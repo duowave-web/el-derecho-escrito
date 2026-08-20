@@ -1,0 +1,15 @@
+User-agent: *
+Allow: /
+
+# Rastreadores de IA — quita el comentario de las líneas Disallow
+# si no quieres que entrenen con tus artículos.
+User-agent: GPTBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+Sitemap: https://elderechoescrito.es/sitemap.xml

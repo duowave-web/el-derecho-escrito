@@ -1,81 +1,184 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>El Derecho Escrito — Análisis jurídico con rigor</title>
-  <meta name="description" content="Blog de artículos y análisis sobre derecho: penal, civil, constitucional, laboral y mercantil. Explicado con rigor y sin jerga innecesaria.">
-  <link rel="stylesheet" href="css/styles.css">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚖️</text></svg>">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>El Derecho Escrito | Análisis y artículos jurídicos en español</title>
+<meta name="description" content="Blog jurídico independiente: derecho penal, civil, constitucional, laboral y mercantil explicados con rigor y sin jerga. Análisis de normas y sentencias en español.">
+<link rel="canonical" href="https://elderechoescrito.es/">
+<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+<meta name="author" content="El Derecho Escrito">
+<meta name="theme-color" content="#7a1f2b">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="El Derecho Escrito">
+<meta property="og:locale" content="es_ES">
+<meta property="og:url" content="https://elderechoescrito.es/">
+<meta property="og:title" content="El Derecho Escrito | Análisis y artículos jurídicos en español">
+<meta property="og:description" content="Blog jurídico independiente: derecho penal, civil, constitucional, laboral y mercantil explicados con rigor y sin jerga.">
+<meta property="og:image" content="https://elderechoescrito.es/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="El Derecho Escrito — blog de análisis jurídico">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="El Derecho Escrito | Análisis y artículos jurídicos">
+<meta name="twitter:description" content="Blog jurídico independiente: derecho penal, civil, constitucional, laboral y mercantil explicados con rigor y sin jerga.">
+<meta name="twitter:image" content="https://elderechoescrito.es/og.png">
+
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="alternate" type="application/rss+xml" title="El Derecho Escrito — artículos" href="/feed.xml">
+<link rel="stylesheet" href="/css/styles.css">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://elderechoescrito.es/#website",
+      "url": "https://elderechoescrito.es/",
+      "name": "El Derecho Escrito",
+      "description": "Blog de análisis y artículos jurídicos en español.",
+      "inLanguage": "es-ES",
+      "publisher": { "@id": "https://elderechoescrito.es/#publisher" },
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": "https://elderechoescrito.es/articulos/?q={search_term_string}"
+        },
+        "query-input": "required name=search_term_string"
+      }
+    },
+    {
+      "@type": "Organization",
+      "@id": "https://elderechoescrito.es/#publisher",
+      "name": "El Derecho Escrito",
+      "url": "https://elderechoescrito.es/",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://elderechoescrito.es/og.png",
+        "width": 1200,
+        "height": 630
+      }
+    },
+    {
+      "@type": "Blog",
+      "@id": "https://elderechoescrito.es/#blog",
+      "url": "https://elderechoescrito.es/",
+      "name": "El Derecho Escrito",
+      "description": "Análisis de normas, sentencias y debates jurídicos explicados con rigor.",
+      "inLanguage": "es-ES",
+      "publisher": { "@id": "https://elderechoescrito.es/#publisher" }
+    },
+    {
+      "@type": "WebPage",
+      "@id": "https://elderechoescrito.es/#webpage",
+      "url": "https://elderechoescrito.es/",
+      "name": "El Derecho Escrito | Análisis y artículos jurídicos en español",
+      "isPartOf": { "@id": "https://elderechoescrito.es/#website" },
+      "about": { "@id": "https://elderechoescrito.es/#blog" },
+      "inLanguage": "es-ES"
+    }
+  ]
+}
+</script>
 </head>
 <body>
 
-  <header class="cabecera">
-    <div class="cabecera__interior">
-      <a class="marca" href="index.html">El Derecho Escrito</a>
-      <nav class="nav">
-        <a href="articulos.html">Artículos</a>
-        <a href="sobre.html">Sobre mí</a>
-        <a href="contacto.html">Contacto</a>
-      </nav>
-    </div>
-  </header>
+<a class="saltar" href="#contenido">Saltar al contenido</a>
 
-  <main>
+<header class="cabecera">
+  <div class="cabecera__interior">
+    <a class="marca" href="/">El Derecho Escrito</a>
+    <nav class="nav" aria-label="Navegación principal">
+      <a href="/articulos/">Artículos</a>
+      <a href="/sobre/">Sobre mí</a>
+      <a href="/contacto/">Contacto</a>
+    </nav>
+  </div>
+</header>
 
-    <section class="portada">
-      <div class="contenedor">
-        <p class="portada__antetitulo">Blog jurídico</p>
-        <h1>El derecho, explicado como<br>merece ser explicado</h1>
-        <p class="portada__entradilla">Análisis de normas, sentencias y debates legales con rigor y sin la jerga que hace que casi ningún texto jurídico se entienda a la primera.</p>
-        <div class="portada__acciones">
-          <a class="boton boton--principal" href="articulos.html">Leer los artículos</a>
-          <a class="boton" href="sobre.html">Sobre mí</a>
-        </div>
-      </div>
-    </section>
+<main id="contenido">
 
-    <section class="franja">
-      <div class="contenedor">
-        <div class="areas">
-          <div class="area">
-            <h3>Derecho penal</h3>
-            <p>Garantías, tipos y los límites del poder punitivo.</p>
-          </div>
-          <div class="area">
-            <h3>Constitucional</h3>
-            <p>Derechos fundamentales y control de las normas.</p>
-          </div>
-          <div class="area">
-            <h3>Civil y mercantil</h3>
-            <p>Contratos, responsabilidad y vida societaria.</p>
-          </div>
-          <div class="area">
-            <h3>Laboral</h3>
-            <p>Relación de trabajo, despido y negociación.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="lista">
-      <div class="contenedor">
-        <h2 class="lista__titulo">Últimos artículos</h2>
-        <div id="lista-articulos" data-limite="3"></div>
-        <p class="lista__mas"><a href="articulos.html">Ver todos los artículos &rarr;</a></p>
-      </div>
-    </section>
-
-  </main>
-
-  <footer class="pie">
+  <section class="portada">
     <div class="contenedor">
-      <p>El Derecho Escrito &middot; &copy; <span id="anio">2026</span></p>
-      <p>Contenido divulgativo. No constituye asesoramiento jurídico.</p>
+      <p class="portada__antetitulo">Blog jurídico</p>
+      <h1>El derecho, explicado como merece ser explicado</h1>
+      <p class="portada__entradilla">Análisis de normas, sentencias y debates legales con rigor y sin la jerga que hace que casi ningún texto jurídico se entienda a la primera.</p>
+      <div class="portada__acciones">
+        <a class="boton boton--principal" href="/articulos/">Leer los artículos</a>
+        <a class="boton" href="/sobre/">Sobre mí</a>
+      </div>
     </div>
-  </footer>
+  </section>
 
-  <script src="js/posts.js"></script>
-  <script src="js/main.js"></script>
+  <section class="franja" aria-labelledby="areas-titulo">
+    <div class="contenedor">
+      <h2 id="areas-titulo" class="oculto">Áreas del derecho que se tratan</h2>
+      <div class="areas">
+        <div class="area">
+          <h3>Derecho penal</h3>
+          <p>Garantías, tipos penales y los límites del poder punitivo del Estado.</p>
+        </div>
+        <div class="area">
+          <h3>Derecho constitucional</h3>
+          <p>Derechos fundamentales, control de constitucionalidad y reparto de poder.</p>
+        </div>
+        <div class="area">
+          <h3>Civil y mercantil</h3>
+          <p>Contratos, responsabilidad civil, familia y vida societaria.</p>
+        </div>
+        <div class="area">
+          <h3>Derecho laboral</h3>
+          <p>Relación de trabajo, despido, convenios y negociación colectiva.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="lista" aria-labelledby="ultimos-titulo">
+    <div class="contenedor">
+      <h2 id="ultimos-titulo" class="lista__titulo">Últimos artículos</h2>
+
+      <!-- INICIO LISTADO — al publicar, copia un bloque <article> y edítalo -->
+      <div class="entradas">
+
+        <article class="entrada">
+          <div class="entrada__meta">
+            <span class="etiqueta">Derecho penal</span>
+            <time datetime="2026-08-20">20 de agosto de 2026</time>
+          </div>
+          <h3 class="entrada__titulo">
+            <a href="/articulos/principio-de-legalidad-penal/">El principio de legalidad penal: qué protege y dónde se rompe</a>
+          </h3>
+          <p class="entrada__extracto">Nullum crimen sine lege es una de las garantías más citadas del derecho penal y una de las peor entendidas. Un repaso a sus cuatro exigencias y a los casos donde el legislador las tensiona.</p>
+        </article>
+
+      </div>
+      <!-- FIN LISTADO -->
+
+      <p class="lista__mas"><a href="/articulos/">Ver todos los artículos &rarr;</a></p>
+    </div>
+  </section>
+
+</main>
+
+<footer class="pie">
+  <div class="contenedor">
+    <nav class="pie__nav" aria-label="Navegación del pie">
+      <a href="/articulos/">Artículos</a>
+      <a href="/sobre/">Sobre mí</a>
+      <a href="/contacto/">Contacto</a>
+      <a href="/feed.xml">RSS</a>
+    </nav>
+    <p>El Derecho Escrito &middot; &copy; <span id="anio">2026</span></p>
+    <p>Contenido divulgativo. No constituye asesoramiento jurídico.</p>
+  </div>
+</footer>
+
+<script src="/js/main.js" defer></script>
 </body>
 </html>

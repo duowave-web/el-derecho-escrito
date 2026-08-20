@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>El Derecho Escrito</title>
+    <link>https://elderechoescrito.es/</link>
+    <description>Análisis y artículos jurídicos en español: derecho penal, civil, constitucional, laboral y mercantil explicados con rigor y sin jerga.</description>
+    <language>es-ES</language>
+    <atom:link href="https://elderechoescrito.es/feed.xml" rel="self" type="application/rss+xml"/>
+    <lastBuildDate>Thu, 20 Aug 2026 09:00:00 +0200</lastBuildDate>
+
+    <item>
+      <title>El principio de legalidad penal: qué protege y dónde se rompe</title>
+      <link>https://elderechoescrito.es/articulos/principio-de-legalidad-penal/</link>
+      <guid isPermaLink="true">https://elderechoescrito.es/articulos/principio-de-legalidad-penal/</guid>
+      <pubDate>Thu, 20 Aug 2026 09:00:00 +0200</pubDate>
+      <category>Derecho penal</category>
+      <description>Nullum crimen sine lege es una de las garantías más citadas del derecho penal y una de las peor entendidas. Un repaso a sus cuatro exigencias y a los casos donde el legislador las tensiona.</description>
+    </item>
+
+  </channel>
+</rss>
