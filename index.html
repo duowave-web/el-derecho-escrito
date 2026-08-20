@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>El Derecho Escrito — Artículos y análisis jurídico</title>
+  <meta name="description" content="Blog de artículos y análisis sobre derecho: penal, civil, constitucional, laboral y mercantil. Explicado con rigor y sin jerga innecesaria.">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚖️</text></svg>">
+</head>
+<body>
+
+  <header class="cabecera">
+    <div class="cabecera__interior">
+      <a class="marca" href="index.html">El Derecho Escrito</a>
+      <nav class="nav">
+        <a href="index.html">Artículos</a>
+        <a href="sobre.html">Sobre el blog</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="contenedor">
+        <h1>El Derecho Escrito</h1>
+        <p>Análisis jurídico con rigor y sin jerga innecesaria. Sentencias, normas y debates explicados para quien quiere entenderlos de verdad.</p>
+        <div class="buscador">
+          <input type="search" id="buscador" placeholder="Buscar por tema, título o categoría…" aria-label="Buscar artículos">
+        </div>
+      </div>
+    </section>
+
+    <section class="lista">
+      <div class="contenedor">
+        <h2 class="lista__titulo">Últimos artículos</h2>
+        <div id="lista-articulos"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="pie">
+    <div class="contenedor">
+      <p>El Derecho Escrito &middot; &copy; <span id="anio">2026</span></p>
+      <p>Contenido divulgativo. No constituye asesoramiento jurídico.</p>
+    </div>
+  </footer>
+
+  <script src="js/posts.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
