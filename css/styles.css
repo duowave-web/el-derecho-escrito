@@ -44,6 +44,44 @@ a:hover {
   text-decoration: underline;
 }
 
+/* Accesibilidad: enlace de salto y texto solo para lectores de pantalla */
+
+.saltar {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  background: var(--toga);
+  color: #fff;
+  padding: 12px 20px;
+  z-index: 100;
+  font-family: var(--sans);
+  font-size: 0.9rem;
+}
+
+.saltar:focus {
+  left: 0;
+}
+
+.oculto {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.miel {
+  position: absolute;
+  left: -9999px;
+  opacity: 0;
+  height: 0;
+  overflow: hidden;
+}
+
 .contenedor {
   max-width: var(--ancho);
   margin: 0 auto;
@@ -322,6 +360,99 @@ a:hover {
   margin: 28px 0 0;
   font-family: var(--sans);
   font-size: 0.9rem;
+}
+
+.lectura {
+  color: var(--tinta-suave);
+}
+
+.contador {
+  font-family: var(--sans);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--tinta-suave);
+  margin: 0 0 8px;
+}
+
+/* ------------------------------------------------------------ Migas ----- */
+
+.miga {
+  font-family: var(--sans);
+  font-size: 0.8rem;
+  color: var(--tinta-suave);
+  margin-bottom: 20px;
+}
+
+.miga a {
+  color: var(--tinta-suave);
+}
+
+.miga a:hover {
+  color: var(--toga);
+}
+
+.miga span[aria-hidden] {
+  margin: 0 6px;
+  opacity: 0.5;
+}
+
+/* ------------------------------------------------ Índice del artículo --- */
+
+.indice {
+  background: var(--papel-alt);
+  border: 1px solid var(--borde);
+  border-radius: 8px;
+  padding: 20px 26px;
+  margin: 32px 0 40px;
+  font-family: var(--sans);
+}
+
+.indice h2 {
+  font-family: var(--serif);
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin: 0 0 10px;
+  color: var(--tinta-suave);
+}
+
+.indice ol {
+  margin: 0;
+  padding-left: 20px;
+  font-size: 0.92rem;
+}
+
+.indice li {
+  margin-bottom: 5px;
+}
+
+.entradilla {
+  font-size: 1.12rem;
+}
+
+.aviso {
+  font-size: 0.9rem;
+  color: var(--tinta-suave);
+}
+
+/* -------------------------------------------------------------- Pie ----- */
+
+.pie__nav {
+  display: flex;
+  gap: 18px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.pie__nav a {
+  color: var(--tinta-suave);
+}
+
+.pie__nav a:hover {
+  color: var(--toga);
+  text-decoration: none;
 }
 
 /* --------------------------------------------------------- Contacto ----- */
