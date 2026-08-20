@@ -48,11 +48,17 @@
     contenedor.innerHTML = lista.map(plantilla).join("\n");
   }
 
-  const posts = (typeof ARTICULOS !== "undefined" ? ARTICULOS : [])
+  let posts = (typeof ARTICULOS !== "undefined" ? ARTICULOS : [])
     .slice()
     .sort(function (a, b) {
       return b.fecha.localeCompare(a.fecha);
     });
+
+  // En la portada solo se muestran los N más recientes (data-limite="3")
+  const limite = parseInt(contenedor.dataset.limite, 10);
+  if (!isNaN(limite) && limite > 0) {
+    posts = posts.slice(0, limite);
+  }
 
   pintar(posts);
 
