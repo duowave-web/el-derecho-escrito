@@ -463,10 +463,15 @@ a:hover {
   font-family: var(--ui);
 }
 
+/* Especificidad reforzada: el indice vive dentro de .articulo y si no,
+   la regla .articulo h2 lo pisaria. */
+
+.articulo .indice h2,
 .indice h2 {
   font-family: var(--ui);
   font-size: 12px;
   font-weight: 600;
+  line-height: 1.3;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   margin: 0 0 14px;
