@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Contacto | El Derecho Escrito</title>
+<meta name="description" content="Escríbeme: sugerencias de temas jurídicos, correcciones, dudas sobre un artículo o propuestas de colaboración.">
+<link rel="canonical" href="https://elderechoescrito.es/contacto/">
+<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
+<meta name="author" content="El Derecho Escrito">
+<meta name="theme-color" content="#7a1f2b">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="El Derecho Escrito">
+<meta property="og:locale" content="es_ES">
+<meta property="og:url" content="https://elderechoescrito.es/contacto/">
+<meta property="og:title" content="Contacto | El Derecho Escrito">
+<meta property="og:description" content="Sugerencias de temas, correcciones o propuestas de colaboración.">
+<meta property="og:image" content="https://elderechoescrito.es/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Contacto | El Derecho Escrito">
+<meta name="twitter:description" content="Sugerencias de temas, correcciones o propuestas de colaboración.">
+<meta name="twitter:image" content="https://elderechoescrito.es/og.png">
+
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="alternate" type="application/rss+xml" title="El Derecho Escrito — artículos" href="/feed.xml">
+<link rel="stylesheet" href="/css/styles.css">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "ContactPage",
+      "@id": "https://elderechoescrito.es/contacto/#webpage",
+      "url": "https://elderechoescrito.es/contacto/",
+      "name": "Contacto | El Derecho Escrito",
+      "description": "Formulario y datos de contacto de El Derecho Escrito.",
+      "inLanguage": "es-ES",
+      "isPartOf": { "@id": "https://elderechoescrito.es/#website" }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Inicio", "item": "https://elderechoescrito.es/" },
+        { "@type": "ListItem", "position": 2, "name": "Contacto", "item": "https://elderechoescrito.es/contacto/" }
+      ]
+    }
+  ]
+}
+</script>
+</head>
+<body>
+
+<a class="saltar" href="#contenido">Saltar al contenido</a>
+
+<header class="cabecera">
+  <div class="cabecera__interior">
+    <a class="marca" href="/">El Derecho Escrito</a>
+    <nav class="nav" aria-label="Navegación principal">
+      <a href="/articulos/">Artículos</a>
+      <a href="/sobre/">Sobre mí</a>
+      <a href="/contacto/" class="activo" aria-current="page">Contacto</a>
+    </nav>
+  </div>
+</header>
+
+<main id="contenido">
+
+  <section class="cabecera-seccion">
+    <div class="contenedor">
+      <nav class="miga" aria-label="Ruta de navegación">
+        <a href="/">Inicio</a> <span aria-hidden="true">/</span> <span>Contacto</span>
+      </nav>
+      <h1>Contacto</h1>
+      <p>Sugerencias de temas, correcciones, dudas sobre un artículo o propuestas de colaboración. Respondo a todo lo que llega.</p>
+    </div>
+  </section>
+
+  <section class="contacto">
+    <div class="contenedor">
+
+      <!--
+        PARA QUE EL FORMULARIO FUNCIONE:
+        1. Crea una cuenta gratis en https://formspree.io
+        2. Copia el endpoint que te den (tipo https://formspree.io/f/abcdefgh)
+        3. Pégalo abajo sustituyendo TU_ENDPOINT_AQUI
+        Alternativa si usas Cloudflare Pages: puedes montar una Pages Function
+        en /functions/contacto.js y apuntar el action a /contacto.
+      -->
+      <form class="formulario" action="https://formspree.io/f/TU_ENDPOINT_AQUI" method="POST">
+
+        <div class="campo">
+          <label for="nombre">Nombre</label>
+          <input type="text" id="nombre" name="nombre" autocomplete="name" required>
+        </div>
+
+        <div class="campo">
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" autocomplete="email" required>
+        </div>
+
+        <div class="campo">
+          <label for="asunto">Asunto</label>
+          <input type="text" id="asunto" name="asunto">
+        </div>
+
+        <div class="campo">
+          <label for="mensaje">Mensaje</label>
+          <textarea id="mensaje" name="mensaje" rows="7" required></textarea>
+        </div>
+
+        <!-- Trampa antispam: invisible para personas, tentadora para bots -->
+        <div class="miel" aria-hidden="true">
+          <label for="web">No rellenes este campo</label>
+          <input type="text" id="web" name="_gotcha" tabindex="-1" autocomplete="off">
+        </div>
+
+        <button class="boton boton--principal" type="submit">Enviar mensaje</button>
+
+      </form>
+
+      <aside class="contacto__aparte">
+        <h2>También por email</h2>
+        <!-- Sustituye por tu dirección real -->
+        <p>Si prefieres escribir directamente:<br>
+          <a href="mailto:hola@elderechoescrito.es">hola@elderechoescrito.es</a>
+        </p>
+
+        <h2>Antes de escribir</h2>
+        <p>Este blog es divulgativo. No puedo dar asesoramiento sobre casos concretos ni valorar situaciones personales: para eso hace falta un profesional colegiado que conozca todos los detalles del asunto.</p>
+
+        <h2>Correcciones</h2>
+        <p>Si detectas un error en un artículo, dímelo. Lo corrijo y lo hago constar en el propio texto.</p>
+      </aside>
+
+    </div>
+  </section>
+
+</main>
+
+<footer class="pie">
+  <div class="contenedor">
+    <nav class="pie__nav" aria-label="Navegación del pie">
+      <a href="/articulos/">Artículos</a>
+      <a href="/sobre/">Sobre mí</a>
+      <a href="/contacto/">Contacto</a>
+      <a href="/feed.xml">RSS</a>
+    </nav>
+    <p>El Derecho Escrito &middot; &copy; <span id="anio">2026</span></p>
+    <p>Contenido divulgativo. No constituye asesoramiento jurídico.</p>
+  </div>
+</footer>
+
+<script src="/js/main.js" defer></script>
+</body>
+</html>
