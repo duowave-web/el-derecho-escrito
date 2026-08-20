@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>El Derecho Escrito — Artículos y análisis jurídico</title>
+  <title>El Derecho Escrito — Análisis jurídico con rigor</title>
   <meta name="description" content="Blog de artículos y análisis sobre derecho: penal, civil, constitucional, laboral y mercantil. Explicado con rigor y sin jerga innecesaria.">
   <link rel="stylesheet" href="css/styles.css">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚖️</text></svg>">
@@ -14,19 +14,46 @@
     <div class="cabecera__interior">
       <a class="marca" href="index.html">El Derecho Escrito</a>
       <nav class="nav">
-        <a href="index.html">Artículos</a>
-        <a href="sobre.html">Sobre el blog</a>
+        <a href="articulos.html">Artículos</a>
+        <a href="sobre.html">Sobre mí</a>
+        <a href="contacto.html">Contacto</a>
       </nav>
     </div>
   </header>
 
   <main>
-    <section class="hero">
+
+    <section class="portada">
       <div class="contenedor">
-        <h1>El Derecho Escrito</h1>
-        <p>Análisis jurídico con rigor y sin jerga innecesaria. Sentencias, normas y debates explicados para quien quiere entenderlos de verdad.</p>
-        <div class="buscador">
-          <input type="search" id="buscador" placeholder="Buscar por tema, título o categoría…" aria-label="Buscar artículos">
+        <p class="portada__antetitulo">Blog jurídico</p>
+        <h1>El derecho, explicado como<br>merece ser explicado</h1>
+        <p class="portada__entradilla">Análisis de normas, sentencias y debates legales con rigor y sin la jerga que hace que casi ningún texto jurídico se entienda a la primera.</p>
+        <div class="portada__acciones">
+          <a class="boton boton--principal" href="articulos.html">Leer los artículos</a>
+          <a class="boton" href="sobre.html">Sobre mí</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="franja">
+      <div class="contenedor">
+        <div class="areas">
+          <div class="area">
+            <h3>Derecho penal</h3>
+            <p>Garantías, tipos y los límites del poder punitivo.</p>
+          </div>
+          <div class="area">
+            <h3>Constitucional</h3>
+            <p>Derechos fundamentales y control de las normas.</p>
+          </div>
+          <div class="area">
+            <h3>Civil y mercantil</h3>
+            <p>Contratos, responsabilidad y vida societaria.</p>
+          </div>
+          <div class="area">
+            <h3>Laboral</h3>
+            <p>Relación de trabajo, despido y negociación.</p>
+          </div>
         </div>
       </div>
     </section>
@@ -34,9 +61,11 @@
     <section class="lista">
       <div class="contenedor">
         <h2 class="lista__titulo">Últimos artículos</h2>
-        <div id="lista-articulos"></div>
+        <div id="lista-articulos" data-limite="3"></div>
+        <p class="lista__mas"><a href="articulos.html">Ver todos los artículos &rarr;</a></p>
       </div>
     </section>
+
   </main>
 
   <footer class="pie">
