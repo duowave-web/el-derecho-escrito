@@ -467,6 +467,7 @@ a:hover {
    la regla .articulo h2 lo pisaria. */
 
 .articulo .indice h2,
+.articulo .indice h2,
 .indice h2 {
   font-family: var(--ui);
   font-size: 12px;
