@@ -286,9 +286,15 @@
 
           <div class="lateral__bloque autor">
             <h2 class="lista__titulo">Autor</h2>
-            <!-- Sin retrato todavía: el círculo queda como marcador. Al haberlo,
-                 se mete un <img> dentro y hereda encuadre y recorte. -->
-            <div class="autor__retrato"></div>
+            <!-- El retrato es cuadrado (400x400) y el marco tambien, asi que
+                 object-fit: cover no recorta nada y object-position sobra. Si
+                 algun dia se cambia por una foto no cuadrada, habra que
+                 encuadrarla. -->
+            <div class="autor__retrato">
+              <img src="../../img/juanconteramiranda.jpeg"
+                   alt="Retrato de Juan Contera Miranda"
+                   width="400" height="400" loading="lazy" decoding="async">
+            </div>
             <p class="autor__nombre">Juan Contera Miranda</p>
             <p class="autor__bio">Abogado especializado en Derecho Administrativo, Urbanismo y Jurisdicción Contencioso-Administrativa.</p>
             <a class="autor__enlace" href="../../sobre/">Ver perfil &rarr;</a>
