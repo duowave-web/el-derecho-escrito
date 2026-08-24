@@ -769,18 +769,36 @@ a:hover {
 /* El relleno ocupa el alto completo de la franja y crece hacia la derecha.
    El ancho lo escribe el JS.
 
-   OJO CON EL 0.15: no es un valor estetico, es un techo de accesibilidad. El
-   rotulo va encima y tiene que leerse igual sobre la parte llena que sobre la
-   vacia, y no existe ningun color plano que pase 4.5:1 contra los dos fondos
-   —ni el negro puro, que se queda en 3.55:1 sobre el verdigris a plena
-   intensidad—. Lavando el relleno se acercan los dos fondos hasta que el mismo
-   color de texto vale para ambos:
+   EL 0.10 ESTA ATRAPADO ENTRE DOS LIMITES OPUESTOS. No es un valor estetico.
 
-     relleno resultante             #d9e1dd
-     rotulo  --tinta-suave          5.63:1 vacia / 4.60:1 lleno
-     cifra   --acento-oscuro        8.72:1 vacia / 7.12:1 lleno
+   Techo. El rotulo va encima y tiene que leerse igual sobre la parte llena que
+   sobre la vacia, y no existe ningun color plano que pase 4.5:1 contra los dos
+   fondos —ni el negro puro, que se queda en 3.55:1 sobre el verdigris a plena
+   intensidad—. Lavar el relleno acerca los dos fondos hasta que un mismo color
+   de texto vale para ambos, asi que cuanto mas lavado, mejor se lee:
 
-   A 0.18 el rotulo baja a 4.41:1 y ya incumple AA. No subir de 0.15.
+     alpha  relleno    rotulo --tinta-suave   cifra --acento-oscuro
+     0.18   #d3ddd9    4.41:1  incumple AA    7.00:1
+     0.15   #d9e1dd    4.60:1                 7.12:1
+     0.10   #e3e8e4    4.94:1                 7.65:1   <- actual
+     0.08   #e7eae7    5.06:1                 7.83:1
+
+   Suelo. Pero el relleno tambien tiene que verse: si el borde entre lleno y
+   vacio deja de distinguirse, el indicador no indica nada. Medido en dE2000
+   contra la banda vacia, que es la metrica de diferencia percibida —el ratio
+   WCAG mide legibilidad de texto y aqui no dice nada util—:
+
+     0.15  dE 6.81       0.10  dE 4.70       0.08  dE 3.55
+
+   Por debajo de dE 2 seria imperceptible. El 0.10 se queda con casi toda la
+   ganancia de contraste y conserva margen de borde. Bajar a 0.08 suma 0.12 al
+   rotulo, que no se nota, y se lleva por delante una cuarta parte del dE, que
+   si. No subir de 0.15 ni bajar de 0.10.
+
+   El relleno en si se queda en 1.14:1 contra la banda y no llega a los 3:1 que
+   pide WCAG 1.4.11, pero no tiene por que: el porcentaje esta escrito al lado
+   en texto y en aria-valuenow, asi que la informacion no depende del color. El
+   relleno es refuerzo visual, no el unico canal.
 
    Se usa opacity y no un rgba fijo para que el relleno siga a --acento si la
    marca cambia de color. */
@@ -792,7 +810,7 @@ a:hover {
   bottom: 0;
   width: 0;
   background: var(--acento);
-  opacity: 0.15;
+  opacity: 0.1;
 }
 
 /* Por encima del relleno, que es hermano y va antes en el orden de pintado. */
