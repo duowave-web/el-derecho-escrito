@@ -8,7 +8,7 @@
 <meta name="description" content="Nullum crimen sine lege: las cuatro exigencias del principio de legalidad penal —lex scripta, praevia, certa y stricta— y los puntos donde el legislador y los tribunales las tensionan.">
 <link rel="canonical" href="https://elderechoescrito.es/articulos/principio-de-legalidad-penal/">
 <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
-<meta name="author" content="El Derecho Escrito">
+<meta name="author" content="Juan Contera Miranda">
 <meta name="theme-color" content="#2f6e68">
 
 <meta property="og:type" content="article">
@@ -60,9 +60,11 @@
         "height": 630
       },
       "author": {
-        "@type": "Organization",
-        "name": "El Derecho Escrito",
-        "url": "https://elderechoescrito.es/sobre/"
+        "@type": "Person",
+        "name": "Juan Contera Miranda",
+        "url": "https://elderechoescrito.es/sobre/",
+        "jobTitle": "Abogado",
+        "description": "Abogado especializado en Derecho Administrativo, Urbanismo y Jurisdicción Contencioso-Administrativa."
       },
       "publisher": { "@id": "https://elderechoescrito.es/#publisher" },
       "isPartOf": { "@id": "https://elderechoescrito.es/#blog" }
@@ -120,6 +122,15 @@
 
 <a class="saltar" href="#contenido">Saltar al contenido</a>
 
+<!-- PLANTILLA · Barra de progreso. Se copia tal cual en cada artículo: el ancho
+     y el porcentaje los pone js/main.js midiendo .articulo__cuerpo. Sin JS la
+     banda se queda vacía y no estorba. -->
+<div class="progreso" role="progressbar" aria-label="Progreso de lectura"
+     aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+  <div class="progreso__barra"></div>
+  <p class="progreso__rotulo">Lectura en curso <span aria-hidden="true">—</span> <span class="progreso__cifra">0%</span></p>
+</div>
+
 <header class="cabecera">
   <div class="cabecera__interior">
     <a class="marca" href="../../">El Derecho Escrito</a>
@@ -133,82 +144,194 @@
 
 <main id="contenido">
   <article class="articulo">
-    <div class="contenedor">
+    <div class="contenedor contenedor--amplio">
+      <div class="articulo__disposicion">
 
-      <nav class="miga" aria-label="Ruta de navegación">
-        <a href="../../">Inicio</a> <span aria-hidden="true">/</span>
-        <a href="../../articulos/">Artículos</a> <span aria-hidden="true">/</span>
-        <span>El principio de legalidad penal</span>
-      </nav>
+        <!-- ============================================ COLUMNA PRINCIPAL -->
+        <div class="articulo__principal">
 
-      <div class="entrada__meta">
-        <span class="etiqueta">Derecho penal</span>
-        <time datetime="2026-08-20T09:00:00+02:00">20 de agosto de 2026</time>
-        <span class="lectura">7 min de lectura</span>
+          <nav class="miga" aria-label="Ruta de navegación">
+            <a href="../../">Inicio</a> <span aria-hidden="true">/</span>
+            <a href="../../articulos/">Artículos</a> <span aria-hidden="true">/</span>
+            <span>El principio de legalidad penal</span>
+          </nav>
+
+          <p class="etiqueta etiqueta--plana">Ensayo <span aria-hidden="true">·</span> Derecho penal</p>
+
+          <h1 class="articulo__titular">El principio de legalidad penal: qué protege y dónde se rompe</h1>
+
+          <div class="entrada__meta articulo__ficha">
+            <time datetime="2026-08-20T09:00:00+02:00">20 de agosto de 2026</time>
+            <span class="lectura">7 min de lectura</span>
+          </div>
+
+          <!-- PLANTILLA · Imagen de cabecera. El marco recorta a 16:9 con el
+               encuadre alto; basta con cambiar src y alt. -->
+          <figure class="articulo__portada">
+            <img src="../../img/damajusticia.jpg"
+                 alt="Estatua de bronce de la dama de la justicia, con los ojos vendados y sosteniendo la balanza"
+                 width="1600" height="1066">
+          </figure>
+
+          <p class="entradilla"><em>Nullum crimen, nulla poena sine lege.</em> No hay delito ni pena sin ley. Es probablemente la fórmula latina más repetida en cualquier facultad de derecho, y también una de las que peor se entienden: se cita como si fuera un eslogan cuando en realidad es una estructura con cuatro exigencias distintas, cada una con su propia lógica y sus propios puntos de fricción.</p>
+
+          <!-- PLANTILLA · El cuerpo va envuelto en .articulo__cuerpo y no es
+               opcional: de ahí saca el JS los <h2> del índice lateral y la
+               altura del progreso de lectura. Los <h2> se numeran solos por
+               CSS; no escribas el número en el texto. -->
+          <div class="articulo__cuerpo">
+
+            <h2 id="origen">De dónde viene el principio de legalidad</h2>
+
+            <p>El principio se consolida con la Ilustración, en el tránsito del castigo como acto de poder al castigo como acto reglado. Beccaria lo formula en <em>De los delitos y las penas</em> en 1764: si el ciudadano no puede saber de antemano qué conductas le acarrearán una pena, el poder punitivo se convierte en arbitrariedad pura.</p>
+
+            <p>La idea es tan sencilla como exigente: el Estado solo puede castigar aquello que anunció previamente que iba a castigar. De ahí que el principio no sea un tecnicismo, sino la condición que hace del derecho penal algo distinto de la venganza organizada.</p>
+
+            <blockquote class="cita--destacada">El principio no protege al delincuente. Protege al ciudadano frente a la posibilidad de convertirse en uno sin haberlo sabido.</blockquote>
+
+            <h2 id="exigencias">Las cuatro exigencias</h2>
+
+            <h3>1. Lex scripta — reserva de ley</h3>
+
+            <p>La norma penal debe estar en una ley formal, aprobada por el parlamento. Ni la costumbre ni el reglamento ni la jurisprudencia pueden crear delitos. La razón es de legitimidad democrática: la decisión sobre qué merece cárcel corresponde al órgano que representa a la ciudadanía, no a la administración ni a los tribunales.</p>
+
+            <h3>2. Lex praevia — irretroactividad</h3>
+
+            <p>La ley penal debe existir antes del hecho. Nadie puede ser castigado por una conducta que era lícita cuando la realizó. La excepción, universalmente aceptada, opera en un solo sentido: la ley posterior más favorable sí se aplica retroactivamente, porque si el legislador ha decidido que algo ya no merece ese castigo, mantenerlo carecería de justificación.</p>
+
+            <h3>3. Lex certa — taxatividad</h3>
+
+            <p>La ley debe describir la conducta con precisión suficiente. Un tipo penal redactado con conceptos elásticos —«actos contrarios al orden público», «conductas gravemente perturbadoras»— cumple formalmente con estar escrito y ser previo, pero vacía la garantía de contenido: si nadie puede saber qué cae dentro, la previsibilidad es ficticia. Aquí se concentra buena parte del litigio constitucional moderno.</p>
+
+            <h3>4. Lex stricta — prohibición de analogía</h3>
+
+            <p>El juez no puede extender un tipo penal a supuestos parecidos pero no previstos. La interpretación puede aclarar el alcance de una norma; no puede crearlo. La frontera entre interpretar extensivamente y aplicar analógicamente es, en la práctica, uno de los debates más finos y menos resueltos de la dogmática penal.</p>
+
+            <h2 id="tension">Dónde se tensiona hoy</h2>
+
+            <p>Tres focos concentran la mayor parte de la discusión actual:</p>
+
+            <ul>
+              <li><strong>Las leyes penales en blanco.</strong> Tipos que remiten a normativa administrativa o europea para completar su contenido. Son casi inevitables en materia ambiental, tributaria o de seguridad alimentaria, pero desplazan parte de la definición del delito fuera de la ley formal.</li>
+              <li><strong>Los tipos abiertos en delitos de nuevo cuño.</strong> Ciberdelincuencia, discurso de odio, delitos económicos complejos: ámbitos donde la técnica legislativa recurre a fórmulas amplias porque la realidad regulada muta más rápido que el proceso legislativo.</li>
+              <li><strong>Los cambios jurisprudenciales desfavorables.</strong> Cuando un tribunal reinterpreta un tipo de forma más amplia, el efecto práctico sobre el ciudadano se parece mucho a una ley retroactiva, aunque formalmente no lo sea. La doctrina lleva décadas discutiendo si la garantía debería alcanzar también a este supuesto.</li>
+            </ul>
+
+            <h2 id="importancia">Por qué importa fuera del aula</h2>
+
+            <p>El principio de legalidad no es un tecnicismo procesal. Es el que permite que una persona pueda organizar su vida sabiendo qué puede y qué no puede hacer. Cada vez que se relaja —por urgencia política, por presión mediática, por dificultad técnica de regular un fenómeno nuevo— lo que se erosiona no es una garantía del acusado, sino la previsibilidad del derecho para todos.</p>
+
+          </div>
+
+          <aside class="referencias" aria-labelledby="referencias-titulo">
+            <h2 id="referencias-titulo" class="lista__titulo">Citas y referencias</h2>
+            <ol>
+              <li>Cesare Beccaria, <em>De los delitos y las penas</em>, 1764.</li>
+              <li>Constitución Española, artículos 25.1 y 9.3.</li>
+              <li>Ley Orgánica 10/1995, de 23 de noviembre, del Código Penal, artículos 1 a 4.</li>
+            </ol>
+          </aside>
+
+          <p class="aviso"><em>Este artículo tiene carácter divulgativo y no constituye asesoramiento jurídico. Para un caso concreto, consulta con un profesional colegiado.</em></p>
+
+          <!-- PLANTILLA · Continúa leyendo. Reutiliza .tarjeta de la portada.
+               Los artículos que aún no existen van en <div> y sin enlace, para
+               no generar 404; al publicarlos se cambian por <article> con <a>. -->
+          <section class="continua" aria-labelledby="continua-titulo">
+            <h2 id="continua-titulo" class="lista__titulo">Continúa leyendo</h2>
+
+            <div class="tarjetas tarjetas--tres">
+
+              <div class="tarjeta">
+                <div class="tarjeta__imagen"></div>
+                <p class="etiqueta etiqueta--plana">Ensayo</p>
+                <h3 class="entrada__titulo">La discrecionalidad técnica de la Administración</h3>
+                <div class="entrada__meta">
+                  <time datetime="2026-08-12">12 agosto 2026</time>
+                  <span class="lectura">12 min</span>
+                </div>
+              </div>
+
+              <div class="tarjeta">
+                <div class="tarjeta__imagen"></div>
+                <p class="etiqueta etiqueta--plana">Comentario</p>
+                <h3 class="entrada__titulo">El interés legítimo en el recurso contencioso-administrativo</h3>
+                <div class="entrada__meta">
+                  <time datetime="2026-07-30">30 julio 2026</time>
+                  <span class="lectura">14 min</span>
+                </div>
+              </div>
+
+              <div class="tarjeta">
+                <div class="tarjeta__imagen"></div>
+                <p class="etiqueta etiqueta--plana">Fundamento</p>
+                <h3 class="entrada__titulo">El control judicial de los planes parciales: límites y estándares</h3>
+                <div class="entrada__meta">
+                  <time datetime="2026-07-15">15 julio 2026</time>
+                  <span class="lectura">11 min</span>
+                </div>
+              </div>
+
+            </div>
+          </section>
+
+          <nav class="siguiente" aria-label="Seguir leyendo">
+            <a class="volver" href="../../articulos/">&larr; Volver a todos los artículos</a>
+          </nav>
+
+        </div>
+
+        <!-- ============================================ COLUMNA LATERAL -->
+        <aside class="articulo__lateral">
+
+          <div class="lateral__bloque autor">
+            <h2 class="lista__titulo">Autor</h2>
+            <!-- Sin retrato todavía: el círculo queda como marcador. Al haberlo,
+                 se mete un <img> dentro y hereda encuadre y recorte. -->
+            <div class="autor__retrato"></div>
+            <p class="autor__nombre">Juan Contera Miranda</p>
+            <p class="autor__bio">Abogado especializado en Derecho Administrativo, Urbanismo y Jurisdicción Contencioso-Administrativa.</p>
+            <a class="autor__enlace" href="../../sobre/">Ver perfil &rarr;</a>
+          </div>
+
+          <!-- PLANTILLA · El índice lo genera js/main.js desde los <h2> del
+               cuerpo. El <ol> se deja vacío a propósito: no se escribe a mano.
+               Si el artículo no tuviera <h2>, el bloque se oculta solo. -->
+          <nav class="lateral__bloque indice indice--lateral" aria-labelledby="indice-titulo">
+            <h2 id="indice-titulo" class="lista__titulo">Índice del artículo</h2>
+            <ol id="indice-lista"></ol>
+          </nav>
+
+          <div class="lateral__bloque">
+            <h2 class="lista__titulo">Etiquetas</h2>
+            <!-- Van en <span> y no en <a>: no existen páginas de etiqueta. -->
+            <ul class="etiquetas">
+              <li><span class="etiqueta etiqueta--tag">#Legalidad</span></li>
+              <li><span class="etiqueta etiqueta--tag">#DerechoPenal</span></li>
+              <li><span class="etiqueta etiqueta--tag">#Garantías</span></li>
+              <li><span class="etiqueta etiqueta--tag">#Taxatividad</span></li>
+              <li><span class="etiqueta etiqueta--tag">#Irretroactividad</span></li>
+            </ul>
+          </div>
+
+          <!-- Maqueta sin backend: a propósito no hay <form> y los controles
+               van deshabilitados, para que no se pueda enviar nada. -->
+          <div class="lateral__bloque suscripcion">
+            <svg class="suscripcion__icono" width="30" height="30" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+              <rect x="2" y="5" width="20" height="14" rx="2"></rect>
+              <path d="m2 7 10 6 10-6"></path>
+            </svg>
+            <p class="suscripcion__reclamo">Recibe los nuevos artículos en tu correo electrónico</p>
+            <label class="oculto" for="correo">Correo electrónico</label>
+            <input type="email" id="correo" placeholder="Tu correo electrónico" disabled>
+            <button class="boton boton--principal" type="button" disabled>Suscribirme</button>
+            <p class="suscripcion__nota">Sin spam. Cancela cuando quieras.</p>
+          </div>
+
+        </aside>
+
       </div>
-
-      <h1>El principio de legalidad penal: qué protege y dónde se rompe</h1>
-
-      <p class="entradilla"><em>Nullum crimen, nulla poena sine lege.</em> No hay delito ni pena sin ley. Es probablemente la fórmula latina más repetida en cualquier facultad de derecho, y también una de las que peor se entienden: se cita como si fuera un eslogan cuando en realidad es una estructura con cuatro exigencias distintas, cada una con su propia lógica y sus propios puntos de fricción.</p>
-
-      <nav class="indice" aria-label="Índice del artículo">
-        <h2>En este artículo</h2>
-        <ol>
-          <li><a href="#origen">De dónde viene el principio de legalidad</a></li>
-          <li><a href="#exigencias">Las cuatro exigencias</a></li>
-          <li><a href="#tension">Dónde se tensiona hoy</a></li>
-          <li><a href="#importancia">Por qué importa fuera del aula</a></li>
-        </ol>
-      </nav>
-
-      <h2 id="origen">De dónde viene el principio de legalidad</h2>
-
-      <p>El principio se consolida con la Ilustración, en el tránsito del castigo como acto de poder al castigo como acto reglado. Beccaria lo formula en <em>De los delitos y las penas</em> en 1764: si el ciudadano no puede saber de antemano qué conductas le acarrearán una pena, el poder punitivo se convierte en arbitrariedad pura.</p>
-
-      <p>La idea es tan sencilla como exigente: el Estado solo puede castigar aquello que anunció previamente que iba a castigar. De ahí que el principio no sea un tecnicismo, sino la condición que hace del derecho penal algo distinto de la venganza organizada.</p>
-
-      <blockquote>El principio no protege al delincuente. Protege al ciudadano frente a la posibilidad de convertirse en uno sin haberlo sabido.</blockquote>
-
-      <h2 id="exigencias">Las cuatro exigencias</h2>
-
-      <h3>1. Lex scripta — reserva de ley</h3>
-
-      <p>La norma penal debe estar en una ley formal, aprobada por el parlamento. Ni la costumbre ni el reglamento ni la jurisprudencia pueden crear delitos. La razón es de legitimidad democrática: la decisión sobre qué merece cárcel corresponde al órgano que representa a la ciudadanía, no a la administración ni a los tribunales.</p>
-
-      <h3>2. Lex praevia — irretroactividad</h3>
-
-      <p>La ley penal debe existir antes del hecho. Nadie puede ser castigado por una conducta que era lícita cuando la realizó. La excepción, universalmente aceptada, opera en un solo sentido: la ley posterior más favorable sí se aplica retroactivamente, porque si el legislador ha decidido que algo ya no merece ese castigo, mantenerlo carecería de justificación.</p>
-
-      <h3>3. Lex certa — taxatividad</h3>
-
-      <p>La ley debe describir la conducta con precisión suficiente. Un tipo penal redactado con conceptos elásticos —«actos contrarios al orden público», «conductas gravemente perturbadoras»— cumple formalmente con estar escrito y ser previo, pero vacía la garantía de contenido: si nadie puede saber qué cae dentro, la previsibilidad es ficticia. Aquí se concentra buena parte del litigio constitucional moderno.</p>
-
-      <h3>4. Lex stricta — prohibición de analogía</h3>
-
-      <p>El juez no puede extender un tipo penal a supuestos parecidos pero no previstos. La interpretación puede aclarar el alcance de una norma; no puede crearlo. La frontera entre interpretar extensivamente y aplicar analógicamente es, en la práctica, uno de los debates más finos y menos resueltos de la dogmática penal.</p>
-
-      <h2 id="tension">Dónde se tensiona hoy</h2>
-
-      <p>Tres focos concentran la mayor parte de la discusión actual:</p>
-
-      <ul>
-        <li><strong>Las leyes penales en blanco.</strong> Tipos que remiten a normativa administrativa o europea para completar su contenido. Son casi inevitables en materia ambiental, tributaria o de seguridad alimentaria, pero desplazan parte de la definición del delito fuera de la ley formal.</li>
-        <li><strong>Los tipos abiertos en delitos de nuevo cuño.</strong> Ciberdelincuencia, discurso de odio, delitos económicos complejos: ámbitos donde la técnica legislativa recurre a fórmulas amplias porque la realidad regulada muta más rápido que el proceso legislativo.</li>
-        <li><strong>Los cambios jurisprudenciales desfavorables.</strong> Cuando un tribunal reinterpreta un tipo de forma más amplia, el efecto práctico sobre el ciudadano se parece mucho a una ley retroactiva, aunque formalmente no lo sea. La doctrina lleva décadas discutiendo si la garantía debería alcanzar también a este supuesto.</li>
-      </ul>
-
-      <h2 id="importancia">Por qué importa fuera del aula</h2>
-
-      <p>El principio de legalidad no es un tecnicismo procesal. Es el que permite que una persona pueda organizar su vida sabiendo qué puede y qué no puede hacer. Cada vez que se relaja —por urgencia política, por presión mediática, por dificultad técnica de regular un fenómeno nuevo— lo que se erosiona no es una garantía del acusado, sino la previsibilidad del derecho para todos.</p>
-
-      <hr>
-
-      <p class="aviso"><em>Este artículo tiene carácter divulgativo y no constituye asesoramiento jurídico. Para un caso concreto, consulta con un profesional colegiado.</em></p>
-
-      <nav class="siguiente" aria-label="Seguir leyendo">
-        <a class="volver" href="../../articulos/">&larr; Volver a todos los artículos</a>
-      </nav>
-
     </div>
   </article>
 </main>
