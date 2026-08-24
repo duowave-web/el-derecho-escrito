@@ -64,36 +64,59 @@ Al publicar un artículo nuevo hay que actualizar a mano, siempre:
 
 Si no, el artículo existe pero es invisible para buscadores y lectores de RSS.
 
-## Autoría — se repite en 5 sitios por artículo
+## Autoría — se repite en 7 sitios por artículo
 
 > ⚠️ **El nombre y la bio actuales son de la maqueta de referencia, no del
 > cliente.** «Juan Contera Miranda» y su bio salen del diseño que se usó para
 > montar la plantilla de artículo. **Están pendientes de confirmar.** No se
 > deben dar por buenos ni replicar en artículos nuevos sin preguntar antes.
 
-Sin build no hay una sola fuente de verdad: cada artículo repite el nombre y la
-bio a mano. Al publicar —o al cambiar de autor— hay que tocar los cinco:
+Sin build no hay una sola fuente de verdad: cada artículo repite el nombre, la
+bio y el retrato a mano. Al publicar —o al cambiar de autor— hay que tocar los
+siete.
 
-1. `<meta name="author">` en la cabecera del artículo.
-2. `"name"` dentro de `author` en el JSON-LD. **Es el que importa**: de ahí
-   saca Google la atribución de autoría.
-3. `"description"` dentro de ese mismo `author` — la bio.
-4. `.autor__nombre` en la columna lateral, lo que ve el lector.
-5. `.autor__bio` en la columna lateral. **Es literalmente el mismo texto que
-   el punto 3**, duplicado. Es la incoherencia más fácil de dejarse.
+**En la cabecera:**
+
+1. `<meta name="author">`.
+
+**En el JSON-LD**, dentro del bloque `author`:
+
+2. `"name"`. **Es el que más importa**: de ahí saca Google la atribución.
+3. `"description"` — la bio.
+4. `"url"` dentro de `image` — el retrato. Es lo que Google usa para construir
+   la entidad de autor; si apunta a un archivo que no existe no da error,
+   simplemente se pierde la atribución.
+
+**En la columna lateral**, lo que ve el lector:
+
+5. `.autor__nombre`.
+6. `.autor__bio`. **Es literalmente el mismo texto que el punto 3**, duplicado.
+   Es la incoherencia más fácil de dejarse.
+7. El `<img>` dentro de `.autor__retrato` — y son dos cosas en una: el `src` y
+   el `alt`, que también lleva el nombre escrito.
 
 Referencia de cómo queda: `articulos/principio-de-legalidad-penal/index.html`.
-Para localizar los cinco sin depender de números de línea, que se desactualizan:
+Para localizar los siete sin depender de números de línea, que se desactualizan:
 
 ```sh
-# Los tres del HTML visible y la cabecera
+# Cabecera, nombre y bio del HTML visible
 grep -rn 'name="author"\|autor__nombre\|autor__bio' articulos/
-# El bloque author del JSON-LD entero, con su name y su description
-grep -rn -A6 '"author": {' articulos/
+# El retrato del lateral: la ruta y el alt
+grep -rn -A3 'autor__retrato' articulos/
+# El bloque author del JSON-LD entero: name, url, image y description
+grep -rn -A12 '"author": {' articulos/
 ```
 
-Ojo al buscar: `"description"` a secas engancha también la meta description del
-artículo, que no tiene nada que ver con la bio del autor.
+Dos trampas al buscar:
+
+- `"description"` a secas engancha también la meta description del artículo, que
+  no tiene nada que ver con la bio del autor.
+- `"url"` aparece dos veces dentro de `author`: la del perfil (`sobre/`) y la
+  del retrato, anidada en `image`. No son lo mismo.
+
+Y una que no se ve grepeando: **el nombre está también en el nombre del
+archivo** (`img/juanconteramiranda.jpeg`). Al cambiar de autor hay que renombrar
+el archivo, y eso arrastra los puntos 4 y 7 a la vez.
 
 Dos cosas que conviene no confundir:
 
