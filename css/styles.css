@@ -766,16 +766,40 @@ a:hover {
   justify-content: center;
 }
 
+/* El relleno ocupa el alto completo de la franja y crece hacia la derecha.
+   El ancho lo escribe el JS.
+
+   OJO CON EL 0.15: no es un valor estetico, es un techo de accesibilidad. El
+   rotulo va encima y tiene que leerse igual sobre la parte llena que sobre la
+   vacia, y no existe ningun color plano que pase 4.5:1 contra los dos fondos
+   —ni el negro puro, que se queda en 3.55:1 sobre el verdigris a plena
+   intensidad—. Lavando el relleno se acercan los dos fondos hasta que el mismo
+   color de texto vale para ambos:
+
+     relleno resultante             #d9e1dd
+     rotulo  --tinta-suave          5.63:1 vacia / 4.60:1 lleno
+     cifra   --acento-oscuro        8.72:1 vacia / 7.12:1 lleno
+
+   A 0.18 el rotulo baja a 4.41:1 y ya incumple AA. No subir de 0.15.
+
+   Se usa opacity y no un rgba fijo para que el relleno siga a --acento si la
+   marca cambia de color. */
+
 .progreso__barra {
   position: absolute;
   top: 0;
   left: 0;
-  height: 2px;
+  bottom: 0;
   width: 0;
   background: var(--acento);
+  opacity: 0.15;
 }
 
+/* Por encima del relleno, que es hermano y va antes en el orden de pintado. */
+
 .progreso__rotulo {
+  position: relative;
+  z-index: 1;
   margin: 0;
   font-family: var(--ui);
   font-size: 11px;
@@ -785,8 +809,11 @@ a:hover {
   color: var(--tinta-suave);
 }
 
+/* --acento se queda en 4.44:1 sobre el relleno, a un pelo de AA. El tono
+   oscuro pasa de sobra y mantiene el caracter del acento. */
+
 .progreso__cifra {
-  color: var(--acento);
+  color: var(--acento-oscuro);
 }
 
 /* La banda es fija: hay que apartar el contenido y bajar la cabecera pegajosa
