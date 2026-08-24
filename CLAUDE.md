@@ -51,6 +51,51 @@ Al publicar un artículo nuevo hay que actualizar a mano, siempre:
 
 Si no, el artículo existe pero es invisible para buscadores y lectores de RSS.
 
+## Autoría — se repite en 5 sitios por artículo
+
+> ⚠️ **El nombre y la bio actuales son de la maqueta de referencia, no del
+> cliente.** «Juan Contera Miranda» y su bio salen del diseño que se usó para
+> montar la plantilla de artículo. **Están pendientes de confirmar.** No se
+> deben dar por buenos ni replicar en artículos nuevos sin preguntar antes.
+
+Sin build no hay una sola fuente de verdad: cada artículo repite el nombre y la
+bio a mano. Al publicar —o al cambiar de autor— hay que tocar los cinco:
+
+1. `<meta name="author">` en la cabecera del artículo.
+2. `"name"` dentro de `author` en el JSON-LD. **Es el que importa**: de ahí
+   saca Google la atribución de autoría.
+3. `"description"` dentro de ese mismo `author` — la bio.
+4. `.autor__nombre` en la columna lateral, lo que ve el lector.
+5. `.autor__bio` en la columna lateral. **Es literalmente el mismo texto que
+   el punto 3**, duplicado. Es la incoherencia más fácil de dejarse.
+
+Referencia de cómo queda: `articulos/principio-de-legalidad-penal/index.html`.
+Para localizar los cinco sin depender de números de línea, que se desactualizan:
+
+```sh
+# Los tres del HTML visible y la cabecera
+grep -rn 'name="author"\|autor__nombre\|autor__bio' articulos/
+# El bloque author del JSON-LD entero, con su name y su description
+grep -rn -A6 '"author": {' articulos/
+```
+
+Ojo al buscar: `"description"` a secas engancha también la meta description del
+artículo, que no tiene nada que ver con la bio del autor.
+
+Dos cosas que conviene no confundir:
+
+- **`author` y `publisher` son entidades distintas.** El `publisher` apunta por
+  `@id` a la `Organization` «El Derecho Escrito», definida **una sola vez** en
+  `index.html`. Cambiar de autor no lo toca.
+- **`index.html`, `articulos/` y `contacto/` declaran `author: El Derecho
+  Escrito`**, y está bien: son páginas del sitio, no artículos firmados. Solo
+  los artículos llevan `Person`.
+
+Pendiente relacionado: el JSON-LD del artículo declara `sobre/` como `url` del
+autor, pero esa página sigue con texto de relleno entre corchetes y no menciona
+a nadie. Hoy Google va de un `Person` con nombre a una página que no lo
+confirma. Cerrar las dos cosas a la vez.
+
 ## Estado actual: no indexar
 
 `robots.txt` está en `Disallow: /` a propósito, porque esto es una demo en
