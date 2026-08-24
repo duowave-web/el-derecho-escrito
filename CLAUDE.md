@@ -180,14 +180,16 @@ Balanza vectorial (`balanza.svg`) a la izquierda del nombre en versales. Se
 pinta con `mask` desde CSS para que herede `currentColor`, así que cambia de
 color solo al pasar el ratón. No duplicar el archivo por color.
 
+La tarjeta social `og.png` no se edita a mano: se regenera exportando `og.svg`,
+que es su fuente. Al exportar, ojo con la tipografía: Cormorant Garamond no
+viene con el sistema y el `@import` que lleva el SVG dentro **solo lo resuelve
+un navegador**. Illustrator, Figma o `rsvg-convert` lo ignoran y caen a Georgia,
+que es otro serif. O se instala la fuente antes, o se exporta desde el navegador.
+
 ---
 
 ## Deuda pendiente
 
-- **`og.png` sigue con la marca antigua.** Lleva el granate `#7a1f2b`
-  incrustado sobre fondo marfil, de una iteración anterior. Es un binario: hay
-  que regenerarlo con el verdigrís `#2f6e68`. Mientras no se haga, compartir el
-  sitio en redes muestra un color que ya no existe en el código.
 - Detalle menor: los trazos de la balanza en `favicon.svg` son marfil
   `#fbfaf7`, no el blanco puro que declara el sistema.
 - Faltan bloques que el cliente quiere y aún no existen en ninguna versión:
