@@ -40,6 +40,19 @@ del dominio y hay que revertir todo a rutas absolutas (`/css/styles.css`,
 Las URL absolutas completas (`canonical`, `og:url`, `og:image`, `sitemap.xml`,
 `feed.xml`) ya apuntan a `elderechoescrito.es` y **no se tocan**.
 
+A esa lista se suman las URL absolutas que viven dentro del JSON-LD, que es
+donde más fácil se pasan por alto porque no se ven al leer la página:
+
+- `url` e `image` del `author`, en cada artículo firmado.
+- `image` del `BlogPosting`.
+- Los `@id` de `publisher` e `isPartOf`.
+
+Todas dependen del dominio activo. Si el sitio se sirviera desde otro dominio
+sin actualizarlas, seguirían resolviendo contra `elderechoescrito.es`: no darían
+error, apuntarían al sitio equivocado en silencio. Ojo con `image` del `author`
+en particular: es de lo que Google se sirve para construir la entidad de autor,
+así que una URL muerta ahí se traduce en perder la atribución, no en un aviso.
+
 ## Sin build = mantenimiento manual
 
 Al publicar un artículo nuevo hay que actualizar a mano, siempre:
