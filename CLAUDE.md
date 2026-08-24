@@ -78,12 +78,12 @@ un jurista**. El texto manda, la imagen acompaña.
 --tinta:        #1E1E1E;  /* texto principal */
 --tinta-suave:  #66615B;  /* metadatos, texto secundario */
 --nav:          #34312E;  /* enlaces de navegacion */
---acento:       #C96E21;  /* terracota: antetitulos, enlaces, activo */
+--acento:       #2F6E68;  /* verdigris: antetitulos, enlaces, activo */
 --papel:        #FFFFFF;  /* fondo de contenido */
 --pie:          #242424;  /* fondo del pie, texto en blanco */
 ```
 
-Un solo acento, `#C96E21`, usado **con mucha contención**: antetítulos de
+Un solo acento, `#2F6E68`, usado **con mucha contención**: antetítulos de
 sección, enlaces "Leer más", elemento activo del menú. Nada más. Cuanto menos
 aparece, más pesa.
 
@@ -139,9 +139,12 @@ color solo al pasar el ratón. No duplicar el archivo por color.
 
 ## Deuda pendiente
 
-- **El CSS del repo no coincide con el sistema de arriba.** Usa granate
-  `#7a1f2b` y Georgia, de una iteración anterior. Hay que migrarlo a la paleta
-  terracota y a Cormorant Garamond / Source Serif 4 / Inter.
+- **`og.png` sigue con la marca antigua.** Lleva el granate `#7a1f2b`
+  incrustado sobre fondo marfil, de una iteración anterior. Es un binario: hay
+  que regenerarlo con el verdigrís `#2f6e68`. Mientras no se haga, compartir el
+  sitio en redes muestra un color que ya no existe en el código.
+- Detalle menor: los trazos de la balanza en `favicon.svg` son marfil
+  `#fbfaf7`, no el blanco puro que declara el sistema.
 - Faltan bloques que el cliente quiere y aún no existen en ninguna versión:
   banda de newsletter y bloque "Sobre el autor" en portada.
 - `sobre/index.html` tiene texto de relleno entre corchetes.
