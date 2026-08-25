@@ -127,6 +127,9 @@
     const banda = barra.closest(".progreso");
     const cifra = document.querySelector(".progreso__cifra");
 
+    let pendiente = false;
+    let ultimoEntero = -1;
+
     // La lectura arranca en la cabecera del artículo, no en el primer párrafo:
     // así la barra ya avanza mientras se pasa el titular y la foto. Y termina
     // al acabar el texto, no al final de la página: lo que viene después
@@ -134,6 +137,8 @@
     const arranque = document.querySelector(".articulo__principal") || cuerpo;
 
     function actualizar() {
+      pendiente = false;
+
       const desde = arranque.getBoundingClientRect().top + window.scrollY;
       const hasta = cuerpo.getBoundingClientRect().bottom + window.scrollY;
       const recorrido = hasta - desde - window.innerHeight;
@@ -145,21 +150,43 @@
           : window.scrollY >= desde
             ? 1
             : 0;
-      const porcentaje = Math.round(Math.min(1, Math.max(0, avance)) * 100);
+      const fraccion = Math.min(1, Math.max(0, avance));
 
+      // SIN redondear, y esto es lo que hace que la barra avance de forma
+      // continua. Redondeando a entero solo existían 100 posiciones: en una
+      // banda de 1440px eso son saltos de 14px cada 22px de scroll, que es
+      // exactamente lo que se veía escalonado. Con dos decimales el paso baja
+      // a 0.14px, por debajo del pixel.
+      //
       // Una sola escritura: --avance gobierna a la vez el ancho del relleno y
       // el corte del degradado que colorea el rótulo. Escribir el ancho por un
       // lado y el corte por otro es lo que abriría la puerta a que se separen.
-      if (banda) {
-        banda.style.setProperty("--avance", porcentaje + "%");
-        banda.setAttribute("aria-valuenow", String(porcentaje));
+      if (banda) banda.style.setProperty("--avance", (fraccion * 100).toFixed(2) + "%");
+
+      // La cifra y el aria sí van en enteros, y solo se tocan cuando el entero
+      // cambia. Reescribirlos en cada fotograma repetiría el mismo texto 60
+      // veces por segundo y haría que los lectores de pantalla anunciaran sin
+      // parar un valor que no ha cambiado.
+      const entero = Math.round(fraccion * 100);
+      if (entero !== ultimoEntero) {
+        ultimoEntero = entero;
+        if (cifra) cifra.textContent = entero + "%";
+        if (banda) banda.setAttribute("aria-valuenow", String(entero));
       }
-      if (cifra) cifra.textContent = porcentaje + "%";
+    }
+
+    // Un solo repintado por fotograma por muchos eventos de scroll que lleguen.
+    // Sin esto, un scroll rápido puede disparar varios eventos entre dos
+    // fotogramas y se recalcula geometría que nunca llega a pintarse.
+    function pedirActualizacion() {
+      if (pendiente) return;
+      pendiente = true;
+      requestAnimationFrame(actualizar);
     }
 
     actualizar();
-    window.addEventListener("scroll", actualizar, { passive: true });
-    window.addEventListener("resize", actualizar);
+    window.addEventListener("scroll", pedirActualizacion, { passive: true });
+    window.addEventListener("resize", pedirActualizacion);
   }
 
   /* ------------------------------------------- Fondo de la portada ----- */
