@@ -189,8 +189,29 @@ Inter para lo que se consulta.**
 
 ## Retícula y composición
 
-Contenedor máximo **1440 px**. Cabecera de **73 px**, fondo blanco, sin borde
-inferior visible — la separación la hace el espacio, no una línea.
+Contenedor máximo **1440 px**. Cabecera de **73 px**, fondo blanco, con un
+borde inferior de `--borde` en todas las páginas **salvo el inicio**.
+
+> **Por qué cambió esta regla.** La medición original decía «sin borde inferior
+> visible — la separación la hace el espacio, no una línea», y era correcta:
+> cuando se midió, **todas las páginas arrancaban en blanco**, y sobre blanco
+> una línea habría sido ruido.
+>
+> La portada con vídeo introdujo un caso que entonces no existía. Sobre el
+> vídeo la cabecera se separa sola por contraste, así que ahí la regla original
+> sigue vigente y el inicio **no lleva línea**. Pero en el resto —artículo,
+> listado, sobre, contacto, 404— la cabecera quedaba flotando sin límite sobre
+> fondo blanco.
+>
+> El borde no contradice el criterio original: lo completa para el supuesto
+> nuevo. Si algún día la portada dejara de llevar vídeo, lo coherente sería
+> volver a quitarlo de todas.
+
+Detalle de implementación: en el inicio el borde se apaga con
+`border-bottom-color: transparent`, no con `border: none`. Así la cabecera mide
+lo mismo en las seis páginas, cosa que importa porque ese alto alimenta el
+`calc(100svh - var(--alto-cabecera))` de la portada: un solo píxel de
+diferencia devolvería el scroll que se quitó.
 
 Orden de la portada, tal como está construida:
 

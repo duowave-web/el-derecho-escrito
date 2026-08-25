@@ -17,6 +17,7 @@
   if (anio) anio.textContent = new Date().getFullYear();
 
   buscadorDeArticulos();
+  buscadorDeCabecera();
   indiceDelArticulo();
   barraDeProgreso();
   fondoDePortada();
@@ -71,6 +72,95 @@
     } else {
       actualizarContador(entradas.length);
     }
+  }
+
+  /* ------------------------------------------ Buscador de cabecera ----- */
+
+  /* En el HTML la lupa es un enlace al listado, para que sin JavaScript siga
+     llevando a algún sitio útil. Aquí se sustituye por un <button> de verdad:
+     un enlace que despliega algo no es un enlace, y aria-expanded sobre un
+     enlace es semánticamente pobre. */
+
+  function buscadorDeCabecera() {
+    const form = document.querySelector(".busca");
+    if (!form) return;
+
+    const campo = form.querySelector(".busca__campo");
+    const lupa = form.querySelector(".busca__lupa");
+    if (!campo || !lupa) return;
+
+    // Se guarda antes de sustituir el elemento: es el destino al que sigue
+    // llevando la lupa en pantallas estrechas.
+    const urlListado = lupa.getAttribute("href");
+
+    const boton = document.createElement("button");
+    boton.type = "button";
+    boton.className = lupa.className;
+    boton.setAttribute("aria-label", lupa.getAttribute("aria-label"));
+    boton.setAttribute("aria-expanded", "false");
+    boton.setAttribute("aria-controls", campo.id);
+    boton.innerHTML = lupa.innerHTML;
+    lupa.replaceWith(boton);
+
+    function estrecha() {
+      return window.matchMedia("(max-width: 600px)").matches;
+    }
+
+    function abierta() {
+      return form.classList.contains("busca--abierta");
+    }
+
+    function abrir() {
+      form.classList.add("busca--abierta");
+      boton.setAttribute("aria-expanded", "true");
+      // Fuerza el recálculo de estilo antes de enfocar: el campo venía con
+      // visibility: hidden y focus() no surte efecto sobre algo aún invisible.
+      void campo.offsetWidth;
+      campo.focus();
+    }
+
+    function cerrar(devolverFoco) {
+      form.classList.remove("busca--abierta");
+      boton.setAttribute("aria-expanded", "false");
+      if (devolverFoco) boton.focus();
+    }
+
+    boton.addEventListener("click", function () {
+      // Por debajo de 600px la cabecera ya va en dos filas y el campo está
+      // oculto: la lupa se comporta como el enlace que era.
+      if (estrecha()) {
+        window.location.href = urlListado;
+        return;
+      }
+      if (abierta()) cerrar(true);
+      else abrir();
+    });
+
+    // En el formulario y no en el campo, para que Escape también funcione
+    // con el foco puesto en la lupa.
+    form.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && abierta()) {
+        e.preventDefault();
+        cerrar(true);
+      }
+    });
+
+    // Clic fuera. Sin devolver el foco: quien ha pulsado en otro sitio no
+    // espera que el foco salte a la lupa.
+    document.addEventListener("click", function (e) {
+      if (!abierta()) return;
+      if (form.contains(e.target)) return;
+      cerrar(false);
+    });
+
+    // Enviar en vacío llevaría a articulos/?q= sin filtrar nada; mejor ir al
+    // listado limpio.
+    form.addEventListener("submit", function (e) {
+      if (!campo.value.trim()) {
+        e.preventDefault();
+        window.location.href = urlListado;
+      }
+    });
   }
 
   /* ------------------------------------------- Índice del artículo ----- */

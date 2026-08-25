@@ -34,10 +34,19 @@
   --alto-progreso: 30px; /* banda fija de progreso de lectura */
 
   /* Alto de la cabecera. NO es constante: por debajo de 600px pasa a columna
-     y crece a 101px, y esta redefinida abajo en ese breakpoint. La portada
-     resta este valor al alto de viewport, asi que un numero fijo aqui
-     desbordaria 30px en movil, que es justo el scroll que se quiere evitar. */
-  --alto-cabecera: 71px;
+     y crece, y esta redefinida abajo en ese breakpoint. La portada resta este
+     valor al alto de viewport, asi que un numero fijo aqui desbordaria en
+     movil, que es justo el scroll que se quiere evitar.
+
+     Incluye el borde inferior de 1px. Al anadirlo la cabecera crecio y la
+     portada empezo a desbordar por ese pixel. Si se toca el padding, el borde
+     o el contenido de .cabecera, hay que volver a MEDIRLO, no deducirlo.
+
+     El alto real es fraccionario: 72.195px aqui y 103.4px en movil. Estos
+     valores estan redondeados HACIA ARRIBA a proposito. Pasarse deja un hueco
+     de menos de un pixel al final de la portada, que no se ve; quedarse corto
+     saca barra de scroll, que si se ve. */
+  --alto-cabecera: 73px;
 }
 
 *,
@@ -60,6 +69,12 @@ html {
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
+  }
+
+  /* El campo aparece y desaparece de golpe, sin desplegarse. */
+  .busca__campo,
+  .busca--abierta .busca__campo {
+    transition: none;
   }
 }
 
@@ -140,6 +155,22 @@ a:hover {
   position: sticky;
   top: 0;
   z-index: 10;
+  border-bottom: 1px solid var(--borde);
+}
+
+/* El inicio no lleva linea: sobre el video la cabecera ya se separa por
+   contraste y una linea ahi seria ruido.
+
+   Se apaga con color transparente y NO con border: none a proposito. Quitando
+   el borde la cabecera mediria 1px menos en el inicio que en el resto, y ese
+   alto alimenta el calc(100svh - var(--alto-cabecera)) de la portada: bastaria
+   ese pixel para que reapareciera el scroll que se quito.
+
+   Se detecta por la portada con video en vez de marcar el <header>, para no
+   tener que tocar el HTML de las seis paginas que llevan cabecera. */
+
+body:has(.portada--video) .cabecera {
+  border-bottom-color: transparent;
 }
 
 .cabecera__interior {
@@ -182,8 +213,13 @@ a:hover {
   color: var(--acento);
 }
 
+/* align-items: center y no el stretch por defecto. Sin esto, al abrir el
+   buscador los enlaces se estiran hasta el alto del campo y su texto queda
+   pegado arriba, descuadrado respecto al centro del campo. */
+
 .nav {
   display: flex;
+  align-items: center;
   gap: 28px;
   font-family: var(--ui);
   font-size: 14px;
@@ -202,6 +238,116 @@ a:hover {
 
 .nav a.activo {
   color: var(--acento);
+}
+
+/* ------------------------------------------- Buscador de cabecera ------- */
+
+/* El formulario envia a articulos/?q=… y de ahi lo recoge el buscador que ya
+   vive en el listado, que lee ese parametro al cargar. No se duplica nada de
+   la logica de filtrado.
+
+   Sin JS la lupa es un enlace al listado y el campo no se ve. Con JS,
+   main.js sustituye el enlace por un <button aria-expanded> de verdad. */
+
+.busca {
+  display: flex;
+  align-items: center;
+}
+
+/* Cerrado: ancho cero y visibility hidden, que ademas lo saca del orden de
+   tabulacion y del arbol de accesibilidad sin andar moviendo tabindex.
+   La visibility se retrasa hasta el final para que la salida se vea. */
+
+/* ALTO FIJO, Y CONSTANTE EN LOS DOS ESTADOS. Antes el alto salia del padding
+   vertical: 37px abierto contra 19px cerrado, y la cabecera crecia 5.8px al
+   desplegarse. Eso no es solo un salto feo: el alto de la cabecera alimenta
+   --alto-cabecera y el calc(100svh - …) de la portada, asi que crecer al abrir
+   el buscador devolveria el scroll a la portada.
+
+   Los 30px son un techo medido, no una preferencia. Quien manda en la altura
+   de la cabecera no es la fila de enlaces (24px) sino la marca (31.195px):
+   mientras el campo no pase de ahi, la cabecera no se entera. Por eso el alto
+   se declara igual en cerrado y en abierto, y solo se animan ancho, padding
+   horizontal y opacidad. */
+
+.busca__campo {
+  width: 0;
+  height: 30px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  background: var(--papel-alt);
+  font-family: var(--ui);
+  font-size: 14px;
+  color: var(--tinta);
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    width 220ms ease,
+    padding 220ms ease,
+    opacity 150ms ease,
+    visibility 0s 220ms;
+}
+
+.busca--abierta .busca__campo {
+  width: 220px;
+  padding: 0 12px;
+  border-color: var(--borde);
+  opacity: 1;
+  visibility: visible;
+  transition:
+    width 220ms ease,
+    padding 220ms ease,
+    opacity 150ms 70ms ease,
+    visibility 0s;
+}
+
+.busca__campo:focus-visible {
+  outline: 2px solid var(--acento);
+  outline-offset: 1px;
+}
+
+/* Los estilos van en la clase y no en .nav a porque el elemento cambia de
+   <a> a <button> cuando entra el JS, y debe verse igual en ambos casos. */
+
+.busca__lupa {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--nav);
+  cursor: pointer;
+}
+
+/* Area de pulsacion de 44x44 sin que la caja crezca: si el elemento midiera
+   44px de ancho, la lupa quedaria metida 10px hacia dentro y descuadraria el
+   margen derecho de la cabecera. */
+
+.busca__lupa::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 44px;
+  height: 44px;
+  transform: translate(-50%, -50%);
+}
+
+.busca__lupa:hover {
+  color: var(--acento);
+  text-decoration: none;
+}
+
+.busca__lupa:focus-visible {
+  outline: 2px solid var(--acento);
+  outline-offset: 2px;
+  border-radius: 2px;
 }
 
 /* ---------------------------------------------------------- Portada ----- */
@@ -1462,11 +1608,11 @@ body:has(.progreso) .cabecera {
 }
 
 @media (max-width: 600px) {
-  /* Aqui .cabecera__interior pasa a columna y la cabecera crece de 71 a 101px.
-     Sin actualizar esto, la portada se pasaria 30px y aparecerian los 30px de
-     scroll que se querian evitar. */
+  /* Aqui .cabecera__interior pasa a columna y la cabecera mide 103.4px:
+     20 de padding + 26.4 de la marca + 12 de gap + 24 de la nav + 20 + 1 de
+     borde. Redondeado hacia arriba, como el de escritorio. */
   :root {
-    --alto-cabecera: 101px;
+    --alto-cabecera: 104px;
   }
 
   body {
@@ -1493,6 +1639,16 @@ body:has(.progreso) .cabecera {
 
   .nav {
     gap: 20px;
+  }
+
+  /* Aqui la cabecera ya esta en dos filas y mide 101px. Un campo desplegandose
+     no cabe, y hacerla crecer una fila mas romperia el calc(100svh -
+     --alto-cabecera) de la portada: volveria a aparecer scroll. La lupa se
+     queda como enlace al listado, que ya tiene su buscador a ancho completo,
+     mas comodo en un telefono. El JS respeta esto y no despliega nada. */
+
+  .busca__campo {
+    display: none;
   }
 
   .entrada__titulo {
