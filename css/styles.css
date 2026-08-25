@@ -415,17 +415,24 @@ body:has(.portada--video) .cabecera {
    que aun la conserva es 14.2% a 2560px, de modo que 12% deja margen.
    Comprobado de 768 a 2560: cabeza y los dos platillos visibles en todos.
 
-   25% horizontal: cuando la caja es alta y estrecha el recorte cambia de eje
-   y se come los lados. La estatua empieza en el 4.5% del ancho, asi que un
-   center le cortaria el brazo; el 25% protege ese flanco.
+   75% horizontal: cuando la caja es alta y estrecha el recorte cambia de eje
+   y se come los lados. En los archivos volteados la estatua ocupa el
+   67.5%–95.5% del ancho, asi que hay que proteger el flanco DERECHO: con el
+   25% de antes la ventana se iria al lado sin estatua y a 768px la dejaria en
+   4.5%–86.6%, cortandole el brazo. Por encima de 936px de ancho no hay recorte
+   horizontal y la X no influye. */
 
-   OJO: el 25% NO cambia por estar la portada invertida. scaleX(-1) es un
-   transform y se aplica DESPUES del recorte, sobre lo ya pintado; el recorte se
-   sigue calculando en el fotograma original, donde la estatua sigue en el
-   4.5%–32.5%. Subirlo al 75% desplazaria la ventana al lado del fotograma
-   donde NO hay estatua: a 800px la dejaria en 10.8%–96.4% y le cortaria el
-   brazo. Ademas por encima de 936px de ancho no hay recorte horizontal y la X
-   no hace nada. */
+/* PORTADA INVERTIDA (1/3) — estatua a la derecha, texto a la izquierda.
+   La inversion vive en los ARCHIVOS: el mp4 y el jpg estan volteados de origen
+   con ffmpeg, no por CSS. Aqui ya no hay transform.
+
+   Lo unico que queda de la inversion en esta regla es el 75% horizontal del
+   object-position: al voltear el archivo, la estatua se mudo del 4.5%–32.5%
+   del fotograma al 67.5%–95.5%, y el encuadre tiene que seguirla. Si algun dia
+   se vuelve a voltear el archivo, ese 75% tiene que volver al 25%.
+
+   Las otras dos piezas de la composicion —el sentido del velo y la columna del
+   texto— son maqueta y siguen en CSS, marcadas (2/3) y (3/3). */
 
 .portada__video {
   position: absolute;
@@ -433,13 +440,7 @@ body:has(.portada--video) .cabecera {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: 25% 12%;
-
-  /* PORTADA INVERTIDA (1/3) — estatua a la derecha, texto a la izquierda.
-     Voltea tambien el poster, porque lo pinta este mismo elemento: no hace
-     falta regla aparte para movil ni para reduced-motion.
-     Para revertir: quitar esta linea y las otras dos marcadas igual. */
-  transform: scaleX(-1);
+  object-position: 75% 12%;
 }
 
 /* VELO AL 45%. NO BAJAR DE AHI SIN VOLVER A MEDIR.
@@ -477,8 +478,9 @@ body:has(.portada--video) .cabecera {
   position: absolute;
   inset: 0;
   /* PORTADA INVERTIDA (2/3) — el degradado va hacia la izquierda, que es donde
-     esta ahora el texto. Mismos topes, solo cambia la direccion.
-     Para revertir: to left -> to right. */
+     esta el texto. Esto es maqueta y sigue en CSS: el volteo de la imagen esta
+     en los archivos, pero el velo no se voltea con ellos.
+     Si se devuelve la composicion al otro lado: to left -> to right. */
   background: linear-gradient(
     to left,
     rgba(255, 255, 255, 0) 26%,
@@ -498,8 +500,9 @@ body:has(.portada--video) .cabecera {
   width: 100%;
 }
 
-/* PORTADA INVERTIDA (3/3) — el texto pasa a la primera columna.
-   Para revertir: grid-column: 2. */
+/* PORTADA INVERTIDA (3/3) — el texto va en la primera columna. Maqueta, como
+   el velo: no depende del volteo de los archivos.
+   Si se devuelve la composicion al otro lado: grid-column: 2. */
 
 .portada__texto {
   grid-column: 1;
