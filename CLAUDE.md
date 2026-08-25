@@ -230,10 +230,32 @@ borde inferior de `--borde` en todas las páginas **salvo el inicio**.
 > volver a quitarlo de todas.
 
 Detalle de implementación: en el inicio el borde se apaga con
-`border-bottom-color: transparent`, no con `border: none`. Así la cabecera mide
-lo mismo en las seis páginas, cosa que importa porque ese alto alimenta el
-`calc(100svh - var(--alto-cabecera))` de la portada: un solo píxel de
-diferencia devolvería el scroll que se quitó.
+`border-bottom-color: transparent`, no con `border: none`, para que la cabecera
+mida lo mismo en las seis páginas.
+
+### La portada es una franja de 520 px, no una pantalla completa
+
+`min-height: 520px`, no `height`. Los 520 están medidos contra lo que asoma
+debajo: a 1440×900 se ve el rótulo «ÚLTIMOS ARTÍCULOS», la imagen de la primera
+tarjeta entera y 35 px de su titular. Con 560 la imagen se cortaba 5 px antes de
+acabar, que es el peor corte posible.
+
+> **Por qué dejó de ser pantalla completa.** Estuvo un tiempo en
+> `calc(100svh - var(--alto-cabecera))`. En un monitor de 27" eso son ~1370 px:
+> el texto quedaba perdido en el vacío y no asomaba nada de la sección
+> siguiente, así que nada invitaba a bajar.
+>
+> El cambio se llevó por delante una fuente de fragilidad entera. Mientras la
+> portada restaba el alto de la cabecera, ese alto había que mantenerlo a mano
+> en una variable, por tramos, sincronizado con una medida real fraccionaria
+> (72,195 / 108,195 / 103,398 px). Se rompió dos veces en silencio: al añadir el
+> borde inferior y al añadir la lupa del buscador. Ahora la portada no depende
+> de la cabecera, y la variable `--alto-cabecera` ya no existe.
+
+`min-height` y no `height` porque en móvil el contenido crece —a 360 px el
+titular ocupa 3 líneas y la entradilla 5— y en una franja fija se cortaría. Así
+mide 520 exactos en escritorio y se estira sola donde hace falta, sin necesidad
+de un caso aparte para móvil.
 
 ### La cabecera tiene sus propios puntos de corte
 
@@ -247,14 +269,10 @@ Los tres están **medidos**, no elegidos:
 | **748 px** | la cabecera pasa a dos filas | lo mismo con el buscador cerrado, con la navegación en 356 |
 | **400 px** | la navegación baja a 12 px y menos tracking | en versales ocupa 330 px y por debajo de 379 se parte en dos líneas |
 
-Cada tramo tiene su propio `--alto-cabecera`: **73 / 109 / 104 px**. Los valores
-van redondeados hacia arriba porque el alto real es fraccionario (72,195 /
-108,195 / 103,398): pasarse deja menos de un píxel de hueco al final de la
-portada, que no se ve; quedarse corto saca barra de scroll, que sí.
-
-**Si tocas el contenido de la cabecera, vuelve a medir los cuatro números.** Han
-cambiado ya dos veces —al añadir el borde y al añadir la lupa— y las dos veces
-la portada empezó a desbordar en silencio.
+Siguen haciendo falta: evitan que la marca se parta en dos líneas y que la
+navegación en versales no quepa, y eso pasa exista o no la portada. Lo que ya
+**no** hay que mantener es un alto de cabecera en píxeles sincronizado con
+ellos: son ajustes de maqueta y nada más.
 
 Orden de la portada, tal como está construida:
 

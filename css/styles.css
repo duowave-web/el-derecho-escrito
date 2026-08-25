@@ -32,21 +32,6 @@
   --ancho-amplio: 1200px; /* contenedor de portada y rejillas */
   --lateral: 300px;      /* columna lateral del articulo */
   --alto-progreso: 30px; /* banda fija de progreso de lectura */
-
-  /* Alto de la cabecera. NO es constante: por debajo de 600px pasa a columna
-     y crece, y esta redefinida abajo en ese breakpoint. La portada resta este
-     valor al alto de viewport, asi que un numero fijo aqui desbordaria en
-     movil, que es justo el scroll que se quiere evitar.
-
-     Incluye el borde inferior de 1px. Al anadirlo la cabecera crecio y la
-     portada empezo a desbordar por ese pixel. Si se toca el padding, el borde
-     o el contenido de .cabecera, hay que volver a MEDIRLO, no deducirlo.
-
-     El alto real es fraccionario: 72.195px aqui y 103.4px en movil. Estos
-     valores estan redondeados HACIA ARRIBA a proposito. Pasarse deja un hueco
-     de menos de un pixel al final de la portada, que no se ve; quedarse corto
-     saca barra de scroll, que si se ve. */
-  --alto-cabecera: 73px;
 }
 
 *,
@@ -161,10 +146,10 @@ a:hover {
 /* El inicio no lleva linea: sobre el video la cabecera ya se separa por
    contraste y una linea ahi seria ruido.
 
-   Se apaga con color transparente y NO con border: none a proposito. Quitando
-   el borde la cabecera mediria 1px menos en el inicio que en el resto, y ese
-   alto alimenta el calc(100svh - var(--alto-cabecera)) de la portada: bastaria
-   ese pixel para que reapareciera el scroll que se quito.
+   Se apaga con color transparente y no con border: none, para que la cabecera
+   mida lo mismo en las seis paginas. Ya no es critico —la portada dejo de
+   restarle el alto—, pero un borde que ocupa y no se ve sigue siendo mas
+   predecible que uno que aparece y desaparece del flujo.
 
    Se detecta por la portada con video en vez de marcar el <header>, para no
    tener que tocar el HTML de las seis paginas que llevan cabecera. */
@@ -269,10 +254,8 @@ body:has(.portada--video) .cabecera {
    La visibility se retrasa hasta el final para que la salida se vea. */
 
 /* ALTO FIJO, Y CONSTANTE EN LOS DOS ESTADOS. Antes el alto salia del padding
-   vertical: 37px abierto contra 19px cerrado, y la cabecera crecia 5.8px al
-   desplegarse. Eso no es solo un salto feo: el alto de la cabecera alimenta
-   --alto-cabecera y el calc(100svh - …) de la portada, asi que crecer al abrir
-   el buscador devolveria el scroll a la portada.
+   vertical: 37px abierto contra 19px cerrado, y la cabecera pegaba un salto de
+   5.8px al desplegarse, con los enlaces reacomodandose delante del lector.
 
    Los 30px son un techo medido, no una preferencia. Quien manda en la altura
    de la cabecera no es la fila de enlaces (24px) sino la marca (31.195px):
@@ -371,18 +354,29 @@ body:has(.portada--video) .cabecera {
   text-align: center;
 }
 
-/* La portada ocupa la pantalla menos la cabecera, para que se vea entera al
-   cargar sin necesidad de hacer scroll.
+/* Franja de alto fijo, no pantalla completa. Antes ocupaba 100svh menos la
+   cabecera, y en un monitor de 27 pulgadas eso son ~1370px: el texto quedaba
+   perdido en el vacio y no asomaba nada de la seccion siguiente.
 
-   svh y no vh: vh en movil mide el viewport con la barra del navegador
-   replegada, asi que la seccion queda mas alta que la pantalla y desborda.
-   svh usa el viewport pequeno, el que hay con la barra desplegada, y nunca
-   desborda. A cambio la portada no crece al replegarse la barra, y asoma una
-   franja de la seccion siguiente: eso ademas insinua que hay scroll. */
+   Los 520px estan medidos contra lo que asoma debajo. A 1440x900 dejan ver el
+   rotulo «ULTIMOS ARTICULOS», la imagen de la primera tarjeta entera y 35px de
+   su titular: se entiende que hay contenido y por donde sigue. Con 560 la
+   imagen se cortaba 5px antes de acabar, que es el peor corte posible; con 480
+   asomaba tanto que la franja perdia presencia.
+
+   min-height y no height: en movil el contenido crece —a 360px de ancho el
+   titular ocupa 3 lineas y la entradilla 5, 417.6px en total mas 120 de
+   padding— y en una franja fija de 520 se cortaria. Asi mide 520 exactos en
+   escritorio y se estira sola donde hace falta, sin necesidad de un caso
+   aparte para movil.
+
+   Al no depender ya del alto de la cabecera, se pudo eliminar la variable
+   --alto-cabecera y sus tres redefiniciones por tramo, que habia que mantener
+   sincronizadas a mano con una altura real fraccionaria. */
 
 .portada--video {
   position: relative;
-  height: calc(100svh - var(--alto-cabecera));
+  min-height: 520px;
   display: flex;
   align-items: center;
   padding: 56px 0;
@@ -407,17 +401,19 @@ body:has(.portada--video) .cabecera {
   justify-content: flex-start;
 }
 
-/* Al fijar la altura al viewport, la caja ya no tiene la proporcion del
-   archivo y hay recorte. El encuadre elige por donde.
+/* Con la franja a 520px la caja es mucho mas apaisada que el archivo y el
+   recorte vertical se dispara con el ancho: 35% a 1440, 51% a 1920 y 63.5% a
+   2560. El encuadre decide que se conserva.
 
    La estatua ocupa del 9% al 100% del alto del fotograma —91%, y toca el borde
-   inferior—, asi que NO puede quedar entera bajo recorte vertical: no hay
-   margen abajo que sacrificar. Lo unico que se puede decidir es que se pierde.
+   inferior—, asi que NO puede quedar entera: no hay margen abajo que
+   sacrificar. Se elige salvar la cabeza y la balanza, y perder el pedestal.
 
-   30% vertical: manda casi todo el recorte hacia abajo, de modo que se pierde
-   el pedestal y no la cabeza. Mantiene la cabeza visible hasta viewports de
-   unos 630px de alto. Perdida de base medida: 3.8% a 1920x1080, 6.2% a
-   1440x800 y 1280x720, y nula cuando el recorte pasa a ser horizontal.
+   12% vertical, no 30%. El 30% valia cuando la portada era de pantalla
+   completa y el recorte rondaba el 9%; con 63.5% de recorte deja la ventana
+   en 19%–55.6% y la cabeza, que empieza en el 9%, se queda fuera. La Y maxima
+   que aun la conserva es 14.2% a 2560px, de modo que 12% deja margen.
+   Comprobado de 768 a 2560: cabeza y los dos platillos visibles en todos.
 
    25% horizontal: cuando la caja es alta y estrecha el recorte cambia de eje
    y se come los lados. La estatua empieza en el 4.5% del ancho, asi que un
@@ -429,7 +425,7 @@ body:has(.portada--video) .cabecera {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: 25% 30%;
+  object-position: 25% 12%;
 }
 
 /* VELO AL 45%. NO BAJAR DE AHI SIN VOLVER A MEDIR.
@@ -1625,8 +1621,7 @@ body:has(.progreso) .cabecera {
    966px: es lo que necesita la fila para que quepan la marca en una linea
    (319.16), el hueco (24), la navegacion con el campo desplegado (574.35) y
    el padding (48). Por debajo, abrir el buscador partia la marca en dos lineas
-   y la cabecera crecia 30px sin que --alto-cabecera se enterase, con lo que la
-   portada volvia a desbordar. No se estrecha el campo en vez de ocultarlo
+   y la cabecera crecia 30px. No se estrecha el campo en vez de ocultarlo
    porque a 800px cabrian 52px de campo, que no sirven para nada.
 
    748px: lo mismo con el buscador ya cerrado, es decir con la navegacion en
@@ -1639,12 +1634,6 @@ body:has(.progreso) .cabecera {
 }
 
 @media (max-width: 748px) {
-  /* En columna: 20 de padding + 31.195 de la marca + 12 de gap + 24 de la
-     navegacion + 20 + 1 de borde = 108.195. Redondeado hacia arriba. */
-  :root {
-    --alto-cabecera: 109px;
-  }
-
   .cabecera__interior {
     flex-direction: column;
     align-items: flex-start;
@@ -1653,12 +1642,6 @@ body:has(.progreso) .cabecera {
 }
 
 @media (max-width: 600px) {
-  /* La marca baja a 22px y la cabecera pasa de 108.195 a 103.4:
-     20 + 26.4 + 12 + 24 + 20 + 1. Redondeado hacia arriba, como los otros. */
-  :root {
-    --alto-cabecera: 104px;
-  }
-
   body {
     font-size: 17px;
   }
