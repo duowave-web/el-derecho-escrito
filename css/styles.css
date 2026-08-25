@@ -821,6 +821,57 @@ body:has(.portada--video) .cabecera--con-linea {
   color: var(--tinta-suave);
 }
 
+/* ------------------------------- Iconos de fecha y lectura -------------- */
+
+/* Van por CSS y no como <svg> en el HTML porque el patron .entrada__meta
+   aparece NUEVE veces —cuatro tarjetas en el inicio, una entrada en el
+   listado, y en el articulo su ficha de cabecera mas tres tarjetas de
+   «continua leyendo»—. En el HTML serian 18 bloques repetidos a mano, y cada
+   articulo nuevo los volveria a copiar; sin build eso se desincroniza solo.
+
+   Se usa mask con el icono en data-URI, la misma tecnica que la balanza del
+   logotipo y por el mismo motivo: asi el trazo hereda currentColor y sigue al
+   texto sin declarar el color dos veces.
+
+   Ventaja de accesibilidad que el <svg> no da gratis: un pseudo-elemento con
+   content vacio NO entra en el arbol de accesibilidad, asi que no hay nada
+   que ocultar. Con SVG inline habria que acordarse de poner aria-hidden en
+   los 18, y basta olvidarse en uno para que se lea «calendario 20 mayo 2024».
+
+   Se cuelgan de <time> y .lectura, nunca del contenedor: en el listado
+   .entrada__meta lleva ademas la categoria, que no debe llevar icono. */
+
+.entrada__meta time::before,
+.entrada__meta .lectura::before {
+  content: "";
+  display: inline-block;
+  flex: none;
+  width: 0.95em;
+  height: 0.95em;
+  margin-right: 0.4em;
+  background-color: currentColor;
+
+  /* 0.95em y no 1em: el texto va en versales de 12px, cuya altura de mayuscula
+     es 8.85px. Un icono de 12px se veria mas grande que las propias letras.
+
+     El desplazamiento no es vertical-align: middle, que alinea con la base mas
+     media altura de x. Este texto es TODO mayusculas, asi que su centro visual
+     esta en cap/2 = 4.43px sobre la base, mas arriba, y por eso los iconos
+     quedan altos con middle. El -0.1em baja el icono hasta que su centro cae
+     justo ahi. Medido, no estimado. */
+  vertical-align: -0.1em;
+}
+
+.entrada__meta time::before {
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='2.2' y='3.4' width='11.6' height='10.6' rx='1.6'/%3E%3Cpath d='M2.2 7h11.6M5.6 1.8v2.6M10.4 1.8v2.6'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='2.2' y='3.4' width='11.6' height='10.6' rx='1.6'/%3E%3Cpath d='M2.2 7h11.6M5.6 1.8v2.6M10.4 1.8v2.6'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+.entrada__meta .lectura::before {
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='8' cy='8' r='6.2'/%3E%3Cpath d='M8 4.4V8l2.6 1.6'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='8' cy='8' r='6.2'/%3E%3Cpath d='M8 4.4V8l2.6 1.6'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
 .contador {
   font-family: var(--ui);
   font-size: 12px;
