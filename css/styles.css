@@ -227,8 +227,18 @@ body:has(.portada--video) .cabecera {
   letter-spacing: 0.01em;
 }
 
+/* Versales por CSS y no reescribiendo el HTML: asi los lectores de pantalla
+   siguen leyendo «Artículos», no «A-R-T-I-C-U-L-O-S», que es como algunos
+   deletrean las palabras en mayusculas de verdad.
+
+   El tracking sube de 0.01em a 0.06em porque las mayusculas juntas se leen
+   peor: sin aire entre ellas el ojo no distingue las siluetas, que en caja
+   baja vienen dadas por ascendentes y descendentes. */
+
 .nav a {
   color: var(--nav);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
 }
 
 .nav a:hover {
@@ -1607,10 +1617,44 @@ body:has(.progreso) .cabecera {
   }
 }
 
+/* ------------------- Puntos de corte propios de la cabecera -------------
+   Van aparte del de 600px que usan las tarjetas y el cuerpo del texto: la
+   cabecera se rompe por sus propias medidas y no tiene por que compartirlas.
+   Los dos umbrales estan MEDIDOS, no elegidos a ojo.
+
+   966px: es lo que necesita la fila para que quepan la marca en una linea
+   (319.16), el hueco (24), la navegacion con el campo desplegado (574.35) y
+   el padding (48). Por debajo, abrir el buscador partia la marca en dos lineas
+   y la cabecera crecia 30px sin que --alto-cabecera se enterase, con lo que la
+   portada volvia a desbordar. No se estrecha el campo en vez de ocultarlo
+   porque a 800px cabrian 52px de campo, que no sirven para nada.
+
+   748px: lo mismo con el buscador ya cerrado, es decir con la navegacion en
+   356.35. Ahi ya no hay nada que ocultar y la unica salida es apilar. */
+
+@media (max-width: 966px) {
+  .busca__campo {
+    display: none;
+  }
+}
+
+@media (max-width: 748px) {
+  /* En columna: 20 de padding + 31.195 de la marca + 12 de gap + 24 de la
+     navegacion + 20 + 1 de borde = 108.195. Redondeado hacia arriba. */
+  :root {
+    --alto-cabecera: 109px;
+  }
+
+  .cabecera__interior {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+}
+
 @media (max-width: 600px) {
-  /* Aqui .cabecera__interior pasa a columna y la cabecera mide 103.4px:
-     20 de padding + 26.4 de la marca + 12 de gap + 24 de la nav + 20 + 1 de
-     borde. Redondeado hacia arriba, como el de escritorio. */
+  /* La marca baja a 22px y la cabecera pasa de 108.195 a 103.4:
+     20 + 26.4 + 12 + 24 + 20 + 1. Redondeado hacia arriba, como los otros. */
   :root {
     --alto-cabecera: 104px;
   }
@@ -1627,11 +1671,8 @@ body:has(.progreso) .cabecera {
     padding: 44px 0 32px;
   }
 
-  .cabecera__interior {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
-  }
+  /* La disposicion en columna y el ocultado del campo ya vienen de los cortes
+     de 748px y 966px de arriba; aqui solo se ajusta el tamano. */
 
   .marca {
     font-size: 22px;
@@ -1640,15 +1681,24 @@ body:has(.progreso) .cabecera {
   .nav {
     gap: 20px;
   }
+}
 
-  /* Aqui la cabecera ya esta en dos filas y mide 101px. Un campo desplegandose
-     no cabe, y hacerla crecer una fila mas romperia el calc(100svh -
-     --alto-cabecera) de la portada: volveria a aparecer scroll. La lupa se
-     queda como enlace al listado, que ya tiene su buscador a ancho completo,
-     mas comodo en un telefono. El JS respeta esto y no despliega nada. */
+/* Tercer corte de cabecera, tambien medido. En versales la navegacion ocupa
+   330px, y por debajo de 379px de viewport deja de caber y se parte en dos
+   lineas: la cabecera se va a 124px con la variable diciendo 104, y la portada
+   desborda 20px. Afecta a 375 y 360, que son anchos de movil corrientes.
 
-  .busca__campo {
-    display: none;
+   Se corta en 400px para cubrirlos con margen. El alto no cambia porque la
+   lupa sigue midiendo 24px y es ella la que fija la altura de la fila. */
+
+@media (max-width: 400px) {
+  .nav {
+    gap: 14px;
+  }
+
+  .nav a {
+    font-size: 12px;
+    letter-spacing: 0.04em;
   }
 
   .entrada__titulo {

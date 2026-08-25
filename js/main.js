@@ -102,8 +102,11 @@
     boton.innerHTML = lupa.innerHTML;
     lupa.replaceWith(boton);
 
+    // Debe coincidir con el corte que oculta .busca__campo en el CSS. Por
+    // debajo de ese ancho el campo no cabe junto a la marca, así que la lupa
+    // vuelve a comportarse como el enlace que era en el HTML.
     function estrecha() {
-      return window.matchMedia("(max-width: 600px)").matches;
+      return window.matchMedia("(max-width: 966px)").matches;
     }
 
     function abierta() {

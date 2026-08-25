@@ -180,12 +180,34 @@ Tres familias, cada una con un papel claro:
 | Titular destacado | Cormorant Garamond | 48 px | 600 | −0.015em | 1.08 |
 | Título de tarjeta | Cormorant Garamond | 28 px | 600 | normal | 1.15 |
 | Cuerpo y entradillas | Source Serif 4 | 18 px | 400 | normal | 1.6 |
-| Navegación | Inter | 14 px | 500 | 0.01em | 1.75 |
+| Navegación | Inter | 14 px | 500 | 0.06em | 1.75 | versales |
 | Antetítulo de sección | Inter | 12 px | 600 | 0.08em | 1.3 | versales, color acento |
 | Fecha y metadatos | Inter | 12 px | 500 | 0.06em | 1.4 | versales, `--tinta-suave` |
 
 Regla mental: **Cormorant para lo que se mira, Source Serif para lo que se lee,
 Inter para lo que se consulta.**
+
+> **Por qué la navegación pasó a versales.** La medición original la registraba
+> en caja baja con `0.01em`, y encajaba: era el único elemento de Inter que no
+> iba en versales, y eso la distinguía de los antetítulos y los metadatos.
+>
+> Lo que cambió es que la cabecera dejó de ser solo navegación. Al entrar la
+> lupa del buscador, los enlaces pasaron a convivir con un control, y en caja
+> baja se leían como texto suelto en vez de como una barra de herramientas. Las
+> versales los agrupan visualmente con la lupa y los separan del contenido.
+>
+> Encaja además con la regla mental de arriba: Inter es «lo que se consulta», y
+> en este sistema lo que se consulta ya iba en versales en los otros dos casos.
+> La navegación era la excepción, no la regla.
+>
+> El tracking sube de `0.01em` a `0.06em` porque las mayúsculas juntas se leen
+> peor: la silueta de una palabra en caja baja viene dada por ascendentes y
+> descendentes, y en versales hay que compensar esa pérdida con aire. Es el
+> mismo `0.06em` que ya usaban las fechas y los metadatos.
+>
+> El tamaño se mantiene en 14 px: **medido**, bajarlo a 12 px solo recorta 29 px
+> de los 83 que ensanchan las versales —el ancho lo dominan el tracking y las
+> mayúsculas, no el cuerpo— y no compensa la pérdida de legibilidad.
 
 ## Retícula y composición
 
@@ -212,6 +234,27 @@ Detalle de implementación: en el inicio el borde se apaga con
 lo mismo en las seis páginas, cosa que importa porque ese alto alimenta el
 `calc(100svh - var(--alto-cabecera))` de la portada: un solo píxel de
 diferencia devolvería el scroll que se quitó.
+
+### La cabecera tiene sus propios puntos de corte
+
+Tres, y **no coinciden con el de 600 px** que usan las tarjetas y el cuerpo del
+texto. La cabecera se rompe por sus propias medidas, así que tiene los suyos.
+Los tres están **medidos**, no elegidos:
+
+| Corte | Qué pasa | Por qué ahí |
+|---|---|---|
+| **966 px** | se oculta el campo del buscador | es lo que necesita la fila para la marca en una línea (319) + hueco (24) + navegación desplegada (574) + padding (48) |
+| **748 px** | la cabecera pasa a dos filas | lo mismo con el buscador cerrado, con la navegación en 356 |
+| **400 px** | la navegación baja a 12 px y menos tracking | en versales ocupa 330 px y por debajo de 379 se parte en dos líneas |
+
+Cada tramo tiene su propio `--alto-cabecera`: **73 / 109 / 104 px**. Los valores
+van redondeados hacia arriba porque el alto real es fraccionario (72,195 /
+108,195 / 103,398): pasarse deja menos de un píxel de hueco al final de la
+portada, que no se ve; quedarse corto saca barra de scroll, que sí.
+
+**Si tocas el contenido de la cabecera, vuelve a medir los cuatro números.** Han
+cambiado ya dos veces —al añadir el borde y al añadir la lupa— y las dos veces
+la portada empezó a desbordar en silencio.
 
 Orden de la portada, tal como está construida:
 
