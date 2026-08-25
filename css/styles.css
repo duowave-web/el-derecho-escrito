@@ -32,6 +32,12 @@
   --ancho-amplio: 1200px; /* contenedor de portada y rejillas */
   --lateral: 300px;      /* columna lateral del articulo */
   --alto-progreso: 30px; /* banda fija de progreso de lectura */
+
+  /* Alto de la cabecera. NO es constante: por debajo de 600px pasa a columna
+     y crece a 101px, y esta redefinida abajo en ese breakpoint. La portada
+     resta este valor al alto de viewport, asi que un numero fijo aqui
+     desbordaria 30px en movil, que es justo el scroll que se quiere evitar. */
+  --alto-cabecera: 71px;
 }
 
 *,
@@ -187,9 +193,64 @@ a:hover {
 
 /* ---------------------------------------------------------- Portada ----- */
 
+/* .portada la usan dos paginas: la portada del sitio y 404.html. Todo lo que
+   tiene que ver con el fondo de video va en el modificador .portada--video,
+   porque 404.html no lo lleva y debe conservar su composicion centrada. */
+
 .portada {
   padding: 72px 0 64px;
   text-align: center;
+}
+
+/* La portada ocupa la pantalla menos la cabecera, para que se vea entera al
+   cargar sin necesidad de hacer scroll.
+
+   svh y no vh: vh en movil mide el viewport con la barra del navegador
+   replegada, asi que la seccion queda mas alta que la pantalla y desborda.
+   svh usa el viewport pequeno, el que hay con la barra desplegada, y nunca
+   desborda. A cambio la portada no crece al replegarse la barra, y asoma una
+   franja de la seccion siguiente: eso ademas insinua que hay scroll. */
+
+.portada--video {
+  position: relative;
+  height: calc(100svh - var(--alto-cabecera));
+  display: flex;
+  align-items: center;
+  padding: 56px 0;
+  text-align: left;
+}
+
+/* Paleta oscurecida, solo aqui. Sobre el video el antetitulo en --acento se
+   queda en 2.50:1 y la entradilla en --tinta-suave en 2.59:1: los dos
+   incumplen. Oscurecerlos es lo que permite bajar el velo y que el video se
+   vea. El resto del sitio conserva la jerarquia tonal de siempre. */
+
+.portada--video .portada__antetitulo {
+  color: var(--acento-oscuro);
+}
+
+.portada--video .portada__entradilla {
+  color: var(--tinta);
+  margin: 0;
+}
+
+.portada--video .portada__acciones {
+  justify-content: flex-start;
+}
+
+/* Position relative para que quede por encima del velo sin recurrir a z-index:
+   los tres son hermanos posicionados y este va el ultimo en el HTML. */
+
+.portada__interior {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  width: 100%;
+}
+
+.portada__texto {
+  grid-column: 2;
 }
 
 .portada__antetitulo {
@@ -1188,11 +1249,37 @@ body:has(.progreso) .cabecera {
   text-decoration: none;
 }
 
+/* No hay regla @media (prefers-reduced-motion) para el video, y es a proposito:
+   el poster vive en el atributo poster del propio <video>, asi que un
+   display:none lo ocultaria tambien y la portada se quedaria en blanco. Justo
+   el respaldo que se quiere mostrar. CSS no puede pausar un video, de modo que
+   la unica barrera util es la del JS, que no llega a asignar el src. */
+
 /* --------------------------------------------------------- Responsive --- */
 
 @media (max-width: 900px) {
   .tarjetas {
     grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* El texto deja de caber en media columna: pasa a ancho completo sobre el
+     fondo, y el velo deja de ser degradado lateral para ser un lavado parejo.
+     El corte es tipografico; el del video son 700px y es otra decision. */
+
+  /* La altura la sigue poniendo .portada--video: tambien aqui la portada llena
+     la pantalla menos la cabecera. Solo cambia el respiro vertical. */
+
+  .portada--video {
+    padding: 64px 0 56px;
+  }
+
+  .portada__interior {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .portada__texto {
+    grid-column: 1;
   }
 
   /* El lateral pasa debajo del articulo, no a un lado. */
@@ -1215,6 +1302,13 @@ body:has(.progreso) .cabecera {
 }
 
 @media (max-width: 600px) {
+  /* Aqui .cabecera__interior pasa a columna y la cabecera crece de 71 a 101px.
+     Sin actualizar esto, la portada se pasaria 30px y aparecerian los 30px de
+     scroll que se querian evitar. */
+  :root {
+    --alto-cabecera: 101px;
+  }
+
   body {
     font-size: 17px;
   }
