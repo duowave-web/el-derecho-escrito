@@ -238,6 +238,73 @@ a:hover {
   justify-content: flex-start;
 }
 
+/* Al fijar la altura al viewport, la caja ya no tiene la proporcion del
+   archivo y hay recorte. El encuadre elige por donde.
+
+   La estatua ocupa del 9% al 100% del alto del fotograma —91%, y toca el borde
+   inferior—, asi que NO puede quedar entera bajo recorte vertical: no hay
+   margen abajo que sacrificar. Lo unico que se puede decidir es que se pierde.
+
+   30% vertical: manda casi todo el recorte hacia abajo, de modo que se pierde
+   el pedestal y no la cabeza. Mantiene la cabeza visible hasta viewports de
+   unos 630px de alto. Perdida de base medida: 3.8% a 1920x1080, 6.2% a
+   1440x800 y 1280x720, y nula cuando el recorte pasa a ser horizontal.
+
+   25% horizontal: cuando la caja es alta y estrecha el recorte cambia de eje
+   y se come los lados. La estatua empieza en el 4.5% del ancho, asi que un
+   center le cortaria el brazo; el 25% protege ese flanco. */
+
+.portada__video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 25% 30%;
+}
+
+/* VELO AL 45%. NO BAJAR DE AHI SIN VOLVER A MEDIR.
+
+   El degradado sube de 0 a 0.45 y se queda ahi hasta el borde derecho: no
+   cierra en blanco opaco, para que el video se vea entero. El tramo de subida
+   termina en el 46%, antes de que empiece el texto (51.6%), de modo que todo
+   el texto cae sobre un velo uniforme del 45%.
+
+   Ratios medidos contra el pixel MAS OSCURO de la banda de texto, en seis
+   fotogramas repartidos por los 10 segundos del clip:
+
+     velo   antetitulo   titular   entradilla
+            --acento-    --tinta   --tinta
+            oscuro
+     0.00      4.01       7.05       7.05    <- incumple, el antetitulo
+     0.20      4.87       8.55       8.55
+     0.30      5.34       9.38       9.38
+     0.45      6.10      10.72      10.72    <- actual
+     0.65      7.22      12.69      12.69
+
+   El eslabon debil es SIEMPRE el antetitulo, no la entradilla: es el color
+   mas claro de los tres y va a 12px. Con la paleta original —antetitulo en
+   --acento y entradilla en --tinta-suave— el minimo para cumplir AA seria
+   0.65, que tapa casi todo el video; de ahi que la portada oscurezca esos dos
+   colores. Si alguien revierte esos colores, este 0.45 deja de valer.
+
+   El recorte del video no obliga a subirlo. Remedido con el encuadre actual en
+   seis fotogramas y varios viewports —de 1920x1080 a 1024x720, con recorte
+   vertical y horizontal— el antetitulo se mueve entre 5.94:1 y 6.02:1. Detras
+   del texto solo hay fondo difuminado a cualquier altura, asi que quitar filas
+   por arriba y por abajo apenas cambia el pixel mas oscuro de esa banda. */
+
+.portada__velo {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to right,
+    rgba(255, 255, 255, 0) 26%,
+    rgba(255, 255, 255, 0.45) 46%,
+    rgba(255, 255, 255, 0.45) 100%
+  );
+}
+
 /* Position relative para que quede por encima del velo sin recurrir a z-index:
    los tres son hermanos posicionados y este va el ultimo en el HTML. */
 
@@ -1280,6 +1347,14 @@ body:has(.progreso) .cabecera {
 
   .portada__texto {
     grid-column: 1;
+  }
+
+  /* Aqui el velo no puede ser del 45%: el texto pasa a ancho completo y cruza
+     por encima de la estatua, cuyo bronce baja a L=0.00. Sobre negro puro el
+     antetitulo necesita 0.70 para llegar a AA, asi que se deja en 0.90. */
+
+  .portada__velo {
+    background: rgba(255, 255, 255, 0.9);
   }
 
   /* El lateral pasa debajo del articulo, no a un lado. */

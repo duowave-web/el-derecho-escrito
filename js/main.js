@@ -19,6 +19,7 @@
   buscadorDeArticulos();
   indiceDelArticulo();
   barraDeProgreso();
+  fondoDePortada();
 
   /* ---------------------------------------------------- Buscador ------- */
 
@@ -154,6 +155,42 @@
     actualizar();
     window.addEventListener("scroll", actualizar, { passive: true });
     window.addEventListener("resize", actualizar);
+  }
+
+  /* ------------------------------------------- Fondo de la portada ----- */
+
+  /* El <video> llega sin src a propósito. Ponerlo aquí es lo único que evita
+     de verdad la descarga: ni display:none ni preload="none" la impiden,
+     porque autoplay fuerza la carga igualmente. Si no se cumplen las
+     condiciones, el elemento se queda mostrando su poster y no pesa nada. */
+
+  function fondoDePortada() {
+    const video = document.querySelector(".portada__video");
+    if (!video || !video.dataset.src) return;
+
+    // Dos motivos para no gastar el 1,1 MB: pantalla estrecha —el plano es
+    // apaisado y en vertical se recorta a una banda que pierde la composición—
+    // o petición explícita de menos movimiento.
+    const estrecha = window.matchMedia("(max-width: 700px)").matches;
+    const quieto = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (estrecha || quieto) return;
+
+    // Imprescindible, y como propiedad además de como atributo: sin esto los
+    // navegadores bloquean la reproducción automática.
+    video.muted = true;
+    video.src = video.dataset.src;
+
+    const intento = video.play();
+
+    // Si el navegador bloquea el autoplay de todos modos, no hay nada que
+    // rescatar: se deja el vídeo parado en su primer fotograma, que es
+    // exactamente la misma imagen que el poster. Sin el catch, la promesa
+    // rechazada saldría por consola como error no capturado.
+    if (intento && typeof intento.catch === "function") {
+      intento.catch(function () {
+        video.removeAttribute("autoplay");
+      });
+    }
   }
 
   /* ------------------------------------------------------ Utilidades --- */

@@ -105,6 +105,20 @@
 
   <section class="portada portada--video">
 
+    <!-- El video NO lleva src: lo pone js/main.js solo si la pantalla es ancha
+         y no hay peticion de menos movimiento. Asi el 1,1 MB no se descarga en
+         movil, ni con prefers-reduced-motion, ni sin JavaScript. En esos tres
+         casos se ve el poster, que es el primer fotograma del clip.
+         El muted es obligatorio o el navegador bloquea el autoplay. -->
+    <video class="portada__video"
+           poster="./img/portada-poster.jpg"
+           data-src="./video/portada-dama.mp4"
+           width="1928" height="1072"
+           muted loop playsinline preload="none"
+           aria-hidden="true" tabindex="-1"></video>
+
+    <div class="portada__velo" aria-hidden="true"></div>
+
     <div class="contenedor contenedor--amplio portada__interior">
       <div class="portada__texto">
         <p class="portada__antetitulo">Blog jurídico</p>
