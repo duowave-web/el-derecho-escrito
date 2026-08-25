@@ -147,9 +147,14 @@
             : 0;
       const porcentaje = Math.round(Math.min(1, Math.max(0, avance)) * 100);
 
-      barra.style.width = porcentaje + "%";
+      // Una sola escritura: --avance gobierna a la vez el ancho del relleno y
+      // el corte del degradado que colorea el rótulo. Escribir el ancho por un
+      // lado y el corte por otro es lo que abriría la puerta a que se separen.
+      if (banda) {
+        banda.style.setProperty("--avance", porcentaje + "%");
+        banda.setAttribute("aria-valuenow", String(porcentaje));
+      }
       if (cifra) cifra.textContent = porcentaje + "%";
-      if (banda) banda.setAttribute("aria-valuenow", String(porcentaje));
     }
 
     actualizar();

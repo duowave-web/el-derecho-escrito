@@ -881,7 +881,13 @@ a:hover {
 /* La barra la pinta el JS. Sin JS no se ve nada roto: la banda queda vacia
    y el articulo se lee igual. */
 
+/* --avance es la UNICA fuente del progreso: lo escribe el JS y de el beben
+   tanto el ancho del relleno como el corte del degradado del rotulo. Al ser el
+   mismo valor sobre la misma caja, los dos bordes no pueden desalinearse, ni
+   al redimensionar la ventana ni a ninguna resolucion. */
+
 .progreso {
+  --avance: 0%;
   position: fixed;
   top: 0;
   left: 0;
@@ -891,7 +897,6 @@ a:hover {
   background: var(--papel-alt);
   display: flex;
   align-items: center;
-  justify-content: center;
 }
 
 /* El relleno ocupa el alto completo de la franja y crece hacia la derecha.
@@ -936,17 +941,21 @@ a:hover {
   top: 0;
   left: 0;
   bottom: 0;
-  width: 0;
+  width: var(--avance);
   background: var(--acento);
   opacity: 0.1;
 }
 
-/* Por encima del relleno, que es hermano y va antes en el orden de pintado. */
+/* flex: 1 hace que el rotulo ocupe la banda entera y no solo el ancho de su
+   texto. Es lo que permite que los porcentajes del degradado de abajo esten en
+   coordenadas de banda, las mismas que el ancho del relleno. */
 
 .progreso__rotulo {
   position: relative;
   z-index: 1;
+  flex: 1;
   margin: 0;
+  text-align: center;
   font-family: var(--ui);
   font-size: 11px;
   font-weight: 600;
@@ -955,11 +964,74 @@ a:hover {
   color: var(--tinta-suave);
 }
 
-/* --acento se queda en 4.44:1 sobre el relleno, a un pelo de AA. El tono
-   oscuro pasa de sobra y mantiene el caracter del acento. */
+/* --acento se queda en 4.44:1 sobre el relleno lavado, a un pelo de AA. El
+   tono oscuro pasa de sobra y mantiene el caracter del acento. */
 
 .progreso__cifra {
   color: var(--acento-oscuro);
+}
+
+/* ---- Mejora: relleno solido y rotulo a dos tintas ----------------------- */
+
+/* Con el relleno a plena intensidad ningun color plano sirve para las dos
+   zonas: el texto oscuro sobre el verdigris se queda en 1.04:1. La solucion es
+   que el propio texto cambie de color al cruzar el borde.
+
+   Se hace con UN solo elemento, no con dos capas superpuestas: un degradado de
+   corte duro recortado a las letras. Ventajas sobre duplicar el texto:
+
+     - No puede haber desalineacion, porque no hay dos cajas que alinear.
+     - No hay texto duplicado que ocultar a los lectores de pantalla.
+     - La cifra que actualiza el JS vive en un unico nodo y no se desincroniza.
+
+   Va dentro de @supports porque el respaldo importa mas de lo normal aqui: con
+   relleno solido, cualquier alternativa que no haga dos tintas es ilegible en
+   media banda. Si el navegador no soporta el recorte, se queda el relleno
+   lavado al 10% y el texto oscuro de arriba, que ya estaban verificados.
+
+   Ratios: --tinta-suave sobre --papel-alt da 5.63:1 en la zona vacia, y
+   --papel-alt sobre --acento da 5.43:1 en la rellena. Los dos cumplen AA.
+
+   El degradado se escribe con cuatro topes y no con la sintaxis corta de dos
+   posiciones, que es mas reciente y no puedo probarla en Firefox. */
+
+@supports ((background-clip: text) or (-webkit-background-clip: text)) {
+  .progreso__barra {
+    opacity: 1;
+  }
+
+  .progreso__rotulo {
+    background-image: linear-gradient(
+      to right,
+      var(--papel-alt) 0,
+      var(--papel-alt) var(--avance),
+      var(--tinta-suave) var(--avance),
+      var(--tinta-suave) 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+  }
+
+  /* Sin esto la cifra se pintaria opaca por encima del recorte y se saldria
+     del efecto: sobre el relleno solido caeria a 1.4:1. */
+
+  .progreso__cifra {
+    color: inherit;
+    -webkit-text-fill-color: inherit;
+  }
+
+  /* En alto contraste los fondos se desactivan, y un texto transparente
+     desapareceria del todo. Se vuelve a color plano del sistema. */
+
+  @media (forced-colors: active) {
+    .progreso__rotulo {
+      background-image: none;
+      color: CanvasText;
+      -webkit-text-fill-color: CanvasText;
+    }
+  }
 }
 
 /* La banda es fija: hay que apartar el contenido y bajar la cabecera pegajosa
