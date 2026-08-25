@@ -50,6 +50,19 @@ html {
   scroll-behavior: smooth;
 }
 
+/* El desplazamiento suave es la unica animacion que arranca sola en la pagina:
+   se dispara al pulsar un enlace del indice o del salto al contenido, y mueve
+   el articulo entero. Quien pide menos movimiento debe recibir un salto seco.
+
+   La barra de progreso NO necesita regla aqui: sigue al scroll directamente,
+   sin transicion ni animacion propia, igual que una barra de desplazamiento. */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
 body {
   margin: 0;
   background: var(--papel);
