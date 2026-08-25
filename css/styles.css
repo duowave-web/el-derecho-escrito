@@ -666,6 +666,50 @@ body:has(.portada--video) .cabecera {
   margin: 0 0 28px;
 }
 
+/* Variante en serif, SOLO para el rotulo de seccion de la home. La clase base
+   se queda como esta porque la usan los cinco rotulos del lateral del articulo
+   —autor, indice, etiquetas, referencias y continua leyendo—, que deben seguir
+   siendo Inter pequeno: alli son etiquetas de apoyo, no encabezados.
+
+   20px: tiene que destacar sobre la categoria de las tarjetas (Inter 12px) sin
+   competir con sus titulares (Cormorant 28px). En versales el ojo lo lee mas
+   grande de lo que mide, asi que 20 en caja alta ya pesa lo suficiente y sus
+   mayusculas siguen siendo mas bajas que las del titular de 28.
+
+   700 y no el 600 de la base: a 20px, Cormorant en versales se queda fino y el
+   rotulo no sostenia la seccion. El 700 esta en el @import de arriba
+   —wght@500;600;700— asi que es una cara real y no un engordado sintetico del
+   600: se comprobo forzando su carga y midiendo, porque a 600 el rotulo mide
+   241.78px y a 700 mide 242.98, y una simulacion no cambiaria las metricas.
+
+   0.10em, no los 0.08em de la base ni los 0.12em que pedia el 600. Un serif en
+   versales necesita mas aire que Inter —Cormorant tiene remates y modulacion
+   de grosor, y sin separacion los trazos finos de una letra se confunden con
+   los de la siguiente—, pero con el trazo mas grueso hace falta algo menos:
+   a 0.12 las letras se dispersan y a 0.08 se agolpan.
+
+   Efecto lateral util: el conjunto ADELGAZA. A 700/0.10em el rotulo mide
+   236.2px frente a los 241.8px de 600/0.12em, asi que el bold no empuja al
+   enlace «ver todos»; el encabezado pasa a dos lineas por debajo de 509px de
+   viewport en vez de 514px.
+
+   --tinta y no --acento como la clase base. Es el mismo tono del titular de
+   portada y de los titulares de tarjeta, asi que el rotulo se lee como parte
+   de la estructura de la pagina y no como un adorno. De paso el acento queda
+   en esta seccion solo para las categorias y el enlace «ver todos», que es mas
+   fiel a la regla del sistema de usarlo con mucha contencion.
+
+   No se introduce ningun color nuevo: --pie y --nav estan semanticamente
+   ocupados —fondo del pie y enlaces de navegacion— y ademas son mas claros. */
+
+.lista__titulo--destacado {
+  font-family: var(--display);
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--tinta);
+}
+
 /* Dentro del articulo, .articulo h2 (0,0,1,1) pisa a .lista__titulo (0,0,1,0)
    y convierte el antetitulo en un titular de Cormorant. Los rotulos que viven
    ahi dentro —lateral, referencias, continua leyendo— necesitan recuperarlo. */

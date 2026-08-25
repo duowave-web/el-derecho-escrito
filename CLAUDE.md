@@ -182,10 +182,51 @@ Tres familias, cada una con un papel claro:
 | Cuerpo y entradillas | Source Serif 4 | 18 px | 400 | normal | 1.6 |
 | Navegación | Inter | 14 px | 500 | 0.06em | 1.75 | versales |
 | Antetítulo de sección | Inter | 12 px | 600 | 0.08em | 1.3 | versales, color acento |
+| Rótulo de sección de portada | Cormorant Garamond | 20 px | **700** | 0.10em | 1.3 | versales, `--tinta` |
 | Fecha y metadatos | Inter | 12 px | 500 | 0.06em | 1.4 | versales, `--tinta-suave` |
 
 Regla mental: **Cormorant para lo que se mira, Source Serif para lo que se lee,
 Inter para lo que se consulta.**
+
+> **Los dos rótulos de sección no son lo mismo.** «Antetítulo de sección» es la
+> etiqueta pequeña de Inter, y sigue siendo la norma: la usan los cinco rótulos
+> del lateral del artículo —autor, índice, etiquetas, referencias, continúa
+> leyendo—, donde son apoyo y no encabezado. La clase base `.lista__titulo` es
+> esa.
+>
+> «Rótulo de sección de portada» es una **variante única**, `--destacado`, y de
+> momento solo la lleva «ÚLTIMOS ARTÍCULOS» en el inicio. Ahí el rótulo abre la
+> única sección de la página y tiene que sostenerse frente a una rejilla de
+> cuatro tarjetas; en el lateral de un artículo, en cambio, compite con el
+> texto y debe ceder.
+>
+> Encaja con la regla mental: en la portada el rótulo es **algo que se mira**,
+> no algo que se consulta. Por eso pasa a Cormorant.
+>
+> Los 20 px son el hueco entre la categoría de las tarjetas (Inter 12) y sus
+> titulares (Cormorant 28): destaca sobre la primera sin competir con los
+> segundos. Va en **700**, no en el 600 del resto de Cormorant, porque a 20 px
+> en versales el 600 se queda fino y no sostiene la sección.
+>
+> El tracking sube de 0.08em a **0.10em**: un serif en versales necesita más
+> aire que Inter —Cormorant tiene remates y modulación de grosor, y sin
+> separación los trazos finos de una letra se confunden con los de la
+> siguiente—, pero con el trazo del 700 hace falta algo menos que con el 600,
+> al que le sentaba mejor 0.12em.
+>
+> **Y va en `--tinta`, no en el acento.** Es la otra diferencia con el
+> antetítulo de Inter, que sí es verdigrís. Al compartir tono con el titular de
+> portada y los titulares de tarjeta, el rótulo se lee como parte de la
+> estructura de la página y no como un adorno. De paso el acento queda en esa
+> sección solo para las categorías y el enlace «ver todos», lo que es más fiel
+> a la regla de usarlo con mucha contención.
+
+**El 700 de Cormorant hay que mantenerlo en el `@import`.** Está declarado
+(`wght@500;600;700`) y es el único sitio del proyecto que lo usa. Si alguien
+adelgaza esa lista para aligerar la carga, el navegador no dejará de pintar el
+rótulo: lo **simulará engordando el 600**, que se ve peor que la cara real y no
+avisa por ningún lado. Se comprueba forzando la carga y midiendo — a 600 el
+rótulo mide 241,78 px y a 700, 242,98; una simulación no cambiaría las métricas.
 
 > **Por qué la navegación pasó a versales.** La medición original la registraba
 > en caja baja con `0.01em`, y encajaba: era el único elemento de Inter que no
