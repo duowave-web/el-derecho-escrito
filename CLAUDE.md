@@ -162,7 +162,15 @@ un jurista**. El texto manda, la imagen acompaña.
 --acento:       #2F6E68;  /* verdigris: antetitulos, enlaces, activo */
 --papel:        #FFFFFF;  /* fondo de contenido */
 --pie:          #242424;  /* fondo del pie, texto en blanco */
+--borde:        #E5E1DA;  /* separadores, tarjetas, campos */
+--borde-marcado:#D8D2C9;  /* linea de la cabecera */
 ```
+
+Los dos bordes se diferencian poco a propósito. `--borde` está para separar sin
+que se note; `--borde-marcado` es un paso más oscuro —ΔE 16,4 frente a blanco,
+contra 11,1 del otro— y solo lo usa la línea de la cabecera, que sí tiene que
+leerse como un límite. Ninguno es gris neutro: ambos conservan el
+desplazamiento cálido de la paleta.
 
 Un solo acento, `#2F6E68`, usado **con mucha contención**: antetítulos de
 sección, enlaces "Leer más", elemento activo del menú. Nada más. Cuanto menos
@@ -253,7 +261,8 @@ rótulo mide 241,78 px y a 700, 242,98; una simulación no cambiaría las métri
 ## Retícula y composición
 
 Contenedor máximo **1440 px**. Cabecera de **73 px**, fondo blanco, con un
-borde inferior de `--borde` en todas las páginas **salvo el inicio**.
+borde inferior de **2 px** en `--borde-marcado`. En las cinco páginas
+interiores está siempre; **en el inicio aparece al pasar la franja de portada**.
 
 > **Por qué cambió esta regla.** La medición original decía «sin borde inferior
 > visible — la separación la hace el espacio, no una línea», y era correcta:
@@ -269,10 +278,25 @@ borde inferior de `--borde` en todas las páginas **salvo el inicio**.
 > El borde no contradice el criterio original: lo completa para el supuesto
 > nuevo. Si algún día la portada dejara de llevar vídeo, lo coherente sería
 > volver a quitarlo de todas.
+>
+> Después se afinó una vez más: en el inicio la línea no está ausente, está
+> **esperando**. Aparece en cuanto la cabecera deja de tener la imagen detrás,
+> que es el momento exacto en que la regla original deja de aplicar.
 
-Detalle de implementación: en el inicio el borde se apaga con
-`border-bottom-color: transparent`, no con `border: none`, para que la cabecera
-mida lo mismo en las seis páginas.
+Detalle de implementación, y hay que respetarlo: **el borde existe siempre, a
+2 px, y lo único que cambia es su color.** Nunca se usa `border: none`. Así la
+cabecera mide lo mismo en las seis páginas y, sobre todo, no pega un salto de
+2 px cuando la línea aparece en el inicio: el espacio ya estaba ocupado.
+
+El disparo lo hace `lineaDeCabecera()` en `js/main.js` con un
+`IntersectionObserver` sobre la franja, recortando la zona de observación por
+arriba justo el alto de la cabecera. **Ese alto se mide del DOM, no se escribe**:
+va de 73 px a 109 px según el tramo, y el observador se rehace si cambia. Un
+número fijo ahí se desincronizaría igual que lo haría un umbral de scroll.
+
+Sin JavaScript el inicio no muestra la línea nunca, y es lo coherente: sin JS
+tampoco se carga el vídeo, pero sí el póster, así que la cabecera sigue
+teniendo una imagen detrás y la premisa que justifica ocultarla se mantiene.
 
 ### La portada es una franja de 520 px, no una pantalla completa
 

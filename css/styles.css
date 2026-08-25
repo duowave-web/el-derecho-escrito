@@ -21,6 +21,11 @@
   --papel-alt: #f7f5f2;
   --pie: #242424;
   --borde: #e5e1da;
+  /* Un paso mas oscuro que --borde, para la linea de la cabecera. Separacion
+     del blanco medida en dE: 16.4 frente a los 11.1 de --borde, un 48% mas,
+     sin salirse del registro discreto. Conserva el desplazamiento calido de la
+     paleta: no es un gris neutro. */
+  --borde-marcado: #d8d2c9;
 
   /* Tipografia */
   --display: "Cormorant Garamond", Georgia, serif;
@@ -59,6 +64,13 @@ html {
   /* El campo aparece y desaparece de golpe, sin desplegarse. */
   .busca__campo,
   .busca--abierta .busca__campo {
+    transition: none;
+  }
+
+  /* La linea de la cabecera aparece de golpe, sin fundido. Un cambio de color
+     no mueve nada y podria defenderse dejarlo, pero se desactiva por
+     coherencia con el resto de transiciones del sitio. */
+  body:has(.portada--video) .cabecera {
     transition: none;
   }
 }
@@ -140,22 +152,28 @@ a:hover {
   position: sticky;
   top: 0;
   z-index: 10;
-  border-bottom: 1px solid var(--borde);
+  border-bottom: 2px solid var(--borde-marcado);
 }
 
-/* El inicio no lleva linea: sobre el video la cabecera ya se separa por
-   contraste y una linea ahi seria ruido.
+/* En el inicio la linea no esta desde el principio: mientras la cabecera esta
+   sobre la franja de portada, la imagen ya la separa del contenido y una linea
+   ahi seria ruido. Aparece al pasar la franja, y de eso se encarga
+   lineaDeCabecera() en main.js con un IntersectionObserver.
 
-   Se apaga con color transparente y no con border: none, para que la cabecera
-   mida lo mismo en las seis paginas. Ya no es critico —la portada dejo de
-   restarle el alto—, pero un borde que ocupa y no se ve sigue siendo mas
-   predecible que uno que aparece y desaparece del flujo.
+   EL BORDE SIGUE AHI SIEMPRE, a 2px, y lo unico que cambia es su color. Es lo
+   que garantiza que la cabecera no pegue un salto de 2px al aparecer la linea:
+   el espacio ya estaba ocupado. Por eso transparent y no border: none.
 
    Se detecta por la portada con video en vez de marcar el <header>, para no
    tener que tocar el HTML de las seis paginas que llevan cabecera. */
 
 body:has(.portada--video) .cabecera {
   border-bottom-color: transparent;
+  transition: border-bottom-color 220ms ease;
+}
+
+body:has(.portada--video) .cabecera--con-linea {
+  border-bottom-color: var(--borde-marcado);
 }
 
 .cabecera__interior {

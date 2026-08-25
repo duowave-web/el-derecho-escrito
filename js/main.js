@@ -18,6 +18,7 @@
 
   buscadorDeArticulos();
   buscadorDeCabecera();
+  lineaDeCabecera();
   indiceDelArticulo();
   barraDeProgreso();
   fondoDePortada();
@@ -164,6 +165,48 @@
         window.location.href = urlListado;
       }
     });
+  }
+
+  /* -------------------------------------- Línea de la cabecera --------- */
+
+  /* Solo actúa en el inicio, que es la única página con franja de portada. En
+     el resto la línea es estática y viene del CSS.
+
+     Se observa la franja con el borde superior de la zona de observación
+     recortado justo el alto de la cabecera. Así el disparo cae exactamente
+     cuando la franja deja de estar por debajo de la cabecera, y no cuando ha
+     salido entera de pantalla.
+
+     Ese alto se MIDE, no se escribe: la cabecera pasa de 73px a 104px al
+     plegarse en dos filas por debajo de 748px, y un número fijo aquí se
+     desincronizaría igual que se desincronizaría un umbral de scroll con el
+     alto de la franja. Por eso se rehace el observador si el alto cambia. */
+
+  function lineaDeCabecera() {
+    const cabecera = document.querySelector(".cabecera");
+    const franja = document.querySelector(".portada--video");
+    if (!cabecera || !franja || !("IntersectionObserver" in window)) return;
+
+    let observador = null;
+    let altoMontado = -1;
+
+    function montar() {
+      const alto = Math.ceil(cabecera.getBoundingClientRect().height);
+      if (alto === altoMontado) return;
+      altoMontado = alto;
+
+      if (observador) observador.disconnect();
+      observador = new IntersectionObserver(
+        function (entradas) {
+          cabecera.classList.toggle("cabecera--con-linea", !entradas[0].isIntersecting);
+        },
+        { rootMargin: "-" + alto + "px 0px 0px 0px", threshold: 0 }
+      );
+      observador.observe(franja);
+    }
+
+    montar();
+    window.addEventListener("resize", montar);
   }
 
   /* ------------------------------------------- Índice del artículo ----- */
