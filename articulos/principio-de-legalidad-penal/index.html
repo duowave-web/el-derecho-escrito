@@ -262,6 +262,50 @@
             </ol>
           </aside>
 
+          <!-- COMPARTIR · Enlaces planos a las URL de compartir de cada red, no
+               los botones oficiales. Los widgets de LinkedIn y compañía cargan
+               un script de terceros que rastrea al visitante desde que abre la
+               página, la comparta o no; un <a> no envía nada hasta que se pulsa.
+
+               Las URL llevan dentro la dirección absoluta del artículo, porque
+               la red tiene que poder resolverla desde fuera. Son, por tanto,
+               URL que dependen del dominio activo: están anotadas en CLAUDE.md
+               junto al canonical y al JSON-LD.
+
+               Van al final del artículo y no en el lateral: compartir es sobre
+               todo un gesto de móvil, y en móvil el lateral queda detrás de
+               todo el texto.
+
+               El botón de copiar enlace no está en el HTML a propósito: lo crea
+               js/main.js. Sin JavaScript no puede funcionar, y un botón muerto
+               es peor que ninguno. -->
+          <aside class="compartir" aria-labelledby="compartir-titulo">
+            <h2 id="compartir-titulo" class="lista__titulo">Compartir</h2>
+            <ul class="compartir__lista">
+              <li>
+                <a class="compartir__enlace" rel="noopener noreferrer" target="_blank"
+                   href="https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Felderechoescrito.es%2Farticulos%2Fprincipio-de-legalidad-penal%2F">
+                  <span class="compartir__icono compartir__icono--linkedin" aria-hidden="true"></span>
+                  <span>LinkedIn</span>
+                </a>
+              </li>
+              <li>
+                <a class="compartir__enlace" rel="noopener noreferrer" target="_blank"
+                   href="https://api.whatsapp.com/send?text=El%20principio%20de%20legalidad%20penal%3A%20qu%C3%A9%20protege%20y%20d%C3%B3nde%20se%20rompe%20https%3A%2F%2Felderechoescrito.es%2Farticulos%2Fprincipio-de-legalidad-penal%2F">
+                  <span class="compartir__icono compartir__icono--whatsapp" aria-hidden="true"></span>
+                  <span>WhatsApp</span>
+                </a>
+              </li>
+              <li>
+                <a class="compartir__enlace"
+                   href="mailto:?subject=El%20principio%20de%20legalidad%20penal%3A%20qu%C3%A9%20protege%20y%20d%C3%B3nde%20se%20rompe&amp;body=Te%20paso%20este%20art%C3%ADculo%3A%20https%3A%2F%2Felderechoescrito.es%2Farticulos%2Fprincipio-de-legalidad-penal%2F">
+                  <span class="compartir__icono compartir__icono--correo" aria-hidden="true"></span>
+                  <span>Correo</span>
+                </a>
+              </li>
+            </ul>
+          </aside>
+
           <p class="aviso"><em>Este artículo tiene carácter divulgativo y no constituye asesoramiento jurídico. Para un caso concreto, consulta con un profesional colegiado.</em></p>
 
           <!-- PLANTILLA · Continúa leyendo. DESACTIVADO a propósito mientras

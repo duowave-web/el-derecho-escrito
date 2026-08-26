@@ -47,11 +47,29 @@ donde más fácil se pasan por alto porque no se ven al leer la página:
 - `image` del `BlogPosting`.
 - Los `@id` de `publisher` e `isPartOf`.
 
+Y a esa, las URL de los **botones de compartir** del final del artículo. Van
+dentro del `href` de cada enlace, **codificadas en porcentaje**, así que un
+`grep` de `elderechoescrito.es` a secas **no las encuentra**: ahí dentro la
+dirección aparece como `https%3A%2F%2Felderechoescrito.es%2F…`. Se buscan así:
+
+```sh
+grep -rn 'elderechoescrito\|elderechoescrito\.es\|%2Felderechoescrito' articulos/
+```
+
+En el de WhatsApp y en el de correo la dirección va además **dentro del texto
+del mensaje**, no como parámetro propio, que es donde más fácil se queda sin
+actualizar.
+
 Todas dependen del dominio activo. Si el sitio se sirviera desde otro dominio
 sin actualizarlas, seguirían resolviendo contra `elderechoescrito.es`: no darían
 error, apuntarían al sitio equivocado en silencio. Ojo con `image` del `author`
 en particular: es de lo que Google se sirve para construir la entidad de autor,
 así que una URL muerta ahí se traduce en perder la atribución, no en un aviso.
+
+Y las de compartir tienen un modo de fallar propio: **son las únicas que las
+resuelve un tercero**. El resto las lee Google o el navegador del visitante; la
+de LinkedIn la pide LinkedIn desde sus servidores. Una dirección que solo
+funcione en local no da error al pulsarla — devuelve una tarjeta vacía.
 
 ## Sin build = mantenimiento manual
 

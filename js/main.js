@@ -22,6 +22,7 @@
   indiceDelArticulo();
   barraDeProgreso();
   fondoDePortada();
+  copiarEnlace();
 
   /* ---------------------------------------------------- Buscador ------- */
 
@@ -359,6 +360,68 @@
         video.removeAttribute("autoplay");
       });
     }
+  }
+
+  /* -------------------------------------------------- Copiar enlace ---- */
+
+  /* El botón no está en el HTML: lo crea este bloque. Sin JavaScript no puede
+     funcionar, y un botón que no hace nada es peor que no tenerlo. Los otros
+     tres de la fila son <a> de verdad y funcionan sin esto.
+
+     También se comprueba la API antes de pintarlo: navigator.clipboard no
+     existe fuera de contextos seguros, así que en http:// el botón no llega a
+     aparecer en vez de aparecer y fallar al pulsarlo. */
+
+  function copiarEnlace() {
+    const lista = document.querySelector(".compartir__lista");
+    if (!lista || !navigator.clipboard) return;
+
+    const canonica = document.querySelector('link[rel="canonical"]');
+    const url = canonica ? canonica.href : location.href;
+
+    const li = document.createElement("li");
+    const boton = document.createElement("button");
+    boton.type = "button";
+    boton.className = "compartir__enlace compartir__enlace--copiar";
+
+    const icono = document.createElement("span");
+    icono.className = "compartir__icono compartir__icono--enlace";
+    icono.setAttribute("aria-hidden", "true");
+
+    const texto = document.createElement("span");
+    texto.textContent = "Copiar enlace";
+
+    boton.append(icono, texto);
+    li.appendChild(boton);
+    lista.appendChild(li);
+
+    /* El aviso se anuncia por aria-live y no cambiando el nombre del botón:
+       así el lector de pantalla dice que se ha copiado sin que el control
+       pase a llamarse otra cosa a media interacción. */
+
+    const aviso = document.createElement("span");
+    aviso.className = "oculto";
+    aviso.setAttribute("role", "status");
+    lista.parentNode.appendChild(aviso);
+
+    let temporizador;
+
+    boton.addEventListener("click", function () {
+      navigator.clipboard.writeText(url).then(
+        function () {
+          texto.textContent = "Enlace copiado";
+          aviso.textContent = "Enlace copiado al portapapeles";
+          clearTimeout(temporizador);
+          temporizador = setTimeout(function () {
+            texto.textContent = "Copiar enlace";
+            aviso.textContent = "";
+          }, 2400);
+        },
+        function () {
+          aviso.textContent = "No se ha podido copiar el enlace";
+        }
+      );
+    });
   }
 
   /* ------------------------------------------------------ Utilidades --- */
