@@ -89,23 +89,25 @@ titulares y fechas inventados, sin enlace para no dar 404. Funcionaba como
 maqueta, pero **prometía un archivo que no existe**, y el visitante no tiene
 forma de saber que tres de las cuatro son atrezo.
 
-Hoy hay una tarjeta real y una de espera, `.tarjeta--proxima`, **en la rejilla
-de cuatro columnas de siempre**. Las dos celdas sobrantes se quedan vacías, en
-blanco y sin caja. La sección ocupa la mitad de su ancho y eso es exactamente
-lo que se quiere decir: hay un artículo, viene otro, y el resto todavía no
-existe.
+Hoy hay una tarjeta real y una de espera, `.tarjeta--proxima`, **en una rejilla
+de tres columnas**. La tercera celda se queda vacía, en blanco y sin caja: hay
+un artículo, viene otro, y el resto todavía no existe.
 
 > **Las celdas vacías no llevan nada dentro, y es deliberado.** Un `<div>`
 > vacío para «rellenar» la columna no se ve, pero sí se anuncia: un lector de
-> pantalla lo recorre como un elemento más de la lista, y el usuario oye dos
-> ítems fantasma detrás de los reales. En una rejilla CSS las celdas sobrantes
-> existen solas, sin marcado. **No hay que rellenarlas.**
+> pantalla lo recorre como un elemento más de la lista, y el usuario oye ítems
+> fantasma detrás de los reales. En una rejilla CSS las celdas sobrantes existen
+> solas, sin marcado. **No hay que rellenarlas.**
 
 Al publicar, en este orden:
 
 - **El segundo artículo** sustituye a la tarjeta de espera.
 - **A partir del tercero** se añaden tarjetas sin tocar nada más: la rejilla ya
-  tiene las cuatro columnas y se van ocupando solas.
+  tiene las tres columnas y se van ocupando solas.
+
+Si algún día se vuelve a cambiar el número de columnas, **hay que recalcular el
+punto de corte**: no es un número redondo, sale de medir. Está explicado abajo,
+en la sección de puntos de corte.
 
 ### El «continúa leyendo» del artículo está desactivado a propósito
 
@@ -447,30 +449,50 @@ Los tres están **medidos**, no elegidos:
 > sido ruido. **Si algún día se mueve el de la cabecera, hay que comprobar que
 > las tarjetas siguen entrando**, o separarlos entonces.
 
-### La rejilla de tarjetas tiene el suyo, en 1008 px
+### La rejilla de tarjetas tiene el suyo, en 1084 px
 
-Es aparte de los tres de la cabecera y **está calculado, no elegido**: es el
-ancho por debajo del cual cuatro columnas dejan de caber de verdad.
+Es aparte de los tres de la cabecera y **está medido, no elegido**. Con el
+contenedor de 1200 y hueco de 28, las columnas salen así:
 
-La tarjeta de espera no puede encoger más allá de su `min-content`, **218,9 px**
-— los 160,9 que mide «Próximamente» en Cormorant a 28 px, más los 56 del
-padding y los 2 del filete. Cuatro columnas de ese ancho más tres huecos de
-28 px piden 960 px de contenido, que con el padding del contenedor son **1008 de
-ventana**.
+| Columnas | Ancho de columna | Interior de la caja |
+|---|---|---|
+| 4 | 267 px | 209 px |
+| **3 — la actual** | **365,33 px** | **307,33 px** |
+| 2 | 562 px | 504 px |
 
-Estuvo en 900 px y ahí había una banda rota que no se veía a simple vista: entre
-900 y 1008 la columna caía por debajo de ese suelo —a 1000 da 217 px, a 920 da
-197— y pasaba una de estas dos cosas, según cómo estuviera declarada la rejilla:
+**Lo que fija el corte ha cambiado, y conviene saberlo antes de tocarlo.**
 
-- **Con `1fr`**, la columna de la tarjeta de espera dejaba de ceder y aplastaba
-  a las vecinas. Las columnas dejaban de ser iguales sin que nada se saliera.
-- **Con `minmax(0, 1fr)`**, todas ceden por igual y es el titular el que se sale
-  de su caja.
+Cuando la rejilla era de cuatro columnas mandaba el `min-content` de la tarjeta
+de espera: **218,9 px**, o sea los 160,9 que mide «Próximamente» en Cormorant a
+28 px más los 56 del padding y los 2 del filete. Cuatro columnas de ese ancho
+pedían 1008 px de ventana, y ahí estaba el corte.
 
-Lo segundo es un fallo peor a la vista pero mucho mejor de mantener, porque **se
-ve**. Por eso la rejilla usa `minmax(0, 1fr)` y además el corte está donde la
-geometría deja de dar. Si algún día cambia el cuerpo del rótulo de la tarjeta
-de espera, o su padding, **este número hay que recalcularlo**: sale de ahí.
+Con tres columnas ese suelo cae a **761 px**, que son trece píxeles por encima
+del corte de una sola columna que ya hay en 748. **Deja de apretar.** Ahora
+manda la tipografía, y el número sale de medir: el titular del artículo aguanta
+en 3 líneas hasta **1085 px** de ventana, con la columna en 327, y salta a 4 en
+1080, con 325,3. El corte va en **1084** para quedarse con el último ancho que
+rinde igual que el escritorio.
+
+Cruzarlo no degrada nada, al revés: a 1084 pasa a dos columnas de 504 y el
+titular baja a 2 líneas. Y con dos tarjetas y dos columnas **no sobra ninguna
+celda**, así que la fila se llena entera en vez de arrastrar una columna vacía
+cada vez más estrecha.
+
+> **`minmax(0, 1fr)` se queda aunque el min-content ya no apriete.** Es la red
+> por debajo, y sigue habiendo una diferencia que importa en cómo falla la
+> rejilla si algún día vuelve a apretar:
+>
+> - **Con `1fr`**, la columna que no puede encoger deja de ceder y aplasta a las
+>   vecinas. Las columnas dejan de ser iguales sin que nada se salga.
+> - **Con `minmax(0, 1fr)`**, todas ceden por igual y es el titular el que se
+>   sale de su caja.
+>
+> Lo segundo es peor a la vista pero mucho mejor de mantener, porque **se ve**.
+> Lo primero estuvo semanas ahí sin que nadie lo notara.
+
+Si cambia el número de columnas, el cuerpo del rótulo de la tarjeta de espera o
+su padding, **este número hay que volver a medirlo**. No se deduce.
 
 Siguen haciendo falta: evitan que la marca se parta en dos líneas y que la
 navegación en versales no quepa, y eso pasa exista o no la portada. Lo que ya

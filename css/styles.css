@@ -1055,7 +1055,7 @@ body:has(.portada--video) .cabecera--con-linea {
 
 .tarjetas {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 36px 28px;
 }
 
@@ -2191,21 +2191,25 @@ body:has(.progreso) .cabecera {
 
 /* --------------------------------------------------------- Responsive --- */
 
-/* El paso de cuatro a dos columnas estaba en 900 y sube a 1008, que es el
-   ancho por debajo del cual la rejilla de cuatro deja de caber de verdad.
+/* El paso de tres a dos columnas. Estuvo en 1008 cuando la rejilla era de
+   cuatro, y ese número ya no vale: lo fijaba el min-content de la tarjeta de
+   espera, y con columnas más anchas ese suelo deja de ser lo que aprieta.
 
-   La tarjeta de espera no puede encoger más allá de su min-content: 218,9 px,
-   que son los 160,9 de «Próximamente» en Cormorant a 28 más los 56 de padding
-   y los 2 del filete. Cuatro columnas de ese ancho más tres huecos de 28 piden
-   960 px de contenido, o sea 1008 de ventana contando el padding.
+   Con tres columnas el suelo cae a 761 px de ventana —218,9 de min-content por
+   tres, más dos huecos de 28, más el padding—, o sea trece píxeles por encima
+   del corte de una sola columna que ya hay en 748. Deja de mandar. Quien manda
+   ahora es la tipografía.
 
-   Entre 900 y 1008 la columna caía por debajo de ese suelo —a 1000 px de
-   ventana da 217, a 920 da 197— y con minmax(0, 1fr) el titular se salía de su
-   caja. Con 1fr no se salía, pero era peor: la columna dejaba de ceder y
-   aplastaba a las vecinas. El corte se pone donde la geometría deja de dar, no
-   donde estaba antes. */
+   Medido en pasos de 5 px: el titular del artículo aguanta en 3 líneas hasta
+   1085 de ventana, con la columna en 327, y salta a 4 en 1080, con 325,3. El
+   corte se pone en 1084 para quedarse con el último ancho que rinde como el
+   escritorio.
 
-@media (max-width: 1008px) {
+   Bajar a dos no es una degradación aquí, es lo contrario: con dos tarjetas y
+   dos columnas no sobra ninguna celda, así que la fila se llena entera en vez
+   de arrastrar una columna vacía cada vez más estrecha. */
+
+@media (max-width: 1084px) {
   .tarjetas {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
