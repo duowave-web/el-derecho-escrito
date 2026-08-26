@@ -771,27 +771,38 @@ body:has(.portada--video) .cabecera--con-linea {
   max-width: none;
 }
 
-/* ---------------------------------------------------------- Buscador ---- */
+/* --------------------------------------------- Aviso de filtrado -------- */
 
-.buscador {
+/* Aquí vivía .buscador, el campo propio del listado. Se retiró junto con el
+   campo, que duplicaba el de la cabecera; el CSS se va con él en vez de quedar
+   como bloque sin usuarios.
+
+   Lo que ocupa su sitio es el aviso que aparece cuando se llega con ?q=. No es
+   un control: es la única señal de que lo que se está viendo está filtrado, y
+   por eso lleva la salida al lado. */
+
+.filtro-aviso {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 14px;
   margin: 28px 0 0;
-  max-width: 420px;
+  font-family: var(--ui);
+  font-size: 13px;
+  color: var(--tinta-suave);
 }
 
-.buscador input {
-  width: 100%;
-  padding: 12px 16px;
-  font-family: var(--ui);
-  font-size: 0.95rem;
-  border: 1px solid var(--borde);
-  border-radius: 4px;
-  background: var(--papel);
+.filtro-aviso strong {
+  font-weight: 600;
   color: var(--tinta);
 }
 
-.buscador input:focus {
-  outline: 2px solid var(--acento);
-  outline-offset: 1px;
+.filtro-aviso__limpiar {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--acento);
 }
 
 /* --------------------------------------------------------- Artículos ---- */

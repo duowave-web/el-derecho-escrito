@@ -26,14 +26,19 @@
 
   /* ---------------------------------------------------- Buscador ------- */
 
+  /* El listado ya no tiene campo propio: el buscador vive en la cabecera y
+     envía aquí por GET. Esta función es el otro extremo de ese formulario, así
+     que aunque no haya nada que escribir en esta página, sigue haciendo falta:
+     sin ella la lupa de la cabecera manda a una página que no le escucha. */
+
   function buscadorDeArticulos() {
-    const buscador = document.getElementById("buscador");
     const contenedor = document.getElementById("entradas");
-    if (!buscador || !contenedor) return;
+    if (!contenedor) return;
 
     const entradas = Array.prototype.slice.call(contenedor.querySelectorAll(".entrada"));
     const vacio = document.getElementById("vacio");
     const contador = document.getElementById("contador");
+    const aviso = document.getElementById("filtro-aviso");
 
     // Índice de texto precalculado
     const indice = entradas.map(function (el) {
@@ -62,14 +67,33 @@
       actualizarContador(visibles);
     }
 
-    buscador.addEventListener("input", function (e) {
-      filtrar(e.target.value);
-    });
+    /* El aviso se monta nodo a nodo y con textContent, nunca con innerHTML.
+       La consulta sale de la URL, o sea que la controla quien construye el
+       enlace: concatenarla en HTML sería una inyección de manual. */
+
+    function mostrarAviso(consulta) {
+      if (!aviso) return;
+      aviso.textContent = "";
+
+      aviso.appendChild(document.createTextNode("Resultados para "));
+
+      const cita = document.createElement("strong");
+      cita.textContent = "«" + consulta + "»";
+      aviso.appendChild(cita);
+
+      const limpiar = document.createElement("a");
+      limpiar.className = "filtro-aviso__limpiar";
+      limpiar.href = window.location.pathname;
+      limpiar.textContent = "Ver todos";
+      aviso.appendChild(limpiar);
+
+      aviso.hidden = false;
+    }
 
     // Permite enlazar búsquedas: /articulos/?q=penal
     const parametro = new URLSearchParams(window.location.search).get("q");
-    if (parametro) {
-      buscador.value = parametro;
+    if (parametro && parametro.trim()) {
+      mostrarAviso(parametro.trim());
       filtrar(parametro);
     } else {
       actualizarContador(entradas.length);

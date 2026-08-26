@@ -113,10 +113,19 @@
         <p class="mancheta__entradilla">Análisis de fondo, comentarios de sentencias y piezas largas sobre cómo el derecho se adapta —o no— a los problemas nuevos. Todo escrito para que se entienda a la primera.</p>
       </div>
 
-      <div class="buscador">
-        <label class="oculto" for="buscador">Buscar artículos</label>
-        <input type="search" id="buscador" placeholder="Buscar por tema, título o categoría…">
-      </div>
+      <!-- BÚSQUEDA · Aquí había un campo propio y se quitó: el de la cabecera
+           hace lo mismo y está en todas las páginas.
+
+           Lo que NO se puede quitar es el consumo de ?q=. El buscador de la
+           cabecera es un <form method="get" action="../articulos/">, o sea que
+           envía aquí, y quien lee ese parámetro y filtra es el JS de esta
+           página. Sin esto, el de la cabecera se queda sin destino: envía a una
+           página que ya no le escucha.
+
+           El aviso lo rellena js/main.js cuando hay parámetro, y va vacío en el
+           HTML porque sin JavaScript no hay filtrado que anunciar: la lista se
+           ve entera, que es lo correcto. -->
+      <p class="filtro-aviso" id="filtro-aviso" role="status" hidden></p>
 
     </div>
   </section>
