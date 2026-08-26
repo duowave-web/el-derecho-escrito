@@ -258,17 +258,26 @@ Tres familias, cada una con un papel claro:
 Regla mental: **Cormorant para lo que se mira, Source Serif para lo que se lee,
 Inter para lo que se consulta.**
 
-> **Los dos rótulos de sección no son lo mismo.** «Antetítulo de sección» es la
-> etiqueta pequeña de Inter, y sigue siendo la norma: la usan los cinco rótulos
-> del lateral del artículo —autor, índice, etiquetas, referencias, continúa
-> leyendo—, donde son apoyo y no encabezado. La clase base `.lista__titulo` es
-> esa.
+> **Los dos rótulos de sección no son lo mismo, y el criterio no es dónde están
+> sino qué hacen.** Si el rótulo **abre una sección** que se sostiene sola, va
+> en la variante `--destacado`. Si **acompaña** a algo que ya se está leyendo,
+> va en la clase base `.lista__titulo`, que es la etiqueta pequeña de Inter.
 >
-> «Rótulo de sección de portada» es una **variante única**, `--destacado`, y de
-> momento solo la lleva «ÚLTIMOS ARTÍCULOS» en el inicio. Ahí el rótulo abre la
-> única sección de la página y tiene que sostenerse frente a una rejilla de
-> cuatro columnas; en el lateral de un artículo, en cambio, compite con el
-> texto y debe ceder.
+> Con esa regla, hoy:
+>
+> | Rótulo | Dónde | Clase |
+> |---|---|---|
+> | «Últimos artículos» | portada | `--destacado` |
+> | «Continúa leyendo» | fin del artículo | `--destacado` |
+> | «Autor», «Índice del artículo», «Etiquetas» | lateral | base |
+> | «Citas y referencias» | cuerpo del artículo | base |
+>
+> «Citas y referencias» es el caso que más se presta a duda: está en la columna
+> principal, como «Continúa leyendo», pero es una lista pegada al texto que
+> acaba de leerse, no una sección nueva. Apoya. Por eso va en la base.
+>
+> El rótulo destacado tiene que sostenerse frente a una rejilla de cuatro
+> columnas; en el lateral, en cambio, compite con el texto y debe ceder.
 >
 > Encaja con la regla mental: en la portada el rótulo es **algo que se mira**,
 > no algo que se consulta. Por eso pasa a Cormorant.
