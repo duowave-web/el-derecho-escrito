@@ -596,6 +596,85 @@ body:has(.portada--video) .cabecera--con-linea {
   color: #fff;
 }
 
+/* Contorno. No es un componente nuevo sino un modificador, porque el botón que
+   describe ya estaba a medias dentro de .boton: su estado de reposo es
+   practicamente .boton:hover —filete y texto en acento— y su hover es
+   practicamente .boton--principal —relleno de acento, texto claro—. Interpola
+   entre dos estados que el componente ya tenía, así que hereda el resto:
+   familia, cursor, estructura y, sobre todo, las reglas de :disabled.
+
+   Se queda en 12px versales, y no en los 14 en caja baja de .boton, porque vive
+   en la fila del rótulo «ÚLTIMOS ARTÍCULOS» y tiene que hacer pareja con él.
+   Encaja con la regla del sistema: Inter en versales es lo que se consulta.
+
+   min-height y padding vertical a cero en vez de padding 13px: así el alto es
+   exactamente 44, el mínimo de área de pulsación, y no un resultado indirecto
+   de sumar relleno y línea que se descuadra al tocar el cuerpo.
+
+   La transición se declara por propiedades y no hereda el «all» de .boton: el
+   relleno y el texto van a 160ms y la flecha lleva la suya, más larga, en su
+   propia regla. Con «all» las dos irían atadas al mismo tiempo. */
+
+.boton--contorno {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 44px;
+  padding: 0 24px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--acento);
+  background: none;
+  border-color: var(--acento);
+  border-radius: 999px;
+  transition: background-color 160ms ease, border-color 160ms ease,
+              color 160ms ease;
+}
+
+/* Va después de .boton:hover a propósito: tienen la misma especificidad, así
+   que el orden es lo único que decide. */
+
+.boton--contorno:hover {
+  background: var(--acento);
+  border-color: var(--acento);
+  color: var(--papel);
+}
+
+/* El anillo va en --tinta y no en el --acento que usan el buscador y la lupa.
+   Aquí el botón ya es de acento —filete en reposo, relleno en hover—, así que
+   un anillo del mismo color quedaría a un paso de su propio borde. El foco cae
+   fuera del botón, sobre el blanco de la página: --tinta da ahí 16,67:1.
+
+   Y se distingue del hover por naturaleza, no por color: el hover rellena, el
+   foco dibuja un anillo por fuera. Se pueden dar a la vez sin taparse. */
+
+.boton--contorno:focus-visible {
+  outline: 2px solid var(--tinta);
+  outline-offset: 3px;
+}
+
+.boton__flecha {
+  display: inline-block;
+  transition: transform 220ms cubic-bezier(0.2, 0.7, 0.3, 1);
+}
+
+.boton--contorno:hover .boton__flecha {
+  transform: translateX(4px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .boton--contorno,
+  .boton__flecha {
+    transition: none;
+  }
+
+  .boton--contorno:hover .boton__flecha {
+    transform: none;
+  }
+}
+
 /* ------------------------------------------------------------ Áreas ----- */
 
 .franja {
@@ -934,9 +1013,15 @@ body:has(.portada--video) .cabecera--con-linea {
 /* Portada: el antetitulo a la izquierda y el enlace al listado a la derecha,
    en la misma linea de base. */
 
+/* align-items pasa de baseline a center. Con dos textos enfrentados, alinear
+   las bases era lo correcto; desde que un lado es una caja de 44px, no: el
+   rótulo quedaba 2,6px descentrado respecto al botón —medido—, que es la clase
+   de desajuste que se lee como un fallo. Lo que se empareja ahora es el centro
+   de la caja con el centro del rótulo. */
+
 .lista__encabezado {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
   gap: 24px;
   flex-wrap: wrap;

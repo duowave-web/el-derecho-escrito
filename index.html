@@ -155,7 +155,12 @@
 
       <div class="lista__encabezado">
         <h2 id="ultimos-titulo" class="lista__titulo lista__titulo--destacado">Últimos artículos</h2>
-        <p class="lista__mas lista__mas--enlinea"><a href="./articulos/">Ver todos los artículos &rarr;</a></p>
+        <!-- La flecha va en un <span aria-hidden> y no suelta en el texto: así
+             tiene elemento propio que animar, y de paso deja de anunciarse como
+             «flecha derecha» detrás del enlace. -->
+        <p class="lista__mas lista__mas--enlinea">
+          <a class="boton boton--contorno" href="./articulos/">Ver todos los artículos <span class="boton__flecha" aria-hidden="true">&rarr;</span></a>
+        </p>
       </div>
 
       <!-- INICIO LISTADO — al publicar, copia el bloque <article> y edítalo.

@@ -496,6 +496,42 @@ Dos cosas que esta descripción tuvo mal durante un tiempo, por si suenan de
 algo: **no hay enlace «Leer más»** —el enlace es el propio titular— y **la
 cuadrícula no es de tres**. Fueron cuatro y hoy son dos, según lo publicado.
 
+## Botones — son tres variantes de uno, no tres componentes
+
+`.boton` es la base y hay **tres** formas de usarlo. Antes de inventar una
+cuarta conviene mirar esta tabla, porque las que hay ya cubren casi todo:
+
+| Clase | Reposo | Hover | Para qué |
+|---|---|---|---|
+| `.boton` | filete `--borde`, fondo `--papel`, texto `--tinta` | filete y texto a `--acento` | acción secundaria |
+| `.boton--principal` | relleno `--acento`, texto blanco | relleno `--acento-oscuro` | acción principal |
+| `.boton--contorno` | filete y texto `--acento`, **sin fondo**, pastilla | relleno `--acento`, texto `--papel` | enlace de sección que quiere peso de botón |
+
+> **`--contorno` no salió de la nada.** Su reposo es casi exactamente
+> `.boton:hover` y su hover es casi exactamente `.boton--principal`: interpola
+> entre dos estados que el componente ya tenía. Por eso es un modificador y no
+> una clase suelta — así hereda la familia, el cursor, la estructura y, sobre
+> todo, las reglas de `:disabled`.
+
+Dos cosas que hay que respetar al tocarlo:
+
+- **`.boton--contorno:hover` tiene que ir después de `.boton:hover` en el
+  archivo.** Misma especificidad, así que el orden es lo único que decide. Si
+  alguien reordena el bloque, el hover deja de rellenar sin más aviso.
+- **La transición va declarada por propiedades, no con el `all` de `.boton`.**
+  El relleno y el texto van a 160 ms y la flecha lleva la suya, más larga, en su
+  propia regla. Con `all` las dos quedarían atadas al mismo tiempo, que es justo
+  lo que se quería evitar.
+
+El anillo de foco de `--contorno` va en **`--tinta`**, y no en el `--acento` que
+usan el buscador y la lupa. No es una incoherencia: ahí el control es neutro y
+el acento resalta, pero aquí el botón *ya es* de acento —filete en reposo,
+relleno en hover— y un anillo del mismo color quedaría pegado a su propio borde.
+Cae fuera del botón, sobre el blanco de la página, donde `--tinta` da 16,67:1.
+
+Se distingue del hover **por naturaleza y no por color**: el hover rellena, el
+foco dibuja un anillo por fuera. Pueden darse a la vez sin taparse.
+
 ## Fotografía
 
 Blanco y negro o tonos cálidos apagados, estilo editorial. Todas las miniaturas
