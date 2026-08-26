@@ -1529,8 +1529,21 @@ body:has(.portada--video) .cabecera--con-linea {
    raton sin duplicar archivos ni pintar marcas de colores corporativos: aqui
    mandan la tipografia y el verdigris, no el manual de LinkedIn. */
 
+/* El filete se queda aquí y no sube por encima del enlace de vuelta, aunque
+   este se haya metido en medio. No marca «se acabó el artículo»: abre el bloque
+   de compartir, que tiene su propio rótulo debajo. Un filete sin rótulo encima
+   del enlace sería una raya suelta.
+
+   Además no podría subirse tal cual: .volver es inline-flex, así que un
+   border-top suyo mediría lo que mide el texto, no el ancho de la columna.
+   Llevarlo ahí obligaría a hacerlo de bloque, y entonces toda la franja sería
+   zona pulsable.
+
+   Los 48 de arriba bajan a 40 para igualar el hueco que la caja de citas deja
+   por el otro lado del enlace: 40 y 40. */
+
 .compartir {
-  margin: 48px 0 32px;
+  margin: 40px 0 32px;
   padding-top: 28px;
   border-top: 1px solid var(--borde);
 }
@@ -1827,8 +1840,29 @@ body:has(.portada--video) .cabecera--con-linea {
    necesita separarse de lo que venga antes. Es la única diferencia entre los
    dos, y va en un modificador para que el componente siga siendo uno. */
 
+/* Los dos a cero, y el hueco lo ponen los vecinos: 40 por arriba los de la
+   caja de citas y 40 por abajo los de .compartir. Queda simétrico.
+
+   Tenía 40 arriba de cuando cerraba la página, y al meterse entre las citas y
+   el bloque de compartir eso daba 80 arriba contra 50 abajo. Y no se arreglaba
+   solo: .volver es inline-flex, o sea una caja atómica de línea, así que sus
+   márgenes NO colapsan con los de los hermanos —se suman—. Con un bloque los 40
+   y los 40 se habrían fundido en 40 y no habría pasado nada.
+
+   El margin-bottom a cero hace falta explícitamente: la clase base lleva 24
+   para separarse de la categoría en el enlace de arriba, y aquí sobra.
+
+   Y pasa de inline-flex a flex con width: fit-content. Siendo de línea, la caja
+   iba dentro de un renglón que le añade medio interlineado por arriba, así que
+   los huecos medidos salían 45 y 42 en vez de 40 y 40. De bloque no hay
+   renglón, y además los márgenes sí colapsan con los vecinos. El fit-content es
+   lo que evita el efecto secundario de blockearlo: sin él la caja ocuparía todo
+   el ancho de la columna y toda esa franja sería pulsable. */
+
 .volver--cierre {
-  margin-top: 40px;
+  display: flex;
+  width: fit-content;
+  margin-top: 0;
   margin-bottom: 0;
 }
 

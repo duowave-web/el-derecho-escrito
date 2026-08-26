@@ -261,6 +261,23 @@
             </ol>
           </aside>
 
+          <!-- El mismo enlace que abre el artículo, literalmente: misma clase,
+               mismo texto y mismo destino. La única diferencia es el modificador
+               --cierre, que solo ajusta márgenes.
+
+               Va aquí, entre las citas y el bloque de compartir, y no al final
+               de todo: quien acaba de leer busca antes la salida que el botón de
+               difundir. Debajo queda el aviso legal, que es letra pequeña y no
+               un destino.
+
+               Ya no va envuelto en <nav class="siguiente">: era un landmark sin
+               estilos alrededor de un solo enlace, y con el enlace repetido
+               arriba habrían quedado dos regiones de navegación para lo mismo,
+               que un lector de pantalla anuncia y hay que saltar dos veces. -->
+          <a class="volver volver--cierre" href="../../articulos/">
+            <span class="volver__flecha" aria-hidden="true">&larr;</span>Volver a los artículos
+          </a>
+
           <!-- COMPARTIR · Enlaces planos a las URL de compartir de cada red, no
                los botones oficiales. Los widgets de LinkedIn y compañía cargan
                un script de terceros que rastrea al visitante desde que abre la
@@ -351,15 +368,6 @@
             </div>
           </section>
           -->
-
-          <!-- El mismo enlace que abre el artículo, literalmente. Ya no va
-               envuelto en <nav class="siguiente">: era un landmark sin estilos
-               alrededor de un solo enlace, y con el enlace repetido arriba
-               habrían quedado dos regiones de navegación para lo mismo, que un
-               lector de pantalla anuncia y hay que saltar dos veces. -->
-          <a class="volver volver--cierre" href="../../articulos/">
-            <span class="volver__flecha" aria-hidden="true">&larr;</span>Volver a los artículos
-          </a>
 
         </div>
 
