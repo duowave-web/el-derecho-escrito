@@ -1139,10 +1139,17 @@ body:has(.portada--video) .cabecera--con-linea {
   margin-bottom: 7px;
 }
 
+/* Va en --tinta, como el cuerpo, y no en --tinta-suave. La entradilla no es un
+   metadato ni un pie: es el primer párrafo que se lee, solo que más grande. El
+   gris la trataba como texto de apoyo y la empujaba fuera de la lectura justo
+   donde hay que entrar en ella. La jerarquía la marcan ya el cuerpo y el aire,
+   que es de lo que va este sistema: el color queda para separar lo que se lee
+   de lo que se consulta. */
+
 .entradilla {
   font-size: 1.2rem;
   line-height: 1.55;
-  color: var(--tinta-suave);
+  color: var(--tinta);
 }
 
 .aviso {
