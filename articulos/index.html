@@ -93,18 +93,27 @@
 
 <main id="contenido">
 
-  <!-- Mancheta a dos columnas: titular a la izquierda, entradilla a la derecha.
-       Esta página pasó al contenedor amplio, y a 1200 px un titular con un
-       párrafo debajo, los dos pegados al margen izquierdo, dejaban media
-       página vacía. Enfrentarlos ocupa el ancho sin inventar nada: son las
-       mismas dos familias y el mismo filete de --borde de siempre. -->
-  <section class="cabecera-seccion">
-    <div class="contenedor contenedor--amplio">
+  <!-- Mancheta: banda a sangre que hace de encabezado de sección. El fondo
+       ocupa toda la ventana y arranca pegado a la cabecera, pero el texto sigue
+       en la rejilla de 1200 gracias al .contenedor de dentro.
 
-      <div class="mancheta">
-        <h1>Artículos jurídicos</h1>
-        <p class="mancheta__entradilla">Análisis de fondo, comentarios de sentencias y piezas largas sobre cómo el derecho se adapta —o no— a los problemas nuevos. Todo escrito para que se entienda a la primera.</p>
-      </div>
+       Dos columnas, titular a la izquierda y entradilla a la derecha: a este
+       ancho un titular con un párrafo debajo, los dos pegados al margen,
+       dejaban media página vacía.
+
+       Ya NO cuelga de .cabecera-seccion, que es lo que la tenía contenida y con
+       64 px de hueco por arriba. Esa clase la comparte contacto/, así que no se
+       le podía quitar el relleno sin romper esa página: la mancheta sale de ahí
+       y pasa a ser una banda hermana. -->
+  <div class="mancheta">
+    <div class="contenedor contenedor--amplio mancheta__interior">
+      <h1>Artículos jurídicos</h1>
+      <p class="mancheta__entradilla">Análisis de fondo, comentarios de sentencias y piezas largas sobre cómo el derecho se adapta —o no— a los problemas nuevos. Todo escrito para que se entienda a la primera.</p>
+    </div>
+  </div>
+
+  <section class="lista">
+    <div class="contenedor contenedor--amplio">
 
       <!-- BÚSQUEDA · Aquí había un campo propio y se quitó: el de la cabecera
            hace lo mismo y está en todas las páginas.
@@ -120,11 +129,12 @@
            ve entera, que es lo correcto. -->
       <p class="filtro-aviso" id="filtro-aviso" role="status" hidden></p>
 
-      <!-- FILTROS · Van aquí, dentro de la cabecera de la página, y no encima
-           de la rejilla: ocupan el sitio que dejó el campo de búsqueda, que es
-           donde corresponde a un control de toda la página. Colgándolos de la
-           lista quedaban a 120 px del filete, sumando tres paddings, y se leían
-           como un bloque suelto entre dos secciones.
+      <!-- FILTROS · Vuelven a colgar de la lista. Estuvieron dentro de la
+           cabecera de página porque ahí quedaban a 28 px del filete, mientras
+           que aquí sumaban tres paddings y caían a 120. Con la mancheta
+           convertida en banda a sangre, ese motivo desaparece: la banda tiene
+           su propio relleno y el de .lista deja los filtros a 48, que es una
+           separación de sección normal.
 
            Van en el HTML, no los construye el JS, porque son contenido y no
            adorno. Pero salen con hidden y es js/main.js quien se lo quita: sin
@@ -153,12 +163,6 @@
         <button type="button" class="boton boton--contorno boton--filtro"
                 data-filtro="jurisprudencia" aria-pressed="false">Jurisprudencia</button>
       </div>
-
-    </div>
-  </section>
-
-  <section class="lista">
-    <div class="contenedor contenedor--amplio">
 
       <p class="contador" id="contador" aria-live="polite"></p>
 

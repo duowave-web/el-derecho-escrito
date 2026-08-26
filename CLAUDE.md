@@ -642,9 +642,15 @@ natural, biblioteca o despacho, como una entrevista en *Monocle*.
 
 ### Texto sobre imagen: hay que medir dónde cae, no la media
 
-La mancheta de `articulos/` lleva `img/fondo-articulos.jpg` de fondo, con un
-**velo blanco al 45 %** por delante. El velo no es un gusto, es el mínimo
-medido: sin él el titular queda en **1,68:1** y la entradilla en **1,02**.
+La mancheta de `articulos/` es una **banda a sangre** con
+`img/fondo-articulos.jpg` de fondo y un **velo blanco al 45 %** por delante. El
+fondo cruza toda la ventana; el texto se queda en la rejilla de 1200 gracias al
+`.contenedor` que lleva dentro.
+
+El velo no es un gusto, es el mínimo medido: sin él el titular queda en
+**1,68:1** y la entradilla en **1,02**. Y el sangrado, que se descartó una vez
+por otro motivo, **mejora el contraste**: al empujar los manchones oscuros fuera
+del área de texto, el mínimo global pasa de 5,43 a 12,85 según el ancho.
 
 La trampa está en que la imagen es clara *de media*. Sus manchones oscuros
 están en los bordes izquierdo y derecho, que es exactamente donde la mancheta

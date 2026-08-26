@@ -724,11 +724,16 @@ body:has(.portada--video) .cabecera--con-linea {
 /* Los 28 de arriba son los que tenía el campo de búsqueda que ocupaba este
    sitio: los filtros son su sucesor y cuelgan del mismo filete. */
 
+/* El margen inferior lo pide el contador, que va justo debajo y sin él quedaba
+   pegado a los botones. Va aquí y no en .contador porque la separación es de
+   los filtros hacia lo que venga: el contador ya tenía su propio espaciado de
+   cuando era el primer elemento de la lista. */
+
 .filtros {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-  margin: 28px 0 0;
+  margin: 0 0 22px;
 }
 
 /* [hidden] necesita ayuda frente a display:flex: la hoja de estilos del
@@ -773,7 +778,13 @@ body:has(.portada--video) .cabecera--con-linea {
   padding: 64px 0 40px;
 }
 
-.cabecera-seccion h1 {
+/* .mancheta h1 va aquí y no aparte: la mancheta dejó de colgar de
+   .cabecera-seccion al hacerse banda a sangre, pero su titular es el mismo
+   objeto —el encabezado de una página de sección— y debe seguir midiendo lo
+   mismo. Separarlo en dos reglas sería invitar a que se desincronicen. */
+
+.cabecera-seccion h1,
+.mancheta h1 {
   font-family: var(--display);
   font-size: clamp(2.2rem, 5vw, 2.75rem);
   font-weight: 600;
@@ -788,17 +799,36 @@ body:has(.portada--video) .cabecera--con-linea {
   max-width: 34em;
 }
 
-/* Mancheta del índice de artículos. Dos columnas enfrentadas, con el titular a
-   la izquierda y la entradilla a la derecha, cerradas por un filete.
+/* Mancheta del índice de artículos: banda a sangre que hace de encabezado de
+   sección. El fondo ocupa toda la ventana; el texto se queda en la rejilla
+   gracias al .contenedor que lleva dentro.
 
-   Las columnas no son iguales: el titular cabe en una línea con holgura y la
+   Los 76 de relleno dejan la banda en unos 246 px con el texto de hoy. Es cinco
+   veces la cabecera del sitio, de 73, y menos de la mitad de la franja de
+   portada, de 520: se lee como encabezado sin pretender ser un hero. Va por
+   relleno y no por altura fija para que crezca sola entre 901 y 1084, donde la
+   entradilla pasa a cuatro líneas.
+
+   Arranca pegada a la cabecera, sin margen ni relleno arriba, y eso hace que la
+   línea inferior del nav le sirva de borde superior. El filete de abajo repite
+   ese mismo trazo —2 px en --borde-marcado— así que la banda queda cerrada
+   arriba y abajo por la misma línea. Es deliberado, no una coincidencia.
+
+   El filete va a sangre y no contenido: con el fondo cruzando toda la ventana,
+   una línea que se cortara a los 1200 con la banda tintada a los lados
+   parecería un fallo. Y hace falta, medido: el canto de la banda contra el
+   blanco de debajo tiene ΔE media 7,6 pero baja a 1,4 en las zonas pálidas, o
+   sea que en parte del ancho no cierra nada por sí solo. */
+
+.mancheta {
+  padding: 76px 0;
+  border-bottom: 2px solid var(--borde-marcado);
+}
+
+/* Las columnas no son iguales: el titular cabe en una línea con holgura y la
    entradilla necesita medida de lectura, así que se reparte 5/7. A 1152 útiles
-   con 64 de hueco eso deja 389 para el titular y 545 para el texto, que a 18px
-   son unos 62 caracteres por línea: dentro de la medida cómoda.
-
-   La entradilla suelta el max-width de 34em que tiene .cabecera-seccion p: aquí
-   quien limita la línea es la columna, y dejar los dos topes puestos haría que
-   el más pequeño ganara sin que se vea de dónde sale.
+   con 64 de hueco quedan 453 para el titular y 635 para el texto, unos 57
+   caracteres por línea.
 
    align-items: baseline y no start. Alineando las cajas por arriba, la primera
    línea de la entradilla quedaba 17,5 px por encima de la del titular —medido—,
@@ -810,13 +840,11 @@ body:has(.portada--video) .cabecera--con-linea {
    center, porque allí un lado es un botón. La regla no es una preferencia:
    texto contra texto se alinea por la base, texto contra caja por el centro.) */
 
-.mancheta {
+.mancheta__interior {
   display: grid;
   grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
   gap: 64px;
   align-items: baseline;
-  padding-bottom: 36px;
-  border-bottom: 1px solid var(--borde-marcado);
 }
 
 /* El fondo se declara SOLO aquí dentro, y por eso esta es la única media query
@@ -861,23 +889,27 @@ body:has(.portada--video) .cabecera--con-linea {
   margin: 0;
 }
 
-/* Con la clase sola no basta: .cabecera-seccion p (0,0,1,1) le gana a
-   .mancheta__entradilla (0,0,1,0) y el tope de 34em seguía puesto, dejando la
-   línea 23 px corta dentro de su columna. Acompañada suma dos clases y gana.
+/* Antes esta regla iba acompañada de .cabecera-seccion, porque .cabecera-seccion
+   p (0,0,1,1) le ganaba a la clase sola (0,0,1,0) y le dejaba puesto un
+   max-width de 34em que acortaba la línea 23 px dentro de su columna.
 
-   El color pasa de --tinta-suave a --tinta, y no es cosmético: sobre el fondo
-   nuevo el gris se queda en 2,45:1 y no llega ni con velos que borrarían la
-   imagen; en --tinta da 6,67. Coincide además con el criterio que ya se aplicó
-   a .entradilla en el artículo: es texto para leer, no un metadato, así que la
-   jerarquía la marcan el cuerpo y el aire, no el color.
+   Al salir la mancheta de esa sección, aquella regla ya no la alcanza y la
+   excepción sobra: la clase basta. Se retira en vez de dejarla puesta «por si
+   acaso», que es como se acumulan selectores que nadie entiende luego.
+
+   El color es --tinta y no --tinta-suave, y no es cosmético: sobre el fondo el
+   gris se queda en 2,45:1 y no llega ni con velos que borrarían la imagen.
+   Coincide además con el criterio ya aplicado a .entradilla en el artículo: es
+   texto para leer, no un metadato, así que la jerarquía la marcan el cuerpo y
+   el aire, no el color.
 
    Se queda en --tinta también por debajo de 900, donde no hay fondo. Volver al
    gris solo ahí obligaría a mantener dos colores para el mismo párrafo según el
    ancho, y el motivo de fondo —que es texto de lectura— no depende de eso. */
 
-.cabecera-seccion .mancheta__entradilla {
+.mancheta__entradilla {
   color: var(--tinta);
-  max-width: none;
+  margin: 0;
 }
 
 /* --------------------------------------------- Aviso de filtrado -------- */
@@ -899,6 +931,16 @@ body:has(.portada--video) .cabecera--con-linea {
   font-family: var(--ui);
   font-size: 13px;
   color: var(--tinta-suave);
+}
+
+/* Igual que en .filtros, y por el mismo motivo: el [hidden] de la hoja del
+   navegador tiene menos peso que una clase, así que «display: flex» lo pisaba y
+   el aviso seguía en el flujo. No se veía —no tiene contenido hasta que el JS
+   se lo pone— pero su margen de 28 px sí ocupaba, y separaba los filtros de la
+   banda más de la cuenta. */
+
+.filtro-aviso[hidden] {
+  display: none;
 }
 
 .filtro-aviso strong {
@@ -2474,17 +2516,23 @@ body:has(.progreso) .cabecera {
      Apilada recupera el ancho entero del contenedor, así que la entradilla pasa
      a leerse bien otra vez. */
 
-  .mancheta {
+  .mancheta__interior {
     grid-template-columns: minmax(0, 1fr);
     gap: 16px;
-    padding-bottom: 28px;
   }
 
-  /* Y le vuelve el tope de medida que se le quitó arriba. Enfrentada, la línea
-     la limitaba su columna; apilada no la limita nada y se iba a 86 caracteres
+  /* Sin imagen detrás, la banda no necesita el relleno que le daba presencia:
+     aquí es una cabecera de texto sobre blanco y basta con separarla. */
+
+  .mancheta {
+    padding: 44px 0 32px;
+  }
+
+  /* Y le vuelve el tope de medida que no tiene arriba. Enfrentada, la línea la
+     limitaba su columna; apilada no la limita nada y se iba a 86 caracteres
      —medido a 900 px—, casi el doble de lo cómodo. Con el tope vuelve a 57. */
 
-  .cabecera-seccion .mancheta__entradilla {
+  .mancheta__entradilla {
     max-width: 34em;
   }
 
