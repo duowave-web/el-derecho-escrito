@@ -728,6 +728,49 @@ body:has(.portada--video) .cabecera--con-linea {
   max-width: 34em;
 }
 
+/* Mancheta del índice de artículos. Dos columnas enfrentadas, con el titular a
+   la izquierda y la entradilla a la derecha, cerradas por un filete.
+
+   Las columnas no son iguales: el titular cabe en una línea con holgura y la
+   entradilla necesita medida de lectura, así que se reparte 5/7. A 1152 útiles
+   con 64 de hueco eso deja 389 para el titular y 545 para el texto, que a 18px
+   son unos 62 caracteres por línea: dentro de la medida cómoda.
+
+   La entradilla suelta el max-width de 34em que tiene .cabecera-seccion p: aquí
+   quien limita la línea es la columna, y dejar los dos topes puestos haría que
+   el más pequeño ganara sin que se vea de dónde sale.
+
+   align-items: baseline y no start. Alineando las cajas por arriba, la primera
+   línea de la entradilla quedaba 17,5 px por encima de la del titular —medido—,
+   porque la interlínea del titular es mucho mayor y empuja su base hacia abajo.
+   Aquí los dos lados son texto, así que lo que se empareja son las bases y las
+   dos primeras líneas arrancan juntas.
+
+   (En .lista__encabezado se hizo justo lo contrario, pasar de baseline a
+   center, porque allí un lado es un botón. La regla no es una preferencia:
+   texto contra texto se alinea por la base, texto contra caja por el centro.) */
+
+.mancheta {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  gap: 64px;
+  align-items: baseline;
+  padding-bottom: 36px;
+  border-bottom: 1px solid var(--borde);
+}
+
+.mancheta h1 {
+  margin: 0;
+}
+
+/* Con la clase sola no basta: .cabecera-seccion p (0,0,1,1) le gana a
+   .mancheta__entradilla (0,0,1,0) y el tope de 34em seguía puesto, dejando la
+   línea 23 px corta dentro de su columna. Acompañada suma dos clases y gana. */
+
+.cabecera-seccion .mancheta__entradilla {
+  max-width: none;
+}
+
 /* ---------------------------------------------------------- Buscador ---- */
 
 .buscador {
@@ -2220,6 +2263,28 @@ body:has(.progreso) .cabecera {
 }
 
 @media (max-width: 900px) {
+
+  /* La mancheta se apila. Medido: a 900 la columna de la entradilla conserva
+     460 px, que a 18 px dan unos 43 caracteres por línea; por debajo cae a 34 y
+     luego a 24, y a 375 se queda en 153 px de ancho con once líneas. Enfrentar
+     dos columnas deja de tener sentido mucho antes de que deje de caber.
+
+     Apilada recupera el ancho entero del contenedor, así que la entradilla pasa
+     a leerse bien otra vez. */
+
+  .mancheta {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+    padding-bottom: 28px;
+  }
+
+  /* Y le vuelve el tope de medida que se le quitó arriba. Enfrentada, la línea
+     la limitaba su columna; apilada no la limita nada y se iba a 86 caracteres
+     —medido a 900 px—, casi el doble de lo cómodo. Con el tope vuelve a 57. */
+
+  .cabecera-seccion .mancheta__entradilla {
+    max-width: 34em;
+  }
 
   /* La banda cae a la disposicion vertical del lateral, que ya esta probada,
      en vez de inventar un tercer diseno intermedio.
