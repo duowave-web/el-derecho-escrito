@@ -166,7 +166,15 @@
       <div class="tarjetas tarjetas--dos">
 
         <article class="tarjeta tarjeta--caja">
-          <div class="tarjeta__imagen"></div>
+          <!-- Misma foto que la cabecera del artículo, con alt distinto: se
+               repite la imagen, no la descripción. La cabecera recorta a 16:9 y
+               deja fuera los platos de la balanza, que aquí sí se ven, así que
+               cada texto describe lo que de verdad enseña su encuadre. -->
+          <div class="tarjeta__imagen">
+            <img src="./img/damajusticia.jpg"
+                 alt="Figura de bronce de la justicia, con los ojos vendados y los dos platos de la balanza vacíos"
+                 width="1600" height="1066" loading="lazy" decoding="async">
+          </div>
           <p class="etiqueta etiqueta--plana">Derecho penal</p>
           <h3 class="entrada__titulo">
             <a href="./articulos/principio-de-legalidad-penal/">El principio de legalidad penal: qué protege y dónde se rompe</a>
