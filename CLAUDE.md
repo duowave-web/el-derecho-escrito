@@ -106,7 +106,7 @@ Consecuencia a tener presente: **`.tarjetas--tres` no la usa nadie ahora
 mismo.** Sigue en el CSS porque es la rejilla de ese bloque y vuelve con él. Si
 alguien busca dónde se usa, no encontrará nada y parecerá muerta.
 
-## Autoría — se repite en 7 sitios por artículo
+## Autoría — se repite en 8 sitios por artículo
 
 > ⚠️ **El nombre y la bio actuales son de la maqueta de referencia, no del
 > cliente.** «Juan Contera Miranda» y su bio salen del diseño que se usó para
@@ -115,7 +115,7 @@ alguien busca dónde se usa, no encontrará nada y parecerá muerta.
 
 Sin build no hay una sola fuente de verdad: cada artículo repite el nombre, la
 bio y el retrato a mano. Al publicar —o al cambiar de autor— hay que tocar los
-siete.
+ocho.
 
 **En la cabecera:**
 
@@ -137,12 +137,20 @@ siete.
 7. El `<img>` dentro de `.autor__retrato` — y son dos cosas en una: el `src` y
    el `alt`, que también lleva el nombre escrito.
 
+**En la ficha de cabecera**, y este es el que se escapa:
+
+8. `.firma`, dentro de `.articulo__ficha`. **Solo se ve por debajo de 900 px**,
+   así que en un escritorio no aparece por ninguna parte: quien revise el
+   artículo en pantalla grande puede cambiar los otros siete, darlo por hecho y
+   dejarse este sin tocar. No es una copia del punto 5: es un `<p>` distinto,
+   con su propio enlace a `sobre/`.
+
 Referencia de cómo queda: `articulos/principio-de-legalidad-penal/index.html`.
-Para localizar los siete sin depender de números de línea, que se desactualizan:
+Para localizar los ocho sin depender de números de línea, que se desactualizan:
 
 ```sh
-# Cabecera, nombre y bio del HTML visible
-grep -rn 'name="author"\|autor__nombre\|autor__bio' articulos/
+# Cabecera, nombre y bio del HTML visible, mas la firma de movil
+grep -rn 'name="author"\|autor__nombre\|autor__bio\|class="firma"' articulos/
 # El retrato del lateral: la ruta y el alt
 grep -rn -A3 'autor__retrato' articulos/
 # El bloque author del JSON-LD entero: name, url, image y description
