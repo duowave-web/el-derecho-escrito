@@ -679,6 +679,66 @@ body:has(.portada--video) .cabecera--con-linea {
   }
 }
 
+/* -------------------------------------------------------- Filtros ------ */
+
+/* Los botones de filtro son .boton--contorno con dos cosas encima: un hover
+   distinto y un estado pulsado que .boton no tiene.
+
+   El hover de .boton--contorno rellena de acento sólido, que aquí no vale: ese
+   es el aspecto del filtro activo, y un botón en reposo no puede parecerse al
+   activo solo porque pase el ratón. Se sustituye por un lavado del mismo verde
+   al 8%. Medido, el texto en --acento sobre ese lavado da 5,28:1; el límite AA
+   está entre el 15% y el 20%, así que queda margen de sobra. */
+
+.boton--filtro:hover {
+  background: rgba(47, 110, 104, 0.08);
+  border-color: var(--acento);
+  color: var(--acento);
+}
+
+/* El activo es persistente, no un hover, así que va por aria-pressed y no por
+   una clase: el atributo que lo dice al lector de pantalla es el mismo que lo
+   pinta, y no pueden desincronizarse. */
+
+.boton--filtro[aria-pressed="true"] {
+  background: var(--acento);
+  border-color: var(--acento);
+  color: var(--papel);
+}
+
+/* Y su hover OSCURECE, nunca aclara. Aclararlo lo acercaría al estado de
+   reposo y se leería como «lo estás soltando», que es justo lo contrario de lo
+   que pasa al pulsarlo: ya está puesto y seguirá puesto. Sobre
+   --acento-oscuro el texto en --papel da 9,49:1. */
+
+.boton--filtro[aria-pressed="true"]:hover {
+  background: var(--acento-oscuro);
+  border-color: var(--acento-oscuro);
+  color: var(--papel);
+}
+
+/* Sin artículos que enseñar el botón se deshabilita, que es más honesto que
+   dejar pulsar para no obtener nada. El aspecto lo pone :disabled de .boton,
+   heredado, así que aquí no hay nada que declarar. */
+
+/* Los 28 de arriba son los que tenía el campo de búsqueda que ocupaba este
+   sitio: los filtros son su sucesor y cuelgan del mismo filete. */
+
+.filtros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 28px 0 0;
+}
+
+/* [hidden] necesita ayuda frente a display:flex: la hoja de estilos del
+   navegador declara [hidden] { display: none } con menos peso que una clase,
+   así que sin esto la barra se vería igual antes de que entre el JS. */
+
+.filtros[hidden] {
+  display: none;
+}
+
 /* ------------------------------------------------------------ Áreas ----- */
 
 .franja {

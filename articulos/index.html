@@ -127,6 +127,40 @@
            ve entera, que es lo correcto. -->
       <p class="filtro-aviso" id="filtro-aviso" role="status" hidden></p>
 
+      <!-- FILTROS · Van aquí, dentro de la cabecera de la página, y no encima
+           de la rejilla: ocupan el sitio que dejó el campo de búsqueda, que es
+           donde corresponde a un control de toda la página. Colgándolos de la
+           lista quedaban a 120 px del filete, sumando tres paddings, y se leían
+           como un bloque suelto entre dos secciones.
+
+           Van en el HTML, no los construye el JS, porque son contenido y no
+           adorno. Pero salen con hidden y es js/main.js quien se lo quita: sin
+           JavaScript no hay nada que los haga funcionar, y un control muerto es
+           peor que ninguno. Sin JS la lista se ve entera.
+
+           Son <button> y no enlaces a ?categoria=. Los enlaces navegarían sin
+           JS y mostrarían TODOS los artículos con un filtro pintado como
+           activo, o sea mintiendo; y en un sitio estático generan URLs que
+           Google puede indexar como duplicados finos del listado.
+
+           El estado va en aria-pressed y no en una clase: es el mismo atributo
+           que lo anuncia y el que lo pinta, así que no pueden desincronizarse.
+
+           Los que no tienen artículos van disabled: .boton ya trae sus reglas
+           de :disabled, así que no hace falta CSS aparte. Con un solo artículo
+           publicado, hoy eso deja fuera a Ensayo y Jurisprudencia. -->
+      <div class="filtros" id="filtros" hidden>
+        <h2 class="oculto">Filtrar por categoría</h2>
+        <button type="button" class="boton boton--contorno boton--filtro"
+                data-filtro="todos" aria-pressed="true">Todos</button>
+        <button type="button" class="boton boton--contorno boton--filtro"
+                data-filtro="ensayo" aria-pressed="false">Ensayo</button>
+        <button type="button" class="boton boton--contorno boton--filtro"
+                data-filtro="fundamento" aria-pressed="false">Fundamento</button>
+        <button type="button" class="boton boton--contorno boton--filtro"
+                data-filtro="jurisprudencia" aria-pressed="false">Jurisprudencia</button>
+      </div>
+
     </div>
   </section>
 

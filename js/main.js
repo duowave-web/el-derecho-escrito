@@ -59,19 +59,39 @@
           : n + (n === 1 ? " resultado" : " resultados");
     }
 
-    function filtrar(consulta) {
-      const q = normalizar(consulta.trim());
+    /* Los dos criterios se acumulan, no se pisan: la búsqueda llega por ?q=
+       desde la cabecera y la categoría por los botones, y una tarjeta se ve
+       solo si pasa los dos. Estado guardado aquí, en un sitio, para que el
+       recuento no dependa de quién movió qué el último. */
+
+    let consultaActiva = "";
+    let categoriaActiva = "todos";
+
+    function aplicar() {
+      const q = normalizar(consultaActiva.trim());
       let visibles = 0;
 
       entradas.forEach(function (el, i) {
-        const coincide = !q || indice[i].indexOf(q) !== -1;
+        const porTexto = !q || indice[i].indexOf(q) !== -1;
+        const porCategoria =
+          categoriaActiva === "todos" ||
+          el.getAttribute("data-categoria") === categoriaActiva;
+        const coincide = porTexto && porCategoria;
         el.hidden = !coincide;
         if (coincide) visibles++;
       });
 
       if (vacio) vacio.hidden = visibles !== 0;
-      if (proxima) proxima.hidden = Boolean(q);
+
+      // La tarjeta de espera no es un resultado: solo acompaña a la lista entera
+      if (proxima) proxima.hidden = Boolean(q) || categoriaActiva !== "todos";
+
       actualizarContador(visibles);
+    }
+
+    function filtrar(consulta) {
+      consultaActiva = consulta;
+      aplicar();
     }
 
     /* El aviso se monta nodo a nodo y con textContent, nunca con innerHTML.
@@ -96,6 +116,49 @@
 
       aviso.hidden = false;
     }
+
+    /* Los filtros salen del HTML con hidden y es aquí donde se les quita: sin
+       JavaScript no habría nada que los hiciera funcionar, y un control muerto
+       es peor que ninguno. Sin JS la lista se ve entera, que es lo correcto.
+
+       Los que no tienen ni un artículo se deshabilitan en vez de dejarse
+       pulsables para no dar nada. Se cuenta sobre el DOM y no sobre una lista
+       escrita a mano: al publicar un artículo, su categoría se habilita sola. */
+
+    function montarFiltros() {
+      const barra = document.getElementById("filtros");
+      if (!barra) return;
+
+      const botones = Array.prototype.slice.call(
+        barra.querySelectorAll("[data-filtro]")
+      );
+
+      const hay = {};
+      entradas.forEach(function (el) {
+        const c = el.getAttribute("data-categoria");
+        if (c) hay[c] = true;
+      });
+
+      botones.forEach(function (b) {
+        const clave = b.getAttribute("data-filtro");
+        if (clave !== "todos" && !hay[clave]) b.disabled = true;
+
+        b.addEventListener("click", function () {
+          categoriaActiva = clave;
+          botones.forEach(function (otro) {
+            otro.setAttribute(
+              "aria-pressed",
+              String(otro.getAttribute("data-filtro") === clave)
+            );
+          });
+          aplicar();
+        });
+      });
+
+      barra.hidden = false;
+    }
+
+    montarFiltros();
 
     // Permite enlazar búsquedas: /articulos/?q=penal
     const parametro = new URLSearchParams(window.location.search).get("q");
