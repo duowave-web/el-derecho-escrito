@@ -743,6 +743,18 @@ body:has(.portada--video) .cabecera--con-linea {
   margin: 0 0 28px;
 }
 
+/* Y lo mismo una línea más abajo, por el mismo motivo: la categoría es un <p>,
+   así que dentro del artículo .articulo p (0,0,1,1) le pisa el margen inferior
+   a .etiqueta--plana (0,0,1,0) y lo sube de 4 a 22. Se recupera con la clase
+   acompañada, que suma dos clases y gana.
+
+   Va general y no apuntando a la cabecera, para que valga también para las
+   tarjetas del bloque «continúa leyendo» cuando se descomente. */
+
+.articulo .etiqueta--plana {
+  margin-bottom: 4px;
+}
+
 .entrada {
   padding: 32px 0;
   border-bottom: 1px solid var(--borde);
@@ -955,12 +967,22 @@ body:has(.portada--video) .cabecera--con-linea {
 
 /* Categoria sin pildora: aqui funciona como antetitulo suelto de la tarjeta. */
 
+/* El margen inferior baja de 10 a 4. Medido de glifo a glifo, descontando la
+   media interlínea de cada uno, el hueco real era de 15,7 px entre una etiqueta
+   de 12 y un titular de 28: más que la altura de la propia etiqueta, así que se
+   leían como dos elementos sueltos en vez de como antetítulo y titular. Con 4
+   el hueco óptico queda en unos 10.
+
+   No se toca el listado de artículos, que a primera vista tiene el mismo
+   problema y no lo tiene: allí la categoría es una píldora dentro de la fila de
+   metadatos, junto a la fecha, no un antetítulo sobre el titular. */
+
 .etiqueta--plana {
   display: block;
   background: none;
   border-radius: 0;
   padding: 0;
-  margin: 0 0 10px;
+  margin: 0 0 4px;
   font-size: 12px;
 }
 
@@ -1239,13 +1261,22 @@ body:has(.portada--video) .cabecera--con-linea {
   padding: 56px 0 80px;
 }
 
+/* El margen superior baja de 14 a 6. Encima va la categoría, y los márgenes
+   colapsan al mayor de los dos, así que este era el que mandaba: bajar el de
+   .etiqueta--plana a 4 no habría servido de nada aquí.
+
+   Medido de glifo a glifo, el hueco pasa de 28,1 a unos 12. Queda algo más
+   holgado que los 10 de la tarjeta de portada, y es lo correcto: el titular es
+   de 48 px y no de 28, así que el antetítulo necesita un poco más de aire para
+   no parecer pegado a una masa mucho mayor que él. */
+
 .articulo h1 {
   font-family: var(--display);
   font-size: clamp(2.2rem, 5vw, 3rem);
   font-weight: 600;
   line-height: 1.08;
   letter-spacing: -0.015em;
-  margin: 14px 0 22px;
+  margin: 6px 0 22px;
 }
 
 .articulo h2 {
