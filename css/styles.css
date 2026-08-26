@@ -1581,8 +1581,24 @@ body:has(.progreso) .cabecera {
 
 /* ------------------------------------------- Lateral del articulo ------- */
 
+/* La columna va sobre --papel-alt para anclarla frente al cuerpo del artículo,
+   que es blanco. El filete de --borde hace el mismo papel que en las tarjetas
+   de portada: --papel-alt sobre blanco son 2,6 de dE2000 y no define un canto
+   por sí solo.
+
+   Y aquí hay que invertir una jerarquía. Dentro del lateral ya había tres cosas
+   apoyadas en --papel-alt —la caja de suscripción, las píldoras de etiquetas y
+   el marco del retrato—, que al teñir la columna del mismo token quedaban a dE
+   0,0: invisibles. En vez de oscurecerlas, suben a blanco. Sobre la columna de
+   mármol se leen como fichas levantadas, que es mejor lectura que la de antes:
+   antes eran manchas sobre blanco, ahora son piezas sobre piedra. */
+
 .articulo__lateral {
   font-family: var(--ui);
+  background: var(--papel-alt);
+  border: 1px solid var(--borde);
+  border-radius: 4px;
+  padding: 28px 24px;
 }
 
 .lateral__bloque + .lateral__bloque {
@@ -1595,12 +1611,16 @@ body:has(.progreso) .cabecera {
   margin-bottom: 16px;
 }
 
+/* Blanco, no --papel-alt: desde que la columna es de ese color, el marco se
+   confundía con ella. Solo se ve si la foto falta o mientras carga, pero es
+   justo cuando tiene que notarse que ahí va un retrato. */
+
 .autor__retrato {
   width: 132px;
   height: 132px;
   border-radius: 50%;
   overflow: hidden;
-  background: var(--papel-alt);
+  background: var(--papel);
   margin: 0 auto 18px;
 }
 
@@ -1695,6 +1715,11 @@ body:has(.progreso) .cabecera {
   padding: 0;
 }
 
+/* Fondo blanco y filete, en vez del --papel-alt que hereda de .etiqueta: sobre
+   la columna de mármol aquel era el mismo color y las píldoras se perdían. El
+   filete hace falta porque el blanco sobre --papel-alt tampoco es un canto: son
+   los mismos 2,6 de dE del caso inverso. */
+
 .etiqueta--tag {
   text-transform: none;
   letter-spacing: 0;
@@ -1702,6 +1727,8 @@ body:has(.progreso) .cabecera {
   font-weight: 500;
   padding: 6px 12px;
   color: var(--tinta-suave);
+  background: var(--papel);
+  border: 1px solid var(--borde);
 }
 
 /* Suscripcion. Es solo maqueta: no hay backend, asi que los controles van
@@ -1712,6 +1739,27 @@ body:has(.progreso) .cabecera {
   border-radius: 4px;
   padding: 28px 24px;
   text-align: center;
+}
+
+/* Dentro del lateral pierde fondo y relleno propios: la columna entera ya es
+   de ese color, así que la caja sería una caja dentro de otra idéntica. Se
+   queda separada por el filete de .lateral__bloque, como los demás bloques, y
+   alineada con ellos en vez de metida hacia dentro.
+
+   No toca a .suscripcion--banda de la portada, que sí va sobre blanco y
+   necesita su propio fondo.
+
+   Se anulan los tres lados sueltos y no «padding: 0», porque el de arriba lo
+   pone .lateral__bloque + .lateral__bloque para separar del bloque anterior y
+   esta regla, que va después y tiene la misma especificidad, se lo llevaría
+   por delante. */
+
+.articulo__lateral .suscripcion {
+  background: none;
+  border-radius: 0;
+  padding-right: 0;
+  padding-bottom: 0;
+  padding-left: 0;
 }
 
 .suscripcion__icono {
