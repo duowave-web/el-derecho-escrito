@@ -1532,8 +1532,11 @@ body:has(.progreso) .cabecera {
   margin: 22px 0 28px;
 }
 
+/* 21:9 y no 16:9: en la columna de 720 pasa de 405 a 309 px de alto, 96 menos,
+   un 24%. La foto dejaba demasiado por delante del texto. */
+
 .articulo__portada {
-  aspect-ratio: 16 / 9;
+  aspect-ratio: 21 / 9;
   overflow: hidden;
   border-radius: 3px;
   background: var(--papel-alt);
@@ -1541,14 +1544,22 @@ body:has(.progreso) .cabecera {
 }
 
 /* El encuadre tira hacia arriba a proposito: la foto es mas alta que el marco
-   y centrada perderia la balanza y la cabeza de la figura. */
+   y centrada perderia la balanza y la cabeza de la figura.
+
+   El 12% va atado al 21:9 de arriba y hay que mover los dos a la vez. Al
+   acortar el marco la ventana no se recorta solo por abajo: se estrecha por los
+   dos lados a la vez, porque el porcentaje reparte el sobrante. Con el 30% que
+   servia para 16:9, a 21:9 la ventana pasaba de 50-950 a 114-800 sobre un
+   original de 1066 y cortaba la cabeza por arriba. Comprobado en pantalla, no
+   deducido. Con el 12% queda en 38-724: venda, brazo alzado, empunadura y brazo
+   de la balanza dentro; se pierden los platos, que es lo prescindible. */
 
 .articulo__portada img {
   display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center 30%;
+  object-position: center 12%;
 }
 
 /* Numeracion automatica de los apartados. Va en ::before, asi que no entra en
