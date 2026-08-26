@@ -82,6 +82,41 @@ Al publicar un artículo nuevo hay que actualizar a mano, siempre:
 
 Si no, el artículo existe pero es invisible para buscadores y lectores de RSS.
 
+### La categoría de un artículo se repite en 7 sitios
+
+> ⚠️ **El único artículo publicado es un ejemplo provisional.** «El principio de
+> legalidad penal» y su categoría **«Fundamento»** están para que la plantilla
+> tenga contenido con el que probarse, y **se eliminan al entregar la web**. No
+> se deben tomar como referencia editorial: ni el tema, ni la categoría, ni la
+> firma —que es la de la maqueta, según la sección de autoría.
+
+Como con la autoría, sin build no hay una sola fuente de verdad. Al cambiar la
+categoría de un artículo hay que tocar los siete:
+
+| # | Dónde | Qué |
+|---|---|---|
+| 1 | `index.html` | `.etiqueta--plana` de la tarjeta de portada |
+| 2 | `articulos/index.html` | `.etiqueta` de la tarjeta del listado |
+| 3 | `feed.xml` | `<category>` del `<item>` |
+| 4 | el artículo | `.etiqueta--plana` de la ficha de cabecera |
+| 5 | el artículo | `"articleSection"` del JSON-LD |
+| 6 | el artículo | **`<meta property="article:section">`** — el equivalente Open Graph |
+| 7 | el artículo | la píldora `.etiqueta--tag` del lateral |
+
+Los dos últimos son los que se escapan: el `article:section` no se ve al leer la
+página, y la píldora va sin espacios y con otra capitalización
+(`#Fundamento`), así que un `grep` de la categoría tal cual **no la encuentra**.
+
+```sh
+# Las siete de una vez, contando la variante sin espacios de la etiqueta
+grep -rn 'Fundamento' --include='*.html' --include='*.xml' .
+```
+
+> **Cuidado con un falso positivo.** `index.html` tiene un `<h3>Derecho penal</h3>`
+> dentro de la franja «Áreas del derecho». **No es la categoría de ningún
+> artículo**: son las materias del despacho, y no se tocan al recategorizar.
+> Que las dos listas usen palabras parecidas es casualidad, no una relación.
+
 ### El listado enseña lo que hay, y deja vacío lo que no
 
 Durante un tiempo enseñó cuatro tarjetas: la real y tres marcadores con
