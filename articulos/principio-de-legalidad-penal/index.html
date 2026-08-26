@@ -84,14 +84,6 @@
       "inLanguage": "es-ES"
     },
     {
-      "@type": "BreadcrumbList",
-      "itemListElement": [
-        { "@type": "ListItem", "position": 1, "name": "Inicio", "item": "https://elderechoescrito.es/" },
-        { "@type": "ListItem", "position": 2, "name": "Artículos", "item": "https://elderechoescrito.es/articulos/" },
-        { "@type": "ListItem", "position": 3, "name": "El principio de legalidad penal", "item": "https://elderechoescrito.es/articulos/principio-de-legalidad-penal/" }
-      ]
-    },
-    {
       "@type": "FAQPage",
       "mainEntity": [
         {
@@ -172,11 +164,18 @@
         <!-- ============================================ COLUMNA PRINCIPAL -->
         <div class="articulo__principal">
 
-          <nav class="miga" aria-label="Ruta de navegación">
-            <a href="../../">Inicio</a> <span aria-hidden="true">/</span>
-            <a href="../../articulos/">Artículos</a> <span aria-hidden="true">/</span>
-            <span>El principio de legalidad penal</span>
-          </nav>
+          <!-- PLANTILLA · Vuelta al listado. Aquí había un rastro de migas y se
+               sustituyó por este enlace. Es exactamente el mismo componente que
+               el del final del artículo —misma clase, mismo texto, mismo
+               comportamiento—, así que si se toca uno hay que tocar el otro, o
+               mejor: no tocar ninguno y cambiar solo .volver en el CSS.
+
+               La flecha va en un <span aria-hidden> porque necesita elemento
+               propio que animar, y de paso deja de anunciarse como «flecha
+               izquierda» delante del texto. -->
+          <a class="volver" href="../../articulos/">
+            <span class="volver__flecha" aria-hidden="true">&larr;</span>Volver a los artículos
+          </a>
 
           <p class="etiqueta etiqueta--plana">Fundamento</p>
 
@@ -353,9 +352,14 @@
           </section>
           -->
 
-          <nav class="siguiente" aria-label="Seguir leyendo">
-            <a class="volver" href="../../articulos/">&larr; Volver a todos los artículos</a>
-          </nav>
+          <!-- El mismo enlace que abre el artículo, literalmente. Ya no va
+               envuelto en <nav class="siguiente">: era un landmark sin estilos
+               alrededor de un solo enlace, y con el enlace repetido arriba
+               habrían quedado dos regiones de navegación para lo mismo, que un
+               lector de pantalla anuncia y hay que saltar dos veces. -->
+          <a class="volver volver--cierre" href="../../articulos/">
+            <span class="volver__flecha" aria-hidden="true">&larr;</span>Volver a los artículos
+          </a>
 
         </div>
 

@@ -118,7 +118,11 @@
 
     <p class="aviso"><em>Todo el contenido de este blog es divulgativo y no constituye asesoramiento jurídico. Para un caso concreto, consulta con un profesional colegiado.</em></p>
 
-    <p><a class="volver" href="../contacto/">¿Quieres escribirme? Ve a Contacto &rarr;</a></p>
+    <!-- Usaba .volver, que ahora es el componente de vuelta al listado: misma
+         tipografía, pero con flecha ← y desplazamiento a la izquierda al pasar
+         el ratón. Este enlace va justo al revés, hacia Contacto, así que pasa
+         a .lista__mas, que es el mismo cuerpo y peso sin la dirección. -->
+    <p><a class="lista__mas" href="../contacto/">¿Quieres escribirme? Ve a Contacto &rarr;</a></p>
 
   </div>
 </main>

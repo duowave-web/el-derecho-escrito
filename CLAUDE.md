@@ -161,6 +161,36 @@ Consecuencia a tener presente: **`.tarjetas--tres` no la usa nadie ahora
 mismo.** Sigue en el CSS porque es la rejilla de ese bloque y vuelve con él. Si
 alguien busca dónde se usa, no encontrará nada y parecerá muerta.
 
+### Las migas quedan en dos páginas de cuatro
+
+Se retiraron del **artículo** y del **listado**, donde repetían navegación que
+la cabecera ya da en todas las páginas: de los tres niveles del artículo,
+«Inicio» y «Artículos» estaban a un clic ahí arriba, y el tercero era el título
+de la página en la que ya estás.
+
+**Siguen en `sobre/` y `contacto/`**, y ahí son útiles: son hojas sueltas sin
+un listado padre al que volver, así que la miga es su única ruta de contexto.
+
+En el artículo las sustituye `.volver`, un enlace de vuelta al listado. Es el
+mismo componente que cierra el artículo abajo: **misma clase, mismo texto y
+mismo destino**, y la única diferencia es el modificador `--cierre`, que solo
+cambia márgenes. Si hay que tocar el aspecto se toca `.volver` en el CSS, nunca
+uno de los dos sitios.
+
+> **Al quitar migas hay que quitar también su `BreadcrumbList`.** Son dos cosas
+> en dos sitios —el marcado en el `<body>` y el JSON-LD en el `<head>`— y quitar
+> solo el visible no da ningún error: la página simplemente le sigue declarando
+> a Google una ruta que ya no enseña.
+>
+> Comprobación rápida de que van a la par:
+>
+> ```sh
+> for f in sobre/index.html contacto/index.html articulos/index.html \
+>          articulos/*/index.html; do
+>   echo "$f  migas:$(grep -c 'class=\"miga\"' $f)  json-ld:$(grep -c BreadcrumbList $f)"
+> done
+> ```
+
 ## Autoría — se repite en 8 sitios por artículo
 
 > ⚠️ **El nombre y la bio actuales son de la maqueta de referencia, no del
@@ -199,6 +229,17 @@ ocho.
    artículo en pantalla grande puede cambiar los otros siete, darlo por hecho y
    dejarse este sin tocar. No es una copia del punto 5: es un `<p>` distinto,
    con su propio enlace a `sobre/`.
+
+> **No hay archivo de plantilla, y es deliberado.** La plantilla de artículo es
+> `articulos/principio-de-legalidad-penal/index.html`, anotado con comentarios
+> `<!-- PLANTILLA · … -->` en cada bloque que hay que copiar o rellenar. Para
+> publicar se duplica esa carpeta y se sustituye el contenido.
+>
+> Se descartó crear un `post-template.html` aparte. Sería un noveno sitio donde
+> se repiten la autoría, la categoría y las URL de compartir, **y nada avisaría
+> si se queda atrás**: una plantilla desfasada que aún dijera «Derecho penal» o
+> llevara migas engañaría más de lo que ayuda. El artículo real, en cambio, se
+> actualiza porque se ve.
 
 Referencia de cómo queda: `articulos/principio-de-legalidad-penal/index.html`.
 Para localizar los ocho sin depender de números de línea, que se desactualizan:
