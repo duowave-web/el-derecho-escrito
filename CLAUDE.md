@@ -726,3 +726,24 @@ que es otro serif. O se instala la fuente antes, o se exporta desde el navegador
   `.entrada__titulo`.
 - Accesibilidad: enlace de salto, `aria-label` en navegaciones, jerarquía de
   encabezados correcta. No romperlo.
+
+### Al ampliar un comentario de CSS, reescríbelo entero
+
+Los comentarios de `styles.css` son largos y se amplían a menudo. **No añadas un
+párrafo detrás de un bloque ya cerrado**: si el `*/` anterior se queda puesto, el
+texto nuevo queda fuera del comentario, el parser lo trata como CSS inválido y
+**se traga la regla siguiente entera, sin dar ningún error**. La regla desaparece
+y la página se ve mal en otro sitio.
+
+Ha pasado seis veces. Se detecta en un segundo, así que merece la pena
+comprobarlo después de tocar el archivo:
+
+```sh
+# Cierres de comentario huérfanos. Debe salir 0.
+python3 -c "
+import re,sys
+t=open('css/styles.css',encoding='utf-8').read()
+sin=re.sub(r'/\*.*?\*/','',t,flags=re.S)
+print('cierres sueltos:', sin.count('*/'))
+"
+```
