@@ -375,10 +375,14 @@ que es otro serif. O se instala la fuente antes, o se exporta desde el navegador
 
 - Detalle menor: los trazos de la balanza en `favicon.svg` son marfil
   `#fbfaf7`, no el blanco puro que declara el sistema.
-- Faltan bloques que el cliente quiere y aún no existen en ninguna versión:
-  banda de newsletter y bloque "Sobre el autor" en portada.
+- Falta el bloque «Sobre el autor» en portada, que el cliente quiere y aún no
+  existe en ninguna versión. La banda de newsletter ya está.
 - `sobre/index.html` tiene texto de relleno entre corchetes.
-- El formulario de contacto no tiene backend: no envía nada.
+- **Ninguna de las dos suscripciones envía nada**, ni la banda de la portada ni
+  la del lateral del artículo: comparten componente y las dos van sin `<form>`
+  y con los controles deshabilitados, a propósito, para que no se pueda enviar
+  por accidente. Al conectar backend hay que tocar las dos.
+- El formulario de contacto tampoco tiene backend: no envía nada.
 - `_headers` y `_redirects` son de Netlify. GitHub Pages los ignora. Se
   mantienen por si se mueve el hosting.
 

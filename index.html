@@ -216,6 +216,30 @@
       </div>
       <!-- FIN LISTADO -->
 
+      <!-- Banda de newsletter. Mismo componente que el del lateral del
+           artículo, en su variante horizontal. Sin backend, igual que aquel:
+           a propósito no hay <form> y los controles van deshabilitados, para
+           que no se pueda enviar nada por accidente. -->
+      <aside class="suscripcion suscripcion--banda" aria-labelledby="suscripcion-titulo">
+        <svg class="suscripcion__icono" width="34" height="34" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+          <rect x="2" y="5" width="20" height="14" rx="2"></rect>
+          <path d="m2 7 10 6 10-6"></path>
+        </svg>
+
+        <div class="suscripcion__texto">
+          <p class="suscripcion__reclamo" id="suscripcion-titulo">Recibe los nuevos artículos en tu correo</p>
+          <p class="suscripcion__apoyo">Un aviso cuando se publica algo nuevo. Nada más.</p>
+        </div>
+
+        <div class="suscripcion__accion">
+          <label class="oculto" for="correo-banda">Correo electrónico</label>
+          <input type="email" id="correo-banda" placeholder="Tu correo electrónico" disabled>
+          <button class="boton boton--principal" type="button" disabled>Suscribirme</button>
+          <p class="suscripcion__nota">Sin spam. Cancela cuando quieras.</p>
+        </div>
+      </aside>
+
     </div>
   </section>
 

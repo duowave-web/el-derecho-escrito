@@ -1625,10 +1625,85 @@ body:has(.progreso) .cabecera {
   width: 100%;
 }
 
+/* Texto corto bajo el reclamo. Va en --tinta-suave, que sobre --papel-alt da
+   5.63:1. No se aclara mas: cualquier gris por encima de este cae por debajo
+   del 4.5:1 sobre ese fondo. */
+
+.suscripcion__apoyo {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--tinta-suave);
+}
+
 .suscripcion__nota {
   margin: 12px 0 0;
   font-size: 12px;
   color: var(--tinta-suave);
+}
+
+/* ---- Variante en banda, para la portada -------------------------------- */
+
+/* Mismo componente, en horizontal: icono | texto | formulario. Caja contenida
+   en la reticula de 1200px, no a sangre.
+
+   Todo lo que no se redeclara aqui viene de .suscripcion: fondo, radio, el
+   icono en --acento, el reclamo en Cormorant y los estados disabled. */
+
+.suscripcion--banda {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 28px;
+  padding: 32px 40px;
+  margin-top: 56px;
+  text-align: left;
+}
+
+.suscripcion--banda .suscripcion__icono {
+  flex: none;
+}
+
+.suscripcion--banda .suscripcion__reclamo {
+  margin: 0 0 6px;
+  font-size: 1.4rem;
+}
+
+.suscripcion--banda .suscripcion__accion {
+  display: grid;
+  grid-template-columns: minmax(200px, 260px) auto;
+  gap: 10px;
+}
+
+.suscripcion--banda .suscripcion__nota {
+  grid-column: 1 / -1;
+  margin: 2px 0 0;
+}
+
+/* ALTURA COMPARTIDA. Apilados en el lateral nunca se noto, pero medidos son
+   43.5px el campo y 45px el boton: 1.5px de diferencia que en horizontal, uno
+   al lado del otro, canta. Se fija el alto en los dos y se quita el padding
+   vertical, que era de donde salia el descuadre. */
+
+.suscripcion--banda input,
+.suscripcion--banda .boton {
+  height: 46px;
+  margin: 0;
+}
+
+.suscripcion--banda input {
+  padding: 0 14px;
+}
+
+/* inline-flex y no el inline-block heredado: con alto fijo, un inline-block no
+   centra su texto verticalmente y la etiqueta quedaria pegada arriba. */
+
+.suscripcion--banda .boton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  padding: 0 26px;
 }
 
 .boton:disabled,
@@ -1700,6 +1775,32 @@ body:has(.progreso) .cabecera {
 @media (max-width: 900px) {
   .tarjetas {
     grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* La banda cae a la disposicion vertical del lateral, que ya esta probada,
+     en vez de inventar un tercer diseno intermedio.
+
+     Los 900px estan medidos: el reclamo aguanta en una linea hasta 1000px y
+     pasa a dos por debajo, lo que aun se lee; a 780 ya son tres y a 700 son
+     seis. A 900 la columna de texto conserva 276px, que es el ultimo ancho
+     donde dos lineas siguen leyendose como un titulo y no como un parrafo. */
+
+  .suscripcion--banda {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    gap: 14px;
+    padding: 28px 24px;
+    text-align: center;
+  }
+
+  .suscripcion--banda .suscripcion__accion {
+    grid-template-columns: 1fr;
+    width: 100%;
+    max-width: 380px;
+  }
+
+  .suscripcion--banda .boton {
+    width: 100%;
   }
 
   /* El texto deja de caber en media columna: pasa a ancho completo sobre el
