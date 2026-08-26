@@ -64,23 +64,30 @@ Al publicar un artículo nuevo hay que actualizar a mano, siempre:
 
 Si no, el artículo existe pero es invisible para buscadores y lectores de RSS.
 
-### Con un solo artículo publicado, la portada va a dos columnas
+### El listado enseña lo que hay, y deja vacío lo que no
 
-Durante un tiempo el listado enseñó cuatro tarjetas: la real y tres marcadores
-con titulares y fechas inventados, sin enlace para no dar 404. Funcionaba como
+Durante un tiempo enseñó cuatro tarjetas: la real y tres marcadores con
+titulares y fechas inventados, sin enlace para no dar 404. Funcionaba como
 maqueta, pero **prometía un archivo que no existe**, y el visitante no tiene
 forma de saber que tres de las cuatro son atrezo.
 
-Ahora hay una tarjeta real y una de espera, `.tarjeta--proxima`, en una rejilla
-de dos columnas (`.tarjetas--dos`). La de espera no inventa nada: dice que
-viene más y no finge ser un artículo.
+Hoy hay una tarjeta real y una de espera, `.tarjeta--proxima`, **en la rejilla
+de cuatro columnas de siempre**. Las dos celdas sobrantes se quedan vacías, en
+blanco y sin caja. La sección ocupa la mitad de su ancho y eso es exactamente
+lo que se quiere decir: hay un artículo, viene otro, y el resto todavía no
+existe.
+
+> **Las celdas vacías no llevan nada dentro, y es deliberado.** Un `<div>`
+> vacío para «rellenar» la columna no se ve, pero sí se anuncia: un lector de
+> pantalla lo recorre como un elemento más de la lista, y el usuario oye dos
+> ítems fantasma detrás de los reales. En una rejilla CSS las celdas sobrantes
+> existen solas, sin marcado. **No hay que rellenarlas.**
 
 Al publicar, en este orden:
 
 - **El segundo artículo** sustituye a la tarjeta de espera.
-- **A partir del tercero** se quita el modificador `--dos` y la rejilla vuelve
-  a sus cuatro columnas. Si en algún momento se vuelve a quedar en uno solo,
-  se reponen las dos cosas.
+- **A partir del tercero** se añaden tarjetas sin tocar nada más: la rejilla ya
+  tiene las cuatro columnas y se van ocupando solas.
 
 ### El «continúa leyendo» del artículo está desactivado a propósito
 
@@ -259,10 +266,9 @@ Inter para lo que se consulta.**
 >
 > «Rótulo de sección de portada» es una **variante única**, `--destacado`, y de
 > momento solo la lleva «ÚLTIMOS ARTÍCULOS» en el inicio. Ahí el rótulo abre la
-> única sección de la página y tiene que sostenerse frente a la rejilla de
-> tarjetas —que cuando se decidió el tamaño eran cuatro, y hoy son dos en caja,
-> más grandes: el rótulo tiene que aguantar igual—; en el lateral de un
-> artículo, en cambio, compite con el texto y debe ceder.
+> única sección de la página y tiene que sostenerse frente a una rejilla de
+> cuatro columnas; en el lateral de un artículo, en cambio, compite con el
+> texto y debe ceder.
 >
 > Encaja con la regla mental: en la portada el rótulo es **algo que se mira**,
 > no algo que se consulta. Por eso pasa a Cormorant.
@@ -391,8 +397,8 @@ Los tres están **medidos**, no elegidos:
 | **400 px** | la navegación baja a 12 px y menos tracking | en versales ocupa 330 px y por debajo de 379 se parte en dos líneas |
 
 > **El de 748 dejó de ser solo de la cabecera.** Ahí también caen a una columna
-> las tarjetas en caja de la portada (`.tarjetas--dos`), y es la única
-> excepción a la regla de arriba.
+> las tarjetas en caja de la portada, y es la única excepción a la regla de
+> arriba.
 >
 > No es que las dos cosas dependan de lo mismo: la cabecera se rompe por el
 > ancho de su fila y las tarjetas por el padding de 28 px, que se come 58 px de
@@ -402,9 +408,34 @@ Los tres están **medidos**, no elegidos:
 > 278 px y el titular ocupa 3 líneas, exactamente lo que rinde en una sola
 > columna a 380 px, que es el rendimiento que ya damos por bueno en móvil.
 >
-> Se reutilizó en vez de añadir un sexto corte ocho píxeles más abajo, que
-> habría sido ruido. **Si algún día se mueve el de la cabecera, hay que
-> comprobar que las tarjetas siguen entrando**, o separarlos entonces.
+> Se reutilizó en vez de añadir un corte ocho píxeles más abajo, que habría
+> sido ruido. **Si algún día se mueve el de la cabecera, hay que comprobar que
+> las tarjetas siguen entrando**, o separarlos entonces.
+
+### La rejilla de tarjetas tiene el suyo, en 1008 px
+
+Es aparte de los tres de la cabecera y **está calculado, no elegido**: es el
+ancho por debajo del cual cuatro columnas dejan de caber de verdad.
+
+La tarjeta de espera no puede encoger más allá de su `min-content`, **218,9 px**
+— los 160,9 que mide «Próximamente» en Cormorant a 28 px, más los 56 del
+padding y los 2 del filete. Cuatro columnas de ese ancho más tres huecos de
+28 px piden 960 px de contenido, que con el padding del contenedor son **1008 de
+ventana**.
+
+Estuvo en 900 px y ahí había una banda rota que no se veía a simple vista: entre
+900 y 1008 la columna caía por debajo de ese suelo —a 1000 da 217 px, a 920 da
+197— y pasaba una de estas dos cosas, según cómo estuviera declarada la rejilla:
+
+- **Con `1fr`**, la columna de la tarjeta de espera dejaba de ceder y aplastaba
+  a las vecinas. Las columnas dejaban de ser iguales sin que nada se saliera.
+- **Con `minmax(0, 1fr)`**, todas ceden por igual y es el titular el que se sale
+  de su caja.
+
+Lo segundo es un fallo peor a la vista pero mucho mejor de mantener, porque **se
+ve**. Por eso la rejilla usa `minmax(0, 1fr)` y además el corte está donde la
+geometría deja de dar. Si algún día cambia el cuerpo del rótulo de la tarjeta
+de espera, o su padding, **este número hay que recalcularlo**: sale de ahí.
 
 Siguen haciendo falta: evitan que la marca se parta en dos líneas y que la
 navegación en versales no quepa, y eso pasa exista o no la portada. Lo que ya
