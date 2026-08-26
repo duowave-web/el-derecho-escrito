@@ -611,6 +611,11 @@ body:has(.portada--video) .cabecera--con-linea {
    exactamente 44, el mínimo de área de pulsación, y no un resultado indirecto
    de sumar relleno y línea que se descuadra al tocar el cuerpo.
 
+   No declara border-radius: hereda los 4px de .boton, como los demás botones
+   del sitio. Estuvo un tiempo en 999px, de pastilla, y se quitó para que la
+   familia entera tenga el mismo canto. Si se vuelve a poner, hay que ponerlo
+   también en .boton y .boton--principal, no solo aquí.
+
    La transición se declara por propiedades y no hereda el «all» de .boton: el
    relleno y el texto van a 160ms y la flecha lleva la suya, más larga, en su
    propia regla. Con «all» las dos irían atadas al mismo tiempo. */
@@ -628,7 +633,6 @@ body:has(.portada--video) .cabecera--con-linea {
   color: var(--acento);
   background: none;
   border-color: var(--acento);
-  border-radius: 999px;
   transition: background-color 160ms ease, border-color 160ms ease,
               color 160ms ease;
 }

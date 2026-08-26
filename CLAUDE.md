@@ -527,7 +527,11 @@ cuarta conviene mirar esta tabla, porque las que hay ya cubren casi todo:
 |---|---|---|---|
 | `.boton` | filete `--borde`, fondo `--papel`, texto `--tinta` | filete y texto a `--acento` | acción secundaria |
 | `.boton--principal` | relleno `--acento`, texto blanco | relleno `--acento-oscuro` | acción principal |
-| `.boton--contorno` | filete y texto `--acento`, **sin fondo**, pastilla | relleno `--acento`, texto `--papel` | enlace de sección que quiere peso de botón |
+| `.boton--contorno` | filete y texto `--acento`, **sin fondo** | relleno `--acento`, texto `--papel` | enlace de sección que quiere peso de botón |
+
+Las tres comparten el `border-radius` de 4 px de `.boton`. **Ninguna declara el
+suyo**, y conviene que siga así: el canto es de la familia, no de la variante.
+`--contorno` estuvo un tiempo en pastilla y se rectificó por eso.
 
 > **`--contorno` no salió de la nada.** Su reposo es casi exactamente
 > `.boton:hover` y su hover es casi exactamente `.boton--principal`: interpola
