@@ -816,7 +816,45 @@ body:has(.portada--video) .cabecera--con-linea {
   gap: 64px;
   align-items: baseline;
   padding-bottom: 36px;
-  border-bottom: 1px solid var(--borde);
+  border-bottom: 1px solid var(--borde-marcado);
+}
+
+/* El fondo se declara SOLO aquí dentro, y por eso esta es la única media query
+   por min-width del archivo, que va desde arriba por max-width.
+
+   La diferencia importa: si se declarara fuera y se anulara con
+   «background-image: none» en un corte de max-width, el resultado en pantalla
+   sería el mismo, pero el móvil se bajaría igual los 130 KB. Declarándolo solo
+   donde se usa, no se pide nunca por debajo de 900.
+
+   Y no se pide por dos razones, no solo por el peso: al apilarse, la caja pasa
+   de 8:1 a casi cuadrada, así que «cover» recorta una tira central estrecha y
+   se pierde la composición —ni libro, ni balanza—. Sería peso para no enseñar
+   la imagen.
+
+   El velo va como primera capa de background-image, no como elemento aparte:
+   un degradado de dos paradas iguales es una superficie plana, y así el fondo
+   entero se resuelve en una sola propiedad sin tocar el marcado.
+
+   El 45% está medido sobre la imagen real, muestreando las zonas exactas donde
+   cae cada texto. Sin él, el titular queda en 1,68:1 y la entradilla en 1,02:
+   los manchones oscuros de la imagen están en los bordes izquierdo y derecho,
+   que es justo donde viven los dos. Con él, 5,85 y 6,67.
+
+   Se descartó la alternativa de encuadrar solo el centro claro con un zoom del
+   220%: contrasta de sobra —12,7 y 4,7— pero deja la banda casi blanca, con el
+   veteado, el libro y la balanza fuera de cuadro. Pasaba la medida y fallaba el
+   objetivo. */
+
+@media (min-width: 901px) {
+  .mancheta {
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0.45)),
+      url(../img/fondo-articulos.jpg);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
 }
 
 .mancheta h1 {
@@ -825,9 +863,20 @@ body:has(.portada--video) .cabecera--con-linea {
 
 /* Con la clase sola no basta: .cabecera-seccion p (0,0,1,1) le gana a
    .mancheta__entradilla (0,0,1,0) y el tope de 34em seguía puesto, dejando la
-   línea 23 px corta dentro de su columna. Acompañada suma dos clases y gana. */
+   línea 23 px corta dentro de su columna. Acompañada suma dos clases y gana.
+
+   El color pasa de --tinta-suave a --tinta, y no es cosmético: sobre el fondo
+   nuevo el gris se queda en 2,45:1 y no llega ni con velos que borrarían la
+   imagen; en --tinta da 6,67. Coincide además con el criterio que ya se aplicó
+   a .entradilla en el artículo: es texto para leer, no un metadato, así que la
+   jerarquía la marcan el cuerpo y el aire, no el color.
+
+   Se queda en --tinta también por debajo de 900, donde no hay fondo. Volver al
+   gris solo ahí obligaría a mantener dos colores para el mismo párrafo según el
+   ancho, y el motivo de fondo —que es texto de lectura— no depende de eso. */
 
 .cabecera-seccion .mancheta__entradilla {
+  color: var(--tinta);
   max-width: none;
 }
 

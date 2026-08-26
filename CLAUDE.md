@@ -640,6 +640,49 @@ Blanco y negro o tonos cálidos apagados, estilo editorial. Todas las miniaturas
 de la cuadrícula, misma proporción. El retrato del autor no es corporativo: luz
 natural, biblioteca o despacho, como una entrevista en *Monocle*.
 
+### Texto sobre imagen: hay que medir dónde cae, no la media
+
+La mancheta de `articulos/` lleva `img/fondo-articulos.jpg` de fondo, con un
+**velo blanco al 45 %** por delante. El velo no es un gusto, es el mínimo
+medido: sin él el titular queda en **1,68:1** y la entradilla en **1,02**.
+
+La trampa está en que la imagen es clara *de media*. Sus manchones oscuros
+están en los bordes izquierdo y derecho, que es exactamente donde la mancheta
+pone el titular y la entradilla. **Una media de luminancia habría dicho que no
+hacía falta velo.** Lo que sirve es muestrear el recorte real bajo cada caja de
+texto, en cada ancho, porque `cover` cambia el encuadre con la proporción de la
+caja.
+
+Se probó y se descartó encuadrar solo el centro claro con un zoom del 220 %:
+contrasta de sobra —12,7 y 4,7— pero deja la banda casi blanca, sin veteado, ni
+libro, ni balanza. **Pasaba la métrica y fallaba el objetivo.** Cuando una
+solución de contraste borra aquello que se quería enseñar, la solución es otra.
+
+Por eso también la entradilla está en `--tinta` y no en `--tinta-suave`: el gris
+no llega ni con velos que borrarían la imagen.
+
+> **Para una línea o una superficie plana, el ratio de contraste no es la
+> métrica.** El filete de la mancheta da **1,00:1** sobre el fondo, que suena a
+> invisible, y sin embargo se ve: su **ΔE es 4,5**, por encima del umbral de
+> percepción. El ratio de contraste modela legibilidad de texto —glifos finos
+> sobre un fondo—, no la diferencia entre dos superficies.
+>
+> Usa **contraste para texto y ΔE2000 para superficies**. Confundirlos lleva a
+> «arreglar» cosas que no están rotas, que es lo que estuvo a punto de pasar
+> aquí. Aun así el filete subió a `--borde-marcado` (ΔE 7,2), su segundo uso en
+> el sitio, porque el canto de la banda contra el blanco baja a ΔE 1,5 en las
+> zonas pálidas y ahí la línea es lo único que cierra.
+
+**El fondo se declara dentro de un `@media (min-width: 901px)`**, la única media
+query por min-width del archivo, que va por max-width. La diferencia no es de
+estilo: anularlo con `background-image: none` en un corte de max-width se vería
+igual, pero **el móvil se bajaría los 130 KB de todas formas**. Declarándolo
+solo donde se usa, no se pide nunca.
+
+Y no se pide por dos razones: el peso, y que al apilarse la caja pasa de 8:1 a
+casi cuadrada, con lo que `cover` recorta una tira central y la composición se
+pierde. Sería peso para no enseñar la imagen.
+
 ## Logotipo
 
 Balanza vectorial (`balanza.svg`) a la izquierda del nombre en versales. Se
