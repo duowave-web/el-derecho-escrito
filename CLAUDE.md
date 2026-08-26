@@ -64,6 +64,41 @@ Al publicar un artículo nuevo hay que actualizar a mano, siempre:
 
 Si no, el artículo existe pero es invisible para buscadores y lectores de RSS.
 
+### Con un solo artículo publicado, la portada va a dos columnas
+
+Durante un tiempo el listado enseñó cuatro tarjetas: la real y tres marcadores
+con titulares y fechas inventados, sin enlace para no dar 404. Funcionaba como
+maqueta, pero **prometía un archivo que no existe**, y el visitante no tiene
+forma de saber que tres de las cuatro son atrezo.
+
+Ahora hay una tarjeta real y una de espera, `.tarjeta--proxima`, en una rejilla
+de dos columnas (`.tarjetas--dos`). La de espera no inventa nada: dice que
+viene más y no finge ser un artículo.
+
+Al publicar, en este orden:
+
+- **El segundo artículo** sustituye a la tarjeta de espera.
+- **A partir del tercero** se quita el modificador `--dos` y la rejilla vuelve
+  a sus cuatro columnas. Si en algún momento se vuelve a quedar en uno solo,
+  se reponen las dos cosas.
+
+### El «continúa leyendo» del artículo está desactivado a propósito
+
+Llevaba los mismos tres marcadores y **está comentado**, no borrado: dentro
+queda el esqueleto de una tarjeta, sin titulares ni fechas falsas, listo para
+descomentar cuando haya un segundo artículo.
+
+No se le puso la tarjeta de «Próximamente» de la portada, y la diferencia
+importa: en la portada la sección es **un inventario** y la tarjeta añade una
+promesa, mientras que en el artículo es **navegación** y una promesa no es un
+destino. El rótulo dice «Continúa leyendo» y una tarjeta que no se puede pulsar
+lo desmiente en la misma línea. Debajo ya está «Volver a todos los artículos»,
+que sí lleva a algún sitio.
+
+Consecuencia a tener presente: **`.tarjetas--tres` no la usa nadie ahora
+mismo.** Sigue en el CSS porque es la rejilla de ese bloque y vuelve con él. Si
+alguien busca dónde se usa, no encontrará nada y parecerá muerta.
+
 ## Autoría — se repite en 7 sitios por artículo
 
 > ⚠️ **El nombre y la bio actuales son de la maqueta de referencia, no del
@@ -161,6 +196,7 @@ un jurista**. El texto manda, la imagen acompaña.
 --nav:          #34312E;  /* enlaces de navegacion */
 --acento:       #2F6E68;  /* verdigris: antetitulos, enlaces, activo */
 --papel:        #FFFFFF;  /* fondo de contenido */
+--papel-alt:    #F7F5F2;  /* superficies apoyadas: cajas, campos, bandas */
 --pie:          #242424;  /* fondo del pie, texto en blanco */
 --borde:        #E5E1DA;  /* separadores, tarjetas, campos */
 --borde-marcado:#D8D2C9;  /* linea de la cabecera */
@@ -171,6 +207,25 @@ que se note; `--borde-marcado` es un paso más oscuro —ΔE 16,4 frente a blanc
 contra 11,1 del otro— y solo lo usa la línea de la cabecera, que sí tiene que
 leerse como un límite. Ninguno es gris neutro: ambos conservan el
 desplazamiento cálido de la paleta.
+
+> **`--papel-alt` no sirve para dibujar una caja él solo, y conviene saberlo
+> antes de intentarlo.** Frente al blanco de la página son **ΔE 2,6**, por
+> debajo del umbral en el que dos superficies planas se distinguen. Es
+> deliberado —está pensado como un apoyo que no se nota—, pero significa que
+> una caja rellena con él se lee como si no tuviera contorno.
+>
+> La solución en las tarjetas de portada fue **un filete de 1 px en `--borde`**,
+> no un gris nuevo más oscuro. El canto lo define la línea y el relleno se queda
+> como lo que es, un matiz. Se midió la alternativa —una caja a `#F0ECE6`, ΔE
+> 4,9, que sí se sostiene sola— y se descartó: obligaba a oscurecer *también* el
+> hueco interior, o sea dos tonos nuevos para lo que un filete resuelve con
+> ninguno.
+>
+> El segundo efecto es menos obvio. **`--papel-alt` es a la vez el fondo de la
+> caja y el del hueco de imagen vacío** (`.tarjeta__imagen`), así que dentro de
+> una caja el hueco desaparecía: mismo token, ΔE 0,0. Por eso, y solo dentro de
+> `.tarjeta--caja`, el hueco baja a `--borde` (ΔE 4,7). Afecta únicamente al
+> marcador: en cuanto haya un `<img>` dentro, ese fondo no se ve.
 
 Un solo acento, `#2F6E68`, usado **con mucha contención**: antetítulos de
 sección, enlaces "Leer más", elemento activo del menú. Nada más. Cuanto menos
@@ -204,9 +259,10 @@ Inter para lo que se consulta.**
 >
 > «Rótulo de sección de portada» es una **variante única**, `--destacado`, y de
 > momento solo la lleva «ÚLTIMOS ARTÍCULOS» en el inicio. Ahí el rótulo abre la
-> única sección de la página y tiene que sostenerse frente a una rejilla de
-> cuatro tarjetas; en el lateral de un artículo, en cambio, compite con el
-> texto y debe ceder.
+> única sección de la página y tiene que sostenerse frente a la rejilla de
+> tarjetas —que cuando se decidió el tamaño eran cuatro, y hoy son dos en caja,
+> más grandes: el rótulo tiene que aguantar igual—; en el lateral de un
+> artículo, en cambio, compite con el texto y debe ceder.
 >
 > Encaja con la regla mental: en la portada el rótulo es **algo que se mira**,
 > no algo que se consulta. Por eso pasa a Cormorant.
@@ -334,6 +390,22 @@ Los tres están **medidos**, no elegidos:
 | **748 px** | la cabecera pasa a dos filas | lo mismo con el buscador cerrado, con la navegación en 356 |
 | **400 px** | la navegación baja a 12 px y menos tracking | en versales ocupa 330 px y por debajo de 379 se parte en dos líneas |
 
+> **El de 748 dejó de ser solo de la cabecera.** Ahí también caen a una columna
+> las tarjetas en caja de la portada (`.tarjetas--dos`), y es la única
+> excepción a la regla de arriba.
+>
+> No es que las dos cosas dependan de lo mismo: la cabecera se rompe por el
+> ancho de su fila y las tarjetas por el padding de 28 px, que se come 58 px de
+> cada columna. Es que el valor medido para las tarjetas cae dentro de la banda
+> que ya cubría ese corte. Medido: el titular del artículo pasa de 3 líneas a 4
+> entre 740 y 700 px, y de 4 a 6 por debajo de 540. A 748 el interior mide
+> 278 px y el titular ocupa 3 líneas, exactamente lo que rinde en una sola
+> columna a 380 px, que es el rendimiento que ya damos por bueno en móvil.
+>
+> Se reutilizó en vez de añadir un sexto corte ocho píxeles más abajo, que
+> habría sido ruido. **Si algún día se mueve el de la cabecera, hay que
+> comprobar que las tarjetas siguen entrando**, o separarlos entonces.
+
 Siguen haciendo falta: evitan que la marca se parta en dos líneas y que la
 navegación en versales no quepa, y eso pasa exista o no la portada. Lo que ya
 **no** hay que mantener es un alto de cabecera en píxeles sincronizado con
@@ -342,14 +414,21 @@ ellos: son ajustes de maqueta y nada más.
 Orden de la portada, tal como está construida:
 
 ```
-Cabecera: logotipo a la izquierda, navegacion a la derecha
-Articulo destacado: texto a la izquierda | imagen a la derecha
-Ultimos articulos: cuadricula de 3 tarjetas (imagen, fecha, titulo, extracto)
-Pie: fondo oscuro, solo el copyright
+Cabecera:           logotipo a la izquierda, navegacion y lupa a la derecha
+Portada:            franja de 520 px, texto a la izquierda | estatua a la derecha
+Ultimos articulos:  rotulo + "ver todos", rejilla de tarjetas, banda de newsletter
+Areas del derecho:  franja con las materias que se tratan
+Pie:                fondo oscuro
 ```
 
-Cada tarjeta: imagen arriba, fecha en versales, título en Cormorant, extracto de
-tres líneas y enlace "Leer más" en el color de acento.
+Cada tarjeta va **dentro de una caja** con fondo `--papel-alt`, filete de 1 px
+en `--borde` y 28 px de padding: imagen arriba en 3:2, categoría en versales de
+Inter y color acento, título en Cormorant, extracto y, anclados al fondo, fecha
+y minutos de lectura con sus iconos.
+
+Dos cosas que esta descripción tuvo mal durante un tiempo, por si suenan de
+algo: **no hay enlace «Leer más»** —el enlace es el propio titular— y **la
+cuadrícula no es de tres**. Fueron cuatro y hoy son dos, según lo publicado.
 
 ## Fotografía
 

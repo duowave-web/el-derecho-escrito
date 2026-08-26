@@ -256,46 +256,45 @@
 
           <p class="aviso"><em>Este artículo tiene carácter divulgativo y no constituye asesoramiento jurídico. Para un caso concreto, consulta con un profesional colegiado.</em></p>
 
-          <!-- PLANTILLA · Continúa leyendo. Reutiliza .tarjeta de la portada.
-               Los artículos que aún no existen van en <div> y sin enlace, para
-               no generar 404; al publicarlos se cambian por <article> con <a>. -->
+          <!-- PLANTILLA · Continúa leyendo. DESACTIVADO a propósito mientras
+               solo haya un artículo publicado.
+
+               El rótulo promete continuación, así que el bloque solo tiene
+               sentido si hay adónde continuar. Con tarjetas sin enlace ofrecía
+               una salida que no existe, y eso es peor que no ofrecer ninguna:
+               justo debajo está «Volver a todos los artículos», que sí lleva a
+               algún sitio.
+
+               No se usa aquí la tarjeta de «Próximamente» de la portada. Allí
+               la sección es un inventario y la tarjeta añade una promesa; aquí
+               es navegación, y una promesa no es un destino.
+
+               Al publicar el segundo artículo: descomentar, duplicar la tarjeta
+               las veces que haga falta y rellenarla. Los publicados van en
+               <article> con <a> en el titular; si alguno no existiera todavía,
+               en <div> y sin enlace, para no apuntar a un 404. La rejilla la
+               fija .tarjetas--tres, que sigue en el CSS solo para este bloque.
+
           <section class="continua" aria-labelledby="continua-titulo">
             <h2 id="continua-titulo" class="lista__titulo">Continúa leyendo</h2>
 
             <div class="tarjetas tarjetas--tres">
 
-              <div class="tarjeta">
+              <article class="tarjeta">
                 <div class="tarjeta__imagen"></div>
-                <p class="etiqueta etiqueta--plana">Ensayo</p>
-                <h3 class="entrada__titulo">La discrecionalidad técnica de la Administración</h3>
+                <p class="etiqueta etiqueta--plana">CATEGORÍA</p>
+                <h3 class="entrada__titulo">
+                  <a href="../SLUG/">TITULAR</a>
+                </h3>
                 <div class="entrada__meta">
-                  <time datetime="2026-08-12">12 agosto 2026</time>
-                  <span class="lectura">12 min</span>
+                  <time datetime="AAAA-MM-DD">FECHA</time>
+                  <span class="lectura">N min</span>
                 </div>
-              </div>
-
-              <div class="tarjeta">
-                <div class="tarjeta__imagen"></div>
-                <p class="etiqueta etiqueta--plana">Comentario</p>
-                <h3 class="entrada__titulo">El interés legítimo en el recurso contencioso-administrativo</h3>
-                <div class="entrada__meta">
-                  <time datetime="2026-07-30">30 julio 2026</time>
-                  <span class="lectura">14 min</span>
-                </div>
-              </div>
-
-              <div class="tarjeta">
-                <div class="tarjeta__imagen"></div>
-                <p class="etiqueta etiqueta--plana">Fundamento</p>
-                <h3 class="entrada__titulo">El control judicial de los planes parciales: límites y estándares</h3>
-                <div class="entrada__meta">
-                  <time datetime="2026-07-15">15 julio 2026</time>
-                  <span class="lectura">11 min</span>
-                </div>
-              </div>
+              </article>
 
             </div>
           </section>
+          -->
 
           <nav class="siguiente" aria-label="Seguir leyendo">
             <a class="volver" href="../../articulos/">&larr; Volver a todos los artículos</a>

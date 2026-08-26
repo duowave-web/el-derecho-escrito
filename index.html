@@ -158,10 +158,14 @@
         <p class="lista__mas lista__mas--enlinea"><a href="./articulos/">Ver todos los artículos &rarr;</a></p>
       </div>
 
-      <!-- INICIO LISTADO — al publicar, copia un bloque <article> y edítalo -->
-      <div class="tarjetas">
+      <!-- INICIO LISTADO — al publicar, copia el bloque <article> y edítalo.
+           Mientras haya un solo artículo, la rejilla va a dos columnas y la
+           segunda la ocupa la tarjeta de espera. Al publicar el segundo,
+           sustituye esa tarjeta por el <article> nuevo; a partir del tercero,
+           quita el modificador --dos para volver a la rejilla de cuatro. -->
+      <div class="tarjetas tarjetas--dos">
 
-        <article class="tarjeta">
+        <article class="tarjeta tarjeta--caja">
           <div class="tarjeta__imagen"></div>
           <p class="etiqueta etiqueta--plana">Derecho penal</p>
           <h3 class="entrada__titulo">
@@ -174,43 +178,20 @@
           </div>
         </article>
 
-        <!-- Los tres bloques siguientes son marcadores de maquetación: esos
-             artículos todavía no existen. Van en <div> y sin enlace a propósito,
-             para no apuntar a páginas que darían 404, y por eso tampoco están
-             en sitemap.xml ni en feed.xml. Al publicar uno de verdad, sustituye
-             el <div> por un <article class="tarjeta"> como el de arriba. -->
+        <!-- Tarjeta de espera. Va en <div> y no en <article>, y su rótulo es un
+             <p> y no un <h3>: si fuera encabezado entraría en el esquema del
+             documento al mismo nivel que el artículo real, y un lector de
+             pantalla que navegue por encabezados la anunciaría como si fuera
+             una pieza más. No lleva enlace ni tabindex, así que tampoco recibe
+             foco. La balanza la pinta el CSS con mask; los puntos son
+             decorativos y van ocultos a la accesibilidad. -->
 
-        <div class="tarjeta">
-          <div class="tarjeta__imagen"></div>
-          <p class="etiqueta etiqueta--plana">Ensayo</p>
-          <h3 class="entrada__titulo">La discrecionalidad técnica de la Administración</h3>
-          <p class="entrada__extracto">Análisis de los límites de la discrecionalidad técnica en la toma de decisiones públicas y su control jurisdiccional.</p>
-          <div class="entrada__meta">
-            <time datetime="2026-08-12">12 agosto 2026</time>
-            <span class="lectura">12 min</span>
-          </div>
-        </div>
-
-        <div class="tarjeta">
-          <div class="tarjeta__imagen"></div>
-          <p class="etiqueta etiqueta--plana">Comentario</p>
-          <h3 class="entrada__titulo">El interés legítimo en el recurso contencioso-administrativo</h3>
-          <p class="entrada__extracto">A propósito de la jurisprudencia reciente sobre legitimación activa y el concepto de interés legítimo.</p>
-          <div class="entrada__meta">
-            <time datetime="2026-07-30">30 julio 2026</time>
-            <span class="lectura">14 min</span>
-          </div>
-        </div>
-
-        <div class="tarjeta">
-          <div class="tarjeta__imagen"></div>
-          <p class="etiqueta etiqueta--plana">Fundamento</p>
-          <h3 class="entrada__titulo">El control judicial de los planes parciales: límites y estándares</h3>
-          <p class="entrada__extracto">Sobre el alcance del control judicial en la revisión de los planes parciales y los estándares de motivación exigibles.</p>
-          <div class="entrada__meta">
-            <time datetime="2026-07-15">15 julio 2026</time>
-            <span class="lectura">11 min</span>
-          </div>
+        <div class="tarjeta tarjeta--caja tarjeta--proxima">
+          <p class="proxima__titulo">Próximamente</p>
+          <p class="proxima__texto">El siguiente artículo ya se está escribiendo.</p>
+          <span class="proxima__puntos" aria-hidden="true">
+            <span></span><span></span><span></span>
+          </span>
         </div>
 
       </div>

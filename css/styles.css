@@ -964,6 +964,136 @@ body:has(.portada--video) .cabecera--con-linea {
   padding-top: 16px;
 }
 
+/* Dos columnas. Mientras solo haya un artículo publicado, la segunda la ocupa
+   la tarjeta de espera. Con 1200 de contenedor y 24 de padding quedan 1152
+   útiles, así que a 28 de hueco cada columna mide 562.
+
+   No se usó una rejilla asimétrica (el artículo real más ancho que la espera),
+   que editorialmente tendría sentido, porque la altura de la fila la marca la
+   tarjeta con imagen: a columnas desiguales la de espera salía alta y estrecha,
+   con la balanza flotando en el centro de un hueco vertical. A columnas iguales
+   queda casi cuadrada, que es la proporción donde ese contenido se sostiene.
+
+   minmax(0, 1fr) y no 1fr: «1fr» es en realidad «minmax(auto, 1fr)», y ese auto
+   tiene suelo en el min-content de la columna. La palabra «Próximamente» en
+   Cormorant a 28px mide 219px y no encoge, así que al estrechar la ventana su
+   columna dejaba de ceder y aplastaba a la vecina — medido: a 460px de ventana
+   la tarjeta real se quedaba en 107px de interior y su titular en nueve líneas,
+   mientras la de espera seguía en 219. Con minmax(0, ...) las dos ceden igual. */
+
+.tarjetas--dos {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+/* ------------------------------------------- Tarjeta dentro de caja ----- */
+
+/* El relleno solo no basta para que la caja se lea. --papel-alt sobre el blanco
+   de la página son 2,6 de dE2000, por debajo del umbral en el que una superficie
+   plana se distingue de otra. El canto lo define el filete, no el fondo, y así
+   no hace falta un tono nuevo más oscuro.
+
+   El hueco de imagen sí necesita cambiar de color: por defecto es --papel-alt,
+   el mismo token que ahora usa la caja, con lo que dentro de ella su dE es
+   exactamente 0 y desaparece. Con --borde sube a 4,7 y vuelve a leerse. Solo
+   afecta al marcador: en cuanto haya un <img> dentro, el fondo no se ve. */
+
+.tarjeta--caja {
+  background: var(--papel-alt);
+  border: 1px solid var(--borde);
+  border-radius: 3px;
+  padding: 28px;
+}
+
+.tarjeta--caja .tarjeta__imagen {
+  background: var(--borde);
+}
+
+/* ------------------------------------------- Tarjeta de proximamente ----- */
+
+/* Discontinuo frente al filete continuo de la tarjeta real: distingue «esto
+   todavía no es contenido» sin gastar un color más. */
+
+.tarjeta--proxima {
+  align-items: center;
+  justify-content: center;
+  border-style: dashed;
+  text-align: center;
+  gap: 14px;
+}
+
+/* La balanza del sitio por mask, igual que .marca::before: el SVG hereda
+   currentColor y no hay que duplicar el archivo para teñirlo. */
+
+.tarjeta--proxima::before {
+  content: "";
+  flex: none;
+  width: 46px;
+  height: 44px;
+  margin-bottom: 4px;
+  background-color: var(--acento);
+  -webkit-mask: url(../balanza.svg) center / contain no-repeat;
+  mask: url(../balanza.svg) center / contain no-repeat;
+}
+
+/* Va como <p> y no como encabezado: no debe entrar en el esquema del documento
+   al mismo nivel que el artículo real. El tamaño es el del titular de tarjeta. */
+
+.proxima__titulo {
+  margin: 0;
+  font-family: var(--display);
+  font-size: 28px;
+  font-weight: 600;
+  line-height: 1.15;
+  color: var(--tinta);
+}
+
+.proxima__texto {
+  margin: 0;
+  max-width: 28ch;
+  color: var(--tinta-suave);
+}
+
+.proxima__puntos {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.proxima__puntos span {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--acento);
+  opacity: 0.25;
+  animation: latido 1.4s ease-in-out infinite;
+}
+
+.proxima__puntos span:nth-child(2) { animation-delay: 0.2s; }
+.proxima__puntos span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes latido {
+  0%, 60%, 100% { opacity: 0.25; }
+  30%           { opacity: 1; }
+}
+
+/* Sin movimiento los tres puntos se quedan quietos, y entonces son la única
+   señal de «pendiente» que queda: con la animación activa da igual que el
+   estado de reposo sea tenue, porque el pulso los lleva hasta 5,43:1, pero
+   congelados hay que verlos.
+
+   Por eso van a opacidad completa y no a la de reposo. Medido sobre la caja:
+   0,55 da 2,29:1, por debajo del 3:1 que pide un elemento no textual, y el
+   umbral no se cruza hasta 0,70. A opacidad 1 quedan en 5,43:1, el mismo
+   contraste que la balanza, y los tres iguales se leen como puntos suspensivos
+   — que es exactamente lo que tienen que comunicar. */
+
+@media (prefers-reduced-motion: reduce) {
+  .proxima__puntos span {
+    animation: none;
+    opacity: 1;
+  }
+}
+
 /* ------------------------------------------------------------ Migas ----- */
 
 .miga {
@@ -1875,6 +2005,23 @@ body:has(.progreso) .cabecera {
     flex-direction: column;
     align-items: flex-start;
     gap: 12px;
+  }
+
+  /* Las tarjetas en caja se quedan sin sitio mucho antes que las de cuatro
+     columnas, porque el padding de 28 se come 58px de cada una. Medido: el
+     titular del artículo real pasa de 3 líneas a 4 entre 740 y 700, y de 4 a 6
+     por debajo de 540. A 748 el interior mide 278px y el titular ocupa 3
+     líneas, que es exactamente lo que rinde en una sola columna a 380 — el
+     rendimiento que ya damos por bueno en móvil.
+
+     Se reutiliza el 748 de la cabecera en vez de añadir un sexto punto de
+     corte. No es que las dos cosas dependan de lo mismo: la cabecera se rompe
+     por el ancho de su fila y esto por el padding de la caja. Es que el valor
+     medido aquí cae dentro de la banda segura, y dejar dos cortes separados
+     ocho píxeles solo añadiría ruido al archivo. */
+
+  .tarjetas--dos {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
