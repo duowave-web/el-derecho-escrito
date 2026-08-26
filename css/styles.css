@@ -1189,10 +1189,24 @@ body:has(.portada--video) .cabecera--con-linea {
   color: var(--acento);
 }
 
+/* display: inline y NO inline-flex, que es lo que había y estaba mal.
+
+   La firma tiene dos hijos —el texto «Por » y el enlace con el nombre—, y en un
+   contenedor flex cada uno es un item independiente: el espacio final del texto
+   se descarta y se leía «PorJuan Contera Miranda», pegado. Medido: 0 px entre
+   los dos.
+
+   No se arregla con gap, que también separaría el icono del texto. Se arregla
+   quitando el flex, que nunca hizo falta: el icono se alinea con vertical-align
+   igual que en <time> y en .lectura, que son inline y no dan problema.
+
+   Se escapó porque lo comprobé leyendo textContent, donde el espacio sí está.
+   Solo se ve renderizando, y solo por debajo de 900, que es donde la firma
+   aparece. */
+
 @media (max-width: 900px) {
   .entrada__meta .firma {
-    display: inline-flex;
-    align-items: center;
+    display: inline;
   }
 }
 
