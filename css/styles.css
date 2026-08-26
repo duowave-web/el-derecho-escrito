@@ -1708,7 +1708,30 @@ body:has(.portada--video) .cabecera--con-linea {
 
    Los 24 de abajo son los que tenía .miga: el enlace ocupa su sitio y hereda su
    separación con lo que viene después. Sin ellos quedaba a 1,9 px de la
-   categoría —medido—, pegado. */
+   categoría —medido—, pegado.
+
+   Sin subrayado en ninguno de los dos estados. En reposo ya no lo tenía —la
+   regla global de «a» lo quita—, así que lo que hace falta de verdad es la
+   excepción al hover, que sí lo pone. Se declaran los dos por si algún día
+   cambia la global: la intención queda escrita donde se lee el componente.
+
+   La excepción va aquí y no en la global porque el subrayado al pasar el ratón
+   es correcto para el resto del sitio: los enlaces dentro de un párrafo lo
+   necesitan. Este va solo en su línea.
+
+   Se puede prescindir de él porque no es un enlace embebido en prosa, que es el
+   supuesto que penaliza WCAG 1.4.1: no está dentro de ningún <p> ni tiene texto
+   en línea alrededor —comprobado en los dos usos—, así que no hay texto vecino
+   con el que confundirlo. Lo identifican la flecha, que es una convención de
+   dirección, y el hover, que cambia DOS cosas a la vez: el color se oscurece a
+   --acento-oscuro por la regla global y la flecha se desplaza. Ninguna de las
+   dos es solo color.
+
+   Lo que sí conviene tener presente: justo debajo del de arriba va la categoría
+   del artículo, que es --acento igual y NO es un enlace. Lo que los separa es
+   la flecha y que la categoría va en versales de 12 con tracking, frente a los
+   14 en caja baja de este. Si algún día se tocan esos dos estilos, hay que
+   mirar que sigan distinguiéndose. */
 
 .volver {
   display: inline-flex;
@@ -1718,6 +1741,11 @@ body:has(.portada--video) .cabecera--con-linea {
   font-family: var(--ui);
   font-size: 14px;
   font-weight: 500;
+  text-decoration: none;
+}
+
+.volver:hover {
+  text-decoration: none;
 }
 
 /* El desplazamiento va SOLO en la flecha, y por eso necesita elemento propio:
