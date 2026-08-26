@@ -135,25 +135,57 @@
 
       <p class="contador" id="contador" aria-live="polite"></p>
 
-      <!-- INICIO LISTADO — al publicar, copia un bloque <article> y edítalo -->
-      <div class="entradas" id="entradas">
+      <!-- INICIO LISTADO — mismo componente que la portada: .tarjetas para la
+           rejilla y .tarjeta--caja para cada pieza. No hay CSS propio de esta
+           página; la rejilla, la caja, los iconos de metadatos y los cortes de
+           1084 y 748 vienen ya hechos.
 
-        <article class="entrada">
-          <div class="entrada__meta">
-            <span class="etiqueta">Fundamento</span>
-            <time datetime="2026-08-20">20 de agosto de 2026</time>
-            <span class="lectura">7 min de lectura</span>
+           El titular va en <h2> y no en el <h3> de la portada porque aquí las
+           tarjetas cuelgan del <h1> de la página, no de un rótulo de sección.
+
+           data-categoria es lo que leen los filtros. Va en minúsculas y sin
+           acentos a propósito: es una clave, no un texto, y así no depende de
+           cómo se escriba la etiqueta visible.
+
+           Al publicar, copia el <article> entero y edítalo. -->
+      <div class="tarjetas" id="entradas">
+
+        <article class="tarjeta tarjeta--caja" data-categoria="fundamento">
+          <!-- Mismo alt que la tarjeta de portada, y es correcto que se repita:
+               es el mismo recorte 3:2 de la misma foto en el mismo componente.
+               El que sí cambia es el de la cabecera del artículo, que recorta a
+               21:9 y deja fuera los platos de la balanza. -->
+          <div class="tarjeta__imagen">
+            <img src="../img/damajusticia.jpg"
+                 alt="Figura de bronce de la justicia, con los ojos vendados y los dos platos de la balanza vacíos"
+                 width="1600" height="1066" loading="lazy" decoding="async">
           </div>
+          <p class="etiqueta etiqueta--plana">Fundamento</p>
           <h2 class="entrada__titulo">
             <a href="../articulos/principio-de-legalidad-penal/">El principio de legalidad penal: qué protege y dónde se rompe</a>
           </h2>
           <p class="entrada__extracto">Nullum crimen sine lege es una de las garantías más citadas del derecho penal y una de las peor entendidas. Un repaso a sus cuatro exigencias y a los casos donde el legislador las tensiona.</p>
+          <div class="entrada__meta">
+            <time datetime="2026-08-20">20 agosto 2026</time>
+            <span class="lectura">7 min</span>
+          </div>
         </article>
+
+        <!-- Cierra la rejilla, igual que en la portada. No lleva data-categoria
+             porque no es un artículo: el JS la esconde en cuanto hay un filtro o
+             una búsqueda activos, ya que no es un resultado de nada. -->
+        <div class="tarjeta tarjeta--caja tarjeta--proxima">
+          <p class="proxima__titulo">Próximamente</p>
+          <p class="proxima__texto">El siguiente artículo ya se está escribiendo.</p>
+          <span class="proxima__puntos" aria-hidden="true">
+            <span></span><span></span><span></span>
+          </span>
+        </div>
 
       </div>
       <!-- FIN LISTADO -->
 
-      <p class="vacio" id="vacio" hidden>No hay artículos que coincidan con la búsqueda.</p>
+      <p class="vacio" id="vacio" hidden>No hay artículos en esta categoría.</p>
 
     </div>
   </section>

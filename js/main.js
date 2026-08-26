@@ -35,7 +35,13 @@
     const contenedor = document.getElementById("entradas");
     if (!contenedor) return;
 
-    const entradas = Array.prototype.slice.call(contenedor.querySelectorAll(".entrada"));
+    /* Se excluye la tarjeta de espera: no es un artículo, así que ni cuenta ni
+       se filtra. Se esconde aparte, más abajo, cuando hay algo activo. */
+
+    const entradas = Array.prototype.slice.call(
+      contenedor.querySelectorAll(".tarjeta:not(.tarjeta--proxima)")
+    );
+    const proxima = contenedor.querySelector(".tarjeta--proxima");
     const vacio = document.getElementById("vacio");
     const contador = document.getElementById("contador");
     const aviso = document.getElementById("filtro-aviso");
@@ -64,6 +70,7 @@
       });
 
       if (vacio) vacio.hidden = visibles !== 0;
+      if (proxima) proxima.hidden = Boolean(q);
       actualizarContador(visibles);
     }
 

@@ -892,14 +892,13 @@ body:has(.portada--video) .cabecera--con-linea {
   margin-bottom: 4px;
 }
 
-.entrada {
-  padding: 32px 0;
-  border-bottom: 1px solid var(--borde);
-}
+/* Aquí estaban .entrada y .entrada:last-child, la fila apilada con filete que
+   usaba el listado antes de pasar a tarjetas. Se van con el marcado que las
+   usaba.
 
-.entrada:last-child {
-  border-bottom: none;
-}
+   Las .entrada__* sí siguen: titular, extracto y metadatos son los mismos en
+   las tarjetas de portada y de listado. Lo que desapareció es el contenedor de
+   la fila, no sus piezas. */
 
 .entrada__meta {
   font-family: var(--ui);
