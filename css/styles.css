@@ -416,14 +416,18 @@ body:has(.portada--video) .cabecera--con-linea {
   text-align: left;
 }
 
-/* Paleta oscurecida, solo aqui. Sobre el video el antetitulo en --acento se
-   queda en 2.50:1 y la entradilla en --tinta-suave en 2.59:1: los dos
-   incumplen. Oscurecerlos es lo que permite bajar el velo y que el video se
-   vea. El resto del sitio conserva la jerarquia tonal de siempre. */
+/* Paleta oscurecida, solo aqui. Sobre el video la entradilla en --tinta-suave
+   se queda en 2.59:1 e incumple; oscurecerla es lo que permite bajar el velo y
+   que el video se vea. El resto del sitio conserva la jerarquia tonal.
 
-.portada--video .portada__antetitulo {
-  color: var(--acento-oscuro);
-}
+   Aqui habia tambien un .portada--video .portada__antetitulo en
+   --acento-oscuro, porque en --acento se quedaba en 2.50:1. Se retira con el
+   antetitulo «Blog juridico», que era su unico caso: --video solo lo lleva la
+   portada del inicio.
+
+   La clase base .portada__antetitulo NO se toca: la sigue usando 404.html para
+   el rotulo «Error 404», y alli va sobre blanco, donde --acento cumple de
+   sobra. */
 
 .portada--video .portada__entradilla {
   color: var(--tinta);

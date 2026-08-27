@@ -637,6 +637,24 @@ Areas del derecho:  franja con las materias que se tratan
 Pie:                fondo oscuro
 ```
 
+El bloque de la portada es **titular, entradilla y dos botones**, sin antetítulo
+encima. Llevó uno —«BLOG JURÍDICO»— y se retiró.
+
+> **`.portada__antetitulo` sigue en el CSS y no está muerta.** La usa
+> `404.html` para el rótulo «Error 404», que es el único caso que queda. Quien
+> la busque desde la portada no la encontrará y pensará que sobra.
+>
+> Lo que sí se retiró con el elemento es `.portada--video .portada__antetitulo`,
+> que lo oscurecía a `--acento-oscuro` porque sobre el vídeo el acento se
+> quedaba en 2,50:1. Ese modificador solo lo lleva la portada del inicio, así
+> que sin antetítulo ahí no le quedaba ningún caso. En el 404 no hace falta: va
+> sobre blanco, donde `--acento` da 5,91:1.
+
+El bloque se centra solo: `.portada` es flex con `align-items: center`, así que
+al quitar el antetítulo el texto se recolocó sin tocar nada. Verificado que la
+franja sigue en 520 px —lo garantiza el `min-height`— y que el desvío respecto
+al reparto del padding es 0 en 1440, 900, 600 y 375.
+
 Cada tarjeta va **dentro de una caja** con fondo `--papel-alt`, filete de 1 px
 en `--borde` y 28 px de padding: imagen arriba en 3:2, categoría en versales de
 Inter y color acento, título en Cormorant, extracto y, anclados al fondo, fecha
