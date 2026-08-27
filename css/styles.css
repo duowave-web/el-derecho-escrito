@@ -793,111 +793,87 @@ body:has(.portada--video) .cabecera--con-linea {
 
 /* ------------------------------------------------- Cabecera de sección -- */
 
-.cabecera-seccion {
-  padding: 64px 0 40px;
-}
+/* Aqui vivia .cabecera-seccion, con su padding, su h1 y su parrafo. Se retira
+   entera: la usaban articulos/ y contacto/, y las dos han pasado a .mancheta,
+   que es la banda a sangre. No queda ninguna pagina con esa clase.
 
-/* .mancheta h1 va aquí y no aparte: la mancheta dejó de colgar de
-   .cabecera-seccion al hacerse banda a sangre, pero su titular es el mismo
-   objeto —el encabezado de una página de sección— y debe seguir midiendo lo
-   mismo. Separarlo en dos reglas sería invitar a que se desincronicen. */
+   El h1 se conserva, ahora colgado solo de .mancheta. */
 
-.cabecera-seccion h1,
 .mancheta h1 {
   font-family: var(--display);
   font-size: clamp(2.2rem, 5vw, 2.75rem);
   font-weight: 600;
   line-height: 1.1;
   letter-spacing: -0.015em;
-  margin: 0 0 14px;
 }
 
-.cabecera-seccion p {
-  color: var(--tinta-suave);
-  margin: 0;
-  max-width: 34em;
-}
+/* Mancheta: banda a sangre que hace de encabezado en las tres paginas de
+   seccion —articulos, sobre y contacto—. El fondo ocupa toda la ventana; el
+   titulo se queda en la rejilla gracias al .contenedor que lleva dentro.
 
-/* Mancheta del índice de artículos: banda a sangre que hace de encabezado de
-   sección. El fondo ocupa toda la ventana; el texto se queda en la rejilla
-   gracias al .contenedor que lleva dentro.
+   Sustituyo a .cabecera-seccion, que era contenida y solo la usaba contacto/.
+   Al unificarse las tres, aquella clase se quedo sin usuarios y se retiro.
 
-   Los 76 de relleno dejan la banda en unos 246 px con el texto de hoy. Es cinco
-   veces la cabecera del sitio, de 73, y menos de la mitad de la franja de
-   portada, de 520: se lee como encabezado sin pretender ser un hero. Va por
-   relleno y no por altura fija para que crezca sola entre 901 y 1084, donde la
-   entradilla pasa a cuatro líneas.
+   Los 61 de relleno dejan la banda en 170 px con el titulo de 48. Estuvo en 258
+   con un relleno de 76, cuando llevaba ademas una entradilla a su derecha; sin
+   ella sobraba altura. A 190 sobra aire y a 150 el titulo roza el filete. Va
+   por relleno y no por altura fija para que respire igual si un titulo parte en
+   dos lineas en pantalla estrecha.
 
    Arranca pegada a la cabecera, sin margen ni relleno arriba, y eso hace que la
-   línea inferior del nav le sirva de borde superior. El filete de abajo repite
-   ese mismo trazo —2 px en --borde-marcado— así que la banda queda cerrada
-   arriba y abajo por la misma línea. Es deliberado, no una coincidencia.
+   linea inferior del nav le sirva de borde superior. El filete de abajo repite
+   ese mismo trazo —2 px en --borde-marcado— asi que la banda queda cerrada
+   arriba y abajo por la misma linea. Es deliberado, no una coincidencia.
 
    El filete va a sangre y no contenido: con el fondo cruzando toda la ventana,
-   una línea que se cortara a los 1200 con la banda tintada a los lados
-   parecería un fallo. Y hace falta, medido: el canto de la banda contra el
-   blanco de debajo tiene ΔE media 7,6 pero baja a 1,4 en las zonas pálidas, o
-   sea que en parte del ancho no cierra nada por sí solo. */
+   una linea que se cortara a los 1200 con la banda tintada a los lados
+   pareceria un fallo. Y hace falta, medido: el canto de la banda contra el
+   blanco de debajo tiene dE media 7,6 pero baja a 1,4 en las zonas palidas, o
+   sea que en parte del ancho no cierra nada por si solo. */
 
 .mancheta {
-  padding: 76px 0;
+  padding: 61px 0;
   border-bottom: 2px solid var(--borde-marcado);
 }
 
-/* Las columnas no son iguales: el titular cabe en una línea con holgura y la
-   entradilla necesita medida de lectura, así que se reparte 5/7. A 1152 útiles
-   con 64 de hueco quedan 453 para el titular y 635 para el texto, unos 57
-   caracteres por línea.
-
-   align-items: baseline y no start. Alineando las cajas por arriba, la primera
-   línea de la entradilla quedaba 17,5 px por encima de la del titular —medido—,
-   porque la interlínea del titular es mucho mayor y empuja su base hacia abajo.
-   Aquí los dos lados son texto, así que lo que se empareja son las bases y las
-   dos primeras líneas arrancan juntas.
-
-   (En .lista__encabezado se hizo justo lo contrario, pasar de baseline a
-   center, porque allí un lado es un botón. La regla no es una preferencia:
-   texto contra texto se alinea por la base, texto contra caja por el centro.) */
+/* Un solo elemento centrado, asi que basta con centrarlo. Aqui hubo una rejilla
+   de dos columnas 5/7 con align-items: baseline, para enfrentar el titulo y una
+   entradilla; las dos cosas se fueron con la entradilla. Dejar la rejilla con
+   una sola celda habria sido dejar una estructura que ya no estructura nada. */
 
 .mancheta__interior {
-  display: grid;
-  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
-  gap: 64px;
-  align-items: baseline;
+  display: flex;
+  justify-content: center;
+  text-align: center;
 }
 
-/* El fondo se declara SOLO aquí dentro, y por eso esta es la única media query
+/* El fondo se declara SOLO aqui dentro, y por eso esta es la unica media query
    por min-width del archivo, que va desde arriba por max-width.
 
    La diferencia importa: si se declarara fuera y se anulara con
    «background-image: none» en un corte de max-width, el resultado en pantalla
-   sería el mismo, pero el móvil se bajaría igual los 130 KB. Declarándolo solo
+   seria el mismo, pero el movil se bajaria igual los 130 KB. Declarandolo solo
    donde se usa, no se pide nunca por debajo de 900.
 
-   Y no se pide por dos razones, no solo por el peso: al apilarse, la caja pasa
-   de 8:1 a casi cuadrada, así que «cover» recorta una tira central estrecha y
-   se pierde la composición —ni libro, ni balanza—. Sería peso para no enseñar
-   la imagen.
+   Y no se pide por dos razones, no solo por el peso: al ser mas alta que ancha
+   la ventana, «cover» recorta una tira central estrecha y se pierde la
+   composicion —ni libro, ni balanza—. Seria peso para no ensenar la imagen.
 
-   El velo va como primera capa de background-image, no como elemento aparte:
-   un degradado de dos paradas iguales es una superficie plana, y así el fondo
-   entero se resuelve en una sola propiedad sin tocar el marcado.
+   YA NO LLEVA VELO. Tuvo uno blanco al 45% mientras el texto iba a los lados:
+   los manchones oscuros de la imagen estan en los bordes izquierdo y derecho, y
+   ahi el titular se quedaba en 1,68:1. Con el titulo centrado cae sobre la zona
+   clara del centro y da 14,03:1 SIN velo ninguno, identico en los seis anchos
+   medidos porque esa franja es uniforme. El velo protegia a un texto que ya no
+   esta ahi, y quitandolo la imagen recupera el veteado y la balanza.
 
-   El 45% está medido sobre la imagen real, muestreando las zonas exactas donde
-   cae cada texto. Sin él, el titular queda en 1,68:1 y la entradilla en 1,02:
-   los manchones oscuros de la imagen están en los bordes izquierdo y derecho,
-   que es justo donde viven los dos. Con él, 5,85 y 6,67.
-
-   Se descartó la alternativa de encuadrar solo el centro claro con un zoom del
-   220%: contrasta de sobra —12,7 y 4,7— pero deja la banda casi blanca, con el
-   veteado, el libro y la balanza fuera de cuadro. Pasaba la medida y fallaba el
-   objetivo. */
+   GUARDA: ese 14,03 vale para los titulos de ahora, que miden entre 151 y 157
+   px. Medido, hay sitio hasta unos 450 px de titulo (12,71). A 600 baja a 5,79
+   y a 800 se queda en 2,86 y ya no cumple. Un titulo de seccion mas largo que
+   eso obliga a volver a medir, o a devolver el velo. */
 
 @media (min-width: 901px) {
   .mancheta {
-    background-image:
-      linear-gradient(rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0.45)),
-      url(../img/fondo-articulos.jpg);
+    background-image: url(../img/fondo-cabecera.jpg);
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -908,28 +884,9 @@ body:has(.portada--video) .cabecera--con-linea {
   margin: 0;
 }
 
-/* Antes esta regla iba acompañada de .cabecera-seccion, porque .cabecera-seccion
-   p (0,0,1,1) le ganaba a la clase sola (0,0,1,0) y le dejaba puesto un
-   max-width de 34em que acortaba la línea 23 px dentro de su columna.
-
-   Al salir la mancheta de esa sección, aquella regla ya no la alcanza y la
-   excepción sobra: la clase basta. Se retira en vez de dejarla puesta «por si
-   acaso», que es como se acumulan selectores que nadie entiende luego.
-
-   El color es --tinta y no --tinta-suave, y no es cosmético: sobre el fondo el
-   gris se queda en 2,45:1 y no llega ni con velos que borrarían la imagen.
-   Coincide además con el criterio ya aplicado a .entradilla en el artículo: es
-   texto para leer, no un metadato, así que la jerarquía la marcan el cuerpo y
-   el aire, no el color.
-
-   Se queda en --tinta también por debajo de 900, donde no hay fondo. Volver al
-   gris solo ahí obligaría a mantener dos colores para el mismo párrafo según el
-   ancho, y el motivo de fondo —que es texto de lectura— no depende de eso. */
-
-.mancheta__entradilla {
-  color: var(--tinta);
-  margin: 0;
-}
+/* Aqui estaba .mancheta__entradilla, el parrafo que acompanaba al titulo. Se va
+   con el elemento: la banda es solo titulo. El texto de contacto/ no se pierde,
+   baja al cuerpo de la pagina, encima del formulario. */
 
 /* --------------------------------------------- Aviso de filtrado -------- */
 
@@ -2575,32 +2532,15 @@ body:has(.progreso) .cabecera {
 
 @media (max-width: 900px) {
 
-  /* La mancheta se apila. Medido: a 900 la columna de la entradilla conserva
-     460 px, que a 18 px dan unos 43 caracteres por línea; por debajo cae a 34 y
-     luego a 24, y a 375 se queda en 153 px de ancho con once líneas. Enfrentar
-     dos columnas deja de tener sentido mucho antes de que deje de caber.
+  /* Aqui se apilaba la mancheta, que era de dos columnas, y volvia a ponerse el
+     tope de medida a la entradilla. Las dos reglas se fueron con la entradilla:
+     un titulo centrado no tiene nada que apilar ni medida que limitar.
 
-     Apilada recupera el ancho entero del contenedor, así que la entradilla pasa
-     a leerse bien otra vez. */
-
-  .mancheta__interior {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 16px;
-  }
-
-  /* Sin imagen detrás, la banda no necesita el relleno que le daba presencia:
-     aquí es una cabecera de texto sobre blanco y basta con separarla. */
+     Sin imagen detras, la banda no necesita todo el relleno que le da presencia:
+     aqui es un titulo sobre blanco y basta con separarlo. */
 
   .mancheta {
     padding: 44px 0 32px;
-  }
-
-  /* Y le vuelve el tope de medida que no tiene arriba. Enfrentada, la línea la
-     limitaba su columna; apilada no la limita nada y se iba a 86 caracteres
-     —medido a 900 px—, casi el doble de lo cómodo. Con el tope vuelve a 57. */
-
-  .mancheta__entradilla {
-    max-width: 34em;
   }
 
   /* La banda cae a la disposicion vertical del lateral, que ya esta probada,
@@ -2746,9 +2686,8 @@ body:has(.progreso) .cabecera {
     padding: 48px 0 44px;
   }
 
-  .cabecera-seccion {
-    padding: 44px 0 32px;
-  }
+  /* Aqui habia un .cabecera-seccion con su relleno de movil. Se va con la
+     clase; el equivalente de la banda esta en el corte de 900. */
 
   /* La disposicion en columna y el ocultado del campo ya vienen de los cortes
      de 716px y 934px de arriba; aqui solo se ajusta el tamano. */

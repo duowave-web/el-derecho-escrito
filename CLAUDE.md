@@ -712,30 +712,50 @@ natural, biblioteca o despacho, como una entrevista en *Monocle*.
 
 ### Texto sobre imagen: hay que medir dónde cae, no la media
 
-La mancheta de `articulos/` es una **banda a sangre** con
-`img/fondo-articulos.jpg` de fondo y un **velo blanco al 45 %** por delante. El
-fondo cruza toda la ventana; el texto se queda en la rejilla de 1200 gracias al
-`.contenedor` que lleva dentro.
+La mancheta es una **banda a sangre de 170 px** con `img/fondo-cabecera.jpg` de
+fondo y **sin velo**. Abre las tres páginas de sección —`articulos/`, `sobre/` y
+`contacto/`— con el título centrado y nada más. El fondo cruza toda la ventana;
+el título se queda en la rejilla de 1200 gracias al `.contenedor` que lleva
+dentro.
 
-El velo no es un gusto, es el mínimo medido: sin él el titular queda en
-**1,68:1** y la entradilla en **1,02**. Y el sangrado, que se descartó una vez
-por otro motivo, **mejora el contraste**: al empujar los manchones oscuros fuera
-del área de texto, el mínimo global pasa de 5,43 a 12,85 según el ancho.
+**Dónde cae el texto importa más que cómo de clara sea la imagen**, y esta banda
+lo demuestra en las dos direcciones.
 
-La trampa está en que la imagen es clara *de media*. Sus manchones oscuros
-están en los bordes izquierdo y derecho, que es exactamente donde la mancheta
-pone el titular y la entradilla. **Una media de luminancia habría dicho que no
-hacía falta velo.** Lo que sirve es muestrear el recorte real bajo cada caja de
-texto, en cada ancho, porque `cover` cambia el encuadre con la proporción de la
-caja.
+Los manchones oscuros de la imagen están en los **bordes izquierdo y derecho**.
+Mientras la mancheta llevaba el título a la izquierda y una entradilla a la
+derecha, el texto caía justo encima: **1,68:1** y **1,02:1**, ilegible. Hizo
+falta un velo blanco al 45 % para salvarlo, y aun así lavaba la imagen.
+
+Con el título **centrado**, cae sobre la franja clara del medio y da **14,03:1
+sin velo ninguno** — idéntico en los seis anchos medidos, porque esa zona es
+uniforme. El velo se retiró: protegía a un texto que ya no está ahí, y sin él la
+imagen recupera el veteado y la balanza.
+
+Una media de luminancia habría dicho las dos veces que no hacía falta velo,
+porque la imagen es clara *de media*. **Lo que sirve es muestrear el recorte
+real bajo cada caja de texto**, en cada ancho, porque `cover` cambia el encuadre
+con la proporción de la caja.
+
+> ⚠️ **Guarda: el 14,03 vale para los títulos de ahora**, que miden entre 151 y
+> 157 px —«Artículos», «Sobre mí», «Contacto»—. Medido, hay sitio hasta unos
+> **450 px** de título (12,71). A partir de ahí el texto empieza a invadir los
+> bordes oscuros:
+>
+> | Ancho del título | Contraste sin velo |
+> |---|---|
+> | 160 px | 15,61 |
+> | 300 px | 13,29 |
+> | 450 px | **12,71** |
+> | 600 px | 5,79 |
+> | 800 px | **2,86** ✗ |
+>
+> Un título de sección más largo que 450 px obliga a volver a medir, o a
+> devolver el velo.
 
 Se probó y se descartó encuadrar solo el centro claro con un zoom del 220 %:
-contrasta de sobra —12,7 y 4,7— pero deja la banda casi blanca, sin veteado, ni
-libro, ni balanza. **Pasaba la métrica y fallaba el objetivo.** Cuando una
-solución de contraste borra aquello que se quería enseñar, la solución es otra.
-
-Por eso también la entradilla está en `--tinta` y no en `--tinta-suave`: el gris
-no llega ni con velos que borrarían la imagen.
+contrasta de sobra pero deja la banda casi blanca, sin veteado, ni libro, ni
+balanza. **Pasaba la métrica y fallaba el objetivo.** Cuando una solución de
+contraste borra aquello que se quería enseñar, la solución es otra.
 
 > **Para una línea o una superficie plana, el ratio de contraste no es la
 > métrica.** El filete de la mancheta da **1,00:1** sobre el fondo, que suena a

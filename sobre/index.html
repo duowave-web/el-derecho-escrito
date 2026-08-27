@@ -85,15 +85,35 @@
   </div>
 </header>
 
-<main id="contenido" class="articulo">
+<main id="contenido">
+
+  <!-- Mancheta: la misma banda a sangre que abre articulos/ y contacto/. Esta
+       página no tenía cabecera propia —el <h1> vivía dentro de la columna de
+       lectura, como el de un artículo— y pasa a tenerla como las otras dos.
+
+       La clase .articulo bajó del <main> a un <div> que envuelve solo el cuerpo.
+       Tenía que salir de encima de la banda por dos motivos medidos: su padding
+       de 56 px la despegaba de la cabecera, y su regla .articulo h1 —misma
+       especificidad que .mancheta h1 pero más abajo en el archivo— le ganaba y
+       dejaba la banda en 203,8 px en vez de 172,4. -->
+  <div class="mancheta">
+    <div class="contenedor contenedor--amplio mancheta__interior">
+      <h1>Sobre mí</h1>
+    </div>
+  </div>
+
+  <div class="articulo">
   <div class="contenedor">
 
+    <!-- Las migas bajan aquí, debajo de la banda. Dentro de una banda con el
+         título centrado desordenaban la composición, y esta página las necesita:
+         es una hoja suelta sin listado padre al que volver. -->
     <nav class="miga" aria-label="Ruta de navegación">
       <a href="../">Inicio</a> <span aria-hidden="true">/</span> <span>Sobre mí</span>
     </nav>
 
-    <h1>Sobre mí</h1>
-
+    <!-- Esta entradilla NO es la de la mancheta: es la presentación del autor,
+         contenido de la página, y se queda en la columna de lectura. -->
     <p class="entradilla"><em>[Sustituye este párrafo por tu presentación: quién eres, a qué te dedicas y qué te llevó a escribir sobre derecho. Google valora mucho saber quién firma el contenido, así que merece la pena que sea concreto.]</em></p>
 
     <h2>Por qué existe este blog</h2>
@@ -124,6 +144,7 @@
          a .lista__mas, que es el mismo cuerpo y peso sin la dirección. -->
     <p><a class="lista__mas" href="../contacto/">¿Quieres escribirme? Ve a Contacto &rarr;</a></p>
 
+  </div>
   </div>
 </main>
 

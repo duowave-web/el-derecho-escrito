@@ -93,22 +93,17 @@
 
 <main id="contenido">
 
-  <!-- Mancheta: banda a sangre que hace de encabezado de sección. El fondo
-       ocupa toda la ventana y arranca pegado a la cabecera, pero el texto sigue
-       en la rejilla de 1200 gracias al .contenedor de dentro.
+  <!-- Mancheta: banda a sangre que hace de encabezado de sección, la misma en
+       articulos/, sobre/ y contacto/. El fondo ocupa toda la ventana y arranca
+       pegado a la cabecera; el título se queda en la rejilla de 1200 gracias al
+       .contenedor de dentro.
 
-       Dos columnas, titular a la izquierda y entradilla a la derecha: a este
-       ancho un titular con un párrafo debajo, los dos pegados al margen,
-       dejaban media página vacía.
-
-       Ya NO cuelga de .cabecera-seccion, que es lo que la tenía contenida y con
-       64 px de hueco por arriba. Esa clase la comparte contacto/, así que no se
-       le podía quitar el relleno sin romper esa página: la mancheta sale de ahí
-       y pasa a ser una banda hermana. -->
+       Solo el título, centrado. Llevó una entradilla enfrentada a la derecha en
+       una rejilla 5/7, y las dos cosas se fueron juntas: sin segundo elemento,
+       la rejilla no estructuraba nada. -->
   <div class="mancheta">
     <div class="contenedor contenedor--amplio mancheta__interior">
-      <h1>Artículos jurídicos</h1>
-      <p class="mancheta__entradilla">Análisis de fondo, comentarios de sentencias y piezas largas sobre cómo el derecho se adapta —o no— a los problemas nuevos. Todo escrito para que se entienda a la primera.</p>
+      <h1>Artículos</h1>
     </div>
   </div>
 

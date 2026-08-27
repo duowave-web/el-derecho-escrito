@@ -87,18 +87,30 @@
 
 <main id="contenido">
 
-  <section class="cabecera-seccion">
-    <div class="contenedor">
-      <nav class="miga" aria-label="Ruta de navegación">
-        <a href="../">Inicio</a> <span aria-hidden="true">/</span> <span>Contacto</span>
-      </nav>
+  <!-- Mancheta: la misma banda a sangre que abre articulos/ y sobre/. Solo el
+       título, centrado. Sustituye a .cabecera-seccion, que era contenida y
+       llevaba además las migas y un párrafo. -->
+  <div class="mancheta">
+    <div class="contenedor contenedor--amplio mancheta__interior">
       <h1>Contacto</h1>
-      <p>Sugerencias de temas, correcciones, dudas sobre un artículo o propuestas de colaboración. Respondo a todo lo que llega.</p>
     </div>
-  </section>
+  </div>
 
   <section class="contacto">
     <div class="contenedor">
+
+      <!-- Las migas bajan aquí, debajo de la banda y alineadas a la izquierda.
+           Dentro de una banda con el título centrado desordenaban la
+           composición, y esta página las necesita: es una hoja suelta sin
+           listado padre al que volver, así que son su única ruta de contexto. -->
+      <nav class="miga" aria-label="Ruta de navegación">
+        <a href="../">Inicio</a> <span aria-hidden="true">/</span> <span>Contacto</span>
+      </nav>
+
+      <!-- Este párrafo estaba en la cabecera. No se borra al vaciarla: dice qué
+           tipo de mensajes tienen sentido, que es justo lo que hay que saber
+           antes de escribir. Baja al cuerpo, encima del formulario. -->
+      <p class="contacto__intro">Sugerencias de temas, correcciones, dudas sobre un artículo o propuestas de colaboración. Respondo a todo lo que llega.</p>
 
       <!--
         PARA QUE EL FORMULARIO FUNCIONE:
