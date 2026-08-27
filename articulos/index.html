@@ -209,20 +209,22 @@
           </div>
         </article>
 
-        <!-- Cierra la rejilla, igual que en la portada. No lleva data-categoria
-             porque no es un artículo, y por eso nunca cuenta como resultado.
+        <!-- Cierra la rejilla, igual que en la portada, y SE VE SIEMPRE: con
+             filtro, con búsqueda y en todas las páginas. El JS no la esconde
+             nunca.
 
-             Se ve en dos situaciones y en ninguna más, que el JS decide:
+             Estuvo condicionada —solo en la lista entera de la página 1, o
+             respondiendo a una categoría vacía— y el cambio de fondo es que ha
+             dejado de ser una respuesta para ser mobiliario. Una respuesta
+             tiene que aparecer cuando toca; el cierre de una rejilla, siempre.
 
-             · La lista entera, sin filtro ni búsqueda y en la página 1. Aquí
-               cierra la rejilla, como en la portada.
-             · Una categoría sin artículos. Aquí es la respuesta: dice «aún no
-               hay, pero vienen», que es lo cierto de una categoría vacía.
+             La consecuencia a no perder de vista es que ya no informa de nada:
+             al verse igual con artículos que sin ellos, no puede seguir
+             haciendo de «esta categoría está vacía». De eso se encarga ahora el
+             mensaje .vacio de más abajo, que por eso volvió a ser general.
 
-             Nunca convive con resultados de un filtro, porque entonces no
-             cerraría nada: parecería un artículo más de esa categoría. Y nunca
-             sale en una búsqueda fallida, donde no hay ninguna promesa que
-             hacer; de eso se encarga el mensaje .vacio de más abajo. -->
+             Sigue sin llevar data-categoria porque no es un artículo, así que
+             el contador no la cuenta. Lo único que suma es data-visibles. -->
         <div class="tarjeta tarjeta--caja tarjeta--proxima">
           <p class="proxima__titulo">Próximamente</p>
           <p class="proxima__texto">El siguiente artículo ya se está escribiendo.</p>
@@ -234,14 +236,16 @@
       </div>
       <!-- FIN LISTADO -->
 
-      <!-- Este mensaje es SOLO para la búsqueda sin resultados. Una categoría
-           vacía no lo usa: allí responde la tarjeta de «Próximamente», que sí
-           dice algo —aún no hay, pero vienen— mientras que «no coincide nada»
-           es lo único que se puede decir de una búsqueda fallida.
+      <!-- Sale siempre que no hay resultados, sea por la categoría o por la
+           búsqueda. Estuvo reservado a la búsqueda mientras la categoría vacía
+           la respondía la tarjeta de «Próximamente»; desde que esa tarjeta se
+           ve siempre ya no dice nada del vacío —se ve igual con artículos que
+           sin ellos— y el mensaje vuelve a hacerse cargo de los dos casos.
 
-           Decía «No hay artículos en esta categoría» y era impreciso: salía
-           también con ?q=, donde la categoría no tiene nada que ver. -->
-      <p class="vacio" id="vacio" hidden>No hay artículos que coincidan con la búsqueda.</p>
+           Por eso el texto es general. Tampoco necesita nombrar la consulta:
+           cuando el vacío viene de un ?q=, el aviso de arriba ya la cita y
+           ofrece salir de ella. -->
+      <p class="vacio" id="vacio" hidden>No hay ningún artículo que mostrar.</p>
 
       <!-- PAGINACIÓN · Nueve artículos por página. Los números los construye
            js/main.js: dependen de cuántos artículos pasen el filtro, así que no

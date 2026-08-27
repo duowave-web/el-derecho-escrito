@@ -162,7 +162,7 @@ Si algún día se vuelve a cambiar el número de columnas, **hay que recalcular 
 punto de corte**: no es un número redondo, sale de medir. Está explicado abajo,
 en la sección de puntos de corte.
 
-### Ningún filtro va apagado, y la tarjeta de espera hace dos papeles
+### Ningún filtro va apagado y la tarjeta de espera no se esconde nunca
 
 Los cuatro botones de categoría de `articulos/` **se pueden pulsar siempre**,
 tengan artículos o no. Estuvieron `disabled` los vacíos —hoy Ensayo y
@@ -170,37 +170,84 @@ Jurisprudencia— y el motivo de quitarlo es que un botón apagado no puede
 explicarse: quien lo ve no distingue una categoría vacía de una rota, y el
 único sitio donde cabría la explicación es justo el control que no responde.
 
-Pulsables, la respuesta la da la página: el contador se pone a **«0
-resultados»** y en la rejilla queda **solo la tarjeta de «Próximamente»**.
+**La tarjeta de «Próximamente» tampoco se esconde en ningún caso**: con filtro,
+con búsqueda, con resultados, sin ellos y en todas las páginas.
 
-Eso le da a esa tarjeta **dos papeles distintos**, y conviene tenerlos claros
-antes de tocar la lógica, porque se contradicen si se descuidan:
+Estuvo condicionada, y merece la pena saber por qué se quitó porque el
+razonamiento vuelve cada vez que alguien la mira. Se enseñaba solo en la lista
+entera de la página 1 —o respondiendo a una categoría vacía—, con el argumento
+de que junto a los resultados de un filtro se leería como un artículo más de
+esa categoría. **El cambio de fondo es que ha dejado de ser una respuesta para
+ser mobiliario**: lo que cierra la rejilla, como el pie cierra la página. Una
+respuesta tiene que aparecer cuando toca; un cierre, siempre.
 
-| Situación | Qué se ve | Qué papel hace |
-|---|---|---|
-| Lista entera, página 1 | artículos **+** tarjeta | cierra la rejilla, como en la portada |
-| Categoría sin artículos | **solo** la tarjeta | es la respuesta: aún no hay, pero vienen |
-| Categoría con artículos | solo los artículos | — |
-| Búsqueda sin resultados | solo el mensaje `.vacio` | — |
-| Páginas 2 y siguientes | solo los artículos | — |
+Va también en **todas las páginas**, no solo en la primera. Se sostuvo que la
+primera era su sitio porque ahí está lo más reciente y «próximamente» apunta
+hacia delante, mientras que el final de la lista es lo más antiguo. Ese
+argumento vale mientras la tarjeta sea contenido y decae en cuanto es
+mobiliario: cualquier regla por página reintroduce la condición que el cambio
+quita, y **una tarjeta que aparece y desaparece según dónde estés no puede
+explicar por qué**.
 
-Las dos filas que importan son las que **no** la enseñan pudiendo parecer que
-sí. Con resultados de un filtro no cierra nada: se leería como un artículo más
-de esa categoría. Y en una búsqueda fallida no hay ninguna promesa que hacer
-—nadie va a escribir un artículo porque alguien buscara «zzz»—, así que ahí
-responde `.vacio` y la tarjeta se retira.
+> ⚠️ **La consecuencia que hay que tener presente: ya no informa de nada.** Al
+> verse igual con quince artículos que con ninguno, **no puede seguir haciendo
+> de «esta categoría está vacía»**, que es el papel que tuvo. Quien retoque la
+> lógica del vacío tiene que contar con eso.
+>
+> Por eso `.vacio` volvió a ser un mensaje **general** —«No hay ningún artículo
+> que mostrar»— y sale **siempre que no hay resultados**, venga el vacío de la
+> categoría o de la búsqueda. Ya no se alterna con la tarjeta: **conviven**.
+>
+> Y no necesita nombrar la consulta aunque el vacío venga de un `?q=`: eso ya lo
+> hace `.filtro-aviso` justo encima, que cita la búsqueda y ofrece salir de
+> ella. Si algún día se quita ese aviso, este mensaje se queda corto para la
+> búsqueda — hay que acordarse.
 
-> **`.vacio` es hoy un mensaje solo de búsqueda.** Decía «No hay artículos en
-> esta categoría» y salía también con `?q=`, donde la categoría no pinta nada.
-> Ahora dice «No hay artículos que coincidan con la búsqueda» y **la categoría
-> vacía ya no lo usa**: le responde la tarjeta, que dice algo más que «nada
-> coincide». Si algún día se quita la tarjeta de espera, este mensaje se queda
-> sin sustituto para ese caso — hay que acordarse.
+Lo que **sí** sigue siendo cierto es que no es un resultado: no lleva
+`data-categoria`, no entra en el array de entradas y **el contador no la
+cuenta**. Verificado con doce artículos sintéticos: la página 1 enseña diez
+tarjetas y el contador dice «12 artículos publicados».
 
 Y una consecuencia de mantenimiento: **al publicar el primer Ensayo no hay que
 tocar ningún botón.** Antes había que acordarse de quitarle el `disabled`, y
 existía además una excepción en el JS que lo reactivaba si la URL pedía esa
 categoría. Las dos cosas se han ido: el estado sale del contenido.
+
+#### La altura se iguala por filas, no con un número
+
+`grid-auto-rows: 1fr` en `.tarjetas` iguala **todas** las filas a la más alta, y
+está para que la tarjeta de espera mida lo mismo que las de artículo.
+
+Conviene saber cuál era el problema real, porque no es el que parece: **dentro
+de una fila ya se igualaban solas**, porque `align-items` vale `stretch` por
+defecto. Lo que se descuadraba era la tarjeta que cae en una **fila para ella
+sola** — con tres artículos en tres columnas, la de abajo medía 248,8 px contra
+573,8 los de arriba.
+
+**No se hace con una altura fija porque no hay ninguna que valga.** Un artículo
+mide 573,8 px a 1440, 580,5 a 1000 y 681,6 a 700, y sube a 599,4 en cuanto el
+extracto se alarga. Igualando filas el número sale del contenido y no hay nada
+que mantener al publicar.
+
+> **En una sola columna se deshace**, dentro del corte de 748. No es un
+> capricho: igualar alturas sirve para que no se descuadre lo que está *uno al
+> lado del otro*, y ahí cada tarjeta es su propia fila. Manteniéndolo, la de
+> espera pasaría de 248,8 px a los 681,6 que mide un artículo a ese ancho —una
+> caja casi vacía ocupando la pantalla de un móvil— para arreglar una
+> desalineación que nadie puede ver.
+
+**El único caso que necesita un número es la tarjeta sola**, cuando no hay
+ningún artículo a la vista y por tanto ninguna fila con la que igualarse. Va en
+`min-height: 574px`, atado a `[data-visibles="1"]` para que no pueda inflar
+nunca una fila que tenga artículos dentro: con un solo artículo el atributo ya
+vale 2.
+
+Es un **suelo, no una igualdad**, y la distinción importa antes de «corregirlo»:
+ahí no hay ningún artículo en pantalla contra el que compararla, así que del
+número no se pide que coincida sino que la caja tenga cuerpo de tarjeta. Medido,
+un artículo mediría 573,8 px de 1085 para arriba, 572,8 a 900, 580,2 a 749 y
+608,5 justo en el corte de 1084, donde la columna se ensancha a 504. No hay un
+valor exacto para todos los anchos; se toma el de 1085 en adelante.
 
 #### El centrado usa dos mecanismos que no se pueden mezclar
 

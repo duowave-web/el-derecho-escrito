@@ -35,8 +35,9 @@
     const contenedor = document.getElementById("entradas");
     if (!contenedor) return;
 
-    /* Se excluye la tarjeta de espera: no es un artículo, así que ni cuenta ni
-       se filtra. Se esconde aparte, más abajo, cuando hay algo activo. */
+    /* Se excluye la tarjeta de espera: no es un artículo, así que ni se filtra
+       ni la cuenta el contador. Se ve siempre, y lo único que hace más abajo es
+       sumar uno a data-visibles. */
 
     const POR_PAGINA = 9;
 
@@ -136,43 +137,45 @@
         el.hidden = false;
       });
 
-      /* Hay DOS maneras de no tener nada, y cada una pide una respuesta
-         distinta. No conviven nunca: se alternan.
+      /* El mensaje sale SIEMPRE que no hay resultados, venga el vacío de la
+         categoría o de la búsqueda, y ya no se alterna con nada.
 
-         Vacío por CATEGORÍA — «Ensayo» todavía no tiene artículos. Ahí la
-         tarjeta de espera responde a la pregunta que se hace el visitante: aún
-         no hay, pero vienen. El mensaje sobraría, porque el contador ya dice
-         «0» justo encima.
+         Antes solo salía en la búsqueda, y la categoría vacía se la dejaba a la
+         tarjeta de «Próximamente», que decía algo mejor —aún no hay, pero
+         vienen— y hacía de respuesta. Eso se cae solo desde que la tarjeta está
+         siempre: si se ve igual con quince artículos que con ninguno, deja de
+         significar «esto está vacío». Ya no informa, así que el vacío tiene que
+         decirse aparte.
 
-         Vacío por BÚSQUEDA — «zzz» no aparece en ningún sitio. Ahí «el
-         siguiente artículo ya se está escribiendo» no responde nada: es un
-         salto de tema. Lo que falta es decir que no coincide nada, y de eso se
-         encarga el mensaje.
+         Por eso el texto vuelve a ser general y no menciona la búsqueda. No
+         hace falta que lo haga: cuando el vacío viene de un ?q=, el aviso de
+         arriba ya nombra la consulta y ofrece salir de ella. */
 
-         Si hay búsqueda Y categoría, manda la búsqueda: es el criterio más
-         específico de los dos. */
+      if (vacio) vacio.hidden = coincidentes.length !== 0;
 
-      const vacia = coincidentes.length === 0;
-      const hayBusqueda = Boolean(q);
-      const hayCategoria = categoriaActiva !== "todos";
+      /* La tarjeta de espera ya no se esconde nunca. Dejó de ser una respuesta
+         —que era lo que la ataba a un caso concreto— para ser lo que cierra la
+         rejilla, y eso vale igual con filtro, con búsqueda y en cualquier
+         página.
 
-      if (vacio) vacio.hidden = !(vacia && hayBusqueda);
+         Va en TODAS las páginas y no solo en la primera. Se sostuvo un tiempo
+         que la primera era su sitio porque ahí está lo más reciente y
+         «próximamente» apunta hacia delante, mientras que el final de la lista
+         es lo más antiguo. Ese argumento vale mientras la tarjeta sea una pieza
+         del contenido, y deja de valer en cuanto es mobiliario: restringir las
+         páginas reintroduciría justo el tipo de condición que este cambio
+         quita, y una tarjeta que aparece y desaparece según dónde estés no
+         puede explicar por qué.
 
-      /* La tarjeta de espera no es un resultado, así que solo sale en dos
-         situaciones: acompañando a la lista entera —y solo en la primera
-         página, porque en la última el final es lo más antiguo y
-         «próximamente» apunta al revés— o respondiendo a una categoría vacía.
-
-         Nunca cuando hay resultados, que es lo que había que evitar. */
+         Sigue sin ser un resultado: no lleva data-categoria, no entra en
+         entradas[] y por tanto el contador no la ve. Lo único que suma es la
+         cuenta de lo que hay a la vista, que es cosa del centrado. */
 
       let visiblesEnRejilla = enPagina.length;
 
       if (proxima) {
-        const listaEntera =
-          !hayBusqueda && !hayCategoria && paginaActiva === 1;
-        const categoriaVacia = vacia && hayCategoria && !hayBusqueda;
-        proxima.hidden = !(listaEntera || categoriaVacia);
-        if (!proxima.hidden) visiblesEnRejilla++;
+        proxima.hidden = false;
+        visiblesEnRejilla++;
       }
 
       /* Cuántas tarjetas se ven de verdad, para que el centrado de la rejilla

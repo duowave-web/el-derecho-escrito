@@ -1352,11 +1352,28 @@ main > .lista:last-child {
    Con minmax(0, ...) todas ceden por igual y el fallo, si llega, se ve.
 
    Con menos tarjetas que columnas, las celdas sobrantes se quedan vacías solas.
-   No hay que rellenarlas: un <div> vacío no se ve pero sí se anuncia. */
+   No hay que rellenarlas: un <div> vacío no se ve pero sí se anuncia.
+
+   grid-auto-rows: 1fr iguala TODAS las filas a la más alta, y está para que la
+   tarjeta de «Próximamente» mida lo mismo que las de artículo.
+
+   Dentro de una fila ya se igualaban solas —align-items vale stretch por
+   defecto—, así que el problema nunca fue ese: era la tarjeta que cae en una
+   fila para ella sola. Medido a 1440 con tres artículos, la fila de abajo se
+   quedaba en 248,8 px contra los 573,8 de la de arriba.
+
+   No se hace con una altura fija porque no hay ninguna que valga: la de un
+   artículo son 573,8 px a 1440, 580,5 a 1000 y 681,6 a 700, y sube a 599,4 en
+   cuanto el extracto se alarga. Igualando filas el número sale del contenido y
+   no hay nada que mantener.
+
+   Todas las filas son implícitas —no hay grid-template-rows—, así que
+   grid-auto-rows las alcanza a todas. */
 
 .tarjetas {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-auto-rows: 1fr;
   gap: 36px 28px;
 }
 
@@ -1512,6 +1529,27 @@ main > .lista:last-child {
   border-style: dashed;
   text-align: center;
   gap: 14px;
+}
+
+/* El igualado de filas de .tarjetas la deja a la altura de un artículo siempre
+   que haya alguno a la vista. Cuando NO lo hay —categoría vacía o búsqueda sin
+   resultados— se queda sola en la rejilla y vuelve a sus 248,8 px naturales,
+   que al ancho de una columna es una tira, no una tarjeta.
+
+   Ese es el único caso que necesita un número, y va atado a data-visibles="1",
+   que es justo «se ve ella y nada más». Así no puede inflar nunca una fila que
+   tenga artículos dentro: si hay uno solo el atributo ya vale 2.
+
+   Es un SUELO, no una igualdad, y la diferencia importa para mantenerlo: aquí
+   no hay ningún artículo en pantalla contra el que compararla, así que lo que
+   se pide del número no es que coincida sino que la caja tenga cuerpo de
+   tarjeta. Un artículo mediría 573,8 px de 1085 para arriba, 572,8 a 900, 580,2
+   a 749 y 608,5 en el corte de 1084, donde la columna se ensancha a 504 y crece
+   el hueco de imagen. No hay un valor exacto para todos los anchos; se toma el
+   de 1085 en adelante, que cubre el escritorio. */
+
+.tarjetas[data-visibles="1"] .tarjeta--proxima {
+  min-height: 574px;
 }
 
 /* La balanza del sitio por mask, igual que .marca::before: el SVG hereda
@@ -2820,9 +2858,26 @@ body:has(.progreso) .cabecera {
    Con una sola columna no quedan celdas vacias: las dos tarjetas se apilan y la
    rejilla se acaba donde se acaba la segunda. */
 
+/* En una sola columna se deshace el igualado de filas, y no es una excepción
+   caprichosa: igualar alturas sirve para que no se descuadre lo que está UNO AL
+   LADO DEL OTRO, y aquí no hay nada al lado. Cada tarjeta es su propia fila.
+
+   Manteniéndolo, la de «Próximamente» pasaría de sus 248,8 px naturales a los
+   681,6 que mide un artículo a este ancho: casi setecientos píxeles de caja casi
+   vacía en un móvil, para arreglar una desalineación que nadie puede ver. */
+
 @media (max-width: 748px) {
   .tarjetas {
     grid-template-columns: minmax(0, 1fr);
+    grid-auto-rows: auto;
+  }
+
+  /* El suelo de la tarjeta sola se retira por el mismo motivo que el igualado:
+     a este ancho la caja mide ya 652 px de lado, y estirarla a 574 de alto
+     dejaría un cuadrado casi vacío ocupando la pantalla entera. */
+
+  .tarjetas[data-visibles="1"] .tarjeta--proxima {
+    min-height: 0;
   }
 }
 
