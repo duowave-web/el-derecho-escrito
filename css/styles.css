@@ -769,6 +769,7 @@ body:has(.portada--video) .cabecera--con-linea {
 .filtros {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   gap: 10px;
   margin: 0 0 22px;
 }
@@ -911,10 +912,15 @@ body:has(.portada--video) .cabecera--con-linea {
    un control: es la única señal de que lo que se está viendo está filtrado, y
    por eso lleva la salida al lado. */
 
+/* Centrado como los filtros y el contador, que van justo debajo. No se pidió,
+   pero es el tercer elemento de esa misma pila: dejarlo a la izquierda con los
+   otros dos centrados se leería como un descuadre, no como una decisión. */
+
 .filtro-aviso {
   display: flex;
   align-items: baseline;
   flex-wrap: wrap;
+  justify-content: center;
   gap: 4px 14px;
   margin: 28px 0 0;
   font-family: var(--ui);
@@ -1210,6 +1216,7 @@ body:has(.portada--video) .cabecera--con-linea {
   letter-spacing: 0.06em;
   color: var(--tinta-suave);
   margin: 0 0 8px;
+  text-align: center;
 }
 
 /* ------------------------------------------- Rejilla de tarjetas -------- */
@@ -1261,6 +1268,42 @@ body:has(.portada--video) .cabecera--con-linea {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 36px 28px;
+}
+
+/* Cuando las tarjetas no llegan a llenar UNA fila, la fila se centra en vez de
+   pegarse al margen izquierdo con el hueco al otro lado.
+
+   La distinción es entre «una fila que es todo el contenido» y «una fila que
+   viene detrás de otra». Con una sola fila incompleta no hay columna a la que
+   alinearse y centrar es lo correcto. Con cuatro tarjetas —fila llena arriba y
+   una suelta debajo— esa suelta se queda a la izquierda, y debe: ahí sí hay una
+   columna arriba con la que alinearse, y centrarla la rompería. Medido: el
+   centrado no cambia nada con 3, 4 ni 6 tarjetas.
+
+   Va por :has() y solo en el tramo de tres columnas. Por debajo de 1085 la
+   rejilla ya es de dos o de una, y con dos tarjetas la fila se llena sola.
+
+   Es la unica media query por min-width del archivo junto a la del fondo de la
+   mancheta, y por el mismo motivo: la regla solo tiene sentido donde hay tres
+   columnas, y escribirla al reves obligaria a anularla dos veces.
+
+   Sin soporte de :has() las tarjetas se quedan a la izquierda, como hasta
+   ahora. Se degrada al estado anterior, no a uno roto.
+
+   El ancho sale del contenedor y no de un 365 escrito a mano, para que no se
+   desincronice si cambia --ancho-amplio: (1200 - 48 de padding - 56 de los dos
+   huecos) / 3. */
+
+@media (min-width: 1085px) {
+  .tarjetas:not(:has(> :nth-child(2))) {
+    grid-template-columns: minmax(0, calc((var(--ancho-amplio) - 104px) / 3));
+    justify-content: center;
+  }
+
+  .tarjetas:has(> :nth-child(2)):not(:has(> :nth-child(3))) {
+    grid-template-columns: repeat(2, minmax(0, calc((var(--ancho-amplio) - 104px) / 3)));
+    justify-content: center;
+  }
 }
 
 /* Columna para poder anclar la ficha de metadatos al fondo. */
