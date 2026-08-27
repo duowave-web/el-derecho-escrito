@@ -149,6 +149,15 @@ Al publicar, en este orden:
 - **A partir del tercero** se añaden tarjetas sin tocar nada más: la rejilla ya
   tiene las tres columnas y se van ocupando solas.
 
+> ⚠️ **En `articulos/` las tarjetas van en orden de fecha, y hay que escribirlas
+> así aunque el JS las ordene.** No es redundante: el JS ordena por el
+> `datetime` del `<time>`, pero **sin JavaScript se ve el orden del marcado**, y
+> ahí no hay quien lo arregle. El sort protege el caso normal; escribirlas en
+> orden protege el respaldo.
+>
+> El listado pagina de **nueve en nueve**. Al publicar el décimo, el más antiguo
+> pasa solo a la página 2: no hay nada que mover a mano.
+
 Si algún día se vuelve a cambiar el número de columnas, **hay que recalcular el
 punto de corte**: no es un número redondo, sale de medir. Está explicado abajo,
 en la sección de puntos de corte.

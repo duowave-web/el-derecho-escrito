@@ -38,18 +38,51 @@
     /* Se excluye la tarjeta de espera: no es un artículo, así que ni cuenta ni
        se filtra. Se esconde aparte, más abajo, cuando hay algo activo. */
 
-    const entradas = Array.prototype.slice.call(
-      contenedor.querySelectorAll(".tarjeta:not(.tarjeta--proxima)")
-    );
+    const POR_PAGINA = 9;
+
     const proxima = contenedor.querySelector(".tarjeta--proxima");
     const vacio = document.getElementById("vacio");
     const contador = document.getElementById("contador");
     const aviso = document.getElementById("filtro-aviso");
+    const navPaginas = document.getElementById("paginacion");
+
+    /* El orden lo manda la fecha del <time>, no el orden del marcado, para que
+       un despiste al publicar no cambie la portada del listado.
+
+       Pero el marcado TAMBIÉN tiene que estar en orden, y no es redundante: sin
+       JavaScript no hay quien reordene nada, así que ahí se ve tal cual está
+       escrito. El sort protege el caso normal; la convención protege el
+       respaldo. Está anotado en CLAUDE.md.
+
+       Se reordena el DOM y no solo el array: así el orden visual, el de
+       tabulación y el de lectura de un lector de pantalla siguen coincidiendo.
+
+       La tarjeta de espera no tiene <time>, así que queda fuera y se vuelve a
+       poner al final. */
+
+    const entradas = Array.prototype.slice
+      .call(contenedor.querySelectorAll(".tarjeta:not(.tarjeta--proxima)"))
+      .sort(function (a, b) {
+        const fa = a.querySelector("time");
+        const fb = b.querySelector("time");
+        return (fb ? fb.getAttribute("datetime") : "").localeCompare(
+          fa ? fa.getAttribute("datetime") : ""
+        );
+      });
+
+    entradas.forEach(function (el) {
+      contenedor.appendChild(el);
+    });
+    if (proxima) contenedor.appendChild(proxima);
 
     // Índice de texto precalculado
     const indice = entradas.map(function (el) {
       return normalizar(el.textContent);
     });
+
+    /* Cuenta el total que pasa los filtros, no lo que cabe en la página: quien
+       lee «12 resultados» quiere saber cuántos hay, y cuántos ve a la vez se lo
+       dice la paginación de abajo. */
 
     function actualizarContador(n) {
       if (!contador) return;
@@ -59,34 +92,63 @@
           : n + (n === 1 ? " resultado" : " resultados");
     }
 
-    /* Los dos criterios se acumulan, no se pisan: la búsqueda llega por ?q=
-       desde la cabecera y la categoría por los botones, y una tarjeta se ve
-       solo si pasa los dos. Estado guardado aquí, en un sitio, para que el
-       recuento no dependa de quién movió qué el último. */
+    /* Tres criterios que se acumulan, no se pisan: la búsqueda llega por ?q=
+       desde la cabecera, la categoría por los botones o por ?categoria=, y la
+       página por ?pagina=. Estado guardado aquí, en un sitio, para que el
+       recuento no dependa de quién movió qué el último.
+
+       El orden de las operaciones importa: primero se filtra, después se
+       pagina. Así «Fundamento, página 2» es la página 2 DE LOS DE FUNDAMENTO.
+       Al revés no querría decir nada. */
 
     let consultaActiva = "";
     let categoriaActiva = "todos";
+    let paginaActiva = 1;
 
     function aplicar() {
       const q = normalizar(consultaActiva.trim());
-      let visibles = 0;
 
-      entradas.forEach(function (el, i) {
+      const coincidentes = entradas.filter(function (el, i) {
         const porTexto = !q || indice[i].indexOf(q) !== -1;
         const porCategoria =
           categoriaActiva === "todos" ||
           el.getAttribute("data-categoria") === categoriaActiva;
-        const coincide = porTexto && porCategoria;
-        el.hidden = !coincide;
-        if (coincide) visibles++;
+        return porTexto && porCategoria;
       });
 
-      if (vacio) vacio.hidden = visibles !== 0;
+      /* Una página que no existe no da una lista vacía: se ajusta a la última
+         que sí existe. Y como entonces la URL estaría mintiendo, se corrige.
+         Nunca un callejón sin salida. */
 
-      // La tarjeta de espera no es un resultado: solo acompaña a la lista entera
-      if (proxima) proxima.hidden = Boolean(q) || categoriaActiva !== "todos";
+      const totalPaginas = Math.max(1, Math.ceil(coincidentes.length / POR_PAGINA));
+      if (paginaActiva > totalPaginas) {
+        paginaActiva = totalPaginas;
+        sincronizarURL();
+      }
 
-      actualizarContador(visibles);
+      const desde = (paginaActiva - 1) * POR_PAGINA;
+      const enPagina = coincidentes.slice(desde, desde + POR_PAGINA);
+
+      entradas.forEach(function (el) {
+        el.hidden = true;
+      });
+      enPagina.forEach(function (el) {
+        el.hidden = false;
+      });
+
+      if (vacio) vacio.hidden = coincidentes.length !== 0;
+
+      /* La tarjeta de espera no es un resultado: acompaña a la lista entera y
+         solo en la primera página. En la última sería incoherente, porque el
+         final de la lista es lo más antiguo y «próximamente» apunta al revés. */
+
+      if (proxima) {
+        proxima.hidden =
+          Boolean(q) || categoriaActiva !== "todos" || paginaActiva !== 1;
+      }
+
+      actualizarContador(coincidentes.length);
+      montarPaginacion(totalPaginas);
     }
 
     /* Aquí hubo un filtrar(consulta) que envolvía a aplicar(). Tenía sentido
@@ -126,17 +188,93 @@
        Se edita el juego de parámetros existente en vez de reescribir la cadena,
        así ?q= sobrevive si estaba puesto. */
 
-    function sincronizarURL() {
-      if (!window.history || !window.history.replaceState) return;
+    function parametrosActuales() {
       const p = new URLSearchParams(window.location.search);
       if (categoriaActiva === "todos") p.delete("categoria");
       else p.set("categoria", categoriaActiva);
-      const cadena = p.toString();
+      // La página 1 no se escribe: es el estado por defecto y ensucia la URL
+      if (paginaActiva <= 1) p.delete("pagina");
+      else p.set("pagina", String(paginaActiva));
+      return p;
+    }
+
+    function sincronizarURL() {
+      if (!window.history || !window.history.replaceState) return;
+      const cadena = parametrosActuales().toString();
       window.history.replaceState(
         null,
         "",
         window.location.pathname + (cadena ? "?" + cadena : "")
       );
+    }
+
+    /* La navegación la construye el JS y el <nav> vacío está en el HTML. Los
+       números dependen de cuántos artículos pasen el filtro, así que no se
+       pueden escribir a mano; la etiqueta accesible sí es contenido y va en el
+       marcado.
+
+       Sin JavaScript no aparece, y es lo correcto: unos números escritos en el
+       HTML serían enlaces que recargan para enseñar exactamente lo mismo, ya
+       que sin JS se ven todos los artículos de una vez.
+
+       Son <a href> de verdad y NO se interceptan. Pediste que cada página fuera
+       indexable, y para eso Google necesita un href real; de paso permite abrir
+       en pestaña nueva y copiar la dirección. Recargan, y ahí hay una
+       diferencia de fondo con los filtros: un filtro afina lo que ves, una
+       página cambia dónde estás.
+
+       Cada enlace arrastra los parámetros activos, así que paginar dentro de un
+       filtro no lo pierde.
+
+       Sin puntos suspensivos: con nueve por página harían falta más de 45
+       artículos para que la fila moleste. A partir de unas 8 páginas conviene
+       revisarlo. */
+
+    function montarPaginacion(total) {
+      if (!navPaginas) return;
+
+      navPaginas.textContent = "";
+
+      if (total <= 1) {
+        navPaginas.hidden = true;
+        return;
+      }
+
+      const lista = document.createElement("ol");
+      lista.className = "paginacion__lista";
+
+      for (let n = 1; n <= total; n++) {
+        const li = document.createElement("li");
+        const a = document.createElement("a");
+
+        const p = parametrosActuales();
+        if (n <= 1) p.delete("pagina");
+        else p.set("pagina", String(n));
+        const cadena = p.toString();
+        a.href = window.location.pathname + (cadena ? "?" + cadena : "");
+
+        a.className = "paginacion__numero";
+        a.textContent = String(n);
+
+        if (n === paginaActiva) {
+          a.setAttribute("aria-current", "page");
+        } else {
+          /* El número solo no dice nada cuando un lector de pantalla enumera
+             los enlaces. El prefijo oculto lo pone en contexto y deja el texto
+             visible dentro del nombre, que es lo que necesita el control por
+             voz. */
+          const pre = document.createElement("span");
+          pre.className = "oculto";
+          pre.textContent = "Página ";
+          a.insertBefore(pre, a.firstChild);
+        }
+
+        li.appendChild(a);
+        lista.appendChild(li);
+      }
+
+      navPaginas.appendChild(lista);
+      navPaginas.hidden = false;
     }
 
     /* Los filtros salen del HTML con hidden y es aquí donde se les quita: sin
@@ -192,6 +330,10 @@
 
         b.addEventListener("click", function () {
           categoriaActiva = clave;
+          /* Vuelta a la primera página al cambiar de filtro. Sin esto te
+             quedarías en una página que puede no existir en el conjunto nuevo:
+             la 3 de «todos» no tiene por qué existir en «Fundamento». */
+          paginaActiva = 1;
           marcar(clave);
           sincronizarURL();
           aplicar();
@@ -206,16 +348,23 @@
       barra.hidden = false;
     }
 
-    /* Dos entradas por URL que se acumulan, no se pisan: ?q= viene del buscador
-       de la cabecera y ?categoria= de las etiquetas de las tarjetas y de la
-       ficha del artículo. Una tarjeta se ve solo si pasa las dos.
+    /* Tres entradas por URL que se acumulan, no se pisan: ?q= viene del
+       buscador de la cabecera, ?categoria= de las etiquetas de las tarjetas y
+       de la ficha del artículo, y ?pagina= de la navegación de abajo.
 
        La categoría se normaliza antes de compararla, así «Fundamento» y
-       «fundamento» entran igual. */
+       «fundamento» entran igual.
+
+       La página se sanea aquí y se ajusta en aplicar(): un valor de texto, cero
+       o negativo caen en la 1; uno demasiado alto se recorta a la última que
+       exista, porque cuántas hay depende del filtro y aún no está aplicado. */
 
     const parametros = new URLSearchParams(window.location.search);
     const consulta = parametros.get("q");
     const categoria = parametros.get("categoria");
+    const pagina = parseInt(parametros.get("pagina"), 10);
+
+    paginaActiva = Number.isFinite(pagina) && pagina > 1 ? pagina : 1;
 
     montarFiltros(categoria ? normalizar(categoria.trim()) : null);
 

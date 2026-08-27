@@ -218,6 +218,17 @@
 
       <p class="vacio" id="vacio" hidden>No hay artículos en esta categoría.</p>
 
+      <!-- PAGINACIÓN · Nueve artículos por página. Los números los construye
+           js/main.js: dependen de cuántos artículos pasen el filtro, así que no
+           se pueden escribir a mano. La etiqueta accesible sí es contenido y
+           por eso vive aquí y no en una cadena del JS.
+
+           Sale con hidden y solo aparece si hay más de una página. Sin
+           JavaScript no aparece nunca, y es lo correcto: allí se ven todos los
+           artículos de una vez, así que unos números serían enlaces que
+           recargan para enseñar exactamente lo mismo. -->
+      <nav class="paginacion" id="paginacion" aria-label="Paginación" hidden></nav>
+
     </div>
   </section>
 

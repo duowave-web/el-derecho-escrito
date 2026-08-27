@@ -1097,6 +1097,74 @@ body:has(.portada--video) .cabecera--con-linea {
   padding: 24px 0;
 }
 
+/* -------------------------------------------------------- Paginación ---- */
+
+/* Centrada como los filtros y el contador: es la misma pila de controles de la
+   página, solo que al otro extremo de la rejilla.
+
+   Los números reutilizan el registro de la navegación —Inter 12 en versales—
+   porque hacen el mismo trabajo: se consultan, no se leen. El area de pulsacion
+   es de 40 px, algo menos que los 44 del boton de contorno, porque aqui son
+   varios seguidos y la fila entera se lee como un grupo; aun asi queda por
+   encima del minimo de 24 px que pide WCAG 2.2 para objetivos adyacentes. */
+
+.paginacion {
+  margin: 44px 0 0;
+}
+
+.paginacion__lista {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.paginacion__numero {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  height: 40px;
+  padding: 0 10px;
+  border: 1px solid var(--borde);
+  border-radius: 4px;
+  font-family: var(--ui);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--acento);
+  text-decoration: none;
+}
+
+.paginacion__numero:hover {
+  border-color: var(--acento);
+  background: rgba(47, 110, 104, 0.08);
+  text-decoration: none;
+}
+
+/* La actual sigue siendo enlace para que la fila no cambie de altura ni de
+   ancho al movernos, pero se pinta como el filtro activo y lo dice con
+   aria-current, que es el atributo que lo anuncia y el que lo pinta. */
+
+.paginacion__numero[aria-current="page"] {
+  background: var(--acento);
+  border-color: var(--acento);
+  color: var(--papel);
+}
+
+.paginacion__numero[aria-current="page"]:hover {
+  background: var(--acento-oscuro);
+  border-color: var(--acento-oscuro);
+}
+
+.paginacion__numero:focus-visible {
+  outline: 2px solid var(--tinta);
+  outline-offset: 3px;
+}
+
 .lista__mas {
   margin: 32px 0 0;
   font-family: var(--ui);
