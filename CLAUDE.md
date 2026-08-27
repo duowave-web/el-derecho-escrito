@@ -307,7 +307,7 @@ un jurista**. El texto manda, la imagen acompaña.
 --nav:          #34312E;  /* enlaces de navegacion */
 --acento:       #2F6E68;  /* verdigris: antetitulos, enlaces, activo */
 --papel:        #FFFFFF;  /* fondo de contenido */
---papel-alt:    #F7F5F2;  /* superficies apoyadas: cajas, campos, bandas */
+--papel-alt:    #F6F5F7;  /* superficies apoyadas: cajas, campos, bandas */
 --pie:          #242424;  /* fondo del pie, texto en blanco */
 --borde:        #E5E1DA;  /* separadores, tarjetas, campos */
 --borde-marcado:#D8D2C9;  /* linea de la cabecera */
@@ -319,11 +319,35 @@ contra 11,1 del otro— y solo lo usa la línea de la cabecera, que sí tiene qu
 leerse como un límite. Ninguno es gris neutro: ambos conservan el
 desplazamiento cálido de la paleta.
 
+> **`--papel-alt` es el único token frío, y eso es a propósito desde que lo
+> pidió el cliente.** Estuvo en `#F7F5F2`, un marfil cálido, y pasó a `#F6F5F7`,
+> un blanco mármol. En el eje b\* de Lab la paleta queda así: `--borde-marcado`
+> +5,2, `--tinta-suave` +4,1, `--borde` +3,9, `--nav` +2,4, `--papel` y
+> `--tinta` en 0, **`--papel-alt` −0,9** y `--acento` −2,8.
+>
+> Es decir: el fondo de contraste ya no acompaña a los grises, sino al
+> verdigrís, que **también es frío** y hasta ahora era el único elemento que no
+> encajaba en la temperatura del sistema. Quien lo revise pensando «esto
+> desentona con la paleta cálida» debería mirar antes el b\* del acento.
+>
+> El precio está en los grises cálidos: `--borde` sobre el fondo nuevo sube de
+> ΔE 4,7 a **6,2**, y `--borde-marcado` de 8,2 a **9,4**. Las líneas se ven
+> algo más, lo que en este caso ayuda —ver el punto siguiente—, pero una
+> superficie plana grande en `--borde` sobre `--papel-alt` se leería como beige
+> dentro de una caja fría. Hoy no hay ninguna: se comprobó que **los cinco
+> huecos de imagen del sitio tienen todos su `<img>`**, así que ese fondo no
+> llega a verse. Si alguna vez vuelve a haber un marcador vacío grande, hay que
+> volver a mirarlo.
+
 > **`--papel-alt` no sirve para dibujar una caja él solo, y conviene saberlo
-> antes de intentarlo.** Frente al blanco de la página son **ΔE 2,6**, por
+> antes de intentarlo.** Frente al blanco de la página son **ΔE 2,3**, por
 > debajo del umbral en el que dos superficies planas se distinguen. Es
 > deliberado —está pensado como un apoyo que no se nota—, pero significa que
 > una caja rellena con él se lee como si no tuviera contorno.
+>
+> Con el tono cálido anterior eran 2,6, así que el cambio a frío **aleja un poco
+> más la caja del umbral**, no la acerca. Es la única regresión medible del
+> cambio, y la compensa que los filetes ganan definición.
 >
 > La solución en las tarjetas de portada fue **un filete de 1 px en `--borde`**,
 > no un gris nuevo más oscuro. El canto lo define la línea y el relleno se queda

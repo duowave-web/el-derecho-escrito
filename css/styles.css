@@ -18,7 +18,13 @@
   --acento: #2f6e68;
   --acento-oscuro: #1f4d48;
   --papel: #ffffff;
-  --papel-alt: #f7f5f2;
+
+  /* Blanco marmol frio. Es el unico token de la paleta que no es calido, junto
+     al acento: su b* de Lab es -0,85, mientras que los bordes van en +3,9 y
+     +5,2 y --tinta-suave en +4,1. Cambiar este valor mueve trece sitios de
+     golpe, asi que conviene mirar la seccion de color de CLAUDE.md antes. */
+
+  --papel-alt: #f6f5f7;
   --pie: #242424;
   --borde: #e5e1da;
   /* Un paso mas oscuro que --borde, para la linea de la cabecera. Separacion
