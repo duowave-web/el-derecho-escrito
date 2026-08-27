@@ -231,7 +231,7 @@ body:has(.portada--video) .cabecera--con-linea {
   align-items: center;
   gap: 28px;
   font-family: var(--ui);
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 500;
   letter-spacing: 0.01em;
 }
@@ -240,14 +240,23 @@ body:has(.portada--video) .cabecera--con-linea {
    siguen leyendo «Artículos», no «A-R-T-I-C-U-L-O-S», que es como algunos
    deletrean las palabras en mayusculas de verdad.
 
-   El tracking sube de 0.01em a 0.06em porque las mayusculas juntas se leen
-   peor: sin aire entre ellas el ojo no distingue las siluetas, que en caja
-   baja vienen dadas por ascendentes y descendentes. */
+   El tracking sube de 0.01em porque las mayusculas juntas se leen peor: sin
+   aire entre ellas el ojo no distingue las siluetas, que en caja baja vienen
+   dadas por ascendentes y descendentes.
+
+   0.07em y no los 0.06 que tenia a 14 px. El tracking en em escala con el
+   cuerpo, asi que mantenerlo habria encogido la separacion real de 0,84 a 0,72
+   px justo al hacer las letras mas pequenas, que es cuando mas falta hace. Con
+   0.07 la separacion absoluta se queda en 0,84: cambia el cuerpo, no el aire.
+
+   Cae entre los dos valores que el sistema ya usa a 12 px en versales: 0.06 en
+   fecha y metadatos, que van en 500 como esto, y 0.08 en el antetitulo de
+   seccion, que va en 600 y por tanto necesita mas. */
 
 .nav a {
   color: var(--nav);
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.07em;
 }
 
 .nav a:hover {
@@ -2664,50 +2673,63 @@ body:has(.progreso) .cabecera {
 }
 
 /* ------------------- Puntos de corte propios de la cabecera -------------
-   Van aparte del de 600px que usan las tarjetas y el cuerpo del texto: la
-   cabecera se rompe por sus propias medidas y no tiene por que compartirlas.
-   Los dos umbrales estan MEDIDOS, no elegidos a ojo.
+   Van aparte del de 600px que usan el cuerpo del texto: la cabecera se rompe
+   por sus propias medidas y no tiene por que compartirlas. Los umbrales estan
+   MEDIDOS barriendo anchos, no calculados a ojo.
 
-   966px: es lo que necesita la fila para que quepan la marca en una linea
-   (319.16), el hueco (24), la navegacion con el campo desplegado (574.35) y
-   el padding (48). Por debajo, abrir el buscador partia la marca en dos lineas
-   y la cabecera crecia 30px. No se estrecha el campo en vez de ocultarlo
-   porque a 800px cabrian 52px de campo, que no sirven para nada.
+   Bajaron cuando la navegacion paso de 14px a 12px en versales: la fila entera
+   se estrecho 32,2 px, asi que aguanta 32 px mas de ventana antes de romperse.
 
-   748px: lo mismo con el buscador ya cerrado, es decir con la navegacion en
-   356.35. Ahi ya no hay nada que ocultar y la unica salida es apilar. */
+   934px: hasta aqui cabe la fila con el campo del buscador desplegado. Por
+   debajo, abrir el buscador partiria la marca en dos lineas, asi que el campo
+   se oculta. Estaba en 966. No se estrecha el campo en vez de ocultarlo porque
+   a 800px cabrian 52px de campo, que no sirven para nada.
 
-@media (max-width: 966px) {
+   OJO: este numero esta repetido en js/main.js, en la funcion estrecha() de
+   buscadorDeCabecera, que decide si la lupa despliega el campo o vuelve a ser
+   un enlace al listado. Si se cambia aqui hay que cambiarlo alli.
+
+   716px: lo mismo con el buscador ya cerrado, con la navegacion en 322,2. Ahi
+   ya no hay nada que ocultar y la unica salida es apilar. Estaba en 748.
+
+   El metodo se valido antes de fiarse de el: con la navegacion forzada a 14px,
+   el mismo barrido devuelve 746 y 964, o sea los 748 y 966 documentados menos
+   los 2 px de margen que uso la medicion original. */
+
+@media (max-width: 934px) {
   .busca__campo {
     display: none;
   }
 }
 
+/* Las tarjetas se quedan en 748 y DEJAN DE COMPARTIR corte con la cabecera.
+
+   Compartirlo fue una comodidad mientras los dos numeros coincidian, y estaba
+   anotado que al mover uno habria que comprobar el otro. Comprobado: si las
+   tarjetas bajaran a 716, entre 717 y 720 el interior de la caja se queda en
+   263 px y el titular salta a 4 lineas. En una sola columna a 380 el interior
+   es 274 y el titular ocupa 3, que es el rendimiento aceptado, asi que seguir
+   a la cabecera empeoraria justo lo que el corte protege.
+
+   El motivo de fondo es que nunca dependieron de lo mismo: la cabecera se
+   rompe por el ancho de su fila —y esa fila acaba de encoger— mientras que las
+   tarjetas se rompen por el padding de 28, que se come 58 px de cada columna y
+   no ha cambiado.
+
+   Con una sola columna no quedan celdas vacias: las dos tarjetas se apilan y la
+   rejilla se acaba donde se acaba la segunda. */
+
 @media (max-width: 748px) {
+  .tarjetas {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 716px) {
   .cabecera__interior {
     flex-direction: column;
     align-items: flex-start;
     gap: 12px;
-  }
-
-  /* Las tarjetas en caja se quedan sin sitio antes que las de contorno, porque
-     el padding de 28 se come 58px de cada columna. Medido: el titular del
-     artículo real pasa de 3 líneas a 4 entre 740 y 700, y de 4 a 6 por debajo
-     de 540. A 748 el interior mide 278px y el titular ocupa 3 líneas, que es
-     exactamente lo que rinde en una sola columna a 380 — el rendimiento que ya
-     damos por bueno en móvil.
-
-     Se reutiliza el 748 de la cabecera en vez de añadir otro punto de corte.
-     No es que las dos cosas dependan de lo mismo: la cabecera se rompe por el
-     ancho de su fila y esto por el padding de la caja. Es que el valor medido
-     aquí cae dentro de la banda segura, y dejar dos cortes separados ocho
-     píxeles solo añadiría ruido al archivo.
-
-     Con una sola columna no quedan celdas vacías: las dos tarjetas se apilan y
-     la rejilla se acaba donde se acaba la segunda. */
-
-  .tarjetas {
-    grid-template-columns: minmax(0, 1fr);
   }
 }
 
@@ -2725,7 +2747,7 @@ body:has(.progreso) .cabecera {
   }
 
   /* La disposicion en columna y el ocultado del campo ya vienen de los cortes
-     de 748px y 966px de arriba; aqui solo se ajusta el tamano. */
+     de 716px y 934px de arriba; aqui solo se ajusta el tamano. */
 
   .marca {
     font-size: 22px;
@@ -2736,22 +2758,27 @@ body:has(.progreso) .cabecera {
   }
 }
 
-/* Tercer corte de cabecera, tambien medido. En versales la navegacion ocupa
-   330px, y por debajo de 379px de viewport deja de caber y se parte en dos
-   lineas: la cabecera se va a 124px con la variable diciendo 104, y la portada
-   desborda 20px. Afecta a 375 y 360, que son anchos de movil corrientes.
+/* Tercer corte de cabecera, tambien medido barriendo anchos. Con la navegacion
+   ya en 12px y el hueco de 28, se parte en dos lineas por debajo de 371px de
+   viewport, y eso alcanza a 360, que es un ancho de movil corriente. Se corta
+   en 400 para cubrirlo con margen.
 
-   Se corta en 400px para cubrirlos con margen. El alto no cambia porque la
-   lupa sigue midiendo 24px y es ella la que fija la altura de la fila. */
+   Aqui solo se estrecha el HUECO entre enlaces, a 10px. Antes esta regla hacia
+   tres cosas: bajaba el cuerpo a 12px, apretaba el tracking a 0.04em y ponia el
+   hueco en 14. Las dos primeras sobran ahora: el cuerpo ya es 12 en la base, y
+   apretar las letras justo en la pantalla mas pequena es lo ultimo que conviene
+   hacer.
+
+   Medido, quitar el tracking no cuesta cobertura, la gana: con hueco 14 y
+   0.04em la navegacion aguantaba hasta 320, y con hueco 10 y el tracking
+   intacto aguanta hasta 317. Se recorta entre palabras, no entre letras.
+
+   El alto no cambia porque la lupa sigue midiendo 24px y es ella la que fija la
+   altura de la fila. */
 
 @media (max-width: 400px) {
   .nav {
-    gap: 14px;
-  }
-
-  .nav a {
-    font-size: 12px;
-    letter-spacing: 0.04em;
+    gap: 10px;
   }
 
   .entrada__titulo {

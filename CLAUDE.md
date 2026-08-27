@@ -378,7 +378,7 @@ Tres familias, cada una con un papel claro:
 | Titular destacado | Cormorant Garamond | 48 px | 600 | −0.015em | 1.08 |
 | Título de tarjeta | Cormorant Garamond | 28 px | 600 | normal | 1.15 |
 | Cuerpo y entradillas | Source Serif 4 | 18 px | 400 | normal | 1.6 |
-| Navegación | Inter | 14 px | 500 | 0.06em | 1.75 | versales |
+| Navegación | Inter | 12 px | 500 | 0.07em | 1.75 | versales |
 | Antetítulo de sección | Inter | 12 px | 600 | 0.08em | 1.3 | versales, color acento |
 | Rótulo de sección de portada | Cormorant Garamond | 20 px | **700** | 0.10em | 1.3 | versales, `--tinta` |
 | Fecha y metadatos | Inter | 12 px | 500 | 0.06em | 1.4 | versales, `--tinta-suave` |
@@ -448,14 +448,27 @@ rótulo mide 241,78 px y a 700, 242,98; una simulación no cambiaría las métri
 > en este sistema lo que se consulta ya iba en versales en los otros dos casos.
 > La navegación era la excepción, no la regla.
 >
-> El tracking sube de `0.01em` a `0.06em` porque las mayúsculas juntas se leen
-> peor: la silueta de una palabra en caja baja viene dada por ascendentes y
-> descendentes, y en versales hay que compensar esa pérdida con aire. Es el
-> mismo `0.06em` que ya usaban las fechas y los metadatos.
+> El tracking sube de `0.01em` porque las mayúsculas juntas se leen peor: la
+> silueta de una palabra en caja baja viene dada por ascendentes y descendentes,
+> y en versales hay que compensar esa pérdida con aire.
 >
-> El tamaño se mantiene en 14 px: **medido**, bajarlo a 12 px solo recorta 29 px
-> de los 83 que ensanchan las versales —el ancho lo dominan el tracking y las
-> mayúsculas, no el cuerpo— y no compensa la pérdida de legibilidad.
+> **El cuerpo bajó después de 14 px a 12, a petición del cliente.** Esta sección
+> decía antes que 14 se mantenía porque bajar a 12 «solo recorta 29 px y no
+> compensa la pérdida de legibilidad». Medido de nuevo al hacerlo, el ahorro
+> real es de **32,2 px**, y la legibilidad aguanta: 12 px en versales es el
+> cuerpo que ya usan las fechas, los metadatos y el antetítulo de sección, así
+> que la navegación no estrena nada.
+>
+> **El tracking pasó de `0.06em` a `0.07em` en el mismo cambio**, y no es un
+> retoque estético. El tracking en `em` escala con el cuerpo, así que mantener
+> `0.06` habría encogido la separación real de 0,84 px a 0,72 justo al hacer las
+> letras más pequeñas, que es cuando más falta hace. Con `0.07` la separación
+> absoluta se queda en **0,84 px**, la misma que tenía a 14: cambia el cuerpo,
+> no el aire.
+>
+> Queda entre los dos valores que el sistema ya usa a 12 px en versales: `0.06`
+> en fecha y metadatos, que van en 500 como esto, y `0.08` en el antetítulo, que
+> va en 600 y por eso necesita más.
 
 ## Retícula y composición
 
@@ -529,25 +542,40 @@ Los tres están **medidos**, no elegidos:
 
 | Corte | Qué pasa | Por qué ahí |
 |---|---|---|
-| **966 px** | se oculta el campo del buscador | es lo que necesita la fila para la marca en una línea (319) + hueco (24) + navegación desplegada (574) + padding (48) |
-| **748 px** | la cabecera pasa a dos filas | lo mismo con el buscador cerrado, con la navegación en 356 |
-| **400 px** | la navegación baja a 12 px y menos tracking | en versales ocupa 330 px y por debajo de 379 se parte en dos líneas |
+| **934 px** | se oculta el campo del buscador | hasta ahí cabe la fila con el campo desplegado; por debajo, abrirlo partiría la marca en dos líneas |
+| **716 px** | la cabecera pasa a dos filas | lo mismo con el buscador cerrado, con la navegación en 322,2 |
+| **400 px** | el hueco entre enlaces baja a 10 px | con hueco de 28 la navegación se parte por debajo de 371, y eso alcanza a 360 |
 
-> **El de 748 dejó de ser solo de la cabecera.** Ahí también caen a una columna
-> las tarjetas en caja de la portada, y es la única excepción a la regla de
-> arriba.
+> **Los tres bajaron al pasar la navegación de 14 px a 12.** La fila entera se
+> estrechó 32,2 px, así que aguanta 32 px más de ventana antes de romperse:
+> 966 → 934 y 748 → 716. El de 400 se queda donde estaba pero cambia lo que
+> hace, porque ya no tiene que bajar el cuerpo —la base ya es 12— ni apretar el
+> tracking.
 >
-> No es que las dos cosas dependan de lo mismo: la cabecera se rompe por el
-> ancho de su fila y las tarjetas por el padding de 28 px, que se come 58 px de
-> cada columna. Es que el valor medido para las tarjetas cae dentro de la banda
-> que ya cubría ese corte. Medido: el titular del artículo pasa de 3 líneas a 4
-> entre 740 y 700 px, y de 4 a 6 por debajo de 540. A 748 el interior mide
-> 278 px y el titular ocupa 3 líneas, exactamente lo que rinde en una sola
-> columna a 380 px, que es el rendimiento que ya damos por bueno en móvil.
+> **Se miden barriendo anchos, no calculando.** El método se validó antes de
+> fiarse de él: forzando la navegación a 14 px, el mismo barrido devuelve 746 y
+> 964, es decir los 748 y 966 anteriores menos los 2 px de margen que usó la
+> medición original.
+
+> ⚠️ **El 934 está repetido en `js/main.js`**, en la función `estrecha()` de
+> `buscadorDeCabecera`, que decide si la lupa despliega el campo o vuelve a ser
+> un enlace al listado. Los dos números tienen que ir a la par: si el CSS oculta
+> el campo y el JS cree que aún cabe, la lupa intenta desplegar algo invisible.
+
+> **El de 748 dejó de compartirse con las tarjetas… y ahora sí están
+> separados.** Compartirlo fue una comodidad mientras los dos números
+> coincidían, y quedó anotado que al mover uno habría que comprobar el otro.
 >
-> Se reutilizó en vez de añadir un corte ocho píxeles más abajo, que habría
-> sido ruido. **Si algún día se mueve el de la cabecera, hay que comprobar que
-> las tarjetas siguen entrando**, o separarlos entonces.
+> Comprobado, y no entran: si las tarjetas hubieran seguido a la cabecera hasta
+> 716, entre 717 y 720 el interior de la caja se queda en **263 px** y el
+> titular salta a **4 líneas**. En una sola columna a 380 el interior es 274 y
+> el titular ocupa 3, que es el rendimiento aceptado — o sea que seguir a la
+> cabecera empeoraría justo lo que el corte protege.
+>
+> Así que **las tarjetas se quedan en 748** con su propia media query. El motivo
+> de fondo es que nunca dependieron de lo mismo: la cabecera se rompe por el
+> ancho de su fila, que acaba de encoger, y las tarjetas por el padding de
+> 28 px, que se come 58 de cada columna y no ha cambiado.
 
 ### La rejilla de tarjetas tiene el suyo, en 1084 px
 
