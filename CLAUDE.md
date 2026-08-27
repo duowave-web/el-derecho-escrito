@@ -277,6 +277,28 @@ veces porque hay dos maneras de contar:
 > atributo, sin JS solo las de conteo. Si alguien añade un caso nuevo, tiene
 > que añadirlo a los dos lados o a ninguno.
 
+Y **son dos bloques, uno por tramo de columnas**, porque el ancho que se fuerza
+tiene que ser el de una columna *de ese tramo*:
+
+| Tramo | Columnas | Casos que centra | Ancho forzado |
+|---|---|---|---|
+| ≥ 1085 px | 3 | 1 y 2 tarjetas | `(100% − 56px) / 3` |
+| 749–1084 px | 2 | **solo 1** tarjeta | `(100% − 28px) / 2` |
+| ≤ 748 px | 1 | ninguno | — |
+
+En el tramo de dos, con dos tarjetas la fila ya se llena sola, así que el único
+caso incompleto es el de una. Hubo un tiempo en que solo existía el bloque de
+tres, con ese mismo argumento —«abajo la fila se llena sola»— que **cubría el
+caso de dos y se dejaba el de una**: la tarjeta se quedaba en la columna
+izquierda con medio contenedor vacío al lado.
+
+> **El ancho sale de un `100%` de la rejilla, no de `--ancho-amplio`.** El token
+> vale 1200 y es un **máximo**, así que solo coincide con el ancho real por
+> encima de 1248. Con la fórmula vieja, a 1085 el contenedor mide 1037 y se
+> seguían forzando **365,3 px cuando una columna de tres ahí son 327**. Con
+> `100%` el número sale de lo que la rejilla mide de verdad y vale en todo el
+> tramo.
+
 ### El «continúa leyendo» del artículo está desactivado a propósito
 
 Llevaba los mismos tres marcadores y **está comentado**, no borrado: dentro

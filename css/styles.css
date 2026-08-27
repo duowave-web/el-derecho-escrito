@@ -1393,19 +1393,20 @@ main > .lista:last-child {
    columna arriba con la que alinearse, y centrarla la rompería. Medido: el
    centrado no cambia nada con 3, 4 ni 6 tarjetas.
 
-   Va por :has() y solo en el tramo de tres columnas. Por debajo de 1085 la
-   rejilla ya es de dos o de una, y con dos tarjetas la fila se llena sola.
+   Hay DOS bloques porque hay dos tramos con distinto numero de columnas, y el
+   ancho que se fuerza tiene que ser el de una columna DE ESE TRAMO.
 
-   Es la unica media query por min-width del archivo junto a la del fondo de la
-   mancheta, y por el mismo motivo: la regla solo tiene sentido donde hay tres
-   columnas, y escribirla al reves obligaria a anularla dos veces.
+   Estuvo solo el de tres columnas, con el argumento de que por debajo de 1085
+   la rejilla es de dos o de una «y con dos tarjetas la fila se llena sola». Eso
+   cubre el caso de dos y se deja el de UNA, que es justo el que necesita
+   centrarse: con una sola tarjeta a la vista, una rejilla de dos la dejaba en
+   la columna izquierda con medio contenedor vacio al lado.
 
-   Sin soporte de :has() las tarjetas se quedan a la izquierda, como hasta
-   ahora. Se degrada al estado anterior, no a uno roto.
-
-   El ancho sale del contenedor y no de un 365 escrito a mano, para que no se
-   desincronice si cambia --ancho-amplio: (1200 - 48 de padding - 56 de los dos
-   huecos) / 3. */
+   El ancho se saca de un 100% de la propia rejilla, no de --ancho-amplio. El
+   token vale 1200 y es un maximo, asi que solo coincide con el ancho real por
+   encima de 1248; a 1085 el contenedor mide 1037 y la formula seguia forzando
+   365,3 px cuando una columna de tres ahi son 327. Con 100% el numero sale de
+   lo que la rejilla mide de verdad y vale en todo el tramo. */
 
 @media (min-width: 1085px) {
   /* Dos mecanismos que NO se solapan, y el :not([data-visibles]) es lo que los
@@ -1429,13 +1430,28 @@ main > .lista:last-child {
 
   .tarjetas--centrada:not([data-visibles]):not(:has(> :nth-child(2))),
   .tarjetas--centrada[data-visibles="1"] {
-    grid-template-columns: minmax(0, calc((var(--ancho-amplio) - 104px) / 3));
+    grid-template-columns: minmax(0, calc((100% - 56px) / 3));
     justify-content: center;
   }
 
   .tarjetas--centrada:not([data-visibles]):has(> :nth-child(2)):not(:has(> :nth-child(3))),
   .tarjetas--centrada[data-visibles="2"] {
-    grid-template-columns: repeat(2, minmax(0, calc((var(--ancho-amplio) - 104px) / 3)));
+    grid-template-columns: repeat(2, minmax(0, calc((100% - 56px) / 3)));
+    justify-content: center;
+  }
+}
+
+/* Tramo de DOS columnas. Aqui solo hay un caso incompleto que centrar: una
+   tarjeta. Con dos la fila se llena sola, y con tres o mas ya hay una fila
+   entera arriba con la que alinearse, que es cuando centrar romperia la
+   columna — el mismo criterio que arriba.
+
+   Un solo hueco de 28 px en vez de dos, de ahi el 28 y no el 56. */
+
+@media (min-width: 749px) and (max-width: 1084px) {
+  .tarjetas--centrada:not([data-visibles]):not(:has(> :nth-child(2))),
+  .tarjetas--centrada[data-visibles="1"] {
+    grid-template-columns: minmax(0, calc((100% - 28px) / 2));
     justify-content: center;
   }
 }
