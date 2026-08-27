@@ -193,15 +193,46 @@ explicar por qué**.
 > verse igual con quince artículos que con ninguno, **no puede seguir haciendo
 > de «esta categoría está vacía»**, que es el papel que tuvo. Quien retoque la
 > lógica del vacío tiene que contar con eso.
+
+### El estado vacío lo dice el contador, y solo el contador
+
+No hay ningún mensaje de «no hay artículos» en la página. Hubo uno —`.vacio`,
+«No hay ningún artículo que mostrar»— y **se retiró entero**: párrafo, regla CSS
+y lógica. Lo que queda en cada caso:
+
+| | Categoría vacía | Búsqueda sin resultados |
+|---|---|---|
+| Botón pulsado | **«Ensayo»** encendido | «Todos» |
+| `.filtro-aviso` | — | **«Resultados para «zzz» · Ver todos»** |
+| `.contador` | **«0 resultados»** | **«0 resultados»** |
+
+Se quitó por dos razones, y la segunda es la que decide:
+
+1. **Repetía al contador**, que ya dice cuántos hay en *todos* los estados y no
+   solo cuando el número es cero.
+2. **Lo repetía peor.** `.contador` lleva `aria-live="polite"`; `.vacio` no
+   llevaba ninguna. Con lector de pantalla ese párrafo **aparecía en silencio**,
+   así que lo que se oía ya era exactamente lo que se oye ahora. Quitarlo no le
+   restó nada a nadie: igualó lo que se ve con lo que ya se escuchaba.
+
+La búsqueda no queda desatendida, que es lo que parece a primera vista.
+`mostrarAviso()` se llama **siempre que hay `?q=`**, tenga resultados o no, así
+que el estado de búsqueda tiene *más* contexto que el de categoría: nombra la
+consulta y ofrece una salida. Y sin artículos publicados, sin consulta y sin
+filtro, el contador diría «0 artículos publicados» — tampoco queda ningún estado
+sin explicar.
+
+> ⚠️ **Si algún día se quiere un vacío más cálido, la vía es cambiar cómo habla
+> el contador cuando el número es cero** —o sea la cadena de
+> `actualizarContador()` en `js/main.js`—, **no añadir un párrafo debajo.**
 >
-> Por eso `.vacio` volvió a ser un mensaje **general** —«No hay ningún artículo
-> que mostrar»— y sale **siempre que no hay resultados**, venga el vacío de la
-> categoría o de la búsqueda. Ya no se alterna con la tarjeta: **conviven**.
+> Es la decisión que peor se reinventa: dentro de seis meses «el vacío se ve
+> seco» pide a gritos un `<p>` nuevo bajo la rejilla, y eso devuelve el problema
+> entero — dos elementos diciendo lo mismo, y el nuevo otra vez el mudo de los
+> dos, porque el `aria-live` seguiría estando en el contador.
 >
-> Y no necesita nombrar la consulta aunque el vacío venga de un `?q=`: eso ya lo
-> hace `.filtro-aviso` justo encima, que cita la búsqueda y ofrece salir de
-> ella. Si algún día se quita ese aviso, este mensaje se queda corto para la
-> búsqueda — hay que acordarse.
+> El contador ya está en el sitio correcto, ya se anuncia y ya existe en todos
+> los estados. Lo único que le falta para ser un buen vacío es la redacción.
 
 Lo que **sí** sigue siendo cierto es que no es un resultado: no lleva
 `data-categoria`, no entra en el array de entradas y **el contador no la

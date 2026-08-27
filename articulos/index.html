@@ -166,23 +166,26 @@
                 data-filtro="jurisprudencia" aria-pressed="false">Jurisprudencia</button>
       </div>
 
+      <!-- EL CONTADOR ES EL ESTADO VACÍO, y no hay ningún párrafo más abajo que
+           lo repita. Aquí vivió un <p class="vacio"> que decía «No hay ningún
+           artículo que mostrar» y se retiró entero.
+
+           Decía lo mismo que esta línea, que ya está en todos los estados y no
+           solo cuando el número es cero. Y lo decía peor: este <p> lleva
+           aria-live, aquel no, así que con lector de pantalla nunca se anunciaba
+           —aparecía en silencio— y lo que se oía era exactamente lo que se oye
+           ahora. Quitarlo no le quitó nada a nadie: igualó lo que se ve con lo
+           que ya se escuchaba.
+
+           En una búsqueda sin resultados tampoco queda nada sin explicar: el
+           aviso de arriba nombra la consulta y ofrece «Ver todos», y sale
+           siempre que hay ?q=, tenga resultados o no.
+
+           SI ALGÚN DÍA SE QUIERE UN VACÍO MÁS CÁLIDO, la vía es cambiar cómo
+           habla ESTE contador cuando el número es cero. No añadir un párrafo
+           debajo: eso es volver a tener dos elementos diciendo lo mismo, y el
+           nuevo volvería a ser el mudo de los dos. -->
       <p class="contador" id="contador" aria-live="polite"></p>
-
-      <!-- Va ENCIMA de la rejilla, y el orden es el argumento: primero se dice
-           que no hay nada y después la tarjeta dice que vendrá. Debajo se leía
-           al revés —la promesa antes que el hecho— y además quedaba fuera de la
-           pantalla, empujado por los 574 px de la tarjeta.
-
-           Sale siempre que no hay resultados, sea por la categoría o por la
-           búsqueda. Estuvo reservado a la búsqueda mientras la categoría vacía
-           la respondía la tarjeta de «Próximamente»; desde que esa tarjeta se
-           ve siempre ya no dice nada del vacío —se ve igual con artículos que
-           sin ellos— y el mensaje vuelve a hacerse cargo de los dos casos.
-
-           Por eso el texto es general. Tampoco necesita nombrar la consulta:
-           cuando el vacío viene de un ?q=, el aviso de arriba ya la cita y
-           ofrece salir de ella. -->
-      <p class="vacio" id="vacio" hidden>No hay ningún artículo que mostrar.</p>
 
       <!-- INICIO LISTADO — mismo componente que la portada: .tarjetas para la
            rejilla y .tarjeta--caja para cada pieza. No hay CSS propio de esta
@@ -236,8 +239,8 @@
 
              La consecuencia a no perder de vista es que ya no informa de nada:
              al verse igual con artículos que sin ellos, no puede seguir
-             haciendo de «esta categoría está vacía». De eso se encarga ahora el
-             mensaje .vacio de más abajo, que por eso volvió a ser general.
+             haciendo de «esta categoría está vacía». De eso se encarga el
+             contador de arriba, que es el único sitio donde vive ese estado.
 
              Sigue sin llevar data-categoria porque no es un artículo, así que
              el contador no la cuenta. Lo único que suma es data-visibles. -->

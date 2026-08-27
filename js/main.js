@@ -42,7 +42,6 @@
     const POR_PAGINA = 9;
 
     const proxima = contenedor.querySelector(".tarjeta--proxima");
-    const vacio = document.getElementById("vacio");
     const contador = document.getElementById("contador");
     const aviso = document.getElementById("filtro-aviso");
     const navPaginas = document.getElementById("paginacion");
@@ -137,21 +136,10 @@
         el.hidden = false;
       });
 
-      /* El mensaje sale SIEMPRE que no hay resultados, venga el vacío de la
-         categoría o de la búsqueda, y ya no se alterna con nada.
-
-         Antes solo salía en la búsqueda, y la categoría vacía se la dejaba a la
-         tarjeta de «Próximamente», que decía algo mejor —aún no hay, pero
-         vienen— y hacía de respuesta. Eso se cae solo desde que la tarjeta está
-         siempre: si se ve igual con quince artículos que con ninguno, deja de
-         significar «esto está vacío». Ya no informa, así que el vacío tiene que
-         decirse aparte.
-
-         Por eso el texto vuelve a ser general y no menciona la búsqueda. No
-         hace falta que lo haga: cuando el vacío viene de un ?q=, el aviso de
-         arriba ya nombra la consulta y ofrece salir de ella. */
-
-      if (vacio) vacio.hidden = coincidentes.length !== 0;
+      /* Aquí se mostraba y se escondía un mensaje de «no hay ningún artículo».
+         No queda nada que hacer con el vacío: lo dice actualizarContador(), más
+         abajo, que ya se llama en todas las pasadas y no solo cuando el número
+         es cero. Un solo sitio, y además el que lleva aria-live. */
 
       /* La tarjeta de espera ya no se esconde nunca. Dejó de ser una respuesta
          —que era lo que la ataba a un caso concreto— para ser lo que cierra la

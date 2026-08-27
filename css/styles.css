@@ -1113,19 +1113,14 @@ main > .lista:last-child {
   color: var(--tinta-suave);
 }
 
-/* Centrado y no a la izquierda porque ya no cuelga de la rejilla: vive entre el
-   contador y las tarjetas, los dos centrados, y alineado a un lado se leia como
-   texto suelto en vez de como la respuesta a lo que dice el contador.
+/* Aqui vivia .vacio, el mensaje de «no hay ningun articulo que mostrar». Se
+   retira con su unico uso: el estado vacio lo dice .contador, que ya esta en
+   todos los estados y no solo cuando el numero es cero, y que ademas lleva el
+   aria-live que este parrafo nunca tuvo.
 
-   El relleno baja de 24 px a 0 arriba: el contador ya deja 8 px de margen y
-   entre los dos son una sola frase en dos lineas, no dos bloques. */
-
-.vacio {
-  color: var(--tinta-suave);
-  font-style: italic;
-  text-align: center;
-  padding: 0 0 22px;
-}
+   Si algun dia se quiere un vacio mas calido, se cambia lo que escribe
+   actualizarContador() en js/main.js. Un parrafo nuevo aqui volveria a ser un
+   segundo elemento diciendo lo mismo, y otra vez el mudo de los dos. */
 
 /* -------------------------------------------------------- Paginación ---- */
 
