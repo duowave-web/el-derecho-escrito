@@ -950,6 +950,28 @@ body:has(.portada--video) .cabecera--con-linea {
   padding: 48px 0 24px;
 }
 
+/* Los 24 de arriba son para cuando .lista lleva otra seccion detras, que es lo
+   que pasa en la portada: ahi le sigue la franja de areas, con sus 48 propios,
+   asi que entre las dos quedan 72.
+
+   En el listado no le sigue nada: .lista es el ultimo hijo del <main> y detras
+   viene el pie. Con 24 las tarjetas quedaban pegadas —medido: 24 px hasta el
+   pie, frente a 48 en la portada, 66 en contacto y 108 en sobre—, o sea el
+   hueco mas apretado del sitio con diferencia.
+
+   Sube a 80, que no es un numero nuevo: es el padding de cierre de .articulo,
+   el que ya usan sobre/ y la pagina de articulo. Es el valor con el que este
+   sitio dice «aqui se acaba el contenido».
+
+   Va por :last-child y no por un modificador escrito a mano porque la
+   diferencia es estructural, no decorativa: la seccion que cierra la pagina
+   necesita el hueco, la que lleva otra detras no. Si algun dia se anade una
+   seccion despues, el cierre pasa a ella solo. */
+
+main > .lista:last-child {
+  padding-bottom: 80px;
+}
+
 .lista__titulo {
   font-family: var(--ui);
   font-size: 12px;
