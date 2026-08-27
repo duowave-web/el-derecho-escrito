@@ -180,7 +180,17 @@
                  alt="Figura de bronce de la justicia, con los ojos vendados y los dos platos de la balanza vacíos"
                  width="1600" height="1066" loading="lazy" decoding="async">
           </div>
-          <p class="etiqueta etiqueta--plana">Fundamento</p>
+          <!-- La categoría lleva al listado con el filtro puesto. El prefijo
+               oculto es para el nombre accesible: «Fundamento» a secas no dice
+               adónde va cuando un lector de pantalla enumera los enlaces. Va en
+               un <span> y no en aria-label porque así el nombre CONTIENE el
+               texto visible, que es lo que necesita el control por voz.
+
+               Ojo: la clave del href va en minúsculas y sin acentos, distinta
+               de la etiqueta visible. Un grep de «Fundamento» no la encuentra. -->
+          <p class="etiqueta etiqueta--plana">
+            <a href="./articulos/?categoria=fundamento"><span class="oculto">Ver artículos de </span>Fundamento</a>
+          </p>
           <h3 class="entrada__titulo">
             <a href="./articulos/principio-de-legalidad-penal/">El principio de legalidad penal: qué protege y dónde se rompe</a>
           </h3>

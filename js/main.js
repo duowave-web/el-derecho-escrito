@@ -89,10 +89,10 @@
       actualizarContador(visibles);
     }
 
-    function filtrar(consulta) {
-      consultaActiva = consulta;
-      aplicar();
-    }
+    /* Aquí hubo un filtrar(consulta) que envolvía a aplicar(). Tenía sentido
+       cuando la consulta entraba por un campo con evento «input»; desde que
+       solo llega por ?q= al cargar, se asigna la variable y se llama a aplicar()
+       una vez, al final, con los dos criterios ya puestos. */
 
     /* El aviso se monta nodo a nodo y con textContent, nunca con innerHTML.
        La consulta sale de la URL, o sea que la controla quien construye el
@@ -117,21 +117,57 @@
       aviso.hidden = false;
     }
 
+    /* La URL refleja siempre el filtro puesto, para que se pueda copiar de la
+       barra de direcciones. Va con replaceState y no con pushState: con tres
+       categorías, pushState llenaría el historial de pasos que nadie quiere
+       deshacer y obligaría a escuchar popstate para reaplicarlos. Con
+       replaceState el botón atrás sale de la página, que es lo esperable.
+
+       Se edita el juego de parámetros existente en vez de reescribir la cadena,
+       así ?q= sobrevive si estaba puesto. */
+
+    function sincronizarURL() {
+      if (!window.history || !window.history.replaceState) return;
+      const p = new URLSearchParams(window.location.search);
+      if (categoriaActiva === "todos") p.delete("categoria");
+      else p.set("categoria", categoriaActiva);
+      const cadena = p.toString();
+      window.history.replaceState(
+        null,
+        "",
+        window.location.pathname + (cadena ? "?" + cadena : "")
+      );
+    }
+
     /* Los filtros salen del HTML con hidden y es aquí donde se les quita: sin
        JavaScript no habría nada que los hiciera funcionar, y un control muerto
        es peor que ninguno. Sin JS la lista se ve entera, que es lo correcto.
 
        Los que no tienen ni un artículo se deshabilitan en vez de dejarse
        pulsables para no dar nada. Se cuenta sobre el DOM y no sobre una lista
-       escrita a mano: al publicar un artículo, su categoría se habilita sola. */
+       escrita a mano: al publicar un artículo, su categoría se habilita sola.
 
-    function montarFiltros() {
+       EXCEPCIÓN: si la URL pide esa categoría, el botón se habilita aunque esté
+       vacía. Desde que ?categoria= es una entrada válida, una categoría sin
+       artículos es un estado alcanzable, y un control deshabilitado que
+       representa el estado actual es un contrasentido. Deshabilitado sigue
+       significando «no puedes entrar aquí por tu cuenta para no obtener nada»,
+       no «este estado no existe». */
+
+    function montarFiltros(pedida) {
       const barra = document.getElementById("filtros");
       if (!barra) return;
 
       const botones = Array.prototype.slice.call(
         barra.querySelectorAll("[data-filtro]")
       );
+      const claves = botones.map(function (b) {
+        return b.getAttribute("data-filtro");
+      });
+
+      // Solo se acepta si es una de las claves reales: la URL la escribe quien
+      // quiera, y un valor inventado dejaría la lista vacía sin explicación.
+      const valida = pedida && claves.indexOf(pedida) !== -1 ? pedida : null;
 
       const hay = {};
       entradas.forEach(function (el) {
@@ -139,35 +175,56 @@
         if (c) hay[c] = true;
       });
 
+      function marcar(clave) {
+        botones.forEach(function (b) {
+          b.setAttribute(
+            "aria-pressed",
+            String(b.getAttribute("data-filtro") === clave)
+          );
+        });
+      }
+
       botones.forEach(function (b) {
         const clave = b.getAttribute("data-filtro");
-        if (clave !== "todos" && !hay[clave]) b.disabled = true;
+        if (clave !== "todos" && !hay[clave] && clave !== valida) {
+          b.disabled = true;
+        }
 
         b.addEventListener("click", function () {
           categoriaActiva = clave;
-          botones.forEach(function (otro) {
-            otro.setAttribute(
-              "aria-pressed",
-              String(otro.getAttribute("data-filtro") === clave)
-            );
-          });
+          marcar(clave);
+          sincronizarURL();
           aplicar();
         });
       });
 
+      if (valida && valida !== "todos") {
+        categoriaActiva = valida;
+        marcar(valida);
+      }
+
       barra.hidden = false;
     }
 
-    montarFiltros();
+    /* Dos entradas por URL que se acumulan, no se pisan: ?q= viene del buscador
+       de la cabecera y ?categoria= de las etiquetas de las tarjetas y de la
+       ficha del artículo. Una tarjeta se ve solo si pasa las dos.
 
-    // Permite enlazar búsquedas: /articulos/?q=penal
-    const parametro = new URLSearchParams(window.location.search).get("q");
-    if (parametro && parametro.trim()) {
-      mostrarAviso(parametro.trim());
-      filtrar(parametro);
-    } else {
-      actualizarContador(entradas.length);
+       La categoría se normaliza antes de compararla, así «Fundamento» y
+       «fundamento» entran igual. */
+
+    const parametros = new URLSearchParams(window.location.search);
+    const consulta = parametros.get("q");
+    const categoria = parametros.get("categoria");
+
+    montarFiltros(categoria ? normalizar(categoria.trim()) : null);
+
+    if (consulta && consulta.trim()) {
+      mostrarAviso(consulta.trim());
+      consultaActiva = consulta;
     }
+
+    aplicar();
   }
 
   /* ------------------------------------------ Buscador de cabecera ----- */

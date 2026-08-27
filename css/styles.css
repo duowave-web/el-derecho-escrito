@@ -81,6 +81,24 @@ html {
   }
 }
 
+/* El [hidden] de la hoja del navegador declara display:none con la misma
+   especificidad que una clase, y las hojas de autor ganan a las del navegador
+   a igualdad de peso. O sea que CUALQUIER regla nuestra que ponga display
+   —.tarjeta{display:flex}, .filtros{display:flex}, .filtro-aviso{display:flex}—
+   deja el atributo sin efecto: el elemento sigue ocupando sitio aunque el JS
+   lo haya marcado como oculto.
+
+   Ha pasado tres veces, y la ultima fue peor que un descuadre: el listado
+   contaba «0 resultados» con la tarjeta filtrada todavia a la vista. Se cierra
+   aqui de una vez, en vez de ir anadiendo una excepcion por clase.
+
+   El !important es el uso legitimo del mecanismo: hidden es un estado del
+   documento, no una preferencia de estilo, y nada deberia poder discutirlo. */
+
+[hidden] {
+  display: none !important;
+}
+
 body {
   margin: 0;
   background: var(--papel);
@@ -755,13 +773,8 @@ body:has(.portada--video) .cabecera--con-linea {
   margin: 0 0 22px;
 }
 
-/* [hidden] necesita ayuda frente a display:flex: la hoja de estilos del
-   navegador declara [hidden] { display: none } con menos peso que una clase,
-   así que sin esto la barra se vería igual antes de que entre el JS. */
-
-.filtros[hidden] {
-  display: none;
-}
+/* Aqui hubo un .filtros[hidden] para que el atributo ganara al display:flex.
+   Sobra desde que hay un [hidden] global arriba del archivo. */
 
 /* ------------------------------------------------------------ Áreas ----- */
 
@@ -909,15 +922,8 @@ body:has(.portada--video) .cabecera--con-linea {
   color: var(--tinta-suave);
 }
 
-/* Igual que en .filtros, y por el mismo motivo: el [hidden] de la hoja del
-   navegador tiene menos peso que una clase, así que «display: flex» lo pisaba y
-   el aviso seguía en el flujo. No se veía —no tiene contenido hasta que el JS
-   se lo pone— pero su margen de 28 px sí ocupaba, y separaba los filtros de la
-   banda más de la cuenta. */
-
-.filtro-aviso[hidden] {
-  display: none;
-}
+/* Aqui hubo un .filtro-aviso[hidden] por el mismo motivo que en .filtros.
+   Sobra desde que hay un [hidden] global arriba del archivo. */
 
 .filtro-aviso strong {
   font-weight: 600;

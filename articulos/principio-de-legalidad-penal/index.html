@@ -177,7 +177,15 @@
             <span class="volver__flecha" aria-hidden="true">&larr;</span>Volver a los artículos
           </a>
 
-          <p class="etiqueta etiqueta--plana">Fundamento</p>
+          <!-- PLANTILLA · La categoría lleva al listado con el filtro puesto.
+               El prefijo oculto da el nombre accesible; va en un <span> y no en
+               aria-label para que el nombre contenga el texto visible.
+
+               Ojo: la clave del href va en minúsculas y sin acentos, distinta de
+               la etiqueta visible. Un grep de «Fundamento» no la encuentra. -->
+          <p class="etiqueta etiqueta--plana">
+            <a href="../../articulos/?categoria=fundamento"><span class="oculto">Ver artículos de </span>Fundamento</a>
+          </p>
 
           <h1 class="articulo__titular">El principio de legalidad penal: qué protege y dónde se rompe</h1>
 
@@ -355,7 +363,9 @@
 
               <article class="tarjeta">
                 <div class="tarjeta__imagen"></div>
-                <p class="etiqueta etiqueta--plana">CATEGORÍA</p>
+                <p class="etiqueta etiqueta--plana">
+                  <a href="../../articulos/?categoria=CLAVE"><span class="oculto">Ver artículos de </span>CATEGORÍA</a>
+                </p>
                 <h3 class="entrada__titulo">
                   <a href="../SLUG/">TITULAR</a>
                 </h3>
