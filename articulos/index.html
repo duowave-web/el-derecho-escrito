@@ -169,12 +169,17 @@
            El titular va en <h2> y no en el <h3> de la portada porque aquí las
            tarjetas cuelgan del <h1> de la página, no de un rótulo de sección.
 
+           --centrada es de esta página y no de la portada: cuando las tarjetas
+           no llenan una fila, aquí se centran y allí se quedan alineadas a la
+           izquierda. El modificador existe justo para eso, porque .tarjetas la
+           comparten las dos.
+
            data-categoria es lo que leen los filtros. Va en minúsculas y sin
            acentos a propósito: es una clave, no un texto, y así no depende de
            cómo se escriba la etiqueta visible.
 
            Al publicar, copia el <article> entero y edítalo. -->
-      <div class="tarjetas" id="entradas">
+      <div class="tarjetas tarjetas--centrada" id="entradas">
 
         <article class="tarjeta tarjeta--caja" data-categoria="fundamento">
           <!-- Mismo alt que la tarjeta de portada, y es correcto que se repita:

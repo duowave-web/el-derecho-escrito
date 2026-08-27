@@ -1273,6 +1273,12 @@ body:has(.portada--video) .cabecera--con-linea {
 /* Cuando las tarjetas no llegan a llenar UNA fila, la fila se centra en vez de
    pegarse al margen izquierdo con el hueco al otro lado.
 
+   VA POR MODIFICADOR, y esto importa: .tarjetas la usan el listado y la
+   portada. Colgado de la clase a secas —como estuvo un commit— el centrado
+   alcanzaba también a la portada, donde las dos tarjetas se centraban igual sin
+   que nadie lo hubiera pedido. En la portada la rejilla se queda alineada a la
+   izquierda como siempre.
+
    La distinción es entre «una fila que es todo el contenido» y «una fila que
    viene detrás de otra». Con una sola fila incompleta no hay columna a la que
    alinearse y centrar es lo correcto. Con cuatro tarjetas —fila llena arriba y
@@ -1295,12 +1301,12 @@ body:has(.portada--video) .cabecera--con-linea {
    huecos) / 3. */
 
 @media (min-width: 1085px) {
-  .tarjetas:not(:has(> :nth-child(2))) {
+  .tarjetas--centrada:not(:has(> :nth-child(2))) {
     grid-template-columns: minmax(0, calc((var(--ancho-amplio) - 104px) / 3));
     justify-content: center;
   }
 
-  .tarjetas:has(> :nth-child(2)):not(:has(> :nth-child(3))) {
+  .tarjetas--centrada:has(> :nth-child(2)):not(:has(> :nth-child(3))) {
     grid-template-columns: repeat(2, minmax(0, calc((var(--ancho-amplio) - 104px) / 3)));
     justify-content: center;
   }
