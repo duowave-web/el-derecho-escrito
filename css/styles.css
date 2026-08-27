@@ -1531,26 +1531,29 @@ main > .lista:last-child {
   gap: 14px;
 }
 
-/* El igualado de filas de .tarjetas la deja a la altura de un artículo siempre
+/* NO LLEVA min-height, y merece explicarse porque es lo primero que se intenta.
+
+   El igualado de filas de .tarjetas la deja a la altura de un artículo siempre
    que haya alguno a la vista. Cuando NO lo hay —categoría vacía o búsqueda sin
-   resultados— se queda sola en la rejilla y vuelve a sus 248,8 px naturales,
-   que al ancho de una columna es una tira, no una tarjeta.
+   resultados— se queda sola y vuelve a sus 248,8 px naturales, así que parece
+   que falta un suelo para que no se quede corta.
 
-   Ese es el único caso que necesita un número, y va atado a data-visibles="1",
-   que es justo «se ve ella y nada más». Así no puede inflar nunca una fila que
-   tenga artículos dentro: si hay uno solo el atributo ya vale 2.
+   Estuvo puesto, en 574 px, que es lo que mide un artículo de 1085 para arriba.
+   Se retiró midiendo lo que pasaba dentro de la caja: el contenido son 190,8 px,
+   o sea un llenado del 33 %, con 191,6 px de hueco arriba y otros 191,6 abajo.
+   El vacío de cada lado medía exactamente lo mismo que el contenido.
 
-   Es un SUELO, no una igualdad, y la diferencia importa para mantenerlo: aquí
-   no hay ningún artículo en pantalla contra el que compararla, así que lo que
-   se pide del número no es que coincida sino que la caja tenga cuerpo de
-   tarjeta. Un artículo mediría 573,8 px de 1085 para arriba, 572,8 a 900, 580,2
-   a 749 y 608,5 en el corte de 1084, donde la columna se ensancha a 504 y crece
-   el hueco de imagen. No hay un valor exacto para todos los anchos; se toma el
-   de 1085 en adelante, que cubre el escritorio. */
+   La premisa era falsa. Se puso creyendo que a lo natural la caja quedaba en una
+   tira, y a un ancho de columna son 365 × 249: proporción 1,47:1, una tarjeta
+   perfectamente normal, con el 77 % de llenado.
 
-.tarjetas[data-visibles="1"] .tarjeta--proxima {
-  min-height: 574px;
-}
+   Y tenía un coste que no se ve pensando solo en la tarjeta: los 325 px de más
+   empujaban el mensaje de «no hay ningún artículo» hasta y=979 en una ventana de
+   1000, o sea fuera de la pantalla. Justo en la página donde ese mensaje es lo
+   único que explica lo que ha pasado.
+
+   Sin número, además, no hay nada que mantener: estirar cuando hay con quién
+   igualarse y encogerse cuando no lo hay es lo que significa el stretch. */
 
 /* La balanza del sitio por mask, igual que .marca::before: el SVG hereda
    currentColor y no hay que duplicar el archivo para teñirlo. */
@@ -2870,14 +2873,6 @@ body:has(.progreso) .cabecera {
   .tarjetas {
     grid-template-columns: minmax(0, 1fr);
     grid-auto-rows: auto;
-  }
-
-  /* El suelo de la tarjeta sola se retira por el mismo motivo que el igualado:
-     a este ancho la caja mide ya 652 px de lado, y estirarla a 574 de alto
-     dejaría un cuadrado casi vacío ocupando la pantalla entera. */
-
-  .tarjetas[data-visibles="1"] .tarjeta--proxima {
-    min-height: 0;
   }
 }
 

@@ -236,18 +236,24 @@ que mantener al publicar.
 > caja casi vacía ocupando la pantalla de un móvil— para arreglar una
 > desalineación que nadie puede ver.
 
-**El único caso que necesita un número es la tarjeta sola**, cuando no hay
-ningún artículo a la vista y por tanto ninguna fila con la que igualarse. Va en
-`min-height: 574px`, atado a `[data-visibles="1"]` para que no pueda inflar
-nunca una fila que tenga artículos dentro: con un solo artículo el atributo ya
-vale 2.
-
-Es un **suelo, no una igualdad**, y la distinción importa antes de «corregirlo»:
-ahí no hay ningún artículo en pantalla contra el que compararla, así que del
-número no se pide que coincida sino que la caja tenga cuerpo de tarjeta. Medido,
-un artículo mediría 573,8 px de 1085 para arriba, 572,8 a 900, 580,2 a 749 y
-608,5 justo en el corte de 1084, donde la columna se ensancha a 504. No hay un
-valor exacto para todos los anchos; se toma el de 1085 en adelante.
+> **Cuando la tarjeta aparece sola no lleva `min-height`, y conviene saberlo
+> porque es lo primero que se intenta.** Sin ningún artículo a la vista no hay
+> fila con la que igualarse y vuelve a sus 248,8 px naturales, que parecen
+> quedarse cortos.
+>
+> Estuvo puesto, en 574 px —lo que mide un artículo de 1085 para arriba—, y se
+> retiró midiendo lo que pasaba dentro de la caja: **el contenido son 190,8 px,
+> o sea un llenado del 33 %**, con 191,6 px de hueco arriba y otros 191,6 abajo.
+> El vacío de cada lado medía exactamente lo mismo que el contenido.
+>
+> La premisa era falsa. Se puso creyendo que a lo natural quedaba en una tira, y
+> a un ancho de columna son **365 × 249: proporción 1,47:1 y 77 % de llenado**,
+> una tarjeta perfectamente normal.
+>
+> Y tenía un coste que no se ve pensando solo en la tarjeta: los 325 px de más
+> **empujaban el mensaje de «no hay ningún artículo» hasta y=979 en una ventana
+> de 1000**, o sea fuera de la pantalla, justo en la página donde ese mensaje es
+> lo único que explica lo que ha pasado.
 
 #### El centrado usa dos mecanismos que no se pueden mezclar
 
