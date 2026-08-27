@@ -179,15 +179,18 @@ Consecuencia a tener presente: **`.tarjetas--tres` no la usa nadie ahora
 mismo.** Sigue en el CSS porque es la rejilla de ese bloque y vuelve con él. Si
 alguien busca dónde se usa, no encontrará nada y parecerá muerta.
 
-### Las migas quedan en dos páginas de cuatro
+### Ya no quedan migas en ninguna página
 
-Se retiraron del **artículo** y del **listado**, donde repetían navegación que
-la cabecera ya da en todas las páginas: de los tres niveles del artículo,
-«Inicio» y «Artículos» estaban a un clic ahí arriba, y el tercero era el título
-de la página en la que ya estás.
+Se retiraron por tandas y siempre por el mismo motivo: **repetían navegación que
+la cabecera ya da en todas las páginas.** Primero las del artículo y el listado
+—de los tres niveles del artículo, «Inicio» y «Artículos» estaban a un clic ahí
+arriba, y el tercero era el título de la página en la que ya estás—, y después
+las de `sobre/` y `contacto/`.
 
-**Siguen en `sobre/` y `contacto/`**, y ahí son útiles: son hojas sueltas sin
-un listado padre al que volver, así que la miga es su única ruta de contexto.
+Esas dos se mantuvieron un tiempo con el argumento de que son hojas sueltas sin
+listado padre al que volver. Dejó de sostenerse cuando las tres páginas de
+sección pasaron a abrir con la misma banda a sangre: el título de la banda ya
+dice dónde estás, y la cabecera dice cómo salir.
 
 En el artículo las sustituye `.volver`, un enlace de vuelta al listado. Es el
 mismo componente que cierra el artículo abajo: **misma clase, mismo texto y
@@ -195,19 +198,21 @@ mismo destino**, y la única diferencia es el modificador `--cierre`, que solo
 cambia márgenes. Si hay que tocar el aspecto se toca `.volver` en el CSS, nunca
 uno de los dos sitios.
 
-> **Al quitar migas hay que quitar también su `BreadcrumbList`.** Son dos cosas
-> en dos sitios —el marcado en el `<body>` y el JSON-LD en el `<head>`— y quitar
-> solo el visible no da ningún error: la página simplemente le sigue declarando
-> a Google una ruta que ya no enseña.
+**`.miga` ya no existe en el CSS.** Se retiró con el último uso, con sus cuatro
+reglas.
+
+> **Si alguna vez vuelven, son DOS cosas y no una:** el marcado en el `<body>` y
+> el `BreadcrumbList` en el JSON-LD del `<head>`. Y al revés también: quitar solo
+> el visible no da ningún error, la página simplemente le sigue declarando a
+> Google una ruta que ya no enseña. Es la mitad que se olvida.
 >
-> Comprobación rápida de que van a la par:
+> Comprobación de que no queda ninguna descuadrada:
 >
 > ```sh
-> for f in sobre/index.html contacto/index.html articulos/index.html \
->          articulos/*/index.html; do
->   echo "$f  migas:$(grep -c 'class=\"miga\"' $f)  json-ld:$(grep -c BreadcrumbList $f)"
-> done
+> grep -rn 'class="miga"\|BreadcrumbList' --include='*.html' .
 > ```
+>
+> Hoy no devuelve nada.
 
 ## Autoría — se repite en 8 sitios por artículo
 

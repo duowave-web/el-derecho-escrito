@@ -1568,25 +1568,16 @@ main > .lista:last-child {
 
 /* ------------------------------------------------------------ Migas ----- */
 
-.miga {
-  font-family: var(--ui);
-  font-size: 13px;
-  color: var(--tinta-suave);
-  margin-bottom: 24px;
-}
+/* Aqui vivia .miga, con sus cuatro reglas. Se retira entera: ya no queda un
+   solo rastro de migas en el sitio.
 
-.miga a {
-  color: var(--tinta-suave);
-}
+   Se fueron por tandas y por el mismo motivo cada vez —repetian navegacion que
+   la cabecera ya da en todas las paginas—: primero las del articulo y el
+   listado, y despues las de sobre/ y contacto/, que eran las ultimas.
 
-.miga a:hover {
-  color: var(--acento);
-}
-
-.miga span[aria-hidden] {
-  margin: 0 8px;
-  opacity: 0.5;
-}
+   Si alguna vez vuelven, hay que reponer DOS cosas y no una: el marcado y el
+   BreadcrumbList del JSON-LD. Quitar solo el visible no da ningun error, y por
+   eso es la mitad que se olvida. */
 
 /* ------------------------------------------------ Índice del artículo --- */
 
