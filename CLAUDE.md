@@ -236,24 +236,53 @@ que mantener al publicar.
 > caja casi vacía ocupando la pantalla de un móvil— para arreglar una
 > desalineación que nadie puede ver.
 
-> **Cuando la tarjeta aparece sola no lleva `min-height`, y conviene saberlo
-> porque es lo primero que se intenta.** Sin ningún artículo a la vista no hay
-> fila con la que igualarse y vuelve a sus 248,8 px naturales, que parecen
-> quedarse cortos.
+**Cuando la tarjeta aparece sola sí lleva `min-height`**, porque sin ningún
+artículo a la vista no hay fila con la que igualarse y volvería a sus 248,8 px:
+la tarjeta cambiaría de tamaño según la categoría que se pulsara. El suelo es la
+altura que tendría el artículo que no está.
+
+Va atado a **`[data-visibles="1"]`**, que es exactamente «se ve ella y nada
+más», así que no puede inflar una fila con artículos dentro: con un solo
+artículo el atributo ya vale 2.
+
+**Son dos valores, uno por tramo**, porque la altura del artículo depende del
+ancho de columna:
+
+| Tramo | Medidas del artículo | Suelo | Desvío peor |
+|---|---|---|---|
+| **3 col** (≥1085) | 573,9 · 588,3 · 573,8 · 573,8 | **574** | −14 a 1150 |
+| **2 col** (749–1084) | 580,2 · 572,8 · 580,5 · 608,5 | **580** | −28 a 1084 |
+| **1 col** (≤748) | 560,1 · 614,9 · 713,6 | **ninguno** | — |
+
+No hay un valor exacto para todo un tramo **y no lo puede haber**: lo que mueve
+la altura es en cuántas líneas parte el titular, que salta de golpe.
+
+> **En una columna no hay suelo, y es justo donde más varía la altura del
+> artículo.** No es un descuido: ahí `grid-auto-rows` vale `auto`, así que la
+> tarjeta mide 248,8 px **siempre, acompañada o sola** —verificado a 375 y a
+> 700—, y no hay dos estados que igualar. Poner un suelo crearía la incoherencia
+> que en los otros tramos se está quitando.
+
+> ⚠️ **El mensaje `.vacio` va ENCIMA de la rejilla, justo bajo el contador, y
+> eso depende de este suelo.** Debajo, los 574 px de la tarjeta lo empujaban
+> hasta y=979 en una ventana de 1000: **fuera de la pantalla**, justo en la
+> página donde es lo único que explica lo que ha pasado.
 >
-> Estuvo puesto, en 574 px —lo que mide un artículo de 1085 para arriba—, y se
-> retiró midiendo lo que pasaba dentro de la caja: **el contenido son 190,8 px,
-> o sea un llenado del 33 %**, con 191,6 px de hueco arriba y otros 191,6 abajo.
-> El vacío de cada lado medía exactamente lo mismo que el contenido.
+> Encima también se lee mejor: primero se dice que no hay nada y después la
+> tarjeta dice que vendrá. Y va centrado, porque ya no cuelga de la rejilla sino
+> que vive entre el contador y las tarjetas, los dos centrados.
 >
-> La premisa era falsa. Se puso creyendo que a lo natural quedaba en una tira, y
-> a un ancho de columna son **365 × 249: proporción 1,47:1 y 77 % de llenado**,
-> una tarjeta perfectamente normal.
+> Si alguien vuelve a bajarlo, tiene que volver a medir dónde cae.
+
+> **El 33 % de llenado de la caja no lo causa el suelo.** Son 190,8 px de
+> contenido, y **acompañada da exactamente el mismo 33,2 %** porque ahí también
+> mide 573,8. Es como se ve la tarjeta en tres columnas desde siempre.
 >
-> Y tenía un coste que no se ve pensando solo en la tarjeta: los 325 px de más
-> **empujaban el mensaje de «no hay ningún artículo» hasta y=979 en una ventana
-> de 1000**, o sea fuera de la pantalla, justo en la página donde ese mensaje es
-> lo único que explica lo que ha pasado.
+> Se midió si convenía separar más los elementos dentro y **no compensa**: `gap`
+> de 28 da 40,6 %, de 40 da 46,8 % y subiendo además la balanza a 72 px se llega
+> a 44,9 %. Ninguna se acerca a llenar la caja —el contenido son ~190 px
+> intrínsecos— y a partir de `gap: 28` los cuatro elementos dejan de leerse como
+> un bloque. La tarjeta tiene que estar callada al lado de un artículo real.
 
 #### El centrado usa dos mecanismos que no se pueden mezclar
 

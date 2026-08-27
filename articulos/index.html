@@ -168,6 +168,22 @@
 
       <p class="contador" id="contador" aria-live="polite"></p>
 
+      <!-- Va ENCIMA de la rejilla, y el orden es el argumento: primero se dice
+           que no hay nada y después la tarjeta dice que vendrá. Debajo se leía
+           al revés —la promesa antes que el hecho— y además quedaba fuera de la
+           pantalla, empujado por los 574 px de la tarjeta.
+
+           Sale siempre que no hay resultados, sea por la categoría o por la
+           búsqueda. Estuvo reservado a la búsqueda mientras la categoría vacía
+           la respondía la tarjeta de «Próximamente»; desde que esa tarjeta se
+           ve siempre ya no dice nada del vacío —se ve igual con artículos que
+           sin ellos— y el mensaje vuelve a hacerse cargo de los dos casos.
+
+           Por eso el texto es general. Tampoco necesita nombrar la consulta:
+           cuando el vacío viene de un ?q=, el aviso de arriba ya la cita y
+           ofrece salir de ella. -->
+      <p class="vacio" id="vacio" hidden>No hay ningún artículo que mostrar.</p>
+
       <!-- INICIO LISTADO — mismo componente que la portada: .tarjetas para la
            rejilla y .tarjeta--caja para cada pieza. No hay CSS propio de esta
            página; la rejilla, la caja, los iconos de metadatos y los cortes de
@@ -235,17 +251,6 @@
 
       </div>
       <!-- FIN LISTADO -->
-
-      <!-- Sale siempre que no hay resultados, sea por la categoría o por la
-           búsqueda. Estuvo reservado a la búsqueda mientras la categoría vacía
-           la respondía la tarjeta de «Próximamente»; desde que esa tarjeta se
-           ve siempre ya no dice nada del vacío —se ve igual con artículos que
-           sin ellos— y el mensaje vuelve a hacerse cargo de los dos casos.
-
-           Por eso el texto es general. Tampoco necesita nombrar la consulta:
-           cuando el vacío viene de un ?q=, el aviso de arriba ya la cita y
-           ofrece salir de ella. -->
-      <p class="vacio" id="vacio" hidden>No hay ningún artículo que mostrar.</p>
 
       <!-- PAGINACIÓN · Nueve artículos por página. Los números los construye
            js/main.js: dependen de cuántos artículos pasen el filtro, así que no

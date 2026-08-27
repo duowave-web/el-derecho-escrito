@@ -1113,10 +1113,18 @@ main > .lista:last-child {
   color: var(--tinta-suave);
 }
 
+/* Centrado y no a la izquierda porque ya no cuelga de la rejilla: vive entre el
+   contador y las tarjetas, los dos centrados, y alineado a un lado se leia como
+   texto suelto en vez de como la respuesta a lo que dice el contador.
+
+   El relleno baja de 24 px a 0 arriba: el contador ya deja 8 px de margen y
+   entre los dos son una sola frase en dos lineas, no dos bloques. */
+
 .vacio {
   color: var(--tinta-suave);
   font-style: italic;
-  padding: 24px 0;
+  text-align: center;
+  padding: 0 0 22px;
 }
 
 /* -------------------------------------------------------- Paginación ---- */
@@ -1547,29 +1555,45 @@ main > .lista:last-child {
   gap: 14px;
 }
 
-/* NO LLEVA min-height, y merece explicarse porque es lo primero que se intenta.
-
-   El igualado de filas de .tarjetas la deja a la altura de un artículo siempre
+/* El igualado de filas de .tarjetas la deja a la altura de un artículo siempre
    que haya alguno a la vista. Cuando NO lo hay —categoría vacía o búsqueda sin
-   resultados— se queda sola y vuelve a sus 248,8 px naturales, así que parece
-   que falta un suelo para que no se quede corta.
+   resultados— se queda sola y volvería a sus 248,8 px naturales, así que la
+   tarjeta cambiaba de tamaño según la categoría que se pulsara. Estos suelos lo
+   evitan: son la altura que tendría el artículo que no está.
 
-   Estuvo puesto, en 574 px, que es lo que mide un artículo de 1085 para arriba.
-   Se retiró midiendo lo que pasaba dentro de la caja: el contenido son 190,8 px,
-   o sea un llenado del 33 %, con 191,6 px de hueco arriba y otros 191,6 abajo.
-   El vacío de cada lado medía exactamente lo mismo que el contenido.
+   VAN ATADOS a data-visibles="1", que es exactamente «se ve ella y nada más».
+   Así no pueden inflar una fila que tenga artículos dentro: con un solo artículo
+   el atributo ya vale 2 y no coincide ninguna de las dos reglas.
 
-   La premisa era falsa. Se puso creyendo que a lo natural la caja quedaba en una
-   tira, y a un ancho de columna son 365 × 249: proporción 1,47:1, una tarjeta
-   perfectamente normal, con el 77 % de llenado.
+   HAY DOS VALORES porque la altura del artículo depende del ancho de columna, y
+   ese depende del tramo. Medido:
 
-   Y tenía un coste que no se ve pensando solo en la tarjeta: los 325 px de más
-   empujaban el mensaje de «no hay ningún artículo» hasta y=979 en una ventana de
-   1000, o sea fuera de la pantalla. Justo en la página donde ese mensaje es lo
-   único que explica lo que ha pasado.
+     3 columnas   1085 → 573,9   1150 → 588,3   1248 → 573,8   1440 → 573,8
+     2 columnas    749 → 580,2    900 → 572,8   1000 → 580,5   1084 → 608,5
+     1 columna     375 → 560,1    600 → 614,9    748 → 713,6
 
-   Sin número, además, no hay nada que mantener: estirar cuando hay con quién
-   igualarse y encogerse cuando no lo hay es lo que significa el stretch. */
+   Se toma 574 arriba y 580 abajo, que aciertan en los anchos de cada tramo
+   donde más se navega y se quedan cortos como mucho 14 px a 1150 y 28 px a
+   1084. No hay un valor exacto para todo el tramo y no lo puede haber: lo que
+   mueve la altura es en cuántas líneas parte el titular, que salta de golpe.
+
+   EN UNA COLUMNA NO HAY SUELO Y NO HACE FALTA, aunque sea donde más varía la
+   altura del artículo. Ahí grid-auto-rows vale auto, así que la tarjeta mide
+   248,8 px SIEMPRE, acompañada o sola: no hay dos estados que igualar. Poner un
+   suelo crearía la incoherencia que arriba se está quitando, y de paso metería
+   una caja de 700 px de lado casi vacía en un móvil. */
+
+@media (min-width: 1085px) {
+  .tarjetas[data-visibles="1"] .tarjeta--proxima {
+    min-height: 574px;
+  }
+}
+
+@media (min-width: 749px) and (max-width: 1084px) {
+  .tarjetas[data-visibles="1"] .tarjeta--proxima {
+    min-height: 580px;
+  }
+}
 
 /* La balanza del sitio por mask, igual que .marca::before: el SVG hereda
    currentColor y no hay que duplicar el archivo para teñirlo. */
