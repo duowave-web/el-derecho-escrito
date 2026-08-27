@@ -1391,12 +1391,33 @@ main > .lista:last-child {
    huecos) / 3. */
 
 @media (min-width: 1085px) {
-  .tarjetas--centrada:not(:has(> :nth-child(2))) {
+  /* Dos mecanismos que NO se solapan, y el :not([data-visibles]) es lo que los
+     separa. Hicieron falta porque cuentan cosas distintas:
+
+     Sin JavaScript se cuentan HIJOS del DOM con :has(). Es lo unico que se
+     puede hacer sin scripts, y acierta porque ahi se ven todos.
+
+     Con JavaScript se cuenta lo que de verdad se ve, que el JS deja en
+     data-visibles. Al filtrar una categoria vacia hay dos hijos y una sola
+     tarjeta a la vista, y contar hijos dejaba la de espera descolocada en la
+     columna izquierda de una rejilla de dos.
+
+     No basta con poner las de atributo despues: :has() adopta la especificidad
+     de su argumento, asi que la regla de dos columnas es (0,3,0) frente a los
+     (0,2,0) del atributo y ganaba por peso, no por orden. De ahi el :not(),
+     que las hace excluyentes en vez de competidoras.
+
+     Con tres o mas visibles no hace falta regla: no coincide ninguna y queda la
+     rejilla de tres columnas de .tarjetas. */
+
+  .tarjetas--centrada:not([data-visibles]):not(:has(> :nth-child(2))),
+  .tarjetas--centrada[data-visibles="1"] {
     grid-template-columns: minmax(0, calc((var(--ancho-amplio) - 104px) / 3));
     justify-content: center;
   }
 
-  .tarjetas--centrada:has(> :nth-child(2)):not(:has(> :nth-child(3))) {
+  .tarjetas--centrada:not([data-visibles]):has(> :nth-child(2)):not(:has(> :nth-child(3))),
+  .tarjetas--centrada[data-visibles="2"] {
     grid-template-columns: repeat(2, minmax(0, calc((var(--ancho-amplio) - 104px) / 3)));
     justify-content: center;
   }

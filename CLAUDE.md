@@ -162,6 +162,68 @@ Si algún día se vuelve a cambiar el número de columnas, **hay que recalcular 
 punto de corte**: no es un número redondo, sale de medir. Está explicado abajo,
 en la sección de puntos de corte.
 
+### Ningún filtro va apagado, y la tarjeta de espera hace dos papeles
+
+Los cuatro botones de categoría de `articulos/` **se pueden pulsar siempre**,
+tengan artículos o no. Estuvieron `disabled` los vacíos —hoy Ensayo y
+Jurisprudencia— y el motivo de quitarlo es que un botón apagado no puede
+explicarse: quien lo ve no distingue una categoría vacía de una rota, y el
+único sitio donde cabría la explicación es justo el control que no responde.
+
+Pulsables, la respuesta la da la página: el contador se pone a **«0
+resultados»** y en la rejilla queda **solo la tarjeta de «Próximamente»**.
+
+Eso le da a esa tarjeta **dos papeles distintos**, y conviene tenerlos claros
+antes de tocar la lógica, porque se contradicen si se descuidan:
+
+| Situación | Qué se ve | Qué papel hace |
+|---|---|---|
+| Lista entera, página 1 | artículos **+** tarjeta | cierra la rejilla, como en la portada |
+| Categoría sin artículos | **solo** la tarjeta | es la respuesta: aún no hay, pero vienen |
+| Categoría con artículos | solo los artículos | — |
+| Búsqueda sin resultados | solo el mensaje `.vacio` | — |
+| Páginas 2 y siguientes | solo los artículos | — |
+
+Las dos filas que importan son las que **no** la enseñan pudiendo parecer que
+sí. Con resultados de un filtro no cierra nada: se leería como un artículo más
+de esa categoría. Y en una búsqueda fallida no hay ninguna promesa que hacer
+—nadie va a escribir un artículo porque alguien buscara «zzz»—, así que ahí
+responde `.vacio` y la tarjeta se retira.
+
+> **`.vacio` es hoy un mensaje solo de búsqueda.** Decía «No hay artículos en
+> esta categoría» y salía también con `?q=`, donde la categoría no pinta nada.
+> Ahora dice «No hay artículos que coincidan con la búsqueda» y **la categoría
+> vacía ya no lo usa**: le responde la tarjeta, que dice algo más que «nada
+> coincide». Si algún día se quita la tarjeta de espera, este mensaje se queda
+> sin sustituto para ese caso — hay que acordarse.
+
+Y una consecuencia de mantenimiento: **al publicar el primer Ensayo no hay que
+tocar ningún botón.** Antes había que acordarse de quitarle el `disabled`, y
+existía además una excepción en el JS que lo reactivaba si la URL pedía esa
+categoría. Las dos cosas se han ido: el estado sale del contenido.
+
+#### El centrado usa dos mecanismos que no se pueden mezclar
+
+`.tarjetas--centrada` centra la fila cuando no se llena, y lo resuelve dos
+veces porque hay dos maneras de contar:
+
+- **Sin JavaScript** se cuentan **hijos del DOM**, con `:has(> :nth-child(N))`.
+  Es lo único posible sin scripts, y acierta porque ahí se ven todos.
+- **Con JavaScript** se cuenta lo que de verdad se ve, que el JS deja en
+  **`data-visibles`**. Hace falta porque al filtrar una categoría vacía sigue
+  habiendo dos hijos y una sola tarjeta a la vista.
+
+> ⚠️ **No basta con poner las reglas de atributo después.** `:has()` **adopta la
+> especificidad de su argumento**, así que la regla de dos columnas pesa
+> (0,3,0) frente a los (0,2,0) del atributo: gana por peso y el orden en el
+> archivo da igual. Estuvo así y dejaba la tarjeta descolocada en la columna
+> izquierda de una rejilla de dos.
+>
+> Se arregla con `:not([data-visibles])` en las reglas de `:has()`, que las
+> vuelve **excluyentes en vez de competidoras**: con JS solo aplican las de
+> atributo, sin JS solo las de conteo. Si alguien añade un caso nuevo, tiene
+> que añadirlo a los dos lados o a ninguno.
+
 ### El «continúa leyendo» del artículo está desactivado a propósito
 
 Llevaba los mismos tres marcadores y **está comentado**, no borrado: dentro

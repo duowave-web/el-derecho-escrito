@@ -144,9 +144,16 @@
            El estado va en aria-pressed y no en una clase: es el mismo atributo
            que lo anuncia y el que lo pinta, así que no pueden desincronizarse.
 
-           Los que no tienen artículos van disabled: .boton ya trae sus reglas
-           de :disabled, así que no hace falta CSS aparte. Con un solo artículo
-           publicado, hoy eso deja fuera a Ensayo y Jurisprudencia. -->
+           NINGUNO VA DISABLED, y es deliberado. Estuvieron apagados los que no
+           tenían artículos —hoy Ensayo y Jurisprudencia—, y el problema es que
+           un botón apagado no se puede pulsar, así que tampoco puede explicar
+           por qué: el lector ve una categoría muerta y no sabe si está vacía o
+           rota. Pulsables, la respuesta la da la propia página: el contador se
+           pone a cero y queda la tarjeta de «Próximamente», que dice justo lo
+           que pasa —todavía no hay, pero habrá.
+
+           Se fue con ellos la lógica que reactivaba un botón cuando la URL
+           pedía su categoría: era la excepción a una regla que ya no existe. -->
       <div class="filtros" id="filtros" hidden>
         <h2 class="oculto">Filtrar por categoría</h2>
         <button type="button" class="boton boton--contorno boton--filtro"
@@ -203,8 +210,19 @@
         </article>
 
         <!-- Cierra la rejilla, igual que en la portada. No lleva data-categoria
-             porque no es un artículo: el JS la esconde en cuanto hay un filtro o
-             una búsqueda activos, ya que no es un resultado de nada. -->
+             porque no es un artículo, y por eso nunca cuenta como resultado.
+
+             Se ve en dos situaciones y en ninguna más, que el JS decide:
+
+             · La lista entera, sin filtro ni búsqueda y en la página 1. Aquí
+               cierra la rejilla, como en la portada.
+             · Una categoría sin artículos. Aquí es la respuesta: dice «aún no
+               hay, pero vienen», que es lo cierto de una categoría vacía.
+
+             Nunca convive con resultados de un filtro, porque entonces no
+             cerraría nada: parecería un artículo más de esa categoría. Y nunca
+             sale en una búsqueda fallida, donde no hay ninguna promesa que
+             hacer; de eso se encarga el mensaje .vacio de más abajo. -->
         <div class="tarjeta tarjeta--caja tarjeta--proxima">
           <p class="proxima__titulo">Próximamente</p>
           <p class="proxima__texto">El siguiente artículo ya se está escribiendo.</p>
@@ -216,7 +234,14 @@
       </div>
       <!-- FIN LISTADO -->
 
-      <p class="vacio" id="vacio" hidden>No hay artículos en esta categoría.</p>
+      <!-- Este mensaje es SOLO para la búsqueda sin resultados. Una categoría
+           vacía no lo usa: allí responde la tarjeta de «Próximamente», que sí
+           dice algo —aún no hay, pero vienen— mientras que «no coincide nada»
+           es lo único que se puede decir de una búsqueda fallida.
+
+           Decía «No hay artículos en esta categoría» y era impreciso: salía
+           también con ?q=, donde la categoría no tiene nada que ver. -->
+      <p class="vacio" id="vacio" hidden>No hay artículos que coincidan con la búsqueda.</p>
 
       <!-- PAGINACIÓN · Nueve artículos por página. Los números los construye
            js/main.js: dependen de cuántos artículos pasen el filtro, así que no

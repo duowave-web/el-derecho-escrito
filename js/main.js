@@ -136,16 +136,56 @@
         el.hidden = false;
       });
 
-      if (vacio) vacio.hidden = coincidentes.length !== 0;
+      /* Hay DOS maneras de no tener nada, y cada una pide una respuesta
+         distinta. No conviven nunca: se alternan.
 
-      /* La tarjeta de espera no es un resultado: acompaña a la lista entera y
-         solo en la primera página. En la última sería incoherente, porque el
-         final de la lista es lo más antiguo y «próximamente» apunta al revés. */
+         Vacío por CATEGORÍA — «Ensayo» todavía no tiene artículos. Ahí la
+         tarjeta de espera responde a la pregunta que se hace el visitante: aún
+         no hay, pero vienen. El mensaje sobraría, porque el contador ya dice
+         «0» justo encima.
+
+         Vacío por BÚSQUEDA — «zzz» no aparece en ningún sitio. Ahí «el
+         siguiente artículo ya se está escribiendo» no responde nada: es un
+         salto de tema. Lo que falta es decir que no coincide nada, y de eso se
+         encarga el mensaje.
+
+         Si hay búsqueda Y categoría, manda la búsqueda: es el criterio más
+         específico de los dos. */
+
+      const vacia = coincidentes.length === 0;
+      const hayBusqueda = Boolean(q);
+      const hayCategoria = categoriaActiva !== "todos";
+
+      if (vacio) vacio.hidden = !(vacia && hayBusqueda);
+
+      /* La tarjeta de espera no es un resultado, así que solo sale en dos
+         situaciones: acompañando a la lista entera —y solo en la primera
+         página, porque en la última el final es lo más antiguo y
+         «próximamente» apunta al revés— o respondiendo a una categoría vacía.
+
+         Nunca cuando hay resultados, que es lo que había que evitar. */
+
+      let visiblesEnRejilla = enPagina.length;
 
       if (proxima) {
-        proxima.hidden =
-          Boolean(q) || categoriaActiva !== "todos" || paginaActiva !== 1;
+        const listaEntera =
+          !hayBusqueda && !hayCategoria && paginaActiva === 1;
+        const categoriaVacia = vacia && hayCategoria && !hayBusqueda;
+        proxima.hidden = !(listaEntera || categoriaVacia);
+        if (!proxima.hidden) visiblesEnRejilla++;
       }
+
+      /* Cuántas tarjetas se ven de verdad, para que el centrado de la rejilla
+         pueda contarlas. El CSS lo resuelve con :has(> :nth-child(2)), que
+         cuenta hijos del DOM y no sabe nada de cuáles están ocultos: al filtrar
+         una categoría vacía seguía creyendo que había dos y dejaba la tarjeta
+         de espera descolocada en la columna izquierda.
+
+         Sin JavaScript el atributo no existe, pero tampoco hace falta: allí se
+         ven todas, así que contar hijos y contar visibles da lo mismo y el
+         :has() acierta solo. */
+
+      contenedor.setAttribute("data-visibles", String(visiblesEnRejilla));
 
       actualizarContador(coincidentes.length);
       montarPaginacion(totalPaginas);
@@ -198,14 +238,29 @@
       return p;
     }
 
+    /* El try/catch no es precaución de manual: replaceState lanza en contextos
+       donde no se puede cambiar la dirección —un documento srcdoc, por ejemplo,
+       cuyo origen es about:srcdoc—. Sin él, la excepción sube por el manejador
+       del botón y se lleva por delante la llamada a aplicar() que viene
+       después: el filtro se marcaba como pulsado y no filtraba nada.
+
+       Se descubrió probando, y es justo la clase de fallo que no daría la cara
+       en producción pero deja el control mudo si alguna vez se da. Reflejar la
+       URL es un lujo; filtrar es la función. */
+
     function sincronizarURL() {
       if (!window.history || !window.history.replaceState) return;
       const cadena = parametrosActuales().toString();
-      window.history.replaceState(
-        null,
-        "",
-        window.location.pathname + (cadena ? "?" + cadena : "")
-      );
+      try {
+        window.history.replaceState(
+          null,
+          "",
+          window.location.pathname + (cadena ? "?" + cadena : "")
+        );
+      } catch (e) {
+        /* Si no se puede reescribir la URL, el filtro sigue funcionando: lo
+           único que se pierde es que la dirección quede copiable. */
+      }
     }
 
     /* La navegación la construye el JS y el <nav> vacío está en el HTML. Los
@@ -281,16 +336,18 @@
        JavaScript no habría nada que los hiciera funcionar, y un control muerto
        es peor que ninguno. Sin JS la lista se ve entera, que es lo correcto.
 
-       Los que no tienen ni un artículo se deshabilitan en vez de dejarse
-       pulsables para no dar nada. Se cuenta sobre el DOM y no sobre una lista
-       escrita a mano: al publicar un artículo, su categoría se habilita sola.
+       NINGUNO SE DESHABILITA. Los vacíos lo estuvieron, con el argumento de que
+       dejar pulsar para no obtener nada es deshonesto. Se retira, y con ello la
+       excepción que los revivía cuando la URL pedía esa categoría: hacían falta
+       dos reglas para sostener un estado que la interfaz representaba a medias.
 
-       EXCEPCIÓN: si la URL pide esa categoría, el botón se habilita aunque esté
-       vacía. Desde que ?categoria= es una entrada válida, una categoría sin
-       artículos es un estado alcanzable, y un control deshabilitado que
-       representa el estado actual es un contrasentido. Deshabilitado sigue
-       significando «no puedes entrar aquí por tu cuenta para no obtener nada»,
-       no «este estado no existe». */
+       El argumento se cae porque una categoría vacía SÍ dice algo: el contador
+       marca cero y sale la tarjeta de espera. Deja de ser un callejón para
+       convertirse en una respuesta. Un botón que lleva a una respuesta no tiene
+       por qué estar apagado.
+
+       Se va también el recuento de categorías con artículos, que solo servía
+       para eso. */
 
     function montarFiltros(pedida) {
       const barra = document.getElementById("filtros");
@@ -307,12 +364,6 @@
       // quiera, y un valor inventado dejaría la lista vacía sin explicación.
       const valida = pedida && claves.indexOf(pedida) !== -1 ? pedida : null;
 
-      const hay = {};
-      entradas.forEach(function (el) {
-        const c = el.getAttribute("data-categoria");
-        if (c) hay[c] = true;
-      });
-
       function marcar(clave) {
         botones.forEach(function (b) {
           b.setAttribute(
@@ -324,9 +375,6 @@
 
       botones.forEach(function (b) {
         const clave = b.getAttribute("data-filtro");
-        if (clave !== "todos" && !hay[clave] && clave !== valida) {
-          b.disabled = true;
-        }
 
         b.addEventListener("click", function () {
           categoriaActiva = clave;
