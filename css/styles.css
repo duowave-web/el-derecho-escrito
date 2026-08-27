@@ -777,33 +777,15 @@ body:has(.portada--video) .cabecera--con-linea {
 /* Aqui hubo un .filtros[hidden] para que el atributo ganara al display:flex.
    Sobra desde que hay un [hidden] global arriba del archivo. */
 
-/* ------------------------------------------------------------ Áreas ----- */
+/* Aqui vivian .franja, .areas y las dos reglas de .area, la banda de «Areas del
+   derecho» de la portada. Se retiran con su unico uso: el bloque se elimino del
+   HTML y ninguna otra pagina las gastaba.
 
-.franja {
-  background: var(--papel-alt);
-  padding: 48px 0;
-}
-
-.areas {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 28px;
-}
-
-.area h3 {
-  font-family: var(--display);
-  font-size: 1.25rem;
-  font-weight: 600;
-  line-height: 1.2;
-  margin: 0 0 6px;
-}
-
-.area p {
-  margin: 0;
-  font-size: 0.95rem;
-  color: var(--tinta-suave);
-  line-height: 1.5;
-}
+   El token --papel-alt NO se queda huerfano: lo siguen usando once reglas mas
+   —la caja de tarjeta, el lateral del articulo, la banda de suscripcion, el
+   indice, las referencias, los campos y alguna mas—. Lo que se va con .franja
+   es la unica banda A SANGRE del sitio rellena con el, o sea el unico sitio
+   donde ese tono cubria el ancho entero de la ventana. */
 
 /* ------------------------------------------------- Cabecera de sección -- */
 
@@ -950,23 +932,30 @@ body:has(.portada--video) .cabecera--con-linea {
   padding: 48px 0 24px;
 }
 
-/* Los 24 de arriba son para cuando .lista lleva otra seccion detras, que es lo
-   que pasa en la portada: ahi le sigue la franja de areas, con sus 48 propios,
-   asi que entre las dos quedan 72.
+/* Los 24 de arriba son el cierre de una .lista que lleva OTRA SECCION detras: no
+   tiene que despedir la pagina, solo separarse de lo siguiente, que ya trae su
+   propio relleno.
 
-   En el listado no le sigue nada: .lista es el ultimo hijo del <main> y detras
-   viene el pie. Con 24 las tarjetas quedaban pegadas —medido: 24 px hasta el
-   pie, frente a 48 en la portada, 66 en contacto y 108 en sobre—, o sea el
-   hueco mas apretado del sitio con diferencia.
+   Hoy no lo usa nadie, y conviene saberlo antes de darlo por muerto. Lo usaba la
+   portada, donde a .lista le seguia la franja de «Areas del derecho» con sus 48
+   propios —72 entre las dos—, y esa franja se retiro. Ahora .lista es el ultimo
+   hijo del <main> en las DOS paginas que la tienen, asi que en las dos manda la
+   regla de abajo.
 
-   Sube a 80, que no es un numero nuevo: es el padding de cierre de .articulo,
-   el que ya usan sobre/ y la pagina de articulo. Es el valor con el que este
-   sitio dice «aqui se acaba el contenido».
+   Se conserva porque el valor sigue siendo el correcto para ese caso, y el caso
+   puede volver: el bloque de «Sobre el autor» que el cliente quiere en portada
+   iria justo ahi. El dia que entre, la portada recupera sus 24 sola.
 
-   Va por :last-child y no por un modificador escrito a mano porque la
-   diferencia es estructural, no decorativa: la seccion que cierra la pagina
-   necesita el hueco, la que lleva otra detras no. Si algun dia se anade una
-   seccion despues, el cierre pasa a ella solo. */
+   Los 80 no son un numero nuevo: son el padding de cierre de .articulo, el que
+   ya usan sobre/ y la pagina de articulo. Es el valor con el que este sitio dice
+   «aqui se acaba el contenido». Con 24 las tarjetas quedaban pegadas al pie
+   —medido frente a 66 en contacto y 108 en sobre—, el hueco mas apretado del
+   sitio con diferencia.
+
+   Va por :last-child y no por un modificador escrito a mano porque la diferencia
+   es estructural, no decorativa: la seccion que cierra la pagina necesita el
+   hueco, la que lleva otra detras no. Asi el cierre se mueve solo — que es
+   exactamente lo que acaba de pasar al quitar la franja, sin tocar un numero. */
 
 main > .lista:last-child {
   padding-bottom: 80px;

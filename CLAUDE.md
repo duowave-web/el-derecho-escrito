@@ -121,10 +121,15 @@ conviviendo en el mismo archivo**: la etiqueta visible y la clave del enlace.
 grep -rni 'fundamento' --include='*.html' --include='*.xml' .
 ```
 
-> **Cuidado con un falso positivo.** `index.html` tiene un `<h3>Derecho penal</h3>`
-> dentro de la franja «Áreas del derecho». **No es la categoría de ningún
-> artículo**: son las materias del despacho, y no se tocan al recategorizar.
-> Que las dos listas usen palabras parecidas es casualidad, no una relación.
+> **Ya no hay falsos positivos, y antes sí los había.** Aquí decía que
+> `index.html` tenía un `<h3>Derecho penal</h3>` dentro de la franja «Áreas del
+> derecho» —las materias del despacho, que no se tocan al recategorizar—.
+> **Esa franja se eliminó**, y con ella la única lista del sitio que usaba
+> palabras parecidas a las categorías sin serlo.
+>
+> Comprobado ejecutándolo: el `grep` devuelve hoy doce líneas y **las doce son
+> reales** —los nueve puntos, el botón del filtro y dos comentarios que avisan
+> de las variantes—. Si algún día vuelve una lista de materias, vuelve el aviso.
 
 ### El listado enseña lo que hay, y deja vacío lo que no
 
@@ -853,9 +858,22 @@ Orden de la portada, tal como está construida:
 Cabecera:           logotipo a la izquierda, navegacion y lupa a la derecha
 Portada:            franja de 520 px, texto a la izquierda | estatua a la derecha
 Ultimos articulos:  rotulo + "ver todos", rejilla de tarjetas, banda de newsletter
-Areas del derecho:  franja con las materias que se tratan
 Pie:                fondo oscuro
 ```
+
+> **Detrás de «Últimos artículos» iba una franja de «Áreas del derecho»** con
+> las cuatro materias del despacho, y se eliminó con su CSS —`.franja`,
+> `.areas` y las dos reglas de `.area`, que no las usaba nadie más—.
+>
+> No hizo falta tocar ningún espaciado. `.lista` pasó a ser el último hijo del
+> `<main>` y recogió sola el cierre de 80 px de `main > .lista:last-child`, que
+> existe justo para eso. Medido antes y después: de 24 px hasta el pie a **80**,
+> el mismo que el listado.
+>
+> Se llevó por delante el falso positivo del `grep` de categorías —era su
+> `<h3>Derecho penal</h3>`— y **la única banda a sangre rellena de
+> `--papel-alt`**, o sea el único sitio donde ese tono cubría el ancho entero de
+> la ventana. El token no se queda huérfano: lo siguen usando once reglas más.
 
 El bloque de la portada es **titular, entradilla y dos botones**, sin antetítulo
 encima. Llevó uno —«BLOG JURÍDICO»— y se retiró.
