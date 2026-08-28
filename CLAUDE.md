@@ -339,6 +339,33 @@ consulta y ofrece una salida. Y sin artículos publicados, sin consulta y sin
 filtro, el contador diría «0 artículos publicados» — tampoco queda ningún estado
 sin explicar.
 
+#### La palabra la decide el filtro, no el número
+
+`actualizarContador()` dice **«artículos publicados»** solo con la lista sin
+tocar, y **«resultados»** en cuanto hay búsqueda, categoría o etiquetas — los
+haya todos, algunos o ninguno.
+
+Comparaba el número con el total, y con tres ejes combinables eso **miente cada
+vez que un filtro deja pasar a todos**: dos etiquetas que entre las dos cubran
+el archivo daban «4 artículos publicados» y se leía como si no hubiera filtro
+puesto. Con un solo eje casi no pasaba; con tres pasa a menudo.
+
+Medido antes y después, con las cuatro entradas de hoy:
+
+| Estado | Antes | Ahora |
+|---|---|---|
+| Sin filtro | 4 artículos publicados | **4 artículos publicados** |
+| `?categoria=fundamento` (4 de 4) | 4 artículos publicados ✗ | **4 resultados** |
+| `?etiquetas=legalidad,docencia` (4 de 4) | 4 artículos publicados ✗ | **4 resultados** |
+| `?q=principio` (4 de 4) | 4 artículos publicados ✗ | **4 resultados** |
+| `?etiquetas=docencia` (1) | 1 resultado | 1 resultado |
+| Categoría vacía | 0 resultados | 0 resultados |
+
+La prueba que lo cierra es una transición: con etiquetas **y** categoría puestas
+y luego «Borrar etiquetas», quedan los cuatro artículos y el contador sigue
+diciendo **«4 resultados»**, porque la categoría continúa activa. Al pulsar
+«Todos» vuelve a «4 artículos publicados».
+
 > ⚠️ **Si algún día se quiere un vacío más cálido, la vía es cambiar cómo habla
 > el contador cuando el número es cero** —o sea la cadena de
 > `actualizarContador()` en `js/main.js`—, **no añadir un párrafo debajo.**

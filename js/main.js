@@ -83,14 +83,34 @@
 
     /* Cuenta el total que pasa los filtros, no lo que cabe en la página: quien
        lee «12 resultados» quiere saber cuántos hay, y cuántos ve a la vez se lo
-       dice la paginación de abajo. */
+       dice la paginación de abajo.
+
+       QUÉ DECIDE LA PALABRA es si hay algún filtro puesto, NO si el número
+       coincide con el total. Antes se comparaba el número, y con tres ejes
+       combinables eso miente cada vez que un filtro deja pasar a todos: con dos
+       etiquetas que entre las dos cubran el archivo entero, el contador decía
+       «4 artículos publicados» y se leía como si no hubiera filtro ninguno.
+
+       Ahora «publicados» queda reservado a la lista sin tocar, que es la única
+       situación en la que ese número describe el archivo. En cuanto hay
+       búsqueda, categoría o etiquetas, lo que se cuenta son resultados —los
+       haya todos, algunos o ninguno.
+
+       Es además el único sitio donde vive el estado vacío: no hay ningún
+       párrafo debajo que lo repita, así que si algún día se quiere un vacío más
+       cálido se cambia esta cadena y no se añade un elemento nuevo. */
 
     function actualizarContador(n) {
       if (!contador) return;
-      contador.textContent =
-        n === entradas.length
-          ? n + (n === 1 ? " artículo publicado" : " artículos publicados")
-          : n + (n === 1 ? " resultado" : " resultados");
+
+      const hayFiltro =
+        Boolean(consultaActiva.trim()) ||
+        categoriaActiva !== "todos" ||
+        etiquetasActivas.length > 0;
+
+      contador.textContent = hayFiltro
+        ? n + (n === 1 ? " resultado" : " resultados")
+        : n + (n === 1 ? " artículo publicado" : " artículos publicados");
     }
 
     /* Tres criterios que se acumulan, no se pisan: la búsqueda llega por ?q=
