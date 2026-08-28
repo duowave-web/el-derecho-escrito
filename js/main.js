@@ -793,7 +793,12 @@
     const rejilla = document.getElementById("relacionados");
     if (!seccion || !rejilla) return;
 
-    const CUANTOS = 2;
+    /* EN PRUEBAS a 3 para ver cómo queda. Lo medido dice 2: en la columna de
+       720 px del artículo, a tres las tarjetas salen a 221,3 px y el titular
+       pasa a 4 líneas; a dos salen a 346 y se queda en 3, como en portada. Si
+       se vuelve, hay que devolver también .tarjetas--par al <div> del bloque. */
+
+    const CUANTOS = 3;
 
     /* Las etiquetas del artículo actual NO se duplican en ningún sitio: se leen
        de sus propias píldoras del lateral, que ya están en el DOM. El atributo

@@ -98,6 +98,19 @@ Si no, el artículo existe pero es invisible para buscadores y lectores de RSS.
 
 ### La categoría de un artículo se repite en 9 sitios
 
+> ⚠️ **Y hay TRES ENTRADAS DE EJEMPLO más en `articulos/index.html`**, marcadas
+> con `<!-- PROVISIONAL: entradas de ejemplo, borrar antes de entregar -->` y su
+> marca de FIN. Están solo para que el bloque «Continúa leyendo» del artículo
+> tenga candidatos y se pueda ver funcionando con un único artículo publicado.
+>
+> **Sus enlaces dan 404**, y tiene que ser así: si apuntaran al artículo real, la
+> exclusión por `pathname` las descartaría a las tres y el bloque volvería a
+> quedarse vacío. Tampoco se quedan en los relacionados — **se ven en el listado,
+> el contador dice «4 artículos publicados» y entran en el filtro de Fundamento**.
+>
+> Al borrarlas no hay que tocar nada más: el bloque del artículo se queda sin
+> candidatos y **se oculta solo**.
+
 > ⚠️ **El único artículo publicado es un ejemplo provisional.** «El principio de
 > legalidad penal» y su categoría **«Fundamento»** están para que la plantilla
 > tenga contenido con el que probarse, y **se eliminan al entregar la web**. No

@@ -368,7 +368,10 @@
                en realidad abre una sección. Es el segundo uso de esa variante. -->
           <section class="continua" id="continua" aria-labelledby="continua-titulo" hidden>
             <h2 id="continua-titulo" class="lista__titulo lista__titulo--destacado">Continúa leyendo</h2>
-            <div class="tarjetas tarjetas--par" id="relacionados"></div>
+            <!-- EN PRUEBAS sin .tarjetas--par para verlo a tres columnas, que
+                 son las de .tarjetas a secas. Para volver a dos se le devuelve
+                 la clase y se baja CUANTOS a 2 en js/main.js. -->
+            <div class="tarjetas" id="relacionados"></div>
           </section>
 
         </div>

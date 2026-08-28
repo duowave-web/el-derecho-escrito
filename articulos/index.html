@@ -244,6 +244,88 @@
           </div>
         </article>
 
+        <!-- ================================================================
+             PROVISIONAL: entradas de ejemplo, borrar antes de entregar
+             ================================================================
+
+             Las TRES tarjetas de aquí abajo NO son artículos. Existen solo para
+             que el bloque «Continúa leyendo» del artículo tenga candidatos y se
+             pueda ver funcionando con un único artículo publicado.
+
+             ⚠️ SUS ENLACES DAN 404. Los destinos no existen. Tienen que ser
+             rutas distintas de la del artículo real porque, si apuntaran a él,
+             la exclusión por pathname las descartaría a las tres y el bloque
+             volvería a quedarse vacío — que es justo lo que se quería ver.
+
+             Y no se quedan en el bloque de relacionados: al vivir en el listado
+             SE VEN AQUÍ, cuentan en el contador —que pasa a decir «4 artículos
+             publicados»— y entran en el filtro de Fundamento.
+
+             Están puestas para que el orden se note: la primera comparte tres
+             etiquetas, la segunda dos y la tercera ninguna. La tercera es
+             además la más reciente de las tres, así que si aparece la última
+             queda demostrado que manda la afinidad y no la fecha.
+
+             AL BORRARLAS: quitar este comentario y los tres <article> hasta la
+             marca de FIN. No hay que tocar nada más — el bloque del artículo se
+             queda sin candidatos y se oculta solo. -->
+
+        <article class="tarjeta tarjeta--caja" data-categoria="fundamento"
+                 data-etiquetas="legalidad,fundamento,garantias">
+          <div class="tarjeta__imagen">
+            <img src="../img/damajusticia.jpg"
+                 alt="Figura de bronce de la justicia, con los ojos vendados y los dos platos de la balanza vacíos"
+                 width="1600" height="1066" loading="lazy" decoding="async">
+          </div>
+          <p class="etiqueta etiqueta--plana">Fundamento</p>
+          <h2 class="entrada__titulo">
+            <a href="../articulos/ejemplo-cuatro-exigencias/">El principio de legalidad penal: las cuatro exigencias</a>
+          </h2>
+          <p class="entrada__extracto">Entrada de ejemplo. Lex scripta, praevia, certa y stricta: cuatro exigencias que se citan juntas y se cumplen por separado.</p>
+          <div class="entrada__meta">
+            <time datetime="2026-05-12">12 mayo 2026</time>
+            <span class="lectura">6 min</span>
+          </div>
+        </article>
+
+        <article class="tarjeta tarjeta--caja" data-categoria="fundamento"
+                 data-etiquetas="legalidad,garantias">
+          <div class="tarjeta__imagen">
+            <img src="../img/damajusticia.jpg"
+                 alt="Figura de bronce de la justicia, con los ojos vendados y los dos platos de la balanza vacíos"
+                 width="1600" height="1066" loading="lazy" decoding="async">
+          </div>
+          <p class="etiqueta etiqueta--plana">Fundamento</p>
+          <h2 class="entrada__titulo">
+            <a href="../articulos/ejemplo-donde-se-tensiona/">El principio de legalidad penal: dónde se tensiona hoy</a>
+          </h2>
+          <p class="entrada__extracto">Entrada de ejemplo. Leyes penales en blanco, tipos abiertos y la tentación de dejar que el reglamento complete lo que la ley calla.</p>
+          <div class="entrada__meta">
+            <time datetime="2026-06-18">18 junio 2026</time>
+            <span class="lectura">8 min</span>
+          </div>
+        </article>
+
+        <article class="tarjeta tarjeta--caja" data-categoria="fundamento"
+                 data-etiquetas="docencia,divulgacion">
+          <div class="tarjeta__imagen">
+            <img src="../img/damajusticia.jpg"
+                 alt="Figura de bronce de la justicia, con los ojos vendados y los dos platos de la balanza vacíos"
+                 width="1600" height="1066" loading="lazy" decoding="async">
+          </div>
+          <p class="etiqueta etiqueta--plana">Fundamento</p>
+          <h2 class="entrada__titulo">
+            <a href="../articulos/ejemplo-fuera-del-aula/">El principio de legalidad penal: por qué importa fuera del aula</a>
+          </h2>
+          <p class="entrada__extracto">Entrada de ejemplo. La garantía no se agota en el manual: aparece cada vez que una administración sanciona sin norma que la ampare.</p>
+          <div class="entrada__meta">
+            <time datetime="2026-07-30">30 julio 2026</time>
+            <span class="lectura">5 min</span>
+          </div>
+        </article>
+
+        <!-- ============ FIN PROVISIONAL: entradas de ejemplo ============ -->
+
         <!-- Cierra la rejilla, igual que en la portada, y SE VE SIEMPRE: con
              filtro, con búsqueda y en todas las páginas. El JS no la esconde
              nunca.
