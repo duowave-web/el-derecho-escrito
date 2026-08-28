@@ -603,6 +603,8 @@ Tres familias, cada una con un papel claro:
 | Titular destacado | Cormorant Garamond | 48 px | 600 | −0.015em | 1.08 |
 | Título de tarjeta | Cormorant Garamond | 28 px | 600 | normal | 1.15 |
 | Cuerpo y entradillas | Source Serif 4 | 18 px | 400 | normal | 1.6 |
+| **Epígrafe `h2` del artículo** | **Source Serif 4** | **32 px** | **600** | normal | 1.2 |
+| **Epígrafe `h3` del artículo** | **Source Serif 4** | **24 px** | **600** | normal | 1.25 |
 | Navegación | Inter | 12 px | 500 | 0.07em | 1.75 | versales |
 | Antetítulo de sección | Inter | 12 px | 600 | 0.08em | 1.3 | versales, color acento |
 | Rótulo de sección de portada | Cormorant Garamond | 20 px | **700** | 0.10em | 1.3 | versales, `--tinta` |
@@ -610,6 +612,46 @@ Tres familias, cada una con un papel claro:
 
 Regla mental: **Cormorant para lo que se mira, Source Serif para lo que se lee,
 Inter para lo que se consulta.**
+
+> **Los epígrafes del artículo no van en Cormorant, y el titular sí.** Es el
+> único sitio del proyecto donde un `h1` y sus `h2` no comparten familia, así
+> que va a llamar la atención de quien lo lea. Tres cosas antes de «arreglarlo»:
+>
+> **Los dos son serif.** El cambio fue de un serif de *display* a uno de
+> *texto*, no de serif a sans. Quien lea «los epígrafes ya no van en Cormorant»
+> puede suponer que saltan a Inter, y no: van a la misma familia que el párrafo
+> que tienen debajo.
+>
+> **Encaja con la regla de arriba.** Los epígrafes se leen dentro de la columna
+> y en secuencia con el texto —son «lo que se lee»—, mientras que el titular se
+> mira, arriba, con su ficha y su foto. Antes eran lo único de esa columna que
+> no estaba en la familia de lectura.
+>
+> **Ópticamente no se comparan nunca.** Entre el `h1` y el primer `h2` hay
+> **621 px medidos**, con la foto 21:9 de 309 px y la entradilla de 163 en
+> medio. No existe un momento de la lectura en que los dos estén a la vista.
+
+> **Los tamaños no bajan aunque Source Serif pese más, y es deliberado.** El
+> mismo texto pasa de **504,17 a 618,27 px de ancho, un +22,6 %**, y en pantalla
+> se lee bastante más cargado de lo que se leía en Cormorant.
+>
+> Igualar la mancha obligaría a bajar el `h2` a unos **26 px**, y entonces el
+> `h3` caería a **~19,6 — a un pelo de los 18 del cuerpo**, aplastando la
+> escalera `h2`/`h3`/párrafo. Se prefiere el peso al aplastamiento.
+
+> ⚠️ **Y la palanca contra ese peso NO puede ser un 500.** El `@import` carga de
+> Source Serif 4 solo **400 y 600**, y nada entre medias.
+>
+> Pedir un peso que no está **no da ningún error**: el navegador coge el más
+> cercano, aquí el 400, y el epígrafe se queda **exactamente al peso del
+> cuerpo**. Deja de distinguirse y nada avisa.
+>
+> Es el mismo fallo silencioso que el **700 de Cormorant** —documentado unas
+> líneas más abajo—, solo que del revés: allí quitarlo del `@import` hace que el
+> navegador **engorde el 600** y simule una cara que no existe. En los dos casos
+> la página se pinta sin quejarse y el problema solo aparece midiendo.
+>
+> **Para tocar un peso hay que añadirlo antes al `@import`.**
 
 > **Los dos rótulos de sección no son lo mismo, y el criterio no es dónde están
 > sino qué hacen.** Si el rótulo **abre una sección** que se sostiene sola, va

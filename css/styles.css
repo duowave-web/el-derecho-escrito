@@ -6,9 +6,24 @@
    Sistema de diseno medido sobre la web del cliente (elderechoescrito.es).
    Regla mental de tipografia:
      Cormorant  -> lo que se mira   (logotipo, titulares)
-     Source Serif -> lo que se lee  (cuerpo, entradillas)
+     Source Serif -> lo que se lee  (cuerpo, entradillas, epigrafes)
      Inter      -> lo que se consulta (navegacion, fechas, etiquetas)
-   ========================================================================== */
+
+   OJO CON LOS PESOS DEL @import DE ARRIBA: solo existe lo que esta escrito ahi,
+   y pedir uno que falte NO da ningun error.
+
+   De Source Serif 4 hay 400 y 600, y nada entre medias. Si alguien encuentra
+   pesados los epigrafes del articulo —van a 600, y a ese cuerpo cargan bastante—
+   la tentacion es bajarlos a 500. No funciona: ante un peso que no esta, el
+   navegador coge el mas cercano, aqui el 400, y el epigrafe se queda EXACTAMENTE
+   al peso del cuerpo. Deja de distinguirse y nada avisa.
+
+   Es el mismo fallo silencioso del 700 de Cormorant, unas lineas mas abajo en la
+   lista, solo que al reves: alli quitarlo hace que el navegador ENGORDE el 600 y
+   simule una cara que no existe. En los dos casos la pagina se pinta sin
+   quejarse y el problema solo se ve midiendo.
+
+   Para tocar un peso hay que anadirlo antes al @import. */
 
 :root {
   /* Color */
@@ -1917,8 +1932,30 @@ main > .lista:last-child {
   margin: 6px 0 22px;
 }
 
+/* Los epigrafes van en --texto, la familia del cuerpo, y NO en el --display del
+   titular de aqui arriba. Es el unico sitio del sitio donde un h1 y sus h2 no
+   comparten familia, asi que conviene el porque.
+
+   Los dos son SERIF: el cambio fue de un serif de display a uno de texto, no de
+   serif a sans. Quien lea «los epigrafes no van en Cormorant» puede suponer que
+   saltan a Inter, y no.
+
+   Encaja con la regla del sistema —Cormorant para lo que se mira, Source Serif
+   para lo que se lee—: los epigrafes se leen dentro de la columna y en secuencia
+   con el texto, mientras que el titular se mira, arriba y con su ficha.
+
+   Y opticamente no se comparan nunca: entre el h1 y el primer h2 hay 621 px
+   medidos, con la foto 21:9 de 309 px y la entradilla de 163 en medio. No existe
+   un momento de la lectura en que los dos esten a la vista.
+
+   LOS TAMANOS NO BAJAN, aunque Source Serif pese bastante mas: el mismo texto
+   pasa de 504,17 a 618,27 px de ancho, un +22,6 %. Igualar la mancha bajaria el
+   h2 a unos 26 px, y entonces el h3 caeria a ~19,6 — a un pelo de los 18 del
+   cuerpo—, aplastando la escalera h2/h3/parrafo. El peso se prefiere al
+   aplastamiento. */
+
 .articulo h2 {
-  font-family: var(--display);
+  font-family: var(--texto);
   font-size: 2rem;
   font-weight: 600;
   line-height: 1.2;
@@ -1926,7 +1963,7 @@ main > .lista:last-child {
 }
 
 .articulo h3 {
-  font-family: var(--display);
+  font-family: var(--texto);
   font-size: 1.5rem;
   font-weight: 600;
   line-height: 1.25;
