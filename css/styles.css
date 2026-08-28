@@ -832,12 +832,21 @@ body:has(.portada--video) .cabecera--con-linea {
   box-shadow: 0 6px 20px rgba(30, 30, 30, 0.08);
 }
 
+/* La fila ES el <label>, con la casilla dentro, para que TODA ella sea pulsable
+   —padding y hueco a la derecha incluidos— y no solo el texto. Con un <div> por
+   fuera, 93 px de los 202 de la fila no hacian nada. El cursor va aqui por lo
+   mismo: lo que se puede pulsar es la fila entera. */
+
 .panel-etiquetas__fila {
   display: flex;
   align-items: center;
   gap: 9px;
   padding: 5px 6px;
   border-radius: 3px;
+  font-family: var(--ui);
+  font-size: 13px;
+  color: var(--tinta);
+  cursor: pointer;
 }
 
 .panel-etiquetas__fila:hover {
@@ -856,12 +865,6 @@ body:has(.portada--video) .cabecera--con-linea {
   cursor: pointer;
 }
 
-.panel-etiquetas__fila label {
-  font-family: var(--ui);
-  font-size: 13px;
-  color: var(--tinta);
-  cursor: pointer;
-}
 
 /* ---- Etiquetas seleccionadas ------------------------------------------- */
 
@@ -2742,6 +2745,20 @@ body:has(.progreso) .cabecera {
    filete hace falta porque el blanco sobre --papel-alt tampoco es un canto: son
    los mismos 2,6 de dE del caso inverso. */
 
+/* Ahora es un <a> al listado con la etiqueta ya marcada. Estuvo en <span> con el
+   argumento de que no existen paginas de etiqueta — cierto, y siguen sin
+   existir: el destino es el filtro de articulos/, no una pagina nueva.
+
+   Son TRES usos de la misma familia y conviene no confundirlos:
+
+     .etiqueta--plana   categoria     <a>       APLICA un filtro, texto plano
+     .etiqueta--tag     etiqueta      <a>       APLICA un filtro, pildora
+     .etiqueta--filtro  seleccionada  <button>  QUITA un filtro, pildora con aspa
+
+   Las dos pildoras nunca conviven —una vive en el articulo y otra en el
+   listado— y el aspa distingue la que quita. Por eso .etiqueta--filtro no
+   reutiliza esta: misma familia visual, naturaleza opuesta. */
+
 .etiqueta--tag {
   text-transform: none;
   letter-spacing: 0;
@@ -2751,6 +2768,23 @@ body:has(.progreso) .cabecera {
   color: var(--tinta-suave);
   background: var(--papel);
   border: 1px solid var(--borde);
+  transition: color 160ms ease, border-color 160ms ease;
+}
+
+/* SIN SUBRAYADO, al contrario que la categoria de la ficha, y la diferencia no
+   es un capricho: aquella es texto plano —sin borde ni relleno— y ahi el
+   subrayado es lo que dice que es un enlace. Esto es una caja, y un subrayado
+   dentro de una caja con borde se lee como un error de maquetacion, no como una
+   afordancia. Mismo criterio que se aplico a .volver.
+
+   Lo que hace de senal es el tono: borde y texto pasan al acento. No RELLENA,
+   que es lo que hace .etiqueta--filtro al pasar el raton — asi las dos pildoras
+   se distinguen tambien por como responden, no solo por el aspa. */
+
+.etiqueta--tag:hover {
+  color: var(--acento);
+  border-color: var(--acento);
+  text-decoration: none;
 }
 
 /* Suscripcion. Es solo maqueta: no hay backend, asi que los controles van

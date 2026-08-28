@@ -271,6 +271,87 @@ alfabéticamente. Si dos artículos escriben la misma etiqueta distinto —
 > Si algún día no hay ninguna etiqueta, **el control entero se oculta**: un
 > desplegable vacío es peor que ninguno.
 
+#### Cada etiqueta se escribe en 3 sitios y en DOS FORMAS
+
+Desde que las píldoras del lateral son enlaces, una etiqueta vive aquí:
+
+| # | Dónde | Qué forma |
+|---|---|---|
+| 1 | `articulos/index.html` | `data-etiquetas` — **texto visible** |
+| 2 | el artículo, píldora del lateral | **texto visible**, `#Garantías` |
+| 3 | el artículo, `href` de esa píldora | **clave**, `?etiquetas=garantias` |
+
+**Los puntos 2 y 3 están en el mismo elemento**, que es exactamente la trampa
+que ya documenta la categoría: dos formas de la misma palabra conviviendo en la
+misma línea. Un `grep` de «Garantías» no encuentra el `href`, y uno de
+`garantias` no encuentra el texto.
+
+```sh
+# Las dos formas de una etiqueta, en los tres sitios
+grep -rni 'garantias\|garantías' --include='*.html' articulos/
+```
+
+**Si el texto y la clave no coinciden, no da ningún error**: el enlace lleva a
+un filtro que no selecciona nada y se ve la lista entera, como si no se hubiera
+pulsado. Y si `data-etiquetas` del listado no coincide con la píldora del
+artículo, esa etiqueta simplemente no aparece en el desplegable.
+
+> **Balance por artículo, para tenerlo en un sitio:** la categoría se repite en
+> **9** puntos, la autoría en **8** y cada etiqueta en **3**. Las etiquetas son
+> las más baratas de las tres y las únicas cuyo despiste degrada en silencio a
+> «no filtra» en vez de a «se ve mal».
+
+> ⚠️ **Y hay DOS listas más con forma de etiqueta que NO son estas**, en la
+> cabecera del artículo. Es la confusión más fácil de cometer:
+>
+> | Campo | Contenido hoy | ¿Alimenta el filtro? |
+> |---|---|---|
+> | píldoras `.etiqueta--tag` | Legalidad, Fundamento, Garantías, Taxatividad, Irretroactividad | **sí** |
+> | `data-etiquetas` del listado | las mismas | **sí** |
+> | `<meta property="article:tag">` ×3 | «principio de legalidad», «derecho penal», «garantías penales» | no |
+> | `"keywords"` del JSON-LD | seis frases largas de cola | no |
+>
+> Las dos de abajo son **vocabulario de buscador**, frases naturales largas, no
+> el vocabulario de navegación del sitio. Que no coincidan es correcto y
+> deliberado: sirven a lectores distintos. Pero **nada en el archivo lo dice**,
+> así que quien vea cuatro listas de etiquetas puede intentar «unificarlas» y
+> romper el filtro o empobrecer el marcado. Al añadir una etiqueta nueva hay que
+> tocar solo las dos de arriba.
+
+#### Las píldoras del lateral son enlaces, y no llevan subrayado
+
+Estuvieron en `<span>` con el argumento de que no existen páginas de etiqueta.
+Sigue siendo cierto —y siguen sin existir—, pero el destino no es una página
+nueva: es **el filtro del listado**, `?etiquetas=clave`, el mismo parámetro que
+usa el desplegable.
+
+Con esto son **tres usos de la misma familia** y conviene no confundirlos:
+
+| Clase | Qué es | Etiqueta | Qué hace |
+|---|---|---|---|
+| `.etiqueta--plana` | categoría | `<a>` | **aplica** un filtro, texto plano |
+| `.etiqueta--tag` | etiqueta del artículo | `<a>` | **aplica** un filtro, píldora |
+| `.etiqueta--filtro` | etiqueta marcada | `<button>` | **quita** un filtro, píldora con aspa |
+
+Las dos píldoras **nunca conviven** —una vive en el artículo y otra en el
+listado— y el aspa distingue la que quita.
+
+> **`.etiqueta--tag` no se subraya al pasar el ratón y `.etiqueta--plana` sí**,
+> y la diferencia no es un descuido. La categoría es **texto plano**, sin borde
+> ni relleno, y ahí el subrayado es lo que dice que es un enlace. La etiqueta es
+> **una caja**, y un subrayado dentro de una caja con borde se lee como un fallo
+> de maquetación. Mismo criterio que se aplicó a `.volver`.
+>
+> La señal la da el tono: borde y texto pasan al acento. **No rellena**, que es
+> lo que hace `.etiqueta--filtro`, así las dos píldoras se distinguen también
+> por cómo responden y no solo por el aspa.
+
+**Una etiqueta que no comparte ningún otro artículo lleva a un listado con un
+solo resultado: el que acabas de leer.** Es correcto y está comprobado —
+`#Taxatividad` da «1 resultado»—: el filtro se aplicó y el contador y la píldora
+dicen cuál es. No es un callejón sin salida, porque la píldora se puede quitar
+ahí mismo.
+
 #### El desplegable no es un `role="menu"`, y es deliberado
 
 Un menú ARIA **obliga** a navegación por flechas y activación única. Esto es un
@@ -285,6 +366,19 @@ ya son operables por teclado y anuncian su estado sin emular nada.
 - Salir con el tabulador cierra, mirando `relatedTarget` en `focusout`.
 - Las casillas se dejan **nativas**. Rehacerlas con un pseudoelemento obligaría
   a reimplementar foco y alto contraste sin ganar nada.
+
+> **La fila ES el `<label>`, con la casilla dentro, y esto se midió.** Pulsar el
+> *nombre* de la etiqueta ya funcionaba con un `<label for>` normal —es nativo—,
+> pero el resto de la fila no: **93 px de los 202, casi la mitad, caían en el
+> `<div>` contenedor y no hacían nada**. Una fila con la casilla a la izquierda
+> y hueco a la derecha se espera pulsable entera.
+>
+> Envolviendo se arregla sin una línea de JavaScript y entra también el padding.
+> Se conserva el `for=` aunque la casilla vaya dentro: es redundante para el
+> navegador, pero deja la asociación explícita.
+>
+> Comprobado que **no alterna dos veces** al pulsar la casilla directamente, que
+> es el fallo clásico de anidarla: marca a la primera y desmarca a la segunda.
 
 #### Las píldoras se pulsan para quitarse
 

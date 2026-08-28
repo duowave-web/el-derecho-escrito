@@ -529,10 +529,21 @@
 
       const casillas = Object.create(null);
 
+      /* LA FILA ENTERA ES EL <label>, con la casilla dentro. Con un <div> por
+         fuera y el <label> solo alrededor del texto, pulsar el nombre ya
+         funcionaba —eso es nativo y no hacía falta tocarlo— pero el hueco a la
+         derecha no: medido, 93 px de los 202 de la fila, casi la mitad, caían en
+         el <div> y no hacían nada.
+
+         Envolviendo se soluciona sin JavaScript y de paso entra también el
+         padding de la fila. Se conserva el for= aunque la casilla vaya dentro:
+         es redundante para el navegador, pero la asociación queda explícita. */
+
       claves.forEach(function (clave) {
         const id = "et-" + clave;
-        const fila = document.createElement("div");
+        const fila = document.createElement("label");
         fila.className = "panel-etiquetas__fila";
+        fila.setAttribute("for", id);
 
         const casilla = document.createElement("input");
         casilla.type = "checkbox";
@@ -540,9 +551,8 @@
         casilla.value = clave;
         casilla.checked = etiquetasActivas.indexOf(clave) !== -1;
 
-        const etiqueta = document.createElement("label");
-        etiqueta.setAttribute("for", id);
-        etiqueta.textContent = vistas[clave];
+        const texto = document.createElement("span");
+        texto.textContent = vistas[clave];
 
         casilla.addEventListener("change", function () {
           alternar(clave, casilla.checked);
@@ -550,7 +560,7 @@
 
         casillas[clave] = casilla;
         fila.appendChild(casilla);
-        fila.appendChild(etiqueta);
+        fila.appendChild(texto);
         panel.appendChild(fila);
       });
 

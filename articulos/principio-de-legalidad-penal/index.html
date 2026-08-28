@@ -406,13 +406,30 @@
 
           <div class="lateral__bloque">
             <h2 class="lista__titulo">Etiquetas</h2>
-            <!-- Van en <span> y no en <a>: no existen páginas de etiqueta. -->
+            <!-- PLANTILLA · Etiquetas. Van en <a> al listado con la etiqueta ya
+                 marcada, igual que la categoría de la ficha lleva a
+                 ?categoria=. No hay páginas de etiqueta y no hacen falta: el
+                 filtro del listado es el destino.
+
+                 CADA UNA SE ESCRIBE DOS VECES Y EN DOS FORMAS, que es donde se
+                 falla: el texto visible con mayúscula y acentos, y la CLAVE del
+                 href en minúsculas y sin acentos. Misma trampa que
+                 data-categoria y su etiqueta visible. Un grep de «Garantías» no
+                 encuentra el href, y uno de «garantias» no encuentra el texto.
+
+                 La tercera copia está en data-etiquetas del listado, que guarda
+                 el texto visible. Si no coinciden, el enlace lleva a un filtro
+                 que no selecciona nada: no da error, se ve la lista entera.
+
+                 El prefijo oculto es el nombre accesible. «#Legalidad» a secas
+                 no dice a dónde lleva, y en una lista de enlaces leída de
+                 corrido eso deja cinco destinos sin identificar. -->
             <ul class="etiquetas">
-              <li><span class="etiqueta etiqueta--tag">#Legalidad</span></li>
-              <li><span class="etiqueta etiqueta--tag">#Fundamento</span></li>
-              <li><span class="etiqueta etiqueta--tag">#Garantías</span></li>
-              <li><span class="etiqueta etiqueta--tag">#Taxatividad</span></li>
-              <li><span class="etiqueta etiqueta--tag">#Irretroactividad</span></li>
+              <li><a class="etiqueta etiqueta--tag" href="../../articulos/?etiquetas=legalidad"><span class="oculto">Ver artículos con la etiqueta </span>#Legalidad</a></li>
+              <li><a class="etiqueta etiqueta--tag" href="../../articulos/?etiquetas=fundamento"><span class="oculto">Ver artículos con la etiqueta </span>#Fundamento</a></li>
+              <li><a class="etiqueta etiqueta--tag" href="../../articulos/?etiquetas=garantias"><span class="oculto">Ver artículos con la etiqueta </span>#Garantías</a></li>
+              <li><a class="etiqueta etiqueta--tag" href="../../articulos/?etiquetas=taxatividad"><span class="oculto">Ver artículos con la etiqueta </span>#Taxatividad</a></li>
+              <li><a class="etiqueta etiqueta--tag" href="../../articulos/?etiquetas=irretroactividad"><span class="oculto">Ver artículos con la etiqueta </span>#Irretroactividad</a></li>
             </ul>
           </div>
 
