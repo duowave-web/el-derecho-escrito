@@ -793,12 +793,20 @@
     const rejilla = document.getElementById("relacionados");
     if (!seccion || !rejilla) return;
 
-    /* EN PRUEBAS a 3 para ver cómo queda. Lo medido dice 2: en la columna de
-       720 px del artículo, a tres las tarjetas salen a 221,3 px y el titular
-       pasa a 4 líneas; a dos salen a 346 y se queda en 3, como en portada. Si
-       se vuelve, hay que devolver también .tarjetas--par al <div> del bloque. */
+    /* DOS, y se probó a tres antes de decidirlo. En la columna de 720 px del
+       artículo, a tres las tarjetas salen a 221,3 px y a dos a 346.
 
-    const CUANTOS = 3;
+       Lo que descartó las tres NO fue que se rompiera: no desborda nada, la
+       palabra más larga mide 122,4 px y cabe. Fue la imagen, que baja de
+       346×231 a 221×148 — menos de la mitad de superficie— y a ese tamaño la
+       balanza deja de leerse. En un sistema donde la imagen acompaña al texto,
+       acompañar así es casi no estar. El titular, de paso, pasa de 2 líneas a
+       3 o 4 y descuadra las fechas entre tarjetas.
+
+       Si alguna vez se vuelve a tres, hay que quitarle .tarjetas--par al <div>
+       del bloque para que herede las tres columnas de .tarjetas. */
+
+    const CUANTOS = 2;
 
     /* Las etiquetas del artículo actual NO se duplican en ningún sitio: se leen
        de sus propias píldoras del lateral, que ya están en el DOM. El atributo

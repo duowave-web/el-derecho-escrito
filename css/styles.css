@@ -2719,22 +2719,28 @@ body:has(.progreso) .cabecera {
   border-top: 1px solid var(--borde);
 }
 
-/* DOS columnas y no tres, y esta medido. Aqui la rejilla no vive en la reticula
-   de 1200 sino dentro de .articulo__cuerpo, que son 720 px:
+/* DOS columnas y no tres. Aqui la rejilla no vive en la reticula de 1200 sino
+   dentro de .articulo__cuerpo, que son 720 px, asi que a tres las tarjetas
+   salen a 221,3 px y a dos a 346.
 
-     3 columnas -> 221,3 px de tarjeta, titular a 4 lineas
-     2 columnas -> 346 px de tarjeta,   titular a 3 lineas
-     (portada)  -> 365,3 px,            titular a 3 lineas
+   Se probaron las tres antes de decidir, y el motivo que las descarto NO es el
+   que parecia. Se predijo que romperian por min-content y no rompen: no
+   desborda nada, la palabra mas larga mide 122,4 px y cabe de sobra en 221,3.
 
-   Los 221,3 quedan por debajo del suelo de min-content de 218,9 documentado en
-   CLAUDE.md, y las 4 lineas son exactamente la degradacion que el corte de 1084
-   del listado existe para evitar. A dos, el rendimiento es el mismo que en
-   portada y ademas la fila se llena exacta, sin celda suelta.
+   Lo que las descarta es la IMAGEN. Medida en las dos variantes:
+
+     3 columnas -> 221x148 px de hueco  (32.656 px2)  titular a 3-4 lineas
+     2 columnas -> 346x231 px           (79.810 px2)  titular a 2 lineas
+
+   Menos de la mitad de superficie. A 221x148 la balanza de la foto deja de
+   distinguirse, y en un sistema donde la imagen acompana al texto, acompanar
+   asi es casi no estar. De paso, los titulares a 3-4 lineas dejan las fechas
+   descuadradas entre tarjetas, porque van ancladas abajo.
 
    Aqui vivia .tarjetas--tres, para cuando este bloque se rellenaba a mano. Se
-   borra por dos motivos: no cabe, y declaraba repeat(3, 1fr) sin el minmax(0,
-   ...) que protege de que una columna deje de ceder y aplaste a las vecinas.
-   Era el sitio donde ese fallo habria mordido. */
+   borro igualmente: ademas de no convenir, declaraba repeat(3, 1fr) sin el
+   minmax(0, ...) que protege de que una columna deje de ceder y aplaste a las
+   vecinas. */
 
 .tarjetas--par {
   grid-template-columns: repeat(2, minmax(0, 1fr));

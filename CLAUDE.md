@@ -422,19 +422,33 @@ benigno: sin él, ese artículo puntúa cero en afinidad y entra por fecha, que 
 el respaldo previsto. **Las del artículo que se está leyendo no se duplican**: se
 leen de sus propias píldoras `#Etiqueta` del lateral.
 
-**Son DOS tarjetas, no tres, y está medido.** Aquí la rejilla no vive en la
-retícula de 1200 sino dentro de `.articulo__cuerpo`, que son **720 px**:
+**Son DOS tarjetas, no tres, y las tres se probaron antes de decidirlo.** Aquí
+la rejilla no vive en la retícula de 1200 sino dentro de `.articulo__cuerpo`,
+que son **720 px**.
 
-| Rejilla | Ancho de tarjeta | Líneas del titular |
-|---|---|---|
-| 3 columnas | 221,3 px | **4** |
-| **2 columnas** | **346 px** | **3** |
-| *(portada, referencia)* | *365,3 px* | *3* |
+> **La razón no es la que parecía, y merece quedar escrita porque el argumento
+> intuitivo era mío y estaba mal.** Predije que a tres columnas la tarjeta
+> rompería por `min-content` —221,3 px contra el suelo de 218,9—. **No rompe**:
+> no desborda nada, la palabra más larga mide 122,4 px y cabe de sobra.
 
-Los 221,3 quedan por debajo del suelo de min-content de 218,9 documentado más
-abajo, y las 4 líneas son **exactamente la degradación que el corte de 1084 del
-listado existe para evitar**. Poner tres aquí sería servir a propósito lo que
-allí se esquiva con un breakpoint medido.
+Lo que descarta las tres es la **imagen**. Medido en las dos variantes:
+
+| Rejilla | Tarjeta | Hueco de imagen | Superficie | Líneas del titular |
+|---|---|---|---|---|
+| 3 columnas | 221,3 px | 221×148 | 32.656 px² | 3–4 |
+| **2 columnas** | **346 px** | **346×231** | **79.810 px² (×2,4)** | **2** |
+
+**Menos de la mitad de superficie.** A 221×148 la balanza de la foto deja de
+distinguirse, y en un sistema cuya regla es que *«el texto manda, la imagen
+acompaña»*, acompañar a ese tamaño es casi no estar. De paso, los titulares a
+3–4 líneas dejan las fechas descuadradas entre tarjetas, porque van ancladas
+abajo.
+
+> **Salvedad de la prueba:** los tres titulares de ejemplo comparten las cuatro
+> primeras palabras, lo que exagera el número de líneas. Con titulares reales y
+> distintos, tres columnas aguantarían mejor de lo que se vio. **Lo que no
+> mejora con titulares reales es el tamaño de la imagen**, y ese es el argumento
+> que decide.
 
 > **`.tarjetas--tres` ya no existe.** Era la rejilla de este bloque cuando se
 > rellenaba a mano. Se borró por dos motivos: no cabe, y declaraba

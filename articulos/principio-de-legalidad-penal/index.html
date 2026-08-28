@@ -355,12 +355,16 @@
                dos veces. Es el mismo criterio que con los filtros y la
                paginación del listado.
 
-               SON DOS TARJETAS Y NO TRES, y está medido: esta columna tiene
-               720 px, así que a tres van a 221,3 px cada una y el titular salta
-               a 4 líneas —por debajo incluso del suelo de min-content de 218,9
-               que documenta CLAUDE.md—. A dos van a 346 y el titular ocupa 3,
-               igual que en la portada a 365,3. Tres aquí sería servir a
-               propósito lo que en el listado se evita con el corte de 1084.
+               SON DOS TARJETAS Y NO TRES, y se probaron las tres antes de
+               decidirlo. Esta columna tiene 720 px, así que a tres van a
+               221,3 px y a dos a 346.
+
+               Lo que descartó las tres NO fue que se rompiera —no desborda
+               nada, la palabra más larga mide 122,4 px y cabe—. Fue la imagen:
+               baja de 346×231 a 221×148, o sea a menos de la mitad de
+               superficie, y a ese tamaño la balanza deja de distinguirse. El
+               titular, además, pasa de 2 líneas a 3 o 4 y deja las fechas
+               descuadradas entre tarjetas.
 
                El rótulo lleva .lista__titulo--destacado, la misma variante que
                «ÚLTIMOS ARTÍCULOS» en la portada. Con la clase base se leía como
@@ -368,10 +372,7 @@
                en realidad abre una sección. Es el segundo uso de esa variante. -->
           <section class="continua" id="continua" aria-labelledby="continua-titulo" hidden>
             <h2 id="continua-titulo" class="lista__titulo lista__titulo--destacado">Continúa leyendo</h2>
-            <!-- EN PRUEBAS sin .tarjetas--par para verlo a tres columnas, que
-                 son las de .tarjetas a secas. Para volver a dos se le devuelve
-                 la clase y se baja CUANTOS a 2 en js/main.js. -->
-            <div class="tarjetas" id="relacionados"></div>
+            <div class="tarjetas tarjetas--par" id="relacionados"></div>
           </section>
 
         </div>
