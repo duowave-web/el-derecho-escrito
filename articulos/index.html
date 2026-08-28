@@ -204,10 +204,26 @@
            acentos a propósito: es una clave, no un texto, y así no depende de
            cómo se escriba la etiqueta visible.
 
+           ESTA PÁGINA NO ES SOLO UNA PÁGINA: ES EL ÍNDICE DEL SITIO. El bloque
+           «Continúa leyendo» de cada artículo se construye leyendo estas
+           tarjetas por fetch, así que lo que se escriba aquí sale también allí.
+           No hay articulos.json ni nada parecido, y es a propósito: este listado
+           ya había que mantenerlo al publicar, y si se olvida el fallo se ve al
+           instante —el artículo no aparece— en vez de quedarse callado.
+
+           data-etiquetas es lo único que existe solo para eso. Misma convención
+           que data-categoria —minúsculas, sin acentos, separadas por comas—
+           porque también son claves. Se corresponden con las píldoras #Etiqueta
+           del lateral del artículo, que son su versión visible.
+
+           Si se olvida, no se rompe nada: ese artículo puntúa cero en afinidad y
+           entra por fecha, que es el respaldo previsto.
+
            Al publicar, copia el <article> entero y edítalo. -->
       <div class="tarjetas tarjetas--centrada" id="entradas">
 
-        <article class="tarjeta tarjeta--caja" data-categoria="fundamento">
+        <article class="tarjeta tarjeta--caja" data-categoria="fundamento"
+                 data-etiquetas="legalidad,fundamento,garantias,taxatividad,irretroactividad">
           <!-- Mismo alt que la tarjeta de portada, y es correcto que se repita:
                es el mismo recorte 3:2 de la misma foto en el mismo componente.
                El que sí cambia es el de la cabecera del artículo, que recorta a

@@ -23,6 +23,7 @@
   barraDeProgreso();
   fondoDePortada();
   copiarEnlace();
+  articulosRelacionados();
 
   /* ---------------------------------------------------- Buscador ------- */
 
@@ -764,6 +765,163 @@
   }
 
   /* ------------------------------------------------------ Utilidades --- */
+
+  /* ------------------------------------------ Continúa leyendo --------- */
+
+  /* Construye el bloque de relacionados del final del artículo leyendo el
+     LISTADO por fetch. No hay articulos.json ni tarjetas escritas a mano, y las
+     tres opciones se compararon por su modo de fallo, no por cuántos sitios
+     tocan:
+
+     · A mano — los artículos viejos nunca enlazan a los nuevos, porque para eso
+       habría que volver a editarlos. Es la única de las tres que empeora sola
+       con el tiempo.
+     · articulos.json — un archivo más que sincronizar, y si se olvida el índice
+       y el sitio discrepan sin que nada avise.
+     · El listado — ya hay que mantenerlo al publicar, y si se olvida el fallo es
+       inmediato y ruidoso: el artículo no aparece en articulos/.
+
+     O sea que esto no añade un punto de mantenimiento: reutiliza uno que ya
+     existía y cuyo despiste ya se nota. Lo único nuevo es data-etiquetas.
+
+     Consecuencia que conviene tener presente: articulos/index.html deja de ser
+     solo una página y pasa a ser una DEPENDENCIA de todos los artículos. Si
+     alguien le cambia la estructura de las tarjetas, esto se entera. */
+
+  function articulosRelacionados() {
+    const seccion = document.getElementById("continua");
+    const rejilla = document.getElementById("relacionados");
+    if (!seccion || !rejilla) return;
+
+    const CUANTOS = 2;
+
+    /* Las etiquetas del artículo actual NO se duplican en ningún sitio: se leen
+       de sus propias píldoras del lateral, que ya están en el DOM. El atributo
+       data-etiquetas solo hace falta en el listado, o sea para los OTROS. */
+
+    const propias = new Set(
+      Array.prototype.map
+        .call(document.querySelectorAll(".etiqueta--tag"), function (el) {
+          return normalizar(el.textContent.replace(/^#/, "").trim());
+        })
+        .filter(Boolean)
+    );
+
+    fetch(new URL("../", window.location.href).href)
+      .then(function (r) {
+        if (!r.ok) throw new Error("listado no disponible");
+        return r.text();
+      })
+      .then(function (html) {
+        const doc = new DOMParser().parseFromString(html, "text/html");
+
+        /* Fuera la tarjeta de «Próximamente», que no es un artículo, y fuera
+           este mismo artículo. La comparación es por pathname resuelto y no por
+           el href literal, porque en el listado es relativo a otra carpeta. */
+
+        const aqui = normalizarRuta(window.location.pathname);
+
+        const candidatos = Array.prototype.filter
+          .call(
+            doc.querySelectorAll(".tarjeta:not(.tarjeta--proxima)"),
+            function (art) {
+              const a = art.querySelector(".entrada__titulo a");
+              if (!a) return false;
+              const destino = new URL(a.getAttribute("href"), new URL("../", window.location.href));
+              return normalizarRuta(destino.pathname) !== aqui;
+            }
+          )
+          .map(function (art) {
+            const etiquetas = (art.getAttribute("data-etiquetas") || "")
+              .split(",")
+              .map(function (t) {
+                return normalizar(t.trim());
+              })
+              .filter(Boolean);
+
+            const time = art.querySelector("time");
+
+            return {
+              nodo: art,
+              fecha: time ? time.getAttribute("datetime") || "" : "",
+              afinidad: etiquetas.filter(function (t) {
+                return propias.has(t);
+              }).length
+            };
+          });
+
+        /* Un solo criterio para las dos cosas que pediste. Los que comparten
+           etiquetas van primero, y el «rellenar con los más recientes» no es un
+           caso aparte: es este mismo orden aplicado a los que puntúan cero. */
+
+        candidatos.sort(function (a, b) {
+          return b.afinidad - a.afinidad || b.fecha.localeCompare(a.fecha);
+        });
+
+        const elegidos = candidatos.slice(0, CUANTOS);
+        if (!elegidos.length) return;
+
+        elegidos.forEach(function (c) {
+          rejilla.appendChild(adaptarTarjeta(c.nodo));
+        });
+        seccion.hidden = false;
+      })
+      .catch(function () {
+        /* Si el listado no se puede leer, la sección se queda como estaba: sin
+           enseñar. Un bloque de navegación vacío o a medias sería peor que no
+           tenerlo, y debajo sigue estando .volver, que lleva al mismo sitio. */
+      });
+  }
+
+  /* Quita la barra final y el index.html para que dos formas de escribir la
+     misma dirección se comparen iguales. */
+
+  function normalizarRuta(ruta) {
+    return ruta.replace(/index\.html$/, "").replace(/\/+$/, "");
+  }
+
+  /* Pasa una tarjeta del listado a lo que necesita este bloque. Se clona y se
+     retoca; no se construye de cero, para que cualquier cambio futuro en la
+     tarjeta del listado llegue aquí solo. */
+
+  function adaptarTarjeta(original) {
+    const t = original.cloneNode(true);
+    const base = new URL("../", window.location.href);
+
+    /* El listado escribe sus rutas relativas a articulos/, y aquí estamos un
+       nivel más abajo. Se reescriben absolutas resolviéndolas contra esa base:
+       así da igual la profundidad de la carpeta del artículo. */
+
+    Array.prototype.forEach.call(t.querySelectorAll("[href]"), function (a) {
+      a.setAttribute("href", new URL(a.getAttribute("href"), base).pathname);
+    });
+    Array.prototype.forEach.call(t.querySelectorAll("[src]"), function (i) {
+      i.setAttribute("src", new URL(i.getAttribute("src"), base).pathname);
+    });
+
+    /* El titular baja de h2 a h3. En el listado cuelga del h1 de la página;
+       aquí cuelga del h2 «Continúa leyendo», así que un h2 saltaría el nivel.
+       Se cambia la etiqueta conservando el contenido y la clase. */
+
+    const titulo = t.querySelector(".entrada__titulo");
+    if (titulo) {
+      const h3 = document.createElement("h3");
+      h3.className = titulo.className;
+      h3.innerHTML = titulo.innerHTML;
+      titulo.replaceWith(h3);
+    }
+
+    /* Sin extracto y sin caja: son 346 px de ancho y lo que hace falta aquí es
+       reconocer el artículo, no resumirlo. */
+
+    const extracto = t.querySelector(".entrada__extracto");
+    if (extracto) extracto.remove();
+    t.classList.remove("tarjeta--caja");
+    t.removeAttribute("data-categoria");
+    t.removeAttribute("data-etiquetas");
+
+    return t;
+  }
 
   function normalizar(texto) {
     return texto

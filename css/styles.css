@@ -2719,8 +2719,25 @@ body:has(.progreso) .cabecera {
   border-top: 1px solid var(--borde);
 }
 
-.tarjetas--tres {
-  grid-template-columns: repeat(3, 1fr);
+/* DOS columnas y no tres, y esta medido. Aqui la rejilla no vive en la reticula
+   de 1200 sino dentro de .articulo__cuerpo, que son 720 px:
+
+     3 columnas -> 221,3 px de tarjeta, titular a 4 lineas
+     2 columnas -> 346 px de tarjeta,   titular a 3 lineas
+     (portada)  -> 365,3 px,            titular a 3 lineas
+
+   Los 221,3 quedan por debajo del suelo de min-content de 218,9 documentado en
+   CLAUDE.md, y las 4 lineas son exactamente la degradacion que el corte de 1084
+   del listado existe para evitar. A dos, el rendimiento es el mismo que en
+   portada y ademas la fila se llena exacta, sin celda suelta.
+
+   Aqui vivia .tarjetas--tres, para cuando este bloque se rellenaba a mano. Se
+   borra por dos motivos: no cabe, y declaraba repeat(3, 1fr) sin el minmax(0,
+   ...) que protege de que una columna deje de ceder y aplaste a las vecinas.
+   Era el sitio donde ese fallo habria mordido. */
+
+.tarjetas--par {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 /* -------------------------------------------------------------- Pie ----- */

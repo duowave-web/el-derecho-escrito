@@ -332,52 +332,44 @@
 
           <p class="aviso"><em>Este artículo tiene carácter divulgativo y no constituye asesoramiento jurídico. Para un caso concreto, consulta con un profesional colegiado.</em></p>
 
-          <!-- PLANTILLA · Continúa leyendo. DESACTIVADO a propósito mientras
-               solo haya un artículo publicado.
+          <!-- PLANTILLA · Continúa leyendo. NO SE RELLENA A MANO: las tarjetas
+               las construye articulosRelacionados() en js/main.js leyendo por
+               fetch el listado de ../../articulos/, que es el índice del sitio.
 
-               El rótulo promete continuación, así que el bloque solo tiene
-               sentido si hay adónde continuar. Con tarjetas sin enlace ofrecía
-               una salida que no existe, y eso es peor que no ofrecer ninguna:
-               justo debajo está «Volver a todos los artículos», que sí lleva a
-               algún sitio.
+               Por eso al publicar aquí no se toca nada. Basta con añadir el
+               artículo nuevo al listado —cosa que ya hay que hacer— y este
+               bloque lo recoge solo, en este artículo y en todos los demás.
+
+               SALE CON hidden Y LO QUITA EL JS. Con un solo artículo publicado
+               el único candidato es él mismo, así que no hay nada que enseñar y
+               la sección no llega a aparecer. Es lo correcto: el rótulo promete
+               continuación y solo tiene sentido si hay adónde continuar.
 
                No se usa aquí la tarjeta de «Próximamente» de la portada. Allí
                la sección es un inventario y la tarjeta añade una promesa; aquí
-               es navegación, y una promesa no es un destino.
+               es navegación, y una promesa no es un destino. Justo debajo está
+               «Volver a todos los artículos», que sí lleva a algún sitio.
 
-               Al publicar el segundo artículo: descomentar, duplicar la tarjeta
-               las veces que haga falta y rellenarla. Los publicados van en
-               <article> con <a> en el titular; si alguno no existiera todavía,
-               en <div> y sin enlace, para no apuntar a un 404. La rejilla la
-               fija .tarjetas--tres, que sigue en el CSS solo para este bloque.
+               Sin JavaScript tampoco aparece, y se asume: el artículo se lee
+               entero sin esto y la salida de verdad —.volver— ya está puesta
+               dos veces. Es el mismo criterio que con los filtros y la
+               paginación del listado.
+
+               SON DOS TARJETAS Y NO TRES, y está medido: esta columna tiene
+               720 px, así que a tres van a 221,3 px cada una y el titular salta
+               a 4 líneas —por debajo incluso del suelo de min-content de 218,9
+               que documenta CLAUDE.md—. A dos van a 346 y el titular ocupa 3,
+               igual que en la portada a 365,3. Tres aquí sería servir a
+               propósito lo que en el listado se evita con el corte de 1084.
 
                El rótulo lleva .lista__titulo--destacado, la misma variante que
                «ÚLTIMOS ARTÍCULOS» en la portada. Con la clase base se leía como
                un rótulo de apoyo más, igual que los cinco del lateral, cuando
-               en realidad abre una sección. Es el segundo uso de esa variante.
-
-          <section class="continua" aria-labelledby="continua-titulo">
+               en realidad abre una sección. Es el segundo uso de esa variante. -->
+          <section class="continua" id="continua" aria-labelledby="continua-titulo" hidden>
             <h2 id="continua-titulo" class="lista__titulo lista__titulo--destacado">Continúa leyendo</h2>
-
-            <div class="tarjetas tarjetas--tres">
-
-              <article class="tarjeta">
-                <div class="tarjeta__imagen"></div>
-                <p class="etiqueta etiqueta--plana">
-                  <a href="../../articulos/?categoria=CLAVE"><span class="oculto">Ver artículos de </span>CATEGORÍA</a>
-                </p>
-                <h3 class="entrada__titulo">
-                  <a href="../SLUG/">TITULAR</a>
-                </h3>
-                <div class="entrada__meta">
-                  <time datetime="AAAA-MM-DD">FECHA</time>
-                  <span class="lectura">N min</span>
-                </div>
-              </article>
-
-            </div>
+            <div class="tarjetas tarjetas--par" id="relacionados"></div>
           </section>
-          -->
 
         </div>
 

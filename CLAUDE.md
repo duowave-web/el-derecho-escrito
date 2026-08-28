@@ -78,9 +78,23 @@ Al publicar un artículo nuevo hay que actualizar a mano, siempre:
 1. `sitemap.xml` — añadir la URL.
 2. `feed.xml` — añadir el `<item>`.
 3. `index.html` — añadir la tarjeta al listado de portada.
-4. `articulos/index.html` — añadir la entrada al listado completo.
+4. `articulos/index.html` — añadir la entrada al listado completo, **con su
+   `data-etiquetas`**.
 
 Si no, el artículo existe pero es invisible para buscadores y lectores de RSS.
+
+> **El paso 4 pesa más que los otros tres, y conviene saberlo.**
+> `articulos/index.html` **es el índice del sitio**: el bloque «Continúa
+> leyendo» de cada artículo se construye leyendo sus tarjetas por `fetch`. Así
+> que saltárselo no solo esconde el artículo del listado — lo deja fuera de los
+> relacionados de todos los demás.
+>
+> Es a propósito que no haya un `articulos.json` aparte: este archivo ya había
+> que mantenerlo, y **si se olvida el fallo se ve al instante**, mientras que un
+> índice paralelo se desincroniza en silencio. Está razonado más abajo.
+>
+> **Lo que NO hay que tocar al publicar es el bloque «Continúa leyendo»** de
+> ningún artículo. Se rellena solo.
 
 ### La categoría de un artículo se repite en 9 sitios
 
@@ -364,22 +378,76 @@ izquierda con medio contenedor vacío al lado.
 > `100%` el número sale de lo que la rejilla mide de verdad y vale en todo el
 > tramo.
 
-### El «continúa leyendo» del artículo está desactivado a propósito
+### El «continúa leyendo» se construye solo, leyendo el listado
 
-Llevaba los mismos tres marcadores y **está comentado**, no borrado: dentro
-queda el esqueleto de una tarjeta, sin titulares ni fechas falsas, listo para
-descomentar cuando haya un segundo artículo.
+**No se rellena a mano y no hay que tocarlo al publicar.** Las tarjetas las monta
+`articulosRelacionados()` en `js/main.js` haciendo `fetch` de `articulos/`, que
+es el índice del sitio, y eligiendo por **etiquetas compartidas**; los que no
+comparten ninguna entran por **fecha**.
+
+> ⚠️ **`articulos/index.html` ha dejado de ser solo una página: es una
+> dependencia de todos los artículos.** Quien le cambie la estructura de las
+> tarjetas —clases, `time`, el `<a>` del titular— rompe este bloque en todos los
+> artículos a la vez, y ahí no se ve.
+
+Se descartaron las otras dos vías **por su modo de fallo**, no por cuántos
+sitios tocan:
+
+| Vía | Si se olvida | Cómo te enteras |
+|---|---|---|
+| Tarjetas a mano | los artículos viejos nunca enlazan a los nuevos | **nunca** — no hay error, solo enlaces que envejecen |
+| `articulos.json` | el índice y el sitio discrepan | **nunca** — falla en silencio |
+| **Leer el listado** | el artículo no aparece en `articulos/` | **al instante**, es el paso 4 de publicar |
+
+O sea que esto **no añade un décimo punto de mantenimiento**: reutiliza uno que
+ya era obligatorio y cuyo despiste ya se nota a gritos. Y las tarjetas a mano
+tenían un defecto propio: son la única variante que **empeora sola con el
+tiempo**, porque para que el artículo 1 enlace al 7 hay que volver a editar el 1.
+
+Lo único nuevo es **`data-etiquetas`** en la tarjeta del listado. Su fallo es
+benigno: sin él, ese artículo puntúa cero en afinidad y entra por fecha, que es
+el respaldo previsto. **Las del artículo que se está leyendo no se duplican**: se
+leen de sus propias píldoras `#Etiqueta` del lateral.
+
+**Son DOS tarjetas, no tres, y está medido.** Aquí la rejilla no vive en la
+retícula de 1200 sino dentro de `.articulo__cuerpo`, que son **720 px**:
+
+| Rejilla | Ancho de tarjeta | Líneas del titular |
+|---|---|---|
+| 3 columnas | 221,3 px | **4** |
+| **2 columnas** | **346 px** | **3** |
+| *(portada, referencia)* | *365,3 px* | *3* |
+
+Los 221,3 quedan por debajo del suelo de min-content de 218,9 documentado más
+abajo, y las 4 líneas son **exactamente la degradación que el corte de 1084 del
+listado existe para evitar**. Poner tres aquí sería servir a propósito lo que
+allí se esquiva con un breakpoint medido.
+
+> **`.tarjetas--tres` ya no existe.** Era la rejilla de este bloque cuando se
+> rellenaba a mano. Se borró por dos motivos: no cabe, y declaraba
+> `repeat(3, 1fr)` **sin el `minmax(0, ...)`** que impide que una columna deje de
+> ceder y aplaste a las vecinas. Era justo el sitio donde ese fallo habría
+> mordido. La sustituye `.tarjetas--par`.
+
+**Con cero relacionados se oculta la sección entera**, y hoy es el caso: con un
+solo artículo publicado el único candidato es él mismo. El bloque ya está en el
+HTML pero sale con `hidden`, así que **no se ve nada hasta que exista el segundo
+artículo, y entonces aparece solo.**
 
 No se le puso la tarjeta de «Próximamente» de la portada, y la diferencia
 importa: en la portada la sección es **un inventario** y la tarjeta añade una
-promesa, mientras que en el artículo es **navegación** y una promesa no es un
-destino. El rótulo dice «Continúa leyendo» y una tarjeta que no se puede pulsar
-lo desmiente en la misma línea. Debajo ya está «Volver a todos los artículos»,
-que sí lleva a algún sitio.
+promesa, mientras que aquí es **navegación** y una promesa no es un destino. El
+rótulo dice «Continúa leyendo» y una tarjeta que no se puede pulsar lo desmiente
+en la misma línea.
 
-Consecuencia a tener presente: **`.tarjetas--tres` no la usa nadie ahora
-mismo.** Sigue en el CSS porque es la rejilla de ese bloque y vuelve con él. Si
-alguien busca dónde se usa, no encontrará nada y parecerá muerta.
+**Sin JavaScript tampoco aparece**, y se asume: el artículo se lee entero sin
+esto y la salida real —`.volver`— ya está puesta dos veces. Mismo criterio que
+con los filtros y la paginación del listado.
+
+Un detalle que se escapa: al clonar, **el titular baja de `<h2>` a `<h3>`**. En
+el listado cuelga del `<h1>` de la página; aquí cuelga del `<h2>` «Continúa
+leyendo», así que un `<h2>` saltaría el nivel. Verificado con siete artículos
+sintéticos: **cero saltos de jerarquía** en toda la página.
 
 ### Ya no quedan migas en ninguna página
 
