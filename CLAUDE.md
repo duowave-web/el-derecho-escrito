@@ -226,6 +226,91 @@ explicar por qué**.
 > de «esta categoría está vacía»**, que es el papel que tuvo. Quien retoque la
 > lógica del vacío tiene que contar con eso.
 
+### Categorías y etiquetas son dos ejes, y no se pisan
+
+`articulos/` filtra por **tres criterios que se acumulan**: la búsqueda (`?q=`),
+la **categoría** (los cuatro botones, `?categoria=`) y las **etiquetas** (el
+desplegable, `?etiquetas=`). Marcar etiquetas no borra la categoría ni al revés.
+
+> **Se llaman «etiquetas» y no «categorías», y lo decidió el sitio, no yo.** El
+> lateral del artículo ya tiene un bloque titulado «Etiquetas» y sus píldoras
+> llevan **almohadilla**; la categoría va sin ella y en plano. Esa distinción
+> visible ya existía y el filtro solo la respeta.
+>
+> ⚠️ **Queda una colisión sin resolver:** el artículo de ejemplo lleva la
+> etiqueta `#Fundamento`, que es **también** el nombre de una categoría, así que
+> en la misma pantalla hay un botón `FUNDAMENTO` y una píldora `#Fundamento` que
+> filtran cosas distintas. Se deja a propósito —es contenido de un artículo de
+> ejemplo que se borra al entregar— pero **conviene que las etiquetas reales del
+> cliente no repitan nombres de categoría.**
+
+**La lógica es Y entre criterios y O dentro de las etiquetas.** O sea: búsqueda
+Y categoría Y (etiqueta1 O etiqueta2). Es la convención de filtros por facetas y
+además lo pide la escala: con Y, marcar dos etiquetas que no coincidan en ningún
+artículo daría **cero al instante** y el control parecería roto.
+
+#### `data-etiquetas` guarda el TEXTO VISIBLE, no la clave
+
+Y es lo contrario que `data-categoria`, así que merece explicarse:
+
+| Atributo | Qué guarda | Por qué |
+|---|---|---|
+| `data-categoria` | `fundamento` | viaja **literal** a `?categoria=` y a `data-filtro`: ahí la clave *es* el dato |
+| `data-etiquetas` | `Legalidad,Garantías` | de ahí salen el nombre de la casilla y el de la píldora, y **los acentos no se reconstruyen** desde una clave |
+
+Se normaliza al comparar, que es lo que ya hacía el bloque de relacionados, y
+también al escribir la URL —van en clave para no llenarla de `%C3%ADas`—.
+
+**La lista del desplegable no está escrita en ninguna parte**: se recoge de los
+`data-etiquetas` de las tarjetas, se deduplica por clave normalizada y se ordena
+alfabéticamente. Si dos artículos escriben la misma etiqueta distinto —
+«Garantías» y «garantias»— cuentan como una, con la primera grafía que aparezca.
+
+> **Hoy el menú lista siete, y dos son de las entradas provisionales**
+> (`Docencia`, `Divulgación`). Al borrarlas se quedará con las del artículo real.
+> Si algún día no hay ninguna etiqueta, **el control entero se oculta**: un
+> desplegable vacío es peor que ninguno.
+
+#### El desplegable no es un `role="menu"`, y es deliberado
+
+Un menú ARIA **obliga** a navegación por flechas y activación única. Esto es un
+grupo de opciones múltiples, así que lleva `<input type="checkbox">` de verdad:
+ya son operables por teclado y anuncian su estado sin emular nada.
+
+- El botón lleva `aria-expanded` y `aria-controls`.
+- **Cerrado, el panel va con `hidden`**, así sus casillas quedan fuera del orden
+  de tabulación sin tocar `tabindex`.
+- **Escape cierra y devuelve el foco al botón.** Sin lo segundo el foco se
+  quedaría en un panel inexistente y saltaría al principio del documento.
+- Salir con el tabulador cierra, mirando `relatedTarget` en `focusout`.
+- Las casillas se dejan **nativas**. Rehacerlas con un pseudoelemento obligaría
+  a reimplementar foco y alto contraste sin ganar nada.
+
+#### Las píldoras se pulsan para quitarse
+
+No son informativas: cada una es un `<button>` con su aspa y nombre accesible
+«Quitar etiqueta X». **Un filtro que ves pero no puedes deshacer sin volver a
+abrir un menú es un control a medias** — el mismo motivo por el que ningún botón
+de categoría va `disabled`.
+
+Por eso **no reutilizan `.etiqueta--tag`**, que en el artículo es
+deliberadamente un `<span>` inerte. Misma familia visual, distinta naturaleza:
+`.etiqueta--filtro`.
+
+> ⚠️ **El margen va en `.seleccion`, el envoltorio que se oculta, nunca en las
+> píldoras ni en el botón de dentro.** Con `hidden` el envoltorio entra en
+> `display:none` y deja de generar caja, margen y aportación al `gap`; si el
+> margen estuviera en los hijos, ocultarlos dejaría el hueco del padre.
+>
+> Verificado midiendo la distancia entre `.filtros` y `.contador`: **22 px sin
+> selección, 114,8 con dos etiquetas, y 22 exactos otra vez al borrarlas**. Los
+> 22 son el `margin-bottom` de `.filtros` y nada más.
+
+**«Borrar etiquetas» borra solo etiquetas.** No toca la categoría ni la
+búsqueda, y el argumento es el nombre del propio botón: si borrara todo tendría
+que llamarse «Borrar filtros», y entonces no pintaría nada dentro de un bloque
+que solo existe cuando hay etiquetas marcadas.
+
 ### El estado vacío lo dice el contador, y solo el contador
 
 No hay ningún mensaje de «no hay artículos» en la página. Hubo uno —`.vacio`,

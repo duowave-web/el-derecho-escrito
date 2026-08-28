@@ -104,7 +104,23 @@
 
     let consultaActiva = "";
     let categoriaActiva = "todos";
+    let etiquetasActivas = [];
     let paginaActiva = 1;
+
+    /* Las etiquetas de una tarjeta, en clave. El atributo guarda el TEXTO
+       VISIBLE —«Garantías»— porque de ahí sale también el nombre de la casilla y
+       el de la píldora, y los acentos no se pueden reconstruir a partir de una
+       clave. Para comparar se normaliza aquí, que es lo mismo que hace el bloque
+       de relacionados. */
+
+    function etiquetasDe(el) {
+      return (el.getAttribute("data-etiquetas") || "")
+        .split(",")
+        .map(function (t) {
+          return normalizar(t.trim());
+        })
+        .filter(Boolean);
+    }
 
     function aplicar() {
       const q = normalizar(consultaActiva.trim());
@@ -114,7 +130,24 @@
         const porCategoria =
           categoriaActiva === "todos" ||
           el.getAttribute("data-categoria") === categoriaActiva;
-        return porTexto && porCategoria;
+
+        /* Y entre criterios, O dentro de las etiquetas: pasa el artículo que
+           tenga ALGUNA de las marcadas, no todas.
+
+           Es la convención de filtros por facetas, y aquí hay además una razón
+           de escala: con Y, marcar dos etiquetas que no coincidan en ningún
+           artículo daría cero al instante —con cuatro entradas es lo normal— y
+           el control parecería roto. Con O, marcar más amplía, que es lo que se
+           espera de un grupo de casillas. */
+
+        const suyas = etiquetasDe(el);
+        const porEtiquetas =
+          !etiquetasActivas.length ||
+          etiquetasActivas.some(function (t) {
+            return suyas.indexOf(t) !== -1;
+          });
+
+        return porTexto && porCategoria && porEtiquetas;
       });
 
       /* Una página que no existe no da una lista vacía: se ajusta a la última
@@ -224,6 +257,11 @@
       const p = new URLSearchParams(window.location.search);
       if (categoriaActiva === "todos") p.delete("categoria");
       else p.set("categoria", categoriaActiva);
+      /* En clave y no con el texto visible, para no llenar la dirección de
+         %C3%ADas. Se normalizan al leerlas, así que el viaje de ida y vuelta
+         es estable. */
+      if (!etiquetasActivas.length) p.delete("etiquetas");
+      else p.set("etiquetas", etiquetasActivas.join(","));
       // La página 1 no se escribe: es el estado por defecto y ensucia la URL
       if (paginaActiva <= 1) p.delete("pagina");
       else p.set("pagina", String(paginaActiva));
@@ -407,6 +445,7 @@
     paginaActiva = Number.isFinite(pagina) && pagina > 1 ? pagina : 1;
 
     montarFiltros(categoria ? normalizar(categoria.trim()) : null);
+    montarEtiquetas(parametros.get("etiquetas"));
 
     if (consulta && consulta.trim()) {
       mostrarAviso(consulta.trim());
@@ -414,6 +453,191 @@
     }
 
     aplicar();
+
+    /* ------------------------------------------------ Etiquetas -------- */
+
+    /* Segundo eje de filtrado, independiente de la categoría. La lista de
+       etiquetas NO está escrita en ninguna parte: se recoge de las tarjetas, así
+       que sale del contenido y no puede quedarse desfasada.
+
+       Se guarda la clave para comparar y el texto visible para enseñar, con la
+       primera grafía que aparezca. Si dos artículos escriben la misma etiqueta
+       distinto —«Garantías» y «garantias»— cuentan como una sola. */
+
+    function montarEtiquetas(pedidas) {
+      const caja = document.querySelector(".menu-etiquetas");
+      const boton = document.getElementById("abrir-etiquetas");
+      const panel = document.getElementById("panel-etiquetas");
+      const seleccion = document.getElementById("seleccion");
+      const lista = document.getElementById("seleccion-lista");
+      const borrar = document.getElementById("borrar-etiquetas");
+      if (!caja || !boton || !panel || !seleccion || !lista || !borrar) return;
+
+      const vistas = Object.create(null);
+      entradas.forEach(function (el) {
+        (el.getAttribute("data-etiquetas") || "").split(",").forEach(function (t) {
+          const texto = t.trim();
+          const clave = normalizar(texto);
+          if (clave && !vistas[clave]) vistas[clave] = texto;
+        });
+      });
+
+      const claves = Object.keys(vistas).sort(function (a, b) {
+        return vistas[a].localeCompare(vistas[b], "es");
+      });
+
+      /* Sin etiquetas en ningún artículo el control no tiene nada que ofrecer, y
+         un desplegable vacío es peor que ninguno. Se queda fuera. */
+
+      if (!claves.length) {
+        caja.hidden = true;
+        return;
+      }
+
+      // Solo se aceptan las que existen: la URL la escribe quien quiera.
+      etiquetasActivas = (pedidas || "")
+        .split(",")
+        .map(function (t) {
+          return normalizar(t.trim());
+        })
+        .filter(function (t) {
+          return t && claves.indexOf(t) !== -1;
+        })
+        .filter(function (t, i, a) {
+          return a.indexOf(t) === i;
+        });
+
+      const casillas = Object.create(null);
+
+      claves.forEach(function (clave) {
+        const id = "et-" + clave;
+        const fila = document.createElement("div");
+        fila.className = "panel-etiquetas__fila";
+
+        const casilla = document.createElement("input");
+        casilla.type = "checkbox";
+        casilla.id = id;
+        casilla.value = clave;
+        casilla.checked = etiquetasActivas.indexOf(clave) !== -1;
+
+        const etiqueta = document.createElement("label");
+        etiqueta.setAttribute("for", id);
+        etiqueta.textContent = vistas[clave];
+
+        casilla.addEventListener("change", function () {
+          alternar(clave, casilla.checked);
+        });
+
+        casillas[clave] = casilla;
+        fila.appendChild(casilla);
+        fila.appendChild(etiqueta);
+        panel.appendChild(fila);
+      });
+
+      function alternar(clave, activa) {
+        const i = etiquetasActivas.indexOf(clave);
+        if (activa && i === -1) etiquetasActivas.push(clave);
+        else if (!activa && i !== -1) etiquetasActivas.splice(i, 1);
+        if (casillas[clave]) casillas[clave].checked = activa;
+        /* Igual que al cambiar de categoría: la página 3 de un conjunto no
+           tiene por qué existir en el siguiente. */
+        paginaActiva = 1;
+        pintarSeleccion();
+        sincronizarURL();
+        aplicar();
+      }
+
+      /* Las píldoras se reconstruyen enteras en cada cambio. Son dos o tres
+         nodos; cualquier cosa más lista abriría la puerta a que lo que se ve y
+         lo que se filtra se desincronicen. */
+
+      function pintarSeleccion() {
+        lista.textContent = "";
+
+        etiquetasActivas.forEach(function (clave) {
+          const li = document.createElement("li");
+          const pildora = document.createElement("button");
+          pildora.type = "button";
+          pildora.className = "etiqueta etiqueta--filtro";
+          /* El nombre accesible dice lo que hace el botón, no lo que pone
+             dentro: quien lo oiga en una lista de controles necesita saber que
+             al pulsarlo se quita, no que se aplica. */
+          pildora.setAttribute("aria-label", "Quitar etiqueta " + vistas[clave]);
+          pildora.appendChild(document.createTextNode("#" + vistas[clave]));
+
+          const aspa = document.createElement("span");
+          aspa.className = "etiqueta__aspa";
+          aspa.setAttribute("aria-hidden", "true");
+          pildora.appendChild(aspa);
+
+          pildora.addEventListener("click", function () {
+            alternar(clave, false);
+          });
+
+          li.appendChild(pildora);
+          lista.appendChild(li);
+        });
+
+        /* Se oculta el ENVOLTORIO, que es quien lleva el margen. En display:none
+           no genera caja ni aporta al gap, así que la distancia entre los
+           filtros y el contador es la misma con selección y sin ella. */
+        seleccion.hidden = etiquetasActivas.length === 0;
+      }
+
+      /* El desplegable. No es un role="menu" a propósito: eso obligaría a
+         navegación por flechas y activación única, y esto es un grupo de
+         opciones múltiples. Con casillas de verdad, el teclado ya funciona. */
+
+      function abrir(si) {
+        boton.setAttribute("aria-expanded", String(si));
+        panel.hidden = !si;
+      }
+
+      boton.addEventListener("click", function () {
+        abrir(boton.getAttribute("aria-expanded") !== "true");
+      });
+
+      /* Escape cierra Y DEVUELVE EL FOCO al botón. Sin lo segundo el foco se
+         quedaría en un panel que ya no existe y saltaría al principio del
+         documento en la siguiente tabulación. */
+
+      caja.addEventListener("keydown", function (e) {
+        if (e.key !== "Escape" && e.key !== "Esc") return;
+        if (boton.getAttribute("aria-expanded") !== "true") return;
+        abrir(false);
+        boton.focus();
+      });
+
+      /* Salir con el tabulador cierra. Se mira relatedTarget, o sea a dónde va
+         el foco: si sigue dentro de la caja no hay que hacer nada. */
+
+      caja.addEventListener("focusout", function (e) {
+        if (!e.relatedTarget || !caja.contains(e.relatedTarget)) abrir(false);
+      });
+
+      document.addEventListener("click", function (e) {
+        if (!caja.contains(e.target)) abrir(false);
+      });
+
+      /* Borra SOLO las etiquetas, no la categoría ni la búsqueda. El nombre del
+         botón es el argumento: si borrara todo tendría que llamarse «Borrar
+         filtros», y entonces no pintaría nada dentro de un bloque que solo
+         existe cuando hay etiquetas marcadas. */
+
+      borrar.addEventListener("click", function () {
+        etiquetasActivas = [];
+        claves.forEach(function (c) {
+          if (casillas[c]) casillas[c].checked = false;
+        });
+        paginaActiva = 1;
+        pintarSeleccion();
+        sincronizarURL();
+        aplicar();
+      });
+
+      pintarSeleccion();
+      caja.hidden = false;
+    }
   }
 
   /* ------------------------------------------ Buscador de cabecera ----- */

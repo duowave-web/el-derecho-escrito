@@ -769,9 +769,203 @@ body:has(.portada--video) .cabecera--con-linea {
   color: var(--papel);
 }
 
-/* Sin artículos que enseñar el botón se deshabilita, que es más honesto que
-   dejar pulsar para no obtener nada. El aspecto lo pone :disabled de .boton,
-   heredado, así que aquí no hay nada que declarar. */
+/* Aqui decia que un boton sin articulos se deshabilita. Ya no: ninguno va
+   disabled, porque un boton apagado no se puede pulsar y por tanto tampoco
+   puede explicar por que esta apagado. Razonado en CLAUDE.md.
+
+   ---- Menu de etiquetas -------------------------------------------------
+
+   Segundo eje de filtrado, en la misma fila que las categorias pero con otra
+   naturaleza: las categorias son excluyentes y van por aria-pressed; esto es un
+   desplegable, y va por aria-expanded. Por eso no reutiliza .boton--filtro, que
+   pinta el estado pulsado.
+
+   La caja es el ancla del panel, que sale posicionado debajo. */
+
+.menu-etiquetas {
+  position: relative;
+}
+
+.boton--menu:hover,
+.boton--menu[aria-expanded="true"] {
+  background: rgba(47, 110, 104, 0.08);
+  border-color: var(--acento);
+  color: var(--acento);
+}
+
+/* El caret gira al abrir. Va en un <span> vacio y aria-hidden porque es
+   decoracion: quien no lo ve ya tiene aria-expanded, que dice lo mismo. */
+
+.boton__caret {
+  width: 0;
+  height: 0;
+  margin-left: 2px;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 5px solid currentColor;
+  transition: transform 160ms ease;
+}
+
+.boton--menu[aria-expanded="true"] .boton__caret {
+  transform: rotate(180deg);
+}
+
+/* El panel. Scrollable a partir de unas ocho filas, que es donde deja de verse
+   como una lista y empieza a empujar el contenido de abajo.
+
+   z-index para que no lo tape la rejilla de tarjetas, y ancho minimo propio: si
+   se ajustara al boton, una etiqueta larga lo desbordaria. */
+
+.panel-etiquetas {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 6px);
+  left: 0;
+  min-width: 220px;
+  max-height: 264px;
+  overflow-y: auto;
+  padding: 8px;
+  text-align: left;
+  background: var(--papel);
+  border: 1px solid var(--borde);
+  border-radius: 4px;
+  box-shadow: 0 6px 20px rgba(30, 30, 30, 0.08);
+}
+
+.panel-etiquetas__fila {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 5px 6px;
+  border-radius: 3px;
+}
+
+.panel-etiquetas__fila:hover {
+  background: var(--papel-alt);
+}
+
+/* La casilla se deja NATIVA y solo se le da color y tamano. Rehacerla con un
+   pseudoelemento obliga a reimplementar foco, estado indeterminado y el modo de
+   alto contraste, y no hay nada que ganar. */
+
+.panel-etiquetas__fila input {
+  flex: none;
+  width: 15px;
+  height: 15px;
+  accent-color: var(--acento);
+  cursor: pointer;
+}
+
+.panel-etiquetas__fila label {
+  font-family: var(--ui);
+  font-size: 13px;
+  color: var(--tinta);
+  cursor: pointer;
+}
+
+/* ---- Etiquetas seleccionadas ------------------------------------------- */
+
+/* EL MARGEN VA AQUI, en el envoltorio que se oculta, y no en las pildoras ni en
+   el boton. Con hidden esto entra en display:none, deja de generar caja y de
+   aportar al gap, asi que la distancia entre los filtros y el contador es
+   identica con seleccion y sin ella. Con el margen en los hijos, ocultarlos
+   dejaria el hueco del padre — que es el fallo que ya se dio una vez. */
+
+.seleccion {
+  margin: 0 0 22px;
+  text-align: center;
+}
+
+.seleccion__lista {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin: 0 0 12px;
+  padding: 0;
+  list-style: none;
+}
+
+/* Pildora PULSABLE, y por eso no reutiliza .etiqueta--tag: aquella es un <span>
+   inerte en el lateral del articulo. Misma familia visual, distinta naturaleza.
+
+   Hereda de .etiqueta el cuerpo y el radio; aqui solo cambia lo que la hace
+   control: cursor, borde y el aspa. */
+
+.etiqueta--filtro {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-family: var(--ui);
+  border: 1px solid var(--acento);
+  background: var(--papel);
+  cursor: pointer;
+  transition: background 160ms ease, color 160ms ease;
+}
+
+.etiqueta--filtro:hover {
+  background: var(--acento);
+  color: var(--papel);
+}
+
+/* El aspa se dibuja con dos trazos girados sobre un cuadrado, para no meter un
+   SVG por cada pildora ni depender de un glifo tipografico. currentColor, asi
+   que sigue al texto en el hover sin declararlo dos veces. */
+
+.etiqueta__aspa,
+.boton__aspa {
+  position: relative;
+  width: 8px;
+  height: 8px;
+  flex: none;
+}
+
+.etiqueta__aspa::before,
+.etiqueta__aspa::after,
+.boton__aspa::before,
+.boton__aspa::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 1.5px;
+  background: currentColor;
+}
+
+.etiqueta__aspa::before,
+.boton__aspa::before {
+  transform: translateY(-50%) rotate(45deg);
+}
+
+.etiqueta__aspa::after,
+.boton__aspa::after {
+  transform: translateY(-50%) rotate(-45deg);
+}
+
+/* El boton de borrar. Discreto a proposito: es una salida, no una accion
+   principal, y compite en la misma zona con las pildoras y el contador. */
+
+.boton--limpiar {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 0;
+  padding: 6px 14px;
+  font-family: var(--ui);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--tinta-suave);
+  background: none;
+  border: 1px solid var(--borde);
+}
+
+.boton--limpiar:hover {
+  color: var(--acento);
+  border-color: var(--acento);
+}
 
 /* Los 28 de arriba son los que tenía el campo de búsqueda que ocupaba este
    sitio: los filtros son su sucesor y cuelgan del mismo filete. */

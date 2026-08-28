@@ -164,6 +164,64 @@
                 data-filtro="fundamento" aria-pressed="false">Fundamento</button>
         <button type="button" class="boton boton--contorno boton--filtro"
                 data-filtro="jurisprudencia" aria-pressed="false">Jurisprudencia</button>
+
+        <!-- ETIQUETAS · Segundo eje de filtrado, INDEPENDIENTE de la categoría:
+             los dos se acumulan y ninguno borra al otro. Entre criterios la
+             lógica es Y —búsqueda Y categoría Y etiquetas— y dentro de las
+             etiquetas es O: pasa el artículo que tenga alguna de las marcadas.
+
+             Es la convención de filtros por facetas, y aquí además hay una
+             razón de escala: con Y, marcar dos etiquetas que no coincidan en
+             ningún artículo daría cero al instante y el control parecería roto.
+
+             SE LLAMAN ETIQUETAS Y NO CATEGORÍAS porque las categorías son los
+             cuatro botones de al lado. La distinción ya existía en el sitio: el
+             lateral del artículo tiene un bloque «Etiquetas» y sus píldoras
+             llevan almohadilla; la categoría va sin ella y en plano.
+
+             NO ES UN role="menu". Un menú obliga a navegación por flechas y
+             activación única, y esto es un grupo de opciones múltiples: para
+             eso lo correcto son casillas de verdad, que ya son operables por
+             teclado y anuncian su estado solas, sin emular nada.
+
+             El panel cerrado va con hidden, así sus casillas quedan fuera del
+             orden de tabulación sin tener que tocar tabindex. Las casillas las
+             construye el JS leyendo data-etiquetas de las tarjetas: la lista
+             sale del contenido, no de una copia escrita a mano. -->
+        <div class="menu-etiquetas">
+          <button type="button" class="boton boton--contorno boton--menu"
+                  id="abrir-etiquetas" aria-expanded="false"
+                  aria-controls="panel-etiquetas">
+            Etiquetas
+            <span class="boton__caret" aria-hidden="true"></span>
+          </button>
+          <div class="panel-etiquetas" id="panel-etiquetas"
+               role="group" aria-label="Filtrar por etiqueta" hidden></div>
+        </div>
+      </div>
+
+      <!-- Las etiquetas marcadas, entre los filtros y el contador. Lo rellena
+           el JS y sale oculto: sin ninguna marcada no hay nada que enseñar.
+
+           EL MARGEN VA EN ESTE ENVOLTORIO, no en las píldoras ni en el botón de
+           dentro, y no es un detalle de estilo. Al ocultarse con hidden el
+           elemento entra en display:none y deja de generar caja, margen y
+           aportación al gap del flex, así que la distancia entre los filtros y
+           el contador es idéntica con selección y sin ella. Si el margen
+           estuviera en los hijos, ocultarlos dejaría el hueco del padre.
+
+           Las píldoras son <button> y se pueden quitar pulsándolas. Un filtro
+           que ves pero no puedes deshacer sin volver a abrir el menú es un
+           control a medias — el mismo motivo por el que ningún botón de
+           categoría va disabled. Por eso no reutilizan .etiqueta--tag, que en
+           el artículo es deliberadamente un <span> inerte. -->
+      <div class="seleccion" id="seleccion" hidden>
+        <h2 class="oculto">Etiquetas seleccionadas</h2>
+        <ul class="seleccion__lista" id="seleccion-lista"></ul>
+        <button type="button" class="boton boton--limpiar" id="borrar-etiquetas">
+          <span class="boton__aspa" aria-hidden="true"></span>
+          Borrar etiquetas
+        </button>
       </div>
 
       <!-- EL CONTADOR ES EL ESTADO VACÍO, y no hay ningún párrafo más abajo que
@@ -223,7 +281,7 @@
       <div class="tarjetas tarjetas--centrada" id="entradas">
 
         <article class="tarjeta tarjeta--caja" data-categoria="fundamento"
-                 data-etiquetas="legalidad,fundamento,garantias,taxatividad,irretroactividad">
+                 data-etiquetas="Legalidad,Fundamento,Garantías,Taxatividad,Irretroactividad">
           <!-- Mismo alt que la tarjeta de portada, y es correcto que se repita:
                es el mismo recorte 3:2 de la misma foto en el mismo componente.
                El que sí cambia es el de la cabecera del artículo, que recorta a
@@ -271,7 +329,7 @@
              queda sin candidatos y se oculta solo. -->
 
         <article class="tarjeta tarjeta--caja" data-categoria="fundamento"
-                 data-etiquetas="legalidad,fundamento,garantias">
+                 data-etiquetas="Legalidad,Fundamento,Garantías">
           <div class="tarjeta__imagen">
             <img src="../img/damajusticia.jpg"
                  alt="Figura de bronce de la justicia, con los ojos vendados y los dos platos de la balanza vacíos"
@@ -289,7 +347,7 @@
         </article>
 
         <article class="tarjeta tarjeta--caja" data-categoria="fundamento"
-                 data-etiquetas="legalidad,garantias">
+                 data-etiquetas="Legalidad,Garantías">
           <div class="tarjeta__imagen">
             <img src="../img/damajusticia.jpg"
                  alt="Figura de bronce de la justicia, con los ojos vendados y los dos platos de la balanza vacíos"
@@ -307,7 +365,7 @@
         </article>
 
         <article class="tarjeta tarjeta--caja" data-categoria="fundamento"
-                 data-etiquetas="docencia,divulgacion">
+                 data-etiquetas="Docencia,Divulgación">
           <div class="tarjeta__imagen">
             <img src="../img/damajusticia.jpg"
                  alt="Figura de bronce de la justicia, con los ojos vendados y los dos platos de la balanza vacíos"
