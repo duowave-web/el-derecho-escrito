@@ -648,9 +648,17 @@
          la barra del navegador, donde relatedTarget también viene null.
 
          Va en el panel y no en el botón: el botón sí debe poder recibir el
-         foco al pulsarlo. */
+         foco al pulsarlo.
+
+         Y SOLO PARA EL BOTÓN IZQUIERDO. Sin la guarda, el preventDefault
+         alcanzaría también al central, que en Windows abre el autoscroll:
+         quedaría bloqueado dentro del panel y en ningún otro sitio de la
+         página, que es la clase de incoherencia que nadie relaciona luego con
+         un desplegable de etiquetas. El foco solo lo mueve el izquierdo, así
+         que es el único que hay que frenar. */
 
       panel.addEventListener("mousedown", function (e) {
+        if (e.button !== 0) return;
         e.preventDefault();
       });
 
