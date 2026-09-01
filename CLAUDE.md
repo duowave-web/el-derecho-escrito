@@ -1539,7 +1539,20 @@ que es otro serif. O se instala la fuente antes, o se exporta desde el navegador
   `#fbfaf7`, no el blanco puro que declara el sistema.
 - Falta el bloque «Sobre el autor» en portada, que el cliente quiere y aún no
   existe en ninguna versión. La banda de newsletter ya está.
-- `sobre/index.html` tiene texto de relleno entre corchetes.
+- `sobre/index.html` tiene texto de relleno entre corchetes. **Ahora pesa más
+  que antes**: desde que `contacto/` dice que el autor atiende asuntos como
+  abogado en ejercicio, `sobre/` es la única página donde el visitante podría
+  saber quién es y en qué ejerce, y sigue vacía.
+- ⚠️ **La web no dice en qué materias ejerce, y hay una contradicción sobre
+  ellas.** La cabecera de este archivo las da por buenas —Derecho
+  Administrativo, Urbanismo y Jurisdicción Contencioso-Administrativa— y así
+  aparecen en la bio del artículo y en su JSON-LD; pero la sección de autoría
+  marca esa bio como **de la maqueta de referencia y pendiente de confirmar**.
+  Mientras las dos cosas se contradigan, **no se escriben materias en textos
+  nuevos**: el de `contacto/` está redactado para no necesitarlas. Hay que
+  confirmarlas con el cliente y, entonces, decidir si van también en contacto.
+- Tampoco hay colegio, número de colegiado, tarifas ni plazos de respuesta.
+  Ninguno aparece en el proyecto y no se han inventado.
 - **Ninguna de las dos suscripciones envía nada**, ni la banda de la portada ni
   la del lateral del artículo: comparten componente y las dos van sin `<form>`
   y con los controles deshabilitados, a propósito, para que no se pueda enviar
