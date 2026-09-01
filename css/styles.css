@@ -1153,12 +1153,26 @@ body:has(.portada--video) .cabecera--con-linea {
 
 /* La caja del termino. El filete responde al hover del boton que lleva dentro,
    para que la pieza se lea como una sola cosa retirable y no como un texto con
-   un aspa al lado. */
+   un aspa al lado.
+
+   EL TERMINO VA SIN COMILLAS ANGULARES. Las llevo —«aula»— y se quitaron porque
+   la caja ya hace lo que ellas hacian: decir donde empieza y donde acaba lo que
+   escribio el visitante. Con un filete alrededor, las « » son un segundo
+   delimitador dentro del primero.
+
+   Los 12 de la izquierda son consecuencia de eso y estan medidos. Con 10, que
+   era lo que habia, el hueco de filete a glifo quedaba en 11 mientras que por
+   la derecha el aspa deja 13 —el boton mide 32 y el aspa 8, o sea 12 a cada
+   lado mas el filete—. La comilla tapaba ese desnivel; sin ella se veia.
+
+   Ahora son 13 y 13. Comprobado con un termino de una sola letra, con uno
+   normal y con dos palabras largas: el hueco no cambia, porque no depende del
+   contenido. */
 
 .filtro-aviso__busqueda {
   display: inline-flex;
   align-items: center;
-  padding-left: 10px;
+  padding-left: 12px;
   border: 1px solid var(--borde);
   border-radius: 0;
   transition: border-color 160ms ease;

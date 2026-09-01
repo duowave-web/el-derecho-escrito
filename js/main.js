@@ -254,9 +254,18 @@
       const caja = document.createElement("span");
       caja.className = "filtro-aviso__busqueda";
 
+      /* SIN COMILLAS ANGULARES. Las llevó, y el motivo de quitarlas es que la
+         caja ya hace lo que ellas hacían: delimitar dónde empieza y acaba lo
+         que escribió el visitante. Con filete alrededor, las « » son un segundo
+         delimitador dentro del primero.
+
+         El resto del listado tampoco las usa —el contador dice «N resultados»
+         a secas y no queda ningún mensaje de vacío—, así que dejarlas aquí era
+         la única excepción. */
+
       const cita = document.createElement("span");
       cita.className = "filtro-aviso__termino";
-      cita.textContent = "«" + consulta + "»";
+      cita.textContent = consulta;
       caja.appendChild(cita);
 
       /* Antes era un <a> a location.pathname, o sea que además de la búsqueda
@@ -268,12 +277,17 @@
          El nombre accesible nombra la consulta. Un «Quitar» a secas, en una
          página donde también se quitan etiquetas, no diría cuál de los filtros
          se está retirando. Va por aria-label y no por texto visible porque lo
-         que se ve es un aspa, y el texto es lo que la traduce. */
+         que se ve es un aspa, y el texto es lo que la traduce.
+
+         Aquí tampoco llevan comillas, por coherencia con lo que se ve. Y no se
+         pierde nada al oírlo: los lectores de pantalla no suelen vocalizar las
+         « », así que esto ya sonaba «Quitar la búsqueda aula» antes de
+         quitarlas del código. */
 
       const quitar = document.createElement("button");
       quitar.type = "button";
       quitar.className = "filtro-aviso__quitar";
-      quitar.setAttribute("aria-label", "Quitar la búsqueda «" + consulta + "»");
+      quitar.setAttribute("aria-label", "Quitar la búsqueda " + consulta);
 
       const aspa = document.createElement("span");
       aspa.className = "boton__aspa";
