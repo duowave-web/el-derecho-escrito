@@ -89,13 +89,12 @@
     </div>
   </div>
 
+  <!-- El contenedor es --amplio y no el de lectura, y ese era el motivo real de
+       que el formulario se viera apretado: con .contenedor a secas son 760px de
+       columna de lectura, que repartidos con el aside dejaban los campos en
+       unos 375. No era un problema del formulario, era el ancho de la página. -->
   <section class="contacto">
-    <div class="contenedor">
-
-      <!-- Este párrafo estaba en la cabecera. No se borra al vaciarla: dice qué
-           tipo de mensajes tienen sentido, que es justo lo que hay que saber
-           antes de escribir. Baja al cuerpo, encima del formulario. -->
-      <p class="contacto__intro">Sugerencias de temas, correcciones, dudas sobre un artículo o propuestas de colaboración. Respondo a todo lo que llega.</p>
+    <div class="contenedor contenedor--amplio">
 
       <!--
         PARA QUE EL FORMULARIO FUNCIONE:
@@ -105,16 +104,33 @@
         Alternativa si usas Cloudflare Pages: puedes montar una Pages Function
         en /functions/contacto.js y apuntar el action a /contacto.
       -->
+      <!-- NOMBRE Y CORREO VAN EN PAREJA y el resto a ancho completo. Aprovechar
+           el ancho no es estirarlo todo: un campo de una sola línea de 576px
+           son unos 76 caracteres, y para un nombre o un correo eso es espacio
+           que no se usa nunca. Emparejados bajan a ~274, que sigue sobrando
+           para lo que se escribe en ellos, y el mensaje se queda con el ancho
+           entero, que es el único campo que lo aprovecha de verdad.
+
+           La pareja es un <div> y no un <fieldset>: no son un grupo con nombre
+           común —son dos preguntas distintas— y un fieldset sin leyenda añade
+           un nivel de agrupación que el lector de pantalla anuncia sin que
+           signifique nada.
+
+           Las etiquetas son <label for> de verdad. Ningún placeholder hace de
+           etiqueta: desaparecen al escribir, así que quien vuelve a repasar el
+           formulario ya no sabe qué pedía cada casilla. -->
       <form class="formulario" action="https://formspree.io/f/TU_ENDPOINT_AQUI" method="POST">
 
-        <div class="campo">
-          <label for="nombre">Nombre</label>
-          <input type="text" id="nombre" name="nombre" autocomplete="name" required>
-        </div>
+        <div class="campos-par">
+          <div class="campo">
+            <label for="nombre">Nombre</label>
+            <input type="text" id="nombre" name="nombre" autocomplete="name" required>
+          </div>
 
-        <div class="campo">
-          <label for="email">Email</label>
-          <input type="email" id="email" name="email" autocomplete="email" required>
+          <div class="campo">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" autocomplete="email" required>
+          </div>
         </div>
 
         <div class="campo">
@@ -124,7 +140,7 @@
 
         <div class="campo">
           <label for="mensaje">Mensaje</label>
-          <textarea id="mensaje" name="mensaje" rows="7" required></textarea>
+          <textarea id="mensaje" name="mensaje" rows="8" required></textarea>
         </div>
 
         <!-- Trampa antispam: invisible para personas, tentadora para bots -->

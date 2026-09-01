@@ -2226,18 +2226,62 @@ main > .lista:last-child {
 
 /* --------------------------------------------------------- Contacto ----- */
 
+/* EL FORMULARIO SE ENSANCHA LIMITANDO LA COLUMNA, no estirando los campos.
+
+   La pagina paso a .contenedor--amplio, que era la causa real de que se viera
+   apretado: con el contenedor de lectura de 760 y el aside al lado, a los
+   campos les quedaban unos 375px.
+
+   Pero ancho de pagina no es ancho de campo. Los 600 de tope salen de contar
+   caracteres: a 0.95rem de Inter caben ahi unos 79, dentro del rango comodo de
+   linea, y un campo de una sola linea mas ancho es espacio que no se usa nunca.
+
+   EL TOPE VA EN .formulario Y NO EN LA PISTA DE LA REJILLA, y esto se corrigio
+   midiendo. Con grid-template-columns: minmax(0, 600px) 1fr la primera pista se
+   queda clavada en 600 y quien cede es el aside: medido, bajaba a 196px a 900 y
+   a 116 a 820, ilegible. Con las dos pistas en fracciones ceden a la vez y el
+   tope del formulario solo actua donde sobra sitio.
+
+   Ademas el tope sigue valiendo cuando las columnas se apilan, que es donde mas
+   falta hacia: a 760 sin el, el campo de mensaje se iba a 712px, o sea 94
+   caracteres por linea.
+
+   RADIO CERO en campos y aside. Estaban en 4px, que era la unica esquina
+   redondeada de esta pagina y no la comparte ningun otro control del sitio
+   salvo .boton. Sin sombras, que aqui no habia ninguna. */
+
 .contacto .contenedor {
   display: grid;
-  grid-template-columns: 1.3fr 1fr;
-  gap: 48px;
+  grid-template-columns: 1.25fr minmax(0, 1fr);
+  gap: 56px;
   padding-top: 48px;
   padding-bottom: 64px;
   align-items: start;
 }
 
+.formulario {
+  max-width: 600px;
+}
+
+/* Nombre y correo en pareja. auto-fit con minmax hace el trabajo de una media
+   query: cuando una de las dos no llega a 220px se apilan solas, asi que no hay
+   un numero que mantener sincronizado con el corte de abajo.
+
+   El hueco vertical va a 0 porque el margen inferior de .campo ya separa las
+   filas; declararlo aqui sumaria dos veces al apilarse. */
+
+.campos-par {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0 20px;
+}
+
 .campo {
   margin-bottom: 20px;
 }
+
+/* Etiqueta real y visible, en la misma familia y cuerpo que los metadatos del
+   sitio. Ningun placeholder hace de etiqueta: desaparecen al escribir. */
 
 .campo label {
   display: block;
@@ -2257,11 +2301,17 @@ main > .lista:last-child {
   font-family: var(--ui);
   font-size: 0.95rem;
   border: 1px solid var(--borde);
-  border-radius: 4px;
+  border-radius: 0;
   background: var(--papel);
   color: var(--tinta);
   resize: vertical;
+  transition: border-color 160ms ease;
 }
+
+/* El anillo de foco es el mismo que el del campo del buscador de la cabecera:
+   2px de --acento con 1 de separacion. Va en :focus y no en :focus-visible a
+   proposito — en un campo de texto se quiere ver siempre, tambien al pulsarlo
+   con el raton, porque marca donde se va a escribir. */
 
 .campo input:focus,
 .campo textarea:focus {
@@ -2269,9 +2319,28 @@ main > .lista:last-child {
   outline-offset: 1px;
 }
 
+/* ERROR. :user-invalid y NO :invalid, que es la diferencia que hace esto
+   utilizable: :invalid pinta los campos required en rojo nada mas cargar la
+   pagina, antes de que nadie haya escrito. :user-invalid espera a que el
+   visitante haya interactuado con el campo.
+
+   El color es --tinta y no un rojo porque LA PALETA NO TIENE NINGUNO, y meter
+   uno seria un token nuevo y una decision de diseno que no toca aqui. El salto
+   de --borde (#E5E1DA) a --tinta (#1E1E1E) es enorme, asi que se ve de sobra.
+
+   Y el color no es el que informa: quien dice que falta el correo o que esta
+   mal escrito es el mensaje nativo del navegador, que sigue intacto porque no
+   se ha tocado required ni type="email" ni se ha puesto novalidate. Esto es un
+   refuerzo visual, no el canal. */
+
+.campo input:user-invalid,
+.campo textarea:user-invalid {
+  border-color: var(--tinta);
+}
+
 .contacto__aparte {
   background: var(--papel-alt);
-  border-radius: 4px;
+  border-radius: 0;
   padding: 26px 28px;
   font-size: 0.95rem;
 }
@@ -3317,7 +3386,22 @@ body:has(.progreso) .cabecera {
   }
 }
 
-@media (max-width: 760px) {
+/* El corte estaba en 760 y sube a 932, y el numero esta MEDIDO, no elegido.
+
+   La pareja nombre/correo se apila sola cuando su columna baja de 460px —dos
+   pistas de 220 mas 20 de hueco—. Con la rejilla en 1.25fr / 1fr y 56 de hueco,
+   eso pasa a partir de 932px de ventana.
+
+   Por debajo de ahi las dos columnas dejaban de pagar: a 820 el formulario
+   quedaba en 398 y el aside en 318, mientras que apilado el formulario tiene
+   sus 600 y el aside el ancho entero. O sea que el diseno de dos columnas era
+   PEOR que el de una en todo ese tramo, y encima con la pareja ya rota.
+
+   Al apilar, el orden de lectura lo da el marcado: formulario primero, aside
+   despues. Es el correcto —se viene a escribir, y las notas de al lado son
+   apoyo— y no hace falta ningun order de CSS para conseguirlo. */
+
+@media (max-width: 932px) {
   .contacto .contenedor {
     grid-template-columns: 1fr;
     gap: 32px;
