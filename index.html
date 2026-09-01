@@ -149,6 +149,90 @@
 
   </section>
 
+  <!-- ================================================================
+       DESTACADO · La lectura recomendada
+       ================================================================
+
+       PROCEDE DE: articulos/principio-de-legalidad-penal/
+
+       ⚠️ ESTE BLOQUE COPIA DATOS DE ESE ARTÍCULO. No se genera solo. Si ese
+       artículo cambia, hay que revisar aquí, uno por uno:
+
+         · el titular          → .destacado__titulo
+         · la entradilla       → .destacado__entradilla
+         · la categoría        → texto y clave del href de .etiqueta--plana
+         · la fecha            → texto y datetime del <time>
+         · los minutos         → .lectura
+         · la imagen           → src del <img>
+         · el destino          → href del titular Y href de la imagen, que son
+                                 dos y hay que cambiar los dos
+
+       Nada de esto da error si se queda desfasado: la portada seguiría
+       enseñando un titular viejo con un enlace que funciona. Se nota leyendo,
+       no probando.
+
+       CUÁL ES EL DESTACADO ES UNA DECISIÓN EDITORIAL, no «el más leído»: no
+       hay analítica en el proyecto y afirmarlo sería inventarse un dato. Por
+       eso el rótulo dice quién recomienda y no cuánta gente lo ha leído.
+
+       PARA CAMBIAR DE DESTACADO se edita este bloque. PARA QUITARLO se borra
+       la <section> entera: no queda hueco porque no queda elemento, y la
+       portada pasa del hero a «Últimos artículos» como antes.
+
+       SI EL ARTÍCULO NO TIENE IMAGEN se borra el <a class="destacado__imagen">
+       y ya está. El bloque es flex y el texto ocupa el ancho entero solo. -->
+  <section class="destacado" aria-labelledby="destacado-titulo">
+    <div class="contenedor contenedor--amplio">
+
+      <h2 id="destacado-titulo" class="lista__titulo lista__titulo--destacado">La lectura recomendada</h2>
+
+      <div class="destacado__pieza">
+
+        <!-- ⚠️ aria-hidden Y tabindex="-1" VAN JUNTOS, y el alt vacío depende
+             de los dos. Sin ellos esto serían dos enlaces seguidos al mismo
+             sitio —la imagen y el titular—, que un lector de pantalla enumera
+             por duplicado y el teclado obliga a tabular dos veces.
+
+             Ocultándolo, el ratón puede pulsar la foto y el teclado solo
+             encuentra el titular, que es el enlace con nombre de verdad.
+
+             Y por eso el alt va vacío: aquí la imagen es decorativa, porque
+             quien la describe es el enlace del titular. Si alguien quita el
+             aria-hidden, este <a> se queda sin nombre accesible: hay que
+             devolverle un alt descriptivo en el mismo movimiento.
+
+             No hay ninguna otra imagen enlazada en el sitio, así que no había
+             patrón que copiar. El de aria-hidden + tabindex="-1" juntos sí
+             existe: lo usa el <video> de la portada, aquí arriba. -->
+        <a class="destacado__imagen" href="./articulos/principio-de-legalidad-penal/"
+           aria-hidden="true" tabindex="-1">
+          <img src="./img/damajusticia.jpg" alt=""
+               width="1600" height="1066" loading="lazy" decoding="async">
+        </a>
+
+        <div class="destacado__texto">
+          <p class="etiqueta etiqueta--plana">
+            <a href="./articulos/?categoria=fundamento"><span class="oculto">Ver artículos de </span>Fundamento</a>
+          </p>
+          <!-- h3 y no h2: cuelga del h2 del rótulo, que a su vez cuelga del h1
+               del hero. Misma jerarquía que las tarjetas de «Últimos
+               artículos», que también van en h3. -->
+          <h3 class="destacado__titulo">
+            <a href="./articulos/principio-de-legalidad-penal/">El principio de legalidad penal: qué protege y dónde se rompe</a>
+          </h3>
+          <!-- La entradilla COMPLETA, no la recortada de la tarjeta de abajo.
+               Es una de las cosas que separan esta pieza de aquellas. -->
+          <p class="destacado__entradilla">Nullum crimen sine lege es una de las garantías más citadas del derecho penal y una de las peor entendidas. Un repaso a sus cuatro exigencias y a los casos donde el legislador las tensiona.</p>
+          <div class="entrada__meta">
+            <time datetime="2026-08-20">20 agosto 2026</time>
+            <span class="lectura">7 min</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
   <section class="lista" aria-labelledby="ultimos-titulo">
     <div class="contenedor contenedor--amplio">
 

@@ -1224,6 +1224,114 @@ body:has(.portada--video) .cabecera--con-linea {
   outline-offset: 2px;
 }
 
+/* --------------------------------------------------------- Destacado ---- */
+
+/* Un articulo recomendado, entre el hero y la rejilla de «Ultimos articulos».
+
+   SU TRABAJO ES SER LA TRANSICION entre dos densidades muy distintas: arriba
+   una imagen a sangre de 520px, abajo una rejilla de cajas grises. Por eso va
+   ABIERTO — sobre --papel, sin fondo y sin filete—, que es justo lo contrario
+   de .tarjeta--caja. La densidad crece hacia abajo en vez de saltar, y la pieza
+   no compite con el hero porque no tiene cerco que la encierre.
+
+   NO ES UNA TARJETA MAS Y NO DEBE PARECERLO. Se separa de las de abajo en
+   cuatro cosas a la vez, no solo en el tamano:
+
+     horizontal          frente a vertical
+     sin caja ni filete  frente a fondo --papel-alt con filete
+     radio 0             frente a los 3px de .tarjeta--caja
+     entradilla entera   frente a la recortada
+
+   Los 36px del titular lo colocan en su sitio de la escala: hero 48, destacado
+   36, tarjeta 28. Si fuera 48 pelearia con el hero; si fuera 28 no se
+   distinguiria de lo de abajo.
+
+   EL FLEX RESUELVE SOLO EL CASO SIN IMAGEN. Con flex-basis en los dos lados, si
+   el <a> de la foto no esta el texto ocupa el ancho entero sin ninguna regla
+   extra ni clase modificadora. Y con flex-wrap, en cuanto no caben los dos
+   lados se apilan — de ahi que no haga falta media query propia. */
+
+.destacado {
+  padding: 56px 0 0;
+}
+
+.destacado__pieza {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 24px 40px;
+}
+
+/* El hueco de imagen lleva fondo --papel-alt como .tarjeta__imagen: si la foto
+   tarda o falla, se ve una superficie del sistema y no un blanco roto. */
+
+.destacado__imagen {
+  display: block;
+  flex: 1 1 340px;
+  max-width: 520px;
+  aspect-ratio: 3 / 2;
+  overflow: hidden;
+  background: var(--papel-alt);
+}
+
+.destacado__imagen img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.destacado__texto {
+  flex: 1 1 340px;
+}
+
+/* Cormorant, como todos los titulares del sitio. El enlace va en --tinta y no
+   en --acento: es el titular de la pieza, no un enlace de apoyo, y el acento se
+   reserva aqui para la categoria. Sin subrayado al pasar el raton por el mismo
+   motivo que en .entrada__titulo: es una masa grande, no una linea de texto.
+
+   VA EN clamp Y NO EN 36 FIJOS, y hace falta: el h1 del hero tambien es fluido
+   —clamp(2.2rem, 5vw, 3rem)— y en movil baja a su minimo de 35,2px. Con 36
+   fijos aqui, a 375 este titular seria MAS GRANDE que el del hero y la
+   jerarquia quedaba del reves. Se ve solo midiendo en estrecho.
+
+   Con clamp(1.9rem, 3.6vw, 2.25rem) la escalera aguanta en todo el recorrido:
+
+     375   hero 35,2  ·  destacado 30,4  ·  tarjeta 28
+     678   hero 35,2  ·  destacado 30,4  ·  tarjeta 28
+     1440  hero 48    ·  destacado 36    ·  tarjeta 28
+
+   El tope de 2.25rem es el valor de diseno; el suelo de 1.9rem es lo que lo
+   mantiene por debajo del hero sin llegar a confundirse con la tarjeta. */
+
+.destacado__titulo {
+  margin: 0 0 14px;
+  font-family: var(--display);
+  font-size: clamp(1.9rem, 3.6vw, 2.25rem);
+  font-weight: 600;
+  line-height: 1.12;
+  letter-spacing: -0.01em;
+}
+
+.destacado__titulo a {
+  color: var(--tinta);
+}
+
+.destacado__titulo a:hover {
+  color: var(--acento);
+  text-decoration: none;
+}
+
+/* Source Serif y no Inter: es texto para leer, no un metadato, y va al cuerpo
+   de 18 como el del articulo. Es la unica entradilla completa de la portada. */
+
+.destacado__entradilla {
+  margin: 0 0 18px;
+  font-size: 18px;
+  line-height: 1.6;
+  color: var(--tinta-suave);
+}
+
 /* --------------------------------------------------------- Artículos ---- */
 
 .lista {

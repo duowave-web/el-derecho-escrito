@@ -96,6 +96,46 @@ Si no, el artículo existe pero es invisible para buscadores y lectores de RSS.
 > **Lo que NO hay que tocar al publicar es el bloque «Continúa leyendo»** de
 > ningún artículo. Se rellena solo.
 
+### El destacado de la portada NO es un quinto paso del checklist
+
+`index.html` abre con una sección **«La lectura recomendada»**, entre el hero y
+«Últimos artículos», con un solo artículo. **Es una decisión editorial y se
+cambia cuando se decide cambiarla**, no cada vez que se publica. Por eso está
+aquí y no en la lista de arriba: publicar no obliga a tocarlo.
+
+**No dice «el más leído» ni nada parecido, y no puede decirlo:** no hay
+analítica en el proyecto, así que afirmar popularidad sería inventarse un dato.
+El rótulo nombra a quien recomienda, no a cuánta gente ha leído.
+
+> ⚠️ **El bloque COPIA datos del artículo, y ese es el precio de tenerlo en el
+> HTML.** No se genera solo. Si el artículo destacado cambia, hay que revisar a
+> mano: titular, entradilla, categoría —texto y clave del `href`—, fecha —texto
+> y `datetime`—, minutos, `src` de la imagen y **los dos `href` de destino**,
+> que son el del titular y el de la imagen.
+>
+> **Nada de esto da error si se queda desfasado**: la portada seguiría
+> enseñando un titular viejo con un enlace que funciona. Se nota leyendo, no
+> probando. El `index.html` lleva la lista completa en un comentario, junto al
+> bloque, con el artículo del que procede escrito arriba.
+
+> ⚠️ **No conviene destacar el artículo más reciente**, y está medido: el más
+> reciente es ya la primera tarjeta de «Últimos artículos», así que el mismo
+> titular y la misma foto salen **dos veces separados por 590 px**, y en un
+> escritorio de 1440×900 **caben los dos en la misma pantalla**. En 1440×700 y
+> en móvil ya no coinciden, pero el caso malo es real.
+>
+> La sección se gana el sitio justo cuando **rescata algo que no está arriba
+> del todo**. Si destaca lo mismo que encabeza la lista, no añade nada.
+>
+> Hoy es inevitable: **con un solo artículo publicado, cualquier elección
+> duplica**. Forma parte del estado de maqueta, como las entradas provisionales.
+
+**Para quitar el destacado se borra la `<section>` entera.** No queda hueco
+porque no queda elemento: la portada pasa del hero a «Últimos artículos» como
+antes — verificado, 0 px. Y **si el artículo no tiene imagen** se borra solo el
+`<a class="destacado__imagen">`: el bloque es flex y el texto ocupa el ancho
+entero sin ninguna regla extra.
+
 ### La categoría de un artículo se repite en 9 sitios
 
 > ⚠️ **Y hay TRES ENTRADAS DE EJEMPLO más en `articulos/index.html`**, marcadas
@@ -1285,9 +1325,43 @@ Orden de la portada, tal como está construida:
 ```
 Cabecera:           logotipo a la izquierda, navegacion y lupa a la derecha
 Portada:            franja de 520 px, texto a la izquierda | estatua a la derecha
+Lectura recomendada: un articulo, horizontal, imagen | texto
 Ultimos articulos:  rotulo + "ver todos", rejilla de tarjetas, banda de newsletter
 Pie:                fondo oscuro
 ```
+
+> **El destacado existe para hacer de transición**, y de ahí viene su forma. El
+> hero es una imagen a sangre de 520 px y debajo hay una rejilla de cajas grises
+> densas: la pieza va **abierta**, sobre `--papel`, **sin fondo y sin filete**,
+> justo lo contrario de `.tarjeta--caja`. Así la densidad crece hacia abajo en
+> vez de saltar, y no compite con el hero porque no tiene cerco.
+>
+> **No es una tarjeta más**, y se separa de las de abajo en cuatro cosas a la
+> vez: horizontal frente a vertical, sin caja frente a caja, radio 0 frente a
+> 3 px, y **entradilla completa** frente a la recortada.
+
+> ⚠️ **El titular va en `clamp` y no en 36 px fijos.** El `h1` del hero también
+> es fluido y en móvil baja a **35,2**; con 36 fijos aquí, a 375 el destacado
+> sería **más grande que el titular del hero** y la jerarquía quedaría del
+> revés. Solo se ve midiendo en estrecho. Medido con `clamp(1.9rem, 3.6vw,
+> 2.25rem)`:
+>
+> | Ancho | Hero | Destacado | Tarjeta |
+> |---|---|---|---|
+> | 375 | 38,4 | **30,4** | 24 |
+> | 1440 | 48 | **36** | 28 |
+
+> ⚠️ **En la imagen, `aria-hidden="true"` y `tabindex="-1"` van juntos, y el
+> `alt=""` depende de los dos.** Sin ellos serían dos enlaces seguidos al mismo
+> destino —imagen y titular—, que un lector de pantalla enumera por duplicado.
+> Ocultando el de la imagen, el ratón la puede pulsar y el teclado solo
+> encuentra el titular. Si alguien quita el `aria-hidden`, ese `<a>` se queda
+> **sin nombre accesible**: hay que devolverle un `alt` descriptivo en el mismo
+> movimiento.
+>
+> **No hay ninguna otra imagen enlazada en el sitio**, así que no había patrón
+> que copiar; el de `aria-hidden` + `tabindex="-1"` juntos sí existía, en el
+> `<video>` de la portada.
 
 > **Detrás de «Últimos artículos» iba una franja de «Áreas del derecho»** con
 > las cuatro materias del despacho, y se eliminó con su CSS —`.franja`,
