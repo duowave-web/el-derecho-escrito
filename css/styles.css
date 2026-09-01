@@ -186,22 +186,47 @@ a:hover {
 
 /* --------------------------------------------------------- Cabecera ----- */
 
+/* EL FILETE ES DE 1px, y bajo de 2 para que se perciba mas fino.
+
+   Se adelgaza el GROSOR y no se aclara el color, que es la otra via. El orden
+   correcto de esa decision es mirar primero cuanto mide: a 1px ya no se puede
+   adelgazar sin trucos —opacidad, o un hairline de 0.5px que en pantallas no
+   Retina se ve igual o desaparece— y entonces lo que toca es bajar el
+   contraste, porque menos contraste se percibe como mas fino en todas. Aqui
+   habia 2px, asi que si se podia.
+
+   Y ademas convenia por sistema: los 2px eran, junto al filete de la mancheta,
+   los unicos del sitio. Todo lo demas —la caja de tarjeta, el panel de
+   etiquetas, los campos del formulario, las pildoras— va a 1px. Esto mete la
+   cabecera en la retícula que ya existia en vez de inventarle un grosor propio.
+
+   EL COLOR NO SE TOCA. --borde-marcado esta elegido para esta linea porque
+   tiene que leerse como un LIMITE: es un paso mas oscuro que --borde, dE 16,4
+   contra 11,1 frente al blanco. Adelgazar y aclarar a la vez son dos
+   reducciones sobre lo mismo y se arriesga a que deje de cerrar nada. Si aun
+   asi se ve pesada, aclarar sigue estando disponible como segundo paso. */
+
 .cabecera {
   background: var(--papel);
   position: sticky;
   top: 0;
   z-index: 10;
-  border-bottom: 2px solid var(--borde-marcado);
+  border-bottom: 1px solid var(--borde-marcado);
 }
 
 /* En el inicio la linea no esta desde el principio: mientras la cabecera esta
    sobre la franja de portada, la imagen ya la separa del contenido y una linea
    ahi seria ruido. Aparece al pasar la franja, y de eso se encarga
-   lineaDeCabecera() en main.js con un IntersectionObserver.
+   lineaDeCabecera() en main.js con un IntersectionObserver — no un listener de
+   scroll, asi que no se ejecuta nada en cada pixel desplazado.
 
-   EL BORDE SIGUE AHI SIEMPRE, a 2px, y lo unico que cambia es su color. Es lo
-   que garantiza que la cabecera no pegue un salto de 2px al aparecer la linea:
+   EL BORDE SIGUE AHI SIEMPRE, ahora a 1px, y lo unico que cambia es su color.
+   Es lo que garantiza que la cabecera no pegue un salto al aparecer la linea:
    el espacio ya estaba ocupado. Por eso transparent y no border: none.
+
+   Al bajar de 2px a 1px ese salto evitado es de 1px en vez de 2, pero el
+   mecanismo importa igual: un pixel de desplazamiento en una barra fija se ve
+   perfectamente, porque todo el contenido de debajo salta con el.
 
    Se detecta por la portada con video en vez de marcar el <header>, para no
    tener que tocar el HTML de las seis paginas que llevan cabecera. */
@@ -213,6 +238,15 @@ body:has(.portada--video) .cabecera {
 
 body:has(.portada--video) .cabecera--con-linea {
   border-bottom-color: var(--borde-marcado);
+}
+
+/* Con movimiento reducido la linea aparece de golpe en vez de fundirse. No se
+   pierde nada: lo que informa es que este o no este, no como llega. */
+
+@media (prefers-reduced-motion: reduce) {
+  body:has(.portada--video) .cabecera {
+    transition: none;
+  }
 }
 
 .cabecera__interior {

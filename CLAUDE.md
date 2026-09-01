@@ -1189,9 +1189,29 @@ rótulo mide 241,78 px y a 700, 242,98; una simulación no cambiaría las métri
 
 ## Retícula y composición
 
-Contenedor máximo **1440 px**. Cabecera de **73 px**, fondo blanco, con un
-borde inferior de **2 px** en `--borde-marcado`. En las cinco páginas
+Contenedor máximo **1440 px**. Cabecera de **72 px**, fondo blanco, con un
+borde inferior de **1 px** en `--borde-marcado`. En las cinco páginas
 interiores está siempre; **en el inicio aparece al pasar la franja de portada**.
+
+> **El filete bajó de 2 px a 1 px para que se percibiera más fino**, y el orden
+> de esa decisión importa: **primero se mide cuánto tiene**. A 1 px ya no se
+> puede adelgazar sin trucos —opacidad, o un *hairline* de 0,5 px que en
+> pantallas no Retina se ve igual o desaparece— y entonces lo que toca es bajar
+> el contraste, porque menos contraste se percibe como más fino en todas. Aquí
+> había 2, así que sí se podía.
+>
+> Y convenía por sistema: esos 2 px eran, junto al filete de la mancheta, **los
+> únicos del sitio**. Todo lo demás —caja de tarjeta, panel de etiquetas, campos
+> del formulario, píldoras— va a 1 px.
+>
+> **El color no se tocó.** `--borde-marcado` está elegido para esta línea porque
+> tiene que leerse como un límite: ΔE 16,4 frente al blanco, contra 11,1 de
+> `--borde`. Adelgazar y aclarar a la vez son dos reducciones sobre lo mismo.
+> Aclarar sigue disponible como segundo paso si aún se ve pesada.
+>
+> ⚠️ **La mancheta sigue en 2 px** y no se tocó: cierra una banda con imagen
+> contra el blanco, no separa una barra fija de un texto. Si algún día se
+> igualan, hay que releer antes por qué subió a `--borde-marcado`.
 
 > **Por qué cambió esta regla.** La medición original decía «sin borde inferior
 > visible — la separación la hace el espacio, no una línea», y era correcta:
@@ -1213,9 +1233,19 @@ interiores está siempre; **en el inicio aparece al pasar la franja de portada**
 > que es el momento exacto en que la regla original deja de aplicar.
 
 Detalle de implementación, y hay que respetarlo: **el borde existe siempre, a
-2 px, y lo único que cambia es su color.** Nunca se usa `border: none`. Así la
-cabecera mide lo mismo en las seis páginas y, sobre todo, no pega un salto de
-2 px cuando la línea aparece en el inicio: el espacio ya estaba ocupado.
+1 px, y lo único que cambia es su color.** Nunca se usa `border: none`. Así la
+cabecera mide lo mismo en las seis páginas y, sobre todo, no pega ningún salto
+cuando la línea aparece en el inicio: el espacio ya estaba ocupado.
+
+> **Que ahora el salto evitado sea de 1 px y no de 2 no lo hace prescindible.**
+> Un píxel en una barra **fija** se ve perfectamente, porque no se mueve ella
+> sola: arrastra consigo todo el contenido de debajo. Verificado desplazando de
+> verdad en la portada: el alto se queda en 72,2 px en los seis puntos de
+> medición, antes y después del disparo.
+
+> **Y con `prefers-reduced-motion` la línea aparece de golpe en vez de
+> fundirse.** El `transition` de 220 ms se anula. No se pierde nada: lo que
+> informa es que esté o no esté, no cómo llega.
 
 El disparo lo hace `lineaDeCabecera()` en `js/main.js` con un
 `IntersectionObserver` sobre la franja, recortando la zona de observación por
