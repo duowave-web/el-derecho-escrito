@@ -96,6 +96,30 @@ Si no, el artículo existe pero es invisible para buscadores y lectores de RSS.
 > **Lo que NO hay que tocar al publicar es el bloque «Continúa leyendo»** de
 > ningún artículo. Se rellena solo.
 
+#### El aviso de cierre del artículo tiene una fórmula fija
+
+Se copia **tal cual** al publicar. No se reescribe con otras palabras:
+
+> Este artículo es divulgación, no asesoramiento: explica una figura general y
+> no puede pesar los detalles de un asunto concreto. Si tienes uno entre manos,
+> [escríbeme](../../contacto/).
+
+Decía «Para un caso concreto, consulta con un profesional colegiado», que
+hablaba del especialista **como de un tercero cuando el especialista es quien
+firma la web**. La frontera no está en *quién* atiende sino en el **marco**, y
+es la misma que usa `contacto/`: un artículo explica una figura general, un
+encargo pesa los detalles de un asunto.
+
+> ⚠️ **Tiene que seguir siendo un aviso, no un reclamo.** Quien lee un artículo
+> viene a aprender, no a contratar. Por eso la salida es **una sola palabra
+> enlazada** y no una invitación: nada de «puedo ayudarte», ni ventajas, ni una
+> segunda frase. Ampliarlo convierte cada artículo en publicidad.
+
+**Y el de `sobre/` es el mismo salvo por una cosa: va sin enlace.** Justo debajo
+tiene «¿Quieres escribirme? Ve a Contacto», así que ponerlo serían dos enlaces
+al mismo sitio en dos líneas seguidas. En el artículo el enlace sí hace falta,
+porque allí no hay ninguna otra salida cerca.
+
 ### El destacado de la portada NO es un quinto paso del checklist
 
 `index.html` abre con una sección **«La lectura recomendada»**, entre el hero y
