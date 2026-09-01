@@ -1544,7 +1544,20 @@ que es otro serif. O se instala la fuente antes, o se exporta desde el navegador
   la del lateral del artículo: comparten componente y las dos van sin `<form>`
   y con los controles deshabilitados, a propósito, para que no se pueda enviar
   por accidente. Al conectar backend hay que tocar las dos.
-- El formulario de contacto tampoco tiene backend: no envía nada.
+- El formulario de contacto tampoco tiene backend: no envía nada. Su `action`
+  apunta a `formspree.io/f/TU_ENDPOINT_AQUI`, que es literalmente un marcador.
+- ⚠️ **`hola@elderechoescrito.es` no existe.** Es la dirección del bloque
+  «También por email» de `contacto/`, y es de las cosas que se publican sin
+  querer **porque no dan error**: el enlace se ve bien, abre el gestor de correo
+  y manda el mensaje a una dirección que no recibe nadie.
+
+  **Se escribe dos veces en la misma línea** —el `href` del `mailto` y el texto
+  visible— y hay que cambiar las dos. Cambiar solo el texto deja un enlace que
+  enseña la buena y envía a la mala, que es peor que no tocarlo.
+
+  Está marcada en el HTML entre `PROVISIONAL` y `FIN PROVISIONAL`. Es la única
+  dirección de correo del sitio: el `mailto` de los botones de compartir del
+  artículo no lleva destinatario, solo asunto y cuerpo.
 - `_headers` y `_redirects` son de Netlify. GitHub Pages los ignora. Se
   mantienen por si se mueve el hosting.
 
