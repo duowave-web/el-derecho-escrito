@@ -627,6 +627,33 @@
         abrir(boton.getAttribute("aria-expanded") !== "true");
       });
 
+      /* EL FOCO NO DEBE SALIR DEL BOTÓN AL PULSAR DENTRO DEL PANEL, y sin esto
+         el desplegable no funcionaba con ratón salvo dando justo en la casilla.
+
+         Al abrirlo, el foco se queda en el botón. Un mousedown sobre algo NO
+         focusable —el nombre de la etiqueta, que es un <span>, o el hueco de la
+         fila— hace que el foco caiga a <body>, así que focusout se dispara con
+         relatedTarget null, el manejador de más abajo lo lee como «se ha ido
+         fuera» y cierra el panel ENTRE el mousedown y el mouseup. El click no
+         llega a completarse sobre un elemento que ya está en display:none, el
+         <label> no se activa y la casilla no cambia.
+
+         Dar en el cuadradito sí funcionaba, y esa asimetría era la pista: el
+         <input> es focusable, así que ahí relatedTarget es el propio input, que
+         está dentro de la caja, y el panel sobrevive.
+
+         preventDefault en mousedown impide el desplazamiento del foco pero NO
+         la activación del <label>, que ocurre en el click. Se prefiere a
+         relajar el focusout porque así se conserva el cierre al tabular hacia
+         la barra del navegador, donde relatedTarget también viene null.
+
+         Va en el panel y no en el botón: el botón sí debe poder recibir el
+         foco al pulsarlo. */
+
+      panel.addEventListener("mousedown", function (e) {
+        e.preventDefault();
+      });
+
       /* Escape cierra Y DEVUELVE EL FOCO al botón. Sin lo segundo el foco se
          quedaría en un panel que ya no existe y saltaría al principio del
          documento en la siguiente tabulación. */

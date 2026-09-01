@@ -364,6 +364,41 @@ ya son operables por teclado y anuncian su estado sin emular nada.
 - **Escape cierra y devuelve el foco al botón.** Sin lo segundo el foco se
   quedaría en un panel inexistente y saltaría al principio del documento.
 - Salir con el tabulador cierra, mirando `relatedTarget` en `focusout`.
+- **El panel lleva `mousedown` con `preventDefault()`**, y sin eso el
+  desplegable no funciona con ratón. Ver abajo.
+
+> ⚠️ **`preventDefault()` en el `mousedown` del panel no es opcional, y su
+> ausencia daba un fallo desconcertante: solo se podía marcar dando justo en el
+> cuadradito.**
+>
+> Al abrir, el foco se queda en el botón. Un `mousedown` sobre algo **no
+> focusable** —el nombre de la etiqueta, que es un `<span>`, o el hueco de la
+> fila— tira el foco a `<body>`, así que `focusout` salta con
+> **`relatedTarget: null`**, el manejador lo lee como «se ha ido fuera» y cierra
+> el panel **entre el `mousedown` y el `mouseup`**. El `click` no llega a
+> completarse sobre algo que ya está en `display:none`, el `<label>` no se
+> activa y la casilla no cambia.
+>
+> Dar en el cuadradito sí funcionaba, y esa asimetría es la pista: el `<input>`
+> **es** focusable, así que ahí `relatedTarget` es el propio input, que está
+> dentro de la caja, y el panel sobrevive.
+>
+> `preventDefault` en `mousedown` impide el desplazamiento del foco pero **no**
+> la activación del `<label>`, que ocurre en el `click`. Se prefiere a relajar
+> el `focusout` a `if (e.relatedTarget && …)`, que también arreglaba el ratón
+> pero **perdía el cierre al tabular hacia la barra del navegador**, donde
+> `relatedTarget` viene igualmente `null`.
+>
+> Va en el panel y **no** en el botón: el botón sí debe poder recibir el foco.
+
+> **Esto no se detecta con `.click()`, y por eso se coló.** Un `.click()`
+> programático no dispara `mousedown` ni mueve el foco, así que `focusout` nunca
+> llega a ejecutarse y todas las pruebas pasaban. Hay que **pulsar de verdad**,
+> con la herramienta de clic del preview, sobre los cuatro puntos de la fila:
+> la palabra, el cuadradito y los huecos a ambos lados.
+>
+> Es la misma lección que ya dejó el `[hidden]`: medir el atributo o simular el
+> evento no es medir lo que hace el navegador.
 - Las casillas se dejan **nativas**. Rehacerlas con un pseudoelemento obligaría
   a reimplementar foco y alto contraste sin ganar nada.
 
