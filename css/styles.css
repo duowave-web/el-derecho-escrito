@@ -2294,10 +2294,14 @@ main > .lista:last-child {
   margin-bottom: 0;
 }
 
-.destacado {
-  font-size: 1.1rem;
-  color: var(--tinta-suave);
-}
+/* Aqui habia una regla .destacado —font-size 1.1rem y color --tinta-suave— sin
+   ningun elemento que la usara en todo el sitio. Se retira.
+
+   No era solo codigo muerto: al declararse DESPUES de la seccion .destacado de
+   la portada, le estaba aplicando tamano y color por herencia. No se notaba
+   porque cada hijo de esa seccion declara los suyos, pero cualquiera que
+   anadiera un elemento sin tamano propio se lo habria encontrado en 1.1rem y en
+   gris sin explicacion posible. */
 
 /* ------------------------------------------------------ Artículo full --- */
 
