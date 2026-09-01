@@ -1625,6 +1625,31 @@ que es otro serif. O se instala la fuente antes, o se exporta desde el navegador
   Está marcada en el HTML entre `PROVISIONAL` y `FIN PROVISIONAL`. Es la única
   dirección de correo del sitio: el `mailto` de los botones de compartir del
   artículo no lleva destinatario, solo asunto y cuerpo.
+- ⚠️ **PRUEBA TEMPORAL EN LA PORTADA: el hero no lleva vídeo ahora mismo.** Hay
+  un `<img class="portada__prueba">` con `img/prueba-dama-2.jpg` como fondo
+  estático, y una regla que **oculta el `<video>`**, que no se ha tocado. Está
+  puesto para enseñárselo al cliente y **hay que revertirlo o convertirlo en
+  definitivo**: no puede quedarse así.
+
+  Los dos bloques van marcados `PRUEBA TEMPORAL` / `FIN PRUEBA TEMPORAL`, uno en
+  `index.html` y otro en `css/styles.css`. Revertir es borrarlos.
+
+  **Pesa 2,73 MB**, o sea **30 veces el póster actual (0,09 MB) y 2,5 veces el
+  vídeo entero (1,07 MB)**. Y hay algo peor que el peso: `fondoDePortada()` no
+  descarga el vídeo en móvil ni con `prefers-reduced-motion` justamente para no
+  gastar 1,1 MB, pero **este `<img>` se descarga siempre, en todos los
+  dispositivos**. Si la imagen se queda, hay que comprimirla y decidir cómo se
+  sirve antes de publicar.
+
+  Lleva además la **variante 2 del encuadre**: el `<img>` ensanchado al 118,2 %
+  y corrido −18,2 % para llevar el centro de la figura al 74 % del ancho, más un
+  `overflow: hidden` acotado con `:has()`. Eso sube el recorte vertical del
+  35,3 % al 45,3 % a 1440 —aunque se desvanece al estrechar: 15,4 % a 932 y casi
+  cero a 789— y por debajo de 788 px cambia el eje de recorte, así que la figura
+  se desplaza sola al 77,9 % en móvil.
+
+  Mientras esté, **el vídeo sigue descargándose y reproduciéndose** aunque no se
+  vea, porque `display: none` no lo impide.
 - `_headers` y `_redirects` son de Netlify. GitHub Pages los ignora. Se
   mantienen por si se mueve el hosting.
 
