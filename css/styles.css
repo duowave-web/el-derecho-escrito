@@ -1098,25 +1098,51 @@ body:has(.portada--video) .cabecera--con-linea {
 
 /* --------------------------------------------- Aviso de filtrado -------- */
 
-/* Aquí vivía .buscador, el campo propio del listado. Se retiró junto con el
-   campo, que duplicaba el de la cabecera; el CSS se va con él en vez de quedar
-   como bloque sin usuarios.
+/* Aqui vivia .buscador, el campo propio del listado. Se retiro junto con el
+   campo, que duplicaba el de la cabecera.
 
-   Lo que ocupa su sitio es el aviso que aparece cuando se llega con ?q=. No es
-   un control: es la única señal de que lo que se está viendo está filtrado, y
-   por eso lleva la salida al lado. */
+   Lo ocupa el aviso que aparece cuando se llega con ?q=. Va centrado como los
+   filtros y el contador: es el primer elemento de esa misma pila y dejarlo a un
+   lado se leeria como un descuadre.
 
-/* Centrado como los filtros y el contador, que van justo debajo. No se pidió,
-   pero es el tercer elemento de esa misma pila: dejarlo a la izquierda con los
-   otros dos centrados se leería como un descuadre, no como una decisión. */
+   ES UNA FRASE CON UNA PIEZA RETIRABLE, no una pildora. La distincion importa
+   porque en pantalla puede convivir con las pildoras de etiqueta activa, que
+   cumplen la misma funcion —«esto es un filtro puesto, se quita aqui»— y si se
+   parecieran demasiado el lector tendria dos filas de cajas casi iguales que
+   filtran ejes distintos.
+
+   Se separan por tres cosas a la vez:
+
+     radio 0        frente a los 3px de .etiqueta
+     caja baja      frente a las versales de .etiqueta
+     --tinta        frente al --acento de .etiqueta--filtro
+
+   La segunda no es estetica: el termino tiene que conservar las mayusculas que
+   escribio el visitante. Ponerlo en versales, como van las pildoras por
+   sistema, seria tergiversar su consulta.
+
+   Y la frase hace algo que una pildora suelta no puede: NOMBRA que esta
+   filtrado. Un chip con «aula» a secas se confundiria con una etiqueta que se
+   llamara asi.
+
+   EL AIRE DE ARRIBA VA EN PADDING Y NO EN MARGEN. Estuvo en margin-top: 28 y no
+   se veia donde se creia: al ser el primer hijo del contenedor, ese margen
+   COLAPSA y acaba empujando al contenedor entero en vez de separar el aviso de
+   lo de arriba. El total medido era el mismo —48 de .lista mas 28— pero por un
+   camino que se rompe en cuanto alguien le ponga un borde o un padding al
+   contenedor. El padding no colapsa nunca.
+
+   Abajo iba a cero, y de ahi que se leyera pegado a los botones, como si fuera
+   parte de ellos. Los 22 son el ritmo que ya llevan .filtros y .seleccion. */
 
 .filtro-aviso {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 4px 14px;
-  margin: 28px 0 0;
+  gap: 6px 10px;
+  padding: 28px 0 0;
+  margin: 0 0 22px;
   font-family: var(--ui);
   font-size: 13px;
   color: var(--tinta-suave);
@@ -1125,17 +1151,63 @@ body:has(.portada--video) .cabecera--con-linea {
 /* Aqui hubo un .filtro-aviso[hidden] por el mismo motivo que en .filtros.
    Sobra desde que hay un [hidden] global arriba del archivo. */
 
-.filtro-aviso strong {
+/* La caja del termino. El filete responde al hover del boton que lleva dentro,
+   para que la pieza se lea como una sola cosa retirable y no como un texto con
+   un aspa al lado. */
+
+.filtro-aviso__busqueda {
+  display: inline-flex;
+  align-items: center;
+  padding-left: 10px;
+  border: 1px solid var(--borde);
+  border-radius: 0;
+  transition: border-color 160ms ease;
+}
+
+.filtro-aviso__busqueda:hover {
+  border-color: var(--acento);
+}
+
+.filtro-aviso__termino {
   font-weight: 600;
   color: var(--tinta);
 }
 
-.filtro-aviso__limpiar {
-  font-size: 12px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
+/* 32x32 de area pulsable para un aspa de 8. El glifo solo daria una diana de
+   unos 12px, por debajo de lo que se puede acertar con el pulgar.
+
+   EL flex: none NO ES DECORATIVO. Sin el, en cuanto el termino es largo y la
+   caja llega al ancho del contenedor, el flex reparte la falta de sitio y lo
+   primero que encoge es el boton: medido en un movil de 375 con una consulta de
+   cinco palabras, bajaba a 29px de ancho. Justo el caso en que la diana mas
+   falta hace es donde se estrechaba sola.
+
+   El foco va en --tinta y por fuera, como en .boton--contorno y .paginacion:
+   el hover tiñe de acento, asi que un anillo de acento se confundiria con el.
+   Sobre el blanco de la pagina --tinta da 16,67:1. */
+
+.filtro-aviso__quitar {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--tinta-suave);
+  cursor: pointer;
+  transition: color 160ms ease;
+}
+
+.filtro-aviso__quitar:hover {
   color: var(--acento);
+}
+
+.filtro-aviso__quitar:focus-visible {
+  outline: 2px solid var(--tinta);
+  outline-offset: 2px;
 }
 
 /* --------------------------------------------------------- Artículos ---- */

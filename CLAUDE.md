@@ -440,6 +440,56 @@ búsqueda, y el argumento es el nombre del propio botón: si borrara todo tendr�
 que llamarse «Borrar filtros», y entonces no pintaría nada dentro de un bloque
 que solo existe cuando hay etiquetas marcadas.
 
+#### El aviso de búsqueda es una frase, no una píldora
+
+`.filtro-aviso` dice «Resultados para «aula»» con el término en una caja que
+lleva una **×** para quitarlo. Los tres ejes tienen así su propia salida y cada
+una borra **solo la suya**.
+
+> **Era un enlace y se llevaba por delante los otros dos.** El «Ver todos»
+> anterior era un `<a href="location.pathname">`: navegaba al listado desnudo,
+> así que borraba también la categoría y las etiquetas. Ahora es un `<button>`
+> que cambia el estado en vivo, y por eso `parametrosActuales()` tuvo que
+> aprender a borrar `q` — antes lo arrastraba de la URL tal cual, porque no
+> había forma de quitarlo sin recargar.
+>
+> Y el cambio de `<a>` a `<button>` arregla de paso el historial: el enlace
+> **empujaba entrada**, mientras que la categoría y las etiquetas usan
+> `replaceState`. Verificado que ahora los tres se comportan igual —
+> `history.length` no se mueve con ninguno.
+
+**No es una píldora, y la distinción es deliberada** porque puede convivir con
+las de etiqueta activa, que cumplen la misma función. Se separan por tres cosas
+a la vez:
+
+| | Aviso de búsqueda | `.etiqueta--filtro` |
+|---|---|---|
+| Radio | **0** | 3 px |
+| Caja | **baja, la del usuario** | versales |
+| Color del texto | `--tinta` | `--acento` |
+
+La segunda no es estética: **el término conserva las mayúsculas que escribió el
+visitante**. Ponerlo en versales, como van las píldoras por sistema, sería
+tergiversar su consulta. Y la frase hace algo que una píldora suelta no puede:
+nombra *qué* está filtrado — un chip con «aula» a secas se confundiría con una
+etiqueta que se llamara así.
+
+> ⚠️ **El aire de arriba va en `padding` y no en `margin`.** Estuvo en
+> `margin-top: 28px` y no separaba lo que se creía: al ser el primer hijo del
+> contenedor, ese margen **colapsa** y empuja al contenedor entero. El total
+> medido salía igual —48 de `.lista` más 28— pero por un camino que se rompe en
+> cuanto alguien le ponga un borde o un padding al contenedor.
+>
+> Abajo iba a **cero**, y de ahí que se leyera pegado a los botones, como si
+> fuera parte de ellos. Ahora lleva los **22** que ya usan `.filtros` y
+> `.seleccion`.
+
+> ⚠️ **La × lleva `flex: none`, y sin eso se encoge justo cuando más falta
+> hace.** Con un término largo la caja llega al ancho del contenedor y el flex
+> reparte la falta de sitio: medido en un móvil de 375 con una consulta de cinco
+> palabras, el botón bajaba de 32 px a **29**. Son 32×32 para un aspa de 8,
+> porque el glifo solo daría una diana de unos 12.
+
 ### El estado vacío lo dice el contador, y solo el contador
 
 No hay ningún mensaje de «no hay artículos» en la página. Hubo uno —`.vacio`,
@@ -449,7 +499,7 @@ y lógica. Lo que queda en cada caso:
 | | Categoría vacía | Búsqueda sin resultados |
 |---|---|---|
 | Botón pulsado | **«Ensayo»** encendido | «Todos» |
-| `.filtro-aviso` | — | **«Resultados para «zzz» · Ver todos»** |
+| `.filtro-aviso` | — | **«Resultados para «zzz»» con una × que la quita** |
 | `.contador` | **«0 resultados»** | **«0 resultados»** |
 
 Se quitó por dos razones, y la segunda es la que decide:

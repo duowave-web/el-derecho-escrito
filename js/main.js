@@ -251,15 +251,51 @@
 
       aviso.appendChild(document.createTextNode("Resultados para "));
 
-      const cita = document.createElement("strong");
-      cita.textContent = "«" + consulta + "»";
-      aviso.appendChild(cita);
+      const caja = document.createElement("span");
+      caja.className = "filtro-aviso__busqueda";
 
-      const limpiar = document.createElement("a");
-      limpiar.className = "filtro-aviso__limpiar";
-      limpiar.href = window.location.pathname;
-      limpiar.textContent = "Ver todos";
-      aviso.appendChild(limpiar);
+      const cita = document.createElement("span");
+      cita.className = "filtro-aviso__termino";
+      cita.textContent = "«" + consulta + "»";
+      caja.appendChild(cita);
+
+      /* Antes era un <a> a location.pathname, o sea que además de la búsqueda
+         se llevaba por delante la categoría y las etiquetas: navegaba al
+         listado desnudo. Ahora borra SOLO su eje, igual que «Borrar etiquetas»
+         hace con el suyo, y por eso tiene que ser un <button>: no hay ninguna
+         dirección a la que ir, hay un estado que cambiar aquí mismo.
+
+         El nombre accesible nombra la consulta. Un «Quitar» a secas, en una
+         página donde también se quitan etiquetas, no diría cuál de los filtros
+         se está retirando. Va por aria-label y no por texto visible porque lo
+         que se ve es un aspa, y el texto es lo que la traduce. */
+
+      const quitar = document.createElement("button");
+      quitar.type = "button";
+      quitar.className = "filtro-aviso__quitar";
+      quitar.setAttribute("aria-label", "Quitar la búsqueda «" + consulta + "»");
+
+      const aspa = document.createElement("span");
+      aspa.className = "boton__aspa";
+      aspa.setAttribute("aria-hidden", "true");
+      quitar.appendChild(aspa);
+
+      quitar.addEventListener("click", function () {
+        consultaActiva = "";
+        /* Igual que al cambiar de categoría o de etiqueta: la página 4 de un
+           conjunto no tiene por qué existir en el siguiente. */
+        paginaActiva = 1;
+        aviso.hidden = true;
+        aviso.textContent = "";
+        /* replaceState, como los otros dos ejes. El <a> anterior NAVEGABA, así
+           que empujaba entrada al historial y este control se comportaba
+           distinto de los demás sin ningún motivo. */
+        sincronizarURL();
+        aplicar();
+      });
+
+      caja.appendChild(quitar);
+      aviso.appendChild(caja);
 
       aviso.hidden = false;
     }
@@ -275,6 +311,13 @@
 
     function parametrosActuales() {
       const p = new URLSearchParams(window.location.search);
+      /* La búsqueda no se tocaba aquí: se arrastraba tal cual venía en la URL,
+         porque hasta ahora no había forma de quitarla sin recargar. Desde que
+         la × del aviso la borra en vivo, este es el sitio donde el parámetro
+         tiene que dejar de existir — si no, seguiría en la dirección después de
+         haberla quitado de la pantalla. */
+      if (!consultaActiva.trim()) p.delete("q");
+      else p.set("q", consultaActiva);
       if (categoriaActiva === "todos") p.delete("categoria");
       else p.set("categoria", categoriaActiva);
       /* En clave y no con el texto visible, para no llenar la dirección de
