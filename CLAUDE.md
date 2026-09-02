@@ -1431,6 +1431,53 @@ Pie:                fondo oscuro
 > `--papel-alt`**, o sea el único sitio donde ese tono cubría el ancho entero de
 > la ventana. El token no se queda huérfano: lo siguen usando once reglas más.
 
+### El vídeo del hero se dibuja al 110 % y corrido, y los dos números van atados
+
+`.portada__video` no ocupa el ancho de la franja: lleva `width: 110%` con
+`left: -6.83%`, y `.portada--video` necesita `overflow: hidden` por eso.
+
+**`object-position` en X no sirve aquí, y conviene saberlo antes de intentarlo.**
+La franja es 2,769 de proporción y el material 1,79, así que `cover` escala por
+el ancho y **el recorte lateral es cero**: sin holgura horizontal, la X no mueve
+nada por encima de 847 px de ventana. Para ampliar hay que dibujar más ancho que
+la caja, y entonces quien coloca es el `left`.
+
+> ⚠️ **El −6,83 % no es un valor de tanteo: sale de una cuenta y depende del
+> material.** La figura está en el **F = 68,33 %** del ancho —medido por
+> densidad de bordes sobre el póster—, y al ampliar por `k` su centro se iría a
+> `F·k`. Para que **no se mueva**:
+>
+> ```
+> left = F · (1 − k)
+> ```
+>
+> Con `k = 1,10` sale −6,83 %. **Si cambia la ampliación o el material, hay que
+> volver a medir F y rehacer la cuenta**, o la figura se desplazará.
+>
+> Van en porcentaje y no en píxeles para que la relación aguante en cualquier
+> ancho de ventana.
+
+**La Y es 30 % y no 12 %.** A 12 % quedaban 92 px de cielo muerto sobre la
+balanza —casi un quinto de la franja— que se leían como un hueco entre la
+cabecera y la figura. A 30 % quedan **27 px a 1440**, y crecen al estrechar.
+
+Y de paso **mejora el corte de abajo**: subir la Y corre la ventana hacia el pie
+del encuadre, así que se recorta **65 px menos** y se ve más pedestal. El
+pedestal se sigue cortando —la figura es más alta que los 520 px de la franja y
+eso no lo arregla ningún encuadre— pero menos que antes.
+
+**Lo que cuesta:** el recorte vertical sube del 35,3 % al **41,2 %** a 1440. Se
+desvanece al estrechar —9,1 % a 932 y **cero por debajo de 847**, donde el eje
+de recorte cambia a horizontal— así que lo paga solo el escritorio ancho.
+
+| Material | Peso | Antes |
+|---|---|---|
+| `video/portada-dama.mp4` | **806 KB** | 1,07 MB |
+| `img/portada-poster.jpg` | **53 KB** | 90 KB |
+
+El vídeo es un **bucle ping-pong**: medido, el primer y el último fotograma
+difieren en **1,23 sobre 255**, o sea que el salto del `loop` no se ve.
+
 El bloque de la portada es **titular, entradilla y dos botones**, sin antetítulo
 encima. Llevó uno —«BLOG JURÍDICO»— y se retiró.
 
@@ -1625,31 +1672,6 @@ que es otro serif. O se instala la fuente antes, o se exporta desde el navegador
   Está marcada en el HTML entre `PROVISIONAL` y `FIN PROVISIONAL`. Es la única
   dirección de correo del sitio: el `mailto` de los botones de compartir del
   artículo no lleva destinatario, solo asunto y cuerpo.
-- ⚠️ **PRUEBA TEMPORAL EN LA PORTADA: el hero no lleva vídeo ahora mismo.** Hay
-  un `<img class="portada__prueba">` con `img/prueba-dama-2.jpg` como fondo
-  estático, y una regla que **oculta el `<video>`**, que no se ha tocado. Está
-  puesto para enseñárselo al cliente y **hay que revertirlo o convertirlo en
-  definitivo**: no puede quedarse así.
-
-  Los dos bloques van marcados `PRUEBA TEMPORAL` / `FIN PRUEBA TEMPORAL`, uno en
-  `index.html` y otro en `css/styles.css`. Revertir es borrarlos.
-
-  **Pesa 2,73 MB**, o sea **30 veces el póster actual (0,09 MB) y 2,5 veces el
-  vídeo entero (1,07 MB)**. Y hay algo peor que el peso: `fondoDePortada()` no
-  descarga el vídeo en móvil ni con `prefers-reduced-motion` justamente para no
-  gastar 1,1 MB, pero **este `<img>` se descarga siempre, en todos los
-  dispositivos**. Si la imagen se queda, hay que comprimirla y decidir cómo se
-  sirve antes de publicar.
-
-  Lleva además la **variante 2 del encuadre**: el `<img>` ensanchado al 118,2 %
-  y corrido −18,2 % para llevar el centro de la figura al 74 % del ancho, más un
-  `overflow: hidden` acotado con `:has()`. Eso sube el recorte vertical del
-  35,3 % al 45,3 % a 1440 —aunque se desvanece al estrechar: 15,4 % a 932 y casi
-  cero a 789— y por debajo de 788 px cambia el eje de recorte, así que la figura
-  se desplaza sola al 77,9 % en móvil.
-
-  Mientras esté, **el vídeo sigue descargándose y reproduciéndose** aunque no se
-  vea, porque `display: none` no lo impide.
 - `_headers` y `_redirects` son de Netlify. GitHub Pages los ignora. Se
   mantienen por si se mueve el hosting.
 

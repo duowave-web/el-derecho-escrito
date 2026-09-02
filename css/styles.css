@@ -538,57 +538,55 @@ body:has(.portada--video) .cabecera--con-linea {
    Las otras dos piezas de la composicion —el sentido del velo y la columna del
    texto— son maqueta y siguen en CSS, marcadas (2/3) y (3/3). */
 
+/* EL VIDEO SE DIBUJA AL 110% Y CORRIDO -6,83%, y los dos numeros estan atados
+   entre si: no se puede tocar uno sin recalcular el otro.
+
+   POR QUE NO BASTA object-position. La franja es 2,769 de proporcion y el
+   material 1,79, asi que cover escala por el ancho y el recorte lateral es
+   CERO. Sin holgura horizontal, la X del object-position no mueve nada por
+   encima de 847px de ventana. Para ampliar hay que dibujar mas ancho que la
+   caja, y entonces la posicion la fija el left.
+
+   POR QUE -6,83 Y NO OTRO. La figura esta en el F = 68,33% del ancho del
+   material —medido por densidad de bordes sobre el poster, no estimado— y al
+   ampliar por k su centro se iria a F·k. Para que NO se mueva:
+
+       left = F · (1 - k)
+
+   Con k = 1,10 sale -6,83%. Si algun dia cambia la ampliacion o el material,
+   hay que volver a medir F y rehacer esta cuenta.
+
+   Van en PORCENTAJE y no en pixeles para que la relacion aguante en cualquier
+   ancho: el <img> sobresale por los dos lados en la misma proporcion.
+
+   LA Y ES 30% Y NO 12%. A 12% quedaban 92px de cielo muerto sobre la balanza
+   —casi un quinto de la franja— que se leian como un hueco entre la cabecera y
+   la figura. A 30% quedan 26px a 1440, y crecen al estrechar.
+
+   De paso MEJORA el corte de abajo: subir la Y corre la ventana hacia el pie
+   del encuadre, asi que se recorta 65px menos y se ve mas pedestal. El pedestal
+   se sigue cortando, porque la figura es mas alta que los 520px de la franja y
+   eso no lo arregla ningun encuadre, pero menos que antes.
+
+   LO QUE CUESTA: el recorte vertical sube del 35,3% al 41,2% a 1440. Y se
+   desvanece al estrechar —9,1% a 932 y cero por debajo de 847—, asi que lo paga
+   solo el escritorio ancho. La nitidez no se toca. */
+
 .portada__video {
   position: absolute;
   inset: 0;
-  width: 100%;
+  width: 110%;
+  left: -6.83%;
+  right: auto;
   height: 100%;
   object-fit: cover;
-  object-position: 75% 12%;
+  object-position: 75% 30%;
 }
 
-/* ================================================================
-   PRUEBA TEMPORAL · fondo estatico con img/prueba-dama-2.jpg
-   ================================================================
-   SIN COMMITEAR. La imagen de prueba lleva .portada__video, asi que hereda
-   cover, object-position y el alto de la franja.
+/* Imprescindible desde que el video se dibuja mas ancho que la seccion: sin
+   esto se sale por los dos lados y se ve sobre el resto de la pagina. */
 
-   Esta regla solo esconde el <video>, que no se ha tocado. Para revertir:
-   borrar este bloque y el <img class="portada__prueba"> de index.html. */
-
-.portada__prueba ~ video.portada__video {
-  display: none;
-}
-
-/* VARIANTE 2 · centro de la figura al 74% del ancho.
-
-   object-position en X no sirve: la franja es 2,769 de proporcion y la imagen
-   1,792, asi que cover escala por el ancho y el recorte lateral es CERO. No hay
-   holgura que repartir. Para desplazarla hay que dibujarla mas ancha que la
-   caja y correrla.
-
-   Los numeros salen de despejar, no de tantear. La figura esta en el 78% de la
-   imagen; si el <img> mide W y su borde izquierdo cae en L, la figura aparece en
-   L + 0,78·W. Igualando eso al 74% de 1440 y exigiendo que el <img> siga
-   cubriendo la caja —L <= 0 y L + W >= 1440— sale W = 118,2% y L = -18,2%.
-
-   Van en PORCENTAJE y no en pixeles para que la relacion se mantenga en
-   cualquier ancho: el borde derecho queda siempre a ras y el sobrante sale por
-   la izquierda.
-
-   Lo que cuesta: el recorte vertical sube del 35,3% al 45,3%. La nitidez no,
-   porque la imagen tiene 2752px de origen para 1702 de dibujo (1,62x). */
-
-.portada__prueba {
-  width: 118.2%;
-  left: -18.2%;
-  right: auto;
-}
-
-/* Necesario para la variante: sin esto el <img> ensanchado se sale de la
-   seccion por la izquierda y se ve sobre el resto de la pagina. */
-
-.portada--video:has(.portada__prueba) {
+.portada--video {
   overflow: hidden;
 }
 
