@@ -1419,15 +1419,13 @@ body:has(.portada--video) .cabecera--con-linea {
    tiene que despedir la pagina, solo separarse de lo siguiente, que ya trae su
    propio relleno.
 
-   Hoy no lo usa nadie, y conviene saberlo antes de darlo por muerto. Lo usaba la
-   portada, donde a .lista le seguia la franja de «Areas del derecho» con sus 48
-   propios —72 entre las dos—, y esa franja se retiro. Ahora .lista es el ultimo
-   hijo del <main> en las DOS paginas que la tienen, asi que en las dos manda la
-   regla de abajo.
-
-   Se conserva porque el valor sigue siendo el correcto para ese caso, y el caso
-   puede volver: el bloque de «Sobre el autor» que el cliente quiere en portada
-   iria justo ahi. El dia que entre, la portada recupera sus 24 sola.
+   VUELVEN A USARSE, y hay que saberlo porque este comentario decia lo contrario.
+   Los uso la portada mientras a .lista le seguia la franja de «Areas del
+   derecho»; al retirarse esa franja se quedaron sin caso y aqui se anoto que no
+   los usaba nadie. Hoy los vuelve a usar la portada: «Ultimos articulos» tiene
+   detras la banda de suscripcion, que se separo a su propia seccion para que no
+   se apagara con ella. En articulos/ sigue mandando la regla de abajo, porque
+   alli .lista es el ultimo hijo del <main>.
 
    Los 80 no son un numero nuevo: son el padding de cierre de .articulo, el que
    ya usan sobre/ y la pagina de articulo. Es el valor con el que este sitio dice
@@ -1442,6 +1440,22 @@ body:has(.portada--video) .cabecera--con-linea {
 
 main > .lista:last-child {
   padding-bottom: 80px;
+}
+
+/* La seccion que solo lleva la banda de suscripcion. Suelta el relleno de
+   arriba y deja que el hueco lo ponga el `margin-top: 56px` de la propia banda,
+   que es el que ya la separaba de las tarjetas cuando vivian juntas.
+
+   Asi la banda queda a 56px de lo que tenga encima, sea el destacado —con
+   «Ultimos articulos» apagado— o la rejilla, sin un caso aparte para cada
+   estado. El cierre de 80 contra el pie lo sigue dando la regla de arriba,
+   porque esta seccion es el ultimo hijo del <main>.
+
+   Sin este 0, los 48 de .lista se sumarian a los 56 de la banda y la portada
+   abriria un hueco de 104px justo donde hoy no hay nada que separar. */
+
+.lista--cierre {
+  padding-top: 0;
 }
 
 .lista__titulo {

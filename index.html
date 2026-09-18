@@ -233,7 +233,22 @@
     </div>
   </section>
 
-  <section class="lista" aria-labelledby="ultimos-titulo">
+  <!-- ═══ ÚLTIMOS ARTÍCULOS — HOY APAGADO, Y ES EL ESTADO CORRECTO ═══
+
+       Con un solo artículo publicado esta sección NO se enseña: el artículo ya
+       es el destacado de arriba, y repetirlo aquí abajo sería el mismo titular
+       y la misma foto dos veces en la misma pantalla.
+
+       LA REGLA: se enciende cuando haya al menos UN artículo que no sea el
+       destacado. Esta sección lista los OTROS, nunca el destacado.
+
+       PARA ENCENDERLA: se quita el atributo `hidden` de la <section> y se pega
+       una tarjeta por artículo dentro de .tarjetas. Nada más — el aire y la
+       banda de suscripción se recolocan solos, que para eso van en secciones
+       separadas.
+
+       Está explicado en CLAUDE.md, con la cuenta de cuántas tarjetas van. -->
+  <section class="lista" hidden aria-labelledby="ultimos-titulo">
     <div class="contenedor contenedor--amplio">
 
       <div class="lista__encabezado">
@@ -246,63 +261,73 @@
         </p>
       </div>
 
-      <!-- INICIO LISTADO — al publicar, copia el bloque <article> y edítalo.
-           La rejilla es de tres columnas. Con dos piezas, la tercera celda
-           queda vacía: no hay que poner nada dentro, y no se deben añadir
-           <div> de relleno, porque un lector de pantalla los anunciaría como
-           elementos de la lista. Al publicar, la tarjeta de espera es la que
-           se sustituye. -->
-      <div class="tarjetas">
+      <!-- INICIO LISTADO — vacío a propósito, porque hoy no hay ningún
+           artículo que no sea el destacado. NO se rellena con marcadores:
+           ni tarjetas de «Próximamente», ni <div> de relleno para cuadrar la
+           fila. Un hueco vacío en una rejilla CSS no existe —la celda se crea
+           sola y no se anuncia—, mientras que un <div> vacío sí lo recorre un
+           lector de pantalla como un elemento más de la lista.
 
-        <article class="tarjeta tarjeta--caja">
-          <!-- Misma foto que la cabecera del artículo, con alt distinto: se
-               repite la imagen, no la descripción. La cabecera recorta a 16:9 y
-               deja fuera los platos de la balanza, que aquí sí se ven, así que
-               cada texto describe lo que de verdad enseña su encuadre. -->
-          <div class="tarjeta__imagen">
-            <img src="./img/damajusticia.jpg"
-                 alt="Figura de bronce de la justicia, con los ojos vendados y los dos platos de la balanza vacíos"
-                 width="1600" height="1066" loading="lazy" decoding="async">
-          </div>
-          <!-- La categoría lleva al listado con el filtro puesto. El prefijo
-               oculto es para el nombre accesible: «Fundamento» a secas no dice
-               adónde va cuando un lector de pantalla enumera los enlaces. Va en
-               un <span> y no en aria-label porque así el nombre CONTIENE el
-               texto visible, que es lo que necesita el control por voz.
+           La rejilla lleva SIEMPRE tres columnas, así que con una o dos
+           tarjetas quedan alineadas a la izquierda y con el mismo ancho que
+           tendrían estando tres. No hay que tocar nada para eso.
 
-               Ojo: la clave del href va en minúsculas y sin acentos, distinta
-               de la etiqueta visible. Un grep de «Fundamento» no la encuentra. -->
-          <p class="etiqueta etiqueta--plana">
-            <a href="./articulos/?categoria=fundamento"><span class="oculto">Ver artículos de </span>Fundamento</a>
-          </p>
-          <h3 class="entrada__titulo">
-            <a href="./articulos/principio-de-legalidad-penal/">El principio de legalidad penal: qué protege y dónde se rompe</a>
-          </h3>
-          <p class="entrada__extracto">Las cuatro exigencias de <i>nullum crimen sine lege</i> y los casos donde el legislador las tensiona.</p>
-          <div class="entrada__meta">
-            <time datetime="2026-08-20">20 agosto 2026</time>
-            <span class="lectura">7 min</span>
-          </div>
-        </article>
+           PLANTILLA DE TARJETA · se copia dentro de .tarjetas, una por
+           artículo, la más reciente primero. Sustituye lo que va en MAYÚSCULAS:
 
-        <!-- Tarjeta de espera. Va en <div> y no en <article>, y su rótulo es un
-             <p> y no un <h3>: si fuera encabezado entraría en el esquema del
-             documento al mismo nivel que el artículo real, y un lector de
-             pantalla que navegue por encabezados la anunciaría como si fuera
-             una pieza más. No lleva enlace ni tabindex, así que tampoco recibe
-             foco. La balanza la pinta el CSS con mask; los puntos son
-             decorativos y van ocultos a la accesibilidad. -->
+           <article class="tarjeta tarjeta--caja">
+             <div class="tarjeta__imagen">
+               <img src="./img/ARCHIVO.jpg"
+                    alt="DESCRIPCIÓN DE LO QUE ENSEÑA ESTE ENCUADRE"
+                    width="1600" height="1066" loading="lazy" decoding="async">
+             </div>
+             <p class="etiqueta etiqueta--plana">
+               <a href="./articulos/?categoria=CLAVE"><span class="oculto">Ver artículos de </span>CATEGORÍA</a>
+             </p>
+             <h3 class="entrada__titulo">
+               <a href="./articulos/SLUG/">TITULAR</a>
+             </h3>
+             <p class="entrada__extracto">EXTRACTO DE UNA O DOS LÍNEAS.</p>
+             <div class="entrada__meta">
+               <time datetime="AAAA-MM-DD">D mes AAAA</time>
+               <span class="lectura">N min</span>
+             </div>
+           </article>
 
-        <div class="tarjeta tarjeta--caja tarjeta--proxima">
-          <p class="proxima__titulo">Próximamente</p>
-          <p class="proxima__texto">El siguiente artículo ya se está escribiendo.</p>
-          <span class="proxima__puntos" aria-hidden="true">
-            <span></span><span></span><span></span>
-          </span>
-        </div>
+           Tres avisos sobre esa plantilla:
 
-      </div>
+           · La CLAVE del href de la categoría va en minúsculas y sin acentos
+             («fundamento»), distinta de la CATEGORÍA visible («Fundamento»).
+             Un grep de la etiqueta visible no encuentra el href.
+           · El <span class="oculto"> es el nombre accesible: «Fundamento» a
+             secas no dice adónde lleva cuando un lector de pantalla enumera los
+             enlaces. Va en un <span> y no en aria-label para que el nombre
+             CONTENGA el texto visible, que es lo que pide el control por voz.
+           · El alt describe ESTE encuadre, no el del artículo. La tarjeta
+             recorta en 3:2 y la cabecera del artículo en 21:9, así que se
+             repite la imagen pero no la descripción. -->
+      <div class="tarjetas"></div>
       <!-- FIN LISTADO -->
+
+    </div>
+  </section>
+
+  <!-- ═══ BANDA DE SUSCRIPCIÓN — SECCIÓN PROPIA, Y NO POR CAPRICHO ═══
+
+       Vivía dentro de «Últimos artículos». Se saca porque esa sección se apaga
+       cuando no hay artículos que listar, y al apagarse se llevaba la banda con
+       ella: la portada se quedaba sin su única captación de correo por un motivo
+       que no tiene nada que ver con ella.
+
+       Separadas, cada una responde a lo suyo: la lista aparece cuando hay algo
+       que listar y la banda está siempre, porque cierra la página.
+
+       ⚠️ Tiene que seguir siendo el ÚLTIMO hijo del <main>. De ahí saca los
+       80 px de cierre contra el pie, por `main > .lista:last-child`. Si alguien
+       mete una sección detrás, esos 80 se van con ella y la banda se queda
+       pegada al pie sin que nada avise. -->
+  <section class="lista lista--cierre">
+    <div class="contenedor contenedor--amplio">
 
       <!-- Banda de newsletter. Mismo componente que el del lateral del
            artículo, en su variante horizontal. Sin backend, igual que aquel:

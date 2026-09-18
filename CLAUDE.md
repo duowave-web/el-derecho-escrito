@@ -77,7 +77,9 @@ Al publicar un artículo nuevo hay que actualizar a mano, siempre:
 
 1. `sitemap.xml` — añadir la URL.
 2. `feed.xml` — añadir el `<item>`.
-3. `index.html` — añadir la tarjeta al listado de portada.
+3. `index.html` — añadir la tarjeta a «Últimos artículos» de la portada, **y si
+   la sección está apagada, encenderla**. Ver abajo: no es copiar y pegar sin
+   más, porque esa sección **no lista el destacado** y hoy va con `hidden`.
 4. `articulos/index.html` — añadir la entrada al listado completo, **con su
    `data-etiquetas`**.
 5. **El índice del propio artículo** — un `<li>` por cada `<h2>`. Ver abajo.
@@ -239,23 +241,114 @@ El rótulo nombra a quien recomienda, no a cuánta gente ha leído.
 > probando. El `index.html` lleva la lista completa en un comentario, junto al
 > bloque, con el artículo del que procede escrito arriba.
 
-> ⚠️ **No conviene destacar el artículo más reciente**, y está medido: el más
-> reciente es ya la primera tarjeta de «Últimos artículos», así que el mismo
-> titular y la misma foto salen **dos veces separados por 590 px**, y en un
-> escritorio de 1440×900 **caben los dos en la misma pantalla**. En 1440×700 y
-> en móvil ya no coinciden, pero el caso malo es real.
+> ⚠️ **El destacado NO se repite en «Últimos artículos», y esa es la regla que
+> evita el problema.** Estuvo descrito aquí como un riesgo a esquivar —«no
+> conviene destacar el artículo más reciente», porque el mismo titular y la
+> misma foto salían **dos veces separados por 590 px** y en 1440×900 **caben los
+> dos en la misma pantalla**—. Ya no es un consejo: la lista de abajo enseña los
+> **otros** artículos, nunca el destacado, así que la duplicación no puede
+> darse.
 >
-> La sección se gana el sitio justo cuando **rescata algo que no está arriba
-> del todo**. Si destaca lo mismo que encabeza la lista, no añade nada.
+> Con eso, el criterio editorial se libera: **se puede destacar el más reciente
+> si es el que se quiere recomendar.** La sección ya no tiene que «rescatar algo
+> que no está arriba del todo» para ganarse el sitio.
 >
-> Hoy es inevitable: **con un solo artículo publicado, cualquier elección
-> duplica**. Forma parte del estado de maqueta, como las entradas provisionales.
+> Y decae lo que decía este archivo de que con un solo artículo **cualquier
+> elección duplica**. Hoy no duplica nada: «Últimos artículos» está apagado.
 
 **Para quitar el destacado se borra la `<section>` entera.** No queda hueco
-porque no queda elemento: la portada pasa del hero a «Últimos artículos» como
-antes — verificado, 0 px. Y **si el artículo no tiene imagen** se borra solo el
-`<a class="destacado__imagen">`: el bloque es flex y el texto ocupa el ancho
-entero sin ninguna regla extra.
+porque no queda elemento — verificado, 0 px. Y **si el artículo no tiene
+imagen** se borra solo el `<a class="destacado__imagen">`: el bloque es flex y
+el texto ocupa el ancho entero sin ninguna regla extra.
+
+### «Últimos artículos» está APAGADO, y encenderlo es un paso del checklist
+
+Hoy la portada es **hero → destacado → banda de suscripción → pie**. La sección
+de «Últimos artículos» sigue en el HTML pero lleva **`hidden`** en la
+`<section>`, porque con un solo artículo publicado no tiene nada que listar: ese
+artículo ya es el destacado.
+
+**La regla, en una línea: se enciende cuando haya al menos un artículo que no
+sea el destacado.** La sección lista los *otros*, nunca el destacado.
+
+| Artículos publicados | Destacado | «Últimos artículos» | Tarjetas |
+|---|---|---|---|
+| 1 | el único | **apagado (`hidden`)** | — |
+| 2 | uno de los dos | encendido | **1** |
+| 3 | el recomendado | encendido | **2** |
+| 4 o más | el recomendado | encendido | **3** (una fila) |
+
+A partir del cuarto no se sigue añadiendo: la rejilla es de tres columnas y una
+fila es lo que enseña la portada. Los demás viven en `articulos/`, que es a
+donde lleva «Ver todos los artículos».
+
+**Para encenderla** se quita el atributo `hidden` de la `<section>` y se pega
+una tarjeta por artículo dentro de `.tarjetas`. La plantilla de la tarjeta está
+**en un comentario ahí mismo**, dentro del bloque, con los tres avisos que
+tiene: la clave de la categoría va en minúsculas y sin acentos, el
+`<span class="oculto">` es el nombre accesible del enlace, y el `alt` describe
+el encuadre 3:2 de la tarjeta y no el 21:9 de la cabecera del artículo.
+
+**No hay que tocar nada más.** Ni espaciados ni la banda de suscripción: están
+medidos para los dos estados. Verificado en 1440, 1000 y 375 —con 1, 2, 3 y 4
+tarjetas— que el hueco contra la banda y contra el pie no se mueve.
+
+> ⚠️ **La rejilla NO se rellena con marcadores.** Con una o dos tarjetas las
+> celdas que sobran se quedan vacías, y así tiene que ser: `grid-template-columns`
+> declara **tres columnas siempre**, existan o no las tarjetas, así que una sola
+> mide los mismos 365,3 px que mediría acompañada y se queda **alineada a la
+> izquierda**. No se estira. Medido:
+>
+> | Ancho | Columnas | Tarjeta | Posiciones con 3 |
+> |---|---|---|---|
+> | 1440 | 3 | **365,3 px** | 0 · 393,3 · 786,7 |
+> | 1000 | 2 | **462 px** | 0 · 490 |
+> | 375 | 1 | **327 px** | apiladas |
+>
+> Nada de `<div>` de relleno para cuadrar la fila: **una celda vacía de una
+> rejilla CSS no existe** —no hay elemento y no se anuncia—, mientras que un
+> `<div>` vacío sí lo recorre un lector de pantalla como un elemento más de la
+> lista. Es el mismo criterio que ya rige en `articulos/`.
+
+> ⚠️ **Y la portada ya no lleva tarjeta de «Próximamente».** Tenía una,
+> `.tarjeta--proxima`, para cerrar la fila mientras solo había un artículo. Se
+> retiró con el apagado de la sección: una promesa no cierra una fila que no se
+> está enseñando.
+>
+> **El CSS de `.tarjeta--proxima` se queda**, y no es código muerto: lo sigue
+> usando `articulos/index.html`, donde la tarjeta es mobiliario y **no se
+> esconde en ningún caso** —está razonado en su propia sección—. Son dos
+> decisiones distintas sobre el mismo componente, en dos páginas distintas.
+
+> ⚠️ **La banda de suscripción se sacó a su propia `<section>`, y hay que
+> dejarla así.** Vivía dentro de «Últimos artículos», así que al apagar esa
+> sección **se apagaba con ella**: la portada perdía su única captación de
+> correo por un motivo que no tiene nada que ver con la banda.
+>
+> Separadas, cada una responde a lo suyo: la lista aparece cuando hay algo que
+> listar, y la banda está siempre porque cierra la página.
+>
+> **Tiene que seguir siendo el último hijo del `<main>`**: de ahí saca los 80 px
+> de cierre contra el pie, por `main > .lista:last-child`. Si alguien mete una
+> sección detrás, esos 80 se van con ella y la banda queda pegada al pie sin que
+> nada avise.
+>
+> Lleva `.lista--cierre`, que suelta el relleno de arriba para que el hueco lo
+> ponga el `margin-top: 56px` de la propia banda —el que ya la separaba de las
+> tarjetas cuando vivían juntas—. Sin ese 0 se sumarían los 48 de `.lista` y la
+> portada abriría **104 px** justo donde hoy no hay nada que separar.
+>
+> Efecto lateral que conviene saber: **los 24 px de `padding-bottom` de `.lista`
+> vuelven a usarse.** Este archivo decía que no los usaba nadie desde que se
+> retiró la franja de «Áreas del derecho». Ahora «Últimos artículos» tiene otra
+> sección detrás, que es exactamente el caso para el que existen.
+
+Medido en los dos estados, a 1440 y a 375:
+
+| | Destacado → banda | Rejilla → banda | Banda → pie |
+|---|---|---|---|
+| Apagado (hoy) | **56 px** | — | **80 px** |
+| Encendido | — | **80 px** | **80 px** |
 
 ### La categoría de un artículo se repite en 9 sitios
 
@@ -1490,9 +1583,14 @@ Orden de la portada, tal como está construida:
 Cabecera:           logotipo a la izquierda, navegacion y lupa a la derecha
 Portada:            franja de 520 px, texto a la izquierda | estatua a la derecha
 Lectura recomendada: un articulo, horizontal, imagen | texto
-Ultimos articulos:  rotulo + "ver todos", rejilla de tarjetas, banda de newsletter
+Ultimos articulos:  rotulo + "ver todos" + rejilla        ← HOY APAGADO (hidden)
+Suscripcion:        banda de newsletter, seccion propia
 Pie:                fondo oscuro
 ```
+
+Ojo con esas dos últimas: la banda de newsletter **estuvo dentro de «Últimos
+artículos»** y hoy es una sección aparte, justamente para que no se apague con
+ella. Está razonado arriba, en la sección del apagado.
 
 > **El destacado existe para hacer de transición**, y de ahí viene su forma. El
 > hero es una imagen a sangre de 520 px y debajo hay una rejilla de cajas grises
@@ -1535,6 +1633,10 @@ Pie:                fondo oscuro
 > `<main>` y recogió sola el cierre de 80 px de `main > .lista:last-child`, que
 > existe justo para eso. Medido antes y después: de 24 px hasta el pie a **80**,
 > el mismo que el listado.
+>
+> Quien lo lea hoy: **el último hijo del `<main>` ya no es esa `.lista`**, sino
+> la sección de la banda de suscripción, que también es `.lista` y por eso
+> recoge los 80 igual. La regla no cambió; cambió quién la cumple.
 >
 > Se llevó por delante el falso positivo del `grep` de categorías —era su
 > `<h3>Derecho penal</h3>`— y **la única banda a sangre rellena de
