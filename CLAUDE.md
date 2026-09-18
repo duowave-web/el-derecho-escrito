@@ -254,40 +254,125 @@ El rótulo nombra a quien recomienda, no a cuánta gente ha leído.
 > que no está arriba del todo» para ganarse el sitio.
 >
 > Y decae lo que decía este archivo de que con un solo artículo **cualquier
-> elección duplica**. Hoy no duplica nada: «Últimos artículos» está apagado.
+> elección duplica**. Hoy no duplica nada: las tarjetas que hay debajo son de
+> ejemplo y ninguna repite el destacado.
 
 **Para quitar el destacado se borra la `<section>` entera.** No queda hueco
 porque no queda elemento — verificado, 0 px. Y **si el artículo no tiene
 imagen** se borra solo el `<a class="destacado__imagen">`: el bloque es flex y
 el texto ocupa el ancho entero sin ninguna regla extra.
 
-### «Últimos artículos» está APAGADO, y encenderlo es un paso del checklist
+### Las tarjetas de ejemplo de la portada — BORRAR AL PUBLICAR
 
-Hoy la portada es **hero → destacado → banda de suscripción → pie**. La sección
-de «Últimos artículos» sigue en el HTML pero lleva **`hidden`** en la
-`<section>`, porque con un solo artículo publicado no tiene nada que listar: ese
-artículo ya es el destacado.
+> ⚠️ **«Últimos artículos» se ve, y las TRES TARJETAS que hay dentro son
+> ATREZO.** Sus artículos no existen: «La discrecionalidad técnica de la
+> Administración», «El interés legítimo en el recurso contencioso-administrativo»
+> y «El control judicial de los planes parciales». Están solo para que el
+> cliente vea la sección con contenido.
+>
+> **Se borran cuando se publiquen artículos reales.** Si se publican y no se
+> borran, la portada enseñará artículos inventados junto a los de verdad, y
+> **nada dará error**: se ve leyendo, no probando.
 
-**La regla, en una línea: se enciende cuando haya al menos un artículo que no
-sea el destacado.** La sección lista los *otros*, nunca el destacado.
+**Cómo quitarlas, en un paso:** en `index.html` se borra todo lo que hay entre
+las dos marcas de caja dentro de `.tarjetas`:
 
-| Artículos publicados | Destacado | «Últimos artículos» | Tarjetas |
+```
+╔════════════════════════════════════════════════╗
+║  EJEMPLO — BORRAR CUANDO HAYA ARTÍCULOS REALES ║   ← desde aquí
+...las tres <article class="… tarjeta--ejemplo">...
+║  FIN EJEMPLO — hasta aquí lo que hay que borrar ║   ← hasta aquí
+╚════════════════════════════════════════════════╝
+```
+
+También se puede localizar por clase, que es más rápido:
+
+```sh
+grep -n 'tarjeta--ejemplo\|EJEMPLO' index.html
+```
+
+Y hay que borrar **la regla `.tarjeta--ejemplo`** de `styles.css`, que se queda
+sin uso. Es una sola —el apagado del zoom— y está rotulada como tal.
+
+> ⚠️ **Si al borrarlas no queda ninguna tarjeta, hay que devolver el `hidden` a
+> la `<section>`.** Una sección con rótulo, filete y «Ver todos» sobre una
+> rejilla vacía es peor que no tenerla. Es el estado en el que estuvo la
+> portada antes del ejemplo, y está razonado justo abajo.
+
+**Qué NO hay que deshacer al borrarlas:** no están en `sitemap.xml`, ni en
+`feed.xml`, ni en `articulos/index.html`, ni en el buscador, ni en los datos
+estructurados — y es correcto que no estén, porque no son contenido.
+Verificado buscando sus titulares en los cuatro sitios: **cero apariciones**.
+
+#### Por qué no llevan ningún enlace
+
+Ni el titular ni la categoría. **No es un olvido**: un enlace daría 404 y uno
+que apuntara al artículo real mentiría sobre lo que abre.
+
+Sin `<a>` casi todo se resuelve solo: no hay cursor de mano, ni subrayado, ni
+foco de teclado, y los colores no cambian, porque el `--tinta` del titular lo
+pone `.entrada__titulo` y el `--acento` de la categoría lo pone `.etiqueta`, no
+sus enlaces. También queda muerta la capa del enlace extendido, que cuelga de
+`.entrada__titulo a::after`.
+
+**Lo único que hay que apagar a mano es el zoom de la imagen**, porque cuelga
+del `:hover` de la tarjeta y no de ningún enlace. Y hay que apagarlo: una
+tarjeta que reacciona al ratón promete que lleva a algún sitio. La quietud es la
+señal de que no.
+
+Comprobado con hit-testing sobre una malla de 80 puntos por tarjeta: **240 de
+240 puntos sin ningún enlace**, cursor `auto` y `transform: none` en las tres.
+
+> **Al sustituirlas por tarjetas reales no basta con cambiar los textos.** Hay
+> que envolver el titular y la categoría en sus `<a>` y quitar
+> `.tarjeta--ejemplo`. La plantilla de una tarjeta real está en un comentario
+> ahí mismo, con sus cuatro avisos.
+
+> **Las tres llevan la MISMA imagen, `damajusticia.jpg`, y es deliberado.** No
+> tiene relación con los titulares inventados: se reutiliza lo que ya había en
+> `img/` y no se ha añadido ningún archivo.
+>
+> Se probaron las otras combinaciones y ninguna funciona, porque en `img/` solo
+> hay **dos** fotos usables —`damajusticia.jpg` y `portada-poster.jpg`; la
+> tercera, `fondo-cabecera.jpg`, es un lavado casi blanco que en un hueco de
+> 365×205 se lee como una imagen que no ha cargado, y la cuarta es el retrato
+> del autor—. Con dos fotos para tres tarjetas, **cualquier reparto deja una
+> desparejada o dos gemelas contiguas**:
+>
+> | Reparto | Problema |
+> |---|---|
+> | poster · dama · dama | gemelas pegadas, y la primera desparejada |
+> | poster · dama · poster | sin gemelas pegadas, pero el centro pesa más |
+> | dama · poster · dama | el centro pesa menos — el defecto que se quiso quitar |
+> | **dama · dama · dama** | **ninguno: las tres pesan igual** |
+>
+> La última es la única que cumple el objetivo, que era que la fila se lea
+> pareja para poder juzgar la maqueta. Y que se vean tres veces la misma foto
+> **no es un defecto aquí**: dice a la cara que son marcadores. Al poner
+> artículos reales, cada uno trae la suya y el problema desaparece.
+
+> **Los tres `alt` son idénticos, y se deja así a propósito.** Un lector de
+> pantalla oye la misma descripción tres veces, que es ruido — pero es el
+> reflejo fiel de lo que se ve, y ponerles `alt=""` enseñaría el patrón
+> equivocado para cuando haya imágenes reales, que sí tendrán que describirse
+> una por una. El ruido se va con los marcadores.
+
+### Cuándo apagar «Últimos artículos» del todo
+
+**La regla de fondo: la sección lista los artículos que NO son el destacado.**
+Hoy no hay ninguno —solo existe el destacado—, así que lo que se ve es el
+ejemplo de arriba. Con artículos reales:
+
+| Artículos publicados | Destacado | «Últimos artículos» | Tarjetas reales |
 |---|---|---|---|
-| 1 | el único | **apagado (`hidden`)** | — |
-| 2 | uno de los dos | encendido | **1** |
-| 3 | el recomendado | encendido | **2** |
-| 4 o más | el recomendado | encendido | **3** (una fila) |
+| 1 | el único | **`hidden`**, salvo con ejemplo | — |
+| 2 | uno de los dos | se ve | **1** |
+| 3 | el recomendado | se ve | **2** |
+| 4 o más | el recomendado | se ve | **3** (una fila) |
 
 A partir del cuarto no se sigue añadiendo: la rejilla es de tres columnas y una
 fila es lo que enseña la portada. Los demás viven en `articulos/`, que es a
 donde lleva «Ver todos los artículos».
-
-**Para encenderla** se quita el atributo `hidden` de la `<section>` y se pega
-una tarjeta por artículo dentro de `.tarjetas`. La plantilla de la tarjeta está
-**en un comentario ahí mismo**, dentro del bloque, con los tres avisos que
-tiene: la clave de la categoría va en minúsculas y sin acentos, el
-`<span class="oculto">` es el nombre accesible del enlace, y el `alt` describe
-el encuadre 3:2 de la tarjeta y no el 21:9 de la cabecera del artículo.
 
 **No hay que tocar nada más.** Ni espaciados ni la banda de suscripción: están
 medidos para los dos estados. Verificado en 1440, 1000 y 375 —con 1, 2, 3 y 4
@@ -314,6 +399,10 @@ tarjetas— que el hueco contra la banda y contra el pie no se mueve.
 > `.tarjeta--proxima`, para cerrar la fila mientras solo había un artículo. Se
 > retiró con el apagado de la sección: una promesa no cierra una fila que no se
 > está enseñando.
+>
+> **No hay que reponerla ahora que la sección se ve otra vez.** La fila la
+> cierran las tres tarjetas de ejemplo, y cuando se borren volverá a haber
+> celdas vacías, que es justo lo que este bloque dice que no se rellena.
 >
 > **El CSS de `.tarjeta--proxima` se queda**, y no es código muerto: lo sigue
 > usando `articulos/index.html`, donde la tarjeta es mobiliario y **no se
@@ -376,7 +465,7 @@ categoría de un artículo hay que tocar los nueve:
 
 | # | Dónde | Qué |
 |---|---|---|
-| 1 | `index.html` | `.etiqueta--plana` de la tarjeta de portada |
+| 1 | `index.html` | la categoría del **destacado**, dentro de `.destacado__antetitulo` |
 | 2 | `articulos/index.html` | `.etiqueta` de la tarjeta del listado |
 | 3 | `articulos/index.html` | **`data-categoria`** de la tarjeta — la clave que leen los filtros |
 | 4 | `feed.xml` | `<category>` del `<item>` |
@@ -1582,8 +1671,8 @@ Orden de la portada, tal como está construida:
 ```
 Cabecera:           logotipo a la izquierda, navegacion y lupa a la derecha
 Portada:            franja de 520 px, texto a la izquierda | estatua a la derecha
-Lectura recomendada: un articulo, horizontal, imagen | texto
-Ultimos articulos:  rotulo + "ver todos" + rejilla        ← HOY APAGADO (hidden)
+Lectura recomendada: un articulo, horizontal, TEXTO | imagen  (45% / 55%)
+Ultimos articulos:  rotulo + "ver todos" + rejilla     ← 3 TARJETAS DE EJEMPLO
 Suscripcion:        banda de newsletter, seccion propia
 Pie:                fondo oscuro
 ```
@@ -1592,15 +1681,201 @@ Ojo con esas dos últimas: la banda de newsletter **estuvo dentro de «Últimos
 artículos»** y hoy es una sección aparte, justamente para que no se apague con
 ella. Está razonado arriba, en la sección del apagado.
 
-> **El destacado existe para hacer de transición**, y de ahí viene su forma. El
-> hero es una imagen a sangre de 520 px y debajo hay una rejilla de cajas grises
-> densas: la pieza va **abierta**, sobre `--papel`, **sin fondo y sin filete**,
-> justo lo contrario de `.tarjeta--caja`. Así la densidad crece hacia abajo en
-> vez de saltar, y no compite con el hero porque no tiene cerco.
+### El rediseño de portada va prefijado con `.inicio`, y no es cosmética
+
+`index.html` lleva `<body class="inicio">`. **Es un gancho de alcance, no un
+estilo**: no pinta nada por sí mismo. Todas las reglas del rediseño cuelgan de
+él porque **tres de los componentes que retoca los comparten otras páginas**:
+
+| Componente | Quién más lo usa |
+|---|---|
+| `.lista__titulo--destacado` | «Continúa leyendo» de cada artículo |
+| `.entrada__meta` | tarjetas de `articulos/` y ficha de cabecera del artículo |
+| `.suscripcion--banda` | lateral del artículo |
+
+Sin el prefijo, cada retoque de la portada se colaba en `articulos/` y en las
+páginas de artículo a la vez. Verificado tras el rediseño: el `<body>` de esas
+páginas **no lleva clase**, su «Continúa leyendo» sigue sin filete, su
+`.entrada__meta` sigue sin barras y `.tarjeta--caja` conserva su fondo, su
+filete de 1 px, sus 28 px de relleno y su radio de 3 — con «Próximamente» en los
+**573,8 px** documentados.
+
+**Lo que el rediseño NO toca, por encargo expreso:** `--papel`, `--papel-alt`,
+`--ancho-amplio`, los textos del hero y su altura de 520 px. El fondo sigue
+siendo **blanco puro** y la banda de suscripción sigue en `--papel-alt` frío,
+que es una petición del cliente. Si algún día se pide el fondo crema de la
+maqueta, hay que releer antes la sección del color.
+
+#### Las tarjetas de la portada son `--abierta`; las del listado, `--caja`
+
+Dos modificadores del mismo componente, a propósito:
+
+| | `.tarjeta--caja` (listado) | `.tarjeta--abierta` (portada) |
+|---|---|---|
+| Fondo y filete | `--papel-alt` + 1 px | **ninguno** |
+| Relleno | 28 px | **0** |
+| Imagen | 3:2, radio 3 px | **16:9, radio 0** |
+| Hover | — | **título a acento + `scale(1.03)`** |
+| Superficie pulsable | el titular | **la tarjeta entera** |
+
+**No se unificaron porque el listado tiene medidas atadas a su caja**: el
+`min-height` de «Próximamente» (574/580) sale de la altura de una tarjeta con
+relleno, y el corte de 1084 sale de esos 28 px de padding. Un rediseño en la
+clase base las invalidaba las dos.
+
+> **La imagen es 16:9 y no el 3:1 de la maqueta.** En una columna de 365 px,
+> 3:1 deja una tira de 122 px de alto, y a esa altura la escultura de la única
+> foto que hay no se distingue. Cuando existan fotos anchas de verdad, subirlo
+> es cambiar un número.
+
+> ⚠️ **El enlace extendido tiene DOS trampas, y ninguna se ve mirando.**
 >
-> **No es una tarjeta más**, y se separa de las de abajo en cuatro cosas a la
-> vez: horizontal frente a vertical, sin caja frente a caja, radio 0 frente a
-> 3 px, y **entradilla completa** frente a la recortada.
+> La tarjeta entera se pulsa con un `::after` del titular estirado por encima.
+> Se prefiere a envolverla en un `<a>` porque así no se anida con el enlace de
+> la categoría y el nombre accesible sigue siendo solo el titular, no toda la
+> tarjeta leída del tirón.
+>
+> **Trampa 1: el `z-index` de la categoría va en el `<a>`, no en el `<p
+> class="etiqueta">`.** Puesto en el `<p>` —que es de ancho completo— subía
+> también su hueco vacío, y la franja a la derecha de «FUNDAMENTO» —unos 270 de
+> los 365 px— **dejaba de abrir el artículo**. Un agujero muerto en mitad de una
+> tarjeta que se anuncia como pulsable entera.
+>
+> **Trampa 2: los dos `z-index` son explícitos** —1 la capa, 2 la categoría—.
+> Sin ellos la capa funcionaba en casi toda la tarjeta y fallaba en una franja de
+> ~8 px sobre la fila de metadatos, donde ganaba el `<time>`: `.entrada__meta`
+> es un contenedor flex y sus hijos se pintan como unidades atómicas aunque no
+> estén posicionados.
+>
+> **Las dos se encontraron con hit-testing, no leyendo ni mirando**, porque las
+> versiones rota y buena se ven idénticas. Se comprueba lanzando
+> `document.elementFromPoint` sobre una malla de la tarjeta y contando adónde
+> lleva cada punto: hoy **120 de 120 van al artículo** y el texto de la
+> categoría al filtro.
+
+#### El filete de los rótulos tiene dos puntos de corte medidos
+
+El rótulo se queda en `--tinta` y **no pasa al acento**: el peso que le faltaba
+lo da la línea, y así el verdigrís sigue reservado a la categoría y al enlace
+«ver todos». Va en un `::after` con `flex: 1`, así que la línea mide lo que
+sobre y no hay nada que calcular al cambiar el texto.
+
+> ⚠️ **Por debajo de 430 px el filete se retira, y el número está medido.** El
+> rótulo más largo —«La lectura recomendada»— pide **322,5 px** en Cormorant 20
+> versales, y eso no baja porque el cuerpo es fijo. Con los 20 del hueco y un
+> mínimo de 40 para que la línea se lea como filete y no como un guion, hacen
+> falta 430,5 px de ventana. Lo que sobra para la línea:
+>
+> | Ventana | 375 | 400 | 430 | 431 | 480 | 600 |
+> |---|---|---|---|---|---|---|
+> | Filete | **−15,5** | 9,5 | 39,5 | **40,5** | 89,5 | 209,5 |
+>
+> Con el negativo pasaba algo peor que quedarse sin línea: **el texto envolvía a
+> dos líneas** —64 px en vez de 32— porque el hueco y el `::after` le robaban
+> sitio. Volviendo a `display: block` el texto recupera su única línea, porque
+> 322,5 caben en los 327 de la columna a 375. **Quitar el filete es lo que
+> arregla el rótulo, no una pérdida.**
+
+> ⚠️ **`flex: 1 1 auto` y no `flex: 1` en el rótulo de «Últimos artículos».**
+> Parecen lo mismo: `flex: 1` es `flex-basis: 0%`, así que el rótulo se encoge
+> hasta cero para quedarse en una fila con el enlace «ver todos» cueste lo que
+> cueste. Medido a 480 px: se quedaba en ~190, «Últimos artículos» —que pide
+> 236,2— **envolvía a dos líneas y su filete se iba a cero**, con el rótulo de
+> arriba funcionando bien. Dos hermanos con distinto tratamiento en el mismo
+> ancho se leen como un error.
+>
+> Con `auto` el tamaño base es su `max-content`, así que cuando no caben los dos
+> baja **el enlace** —`.lista__encabezado` ya trae `flex-wrap`— y el rótulo
+> recupera el ancho entero.
+
+#### El destacado: orden del DOM, suelo de 448 px y por qué 3:2
+
+**El texto va primero en el marcado** y la imagen después, en vez de colocarlos
+con `order`. Así el orden de lectura —teclado, lector de pantalla, página sin
+CSS— coincide con el visual. La única excepción es el tramo apilado, donde la
+maqueta pide la imagen arriba: ahí sí se usa `order: -1`, y no se pierde nada
+porque la imagen va `aria-hidden` y `tabindex="-1"`.
+
+> ⚠️ **El suelo de 448 px de la columna de texto no es un número redondo: es el
+> ancho que pide la fila de metadatos para caber en una línea** (447,4 medidos,
+> redondeado arriba). Sin él, el reparto 45/55 dejaba el texto en 448,65 justo
+> en 1085 —**1,3 px de holgura**— y un pelo de diferencia en el renderizado
+> partía los metadatos en dos. Holgura medida: 1,3 en 1085, 8 en 1100, 30,5 en
+> 1150 y 74,6 a partir de 1248, donde el contenedor topa en 1200.
+>
+> Con `minmax(448px, 45fr)` el texto nunca baja de 448 y la diferencia la absorbe
+> la columna de la imagen, que puede ceder sin que se note. **Si se cambia el
+> texto de «Leer artículo» o de los minutos, este número hay que volver a
+> medirlo**: sale del contenido, no del diseño.
+
+**La imagen se queda en 3:2 y eso es lo que evita el recorte.** La foto es
+1600×1066, o sea 3:2 exactos, así que con `cover` **no se corta ni un píxel** y
+se ve la escultura entera, balanza incluida. El `object-position: 62%` es una
+**red, no un ajuste**: a 3:2 no hace nada porque no hay holgura que repartir, y
+solo entra si la caja cambia de proporción. El 62 % sale de medir sobre la foto
+—la balanza cae al 43 % del ancho y la figura al 69 %—.
+
+Apilado, la imagen lleva `max-width: 560px`: a ancho completo y 3:2 se iría a
+**690 px de alto** en una tablet. Se limita el ancho en vez de recortar con un
+ratio más panorámico, porque el encargo era explícito en no cortar la escultura.
+
+> ⚠️ **Las barras `|` de los metadatos las pone el CSS, no el marcado.** Van en
+> `::after` porque `::before` ya lo ocupan los iconos de calendario y reloj, y
+> fuera del HTML para que un lector de pantalla no tenga que ignorar glifos de
+> puntuación. `:not(:last-child)` deja el último sin barra sin saber cuál es.
+>
+> **Y por debajo de 600 px el enlace baja de fila a propósito, con la barra que
+> lo precede.** La fila pide 447 px, así que por debajo de unos 495 envuelve
+> sola, y al envolver **la barra se quedaba colgando al final de la primera
+> línea**: un separador sin nada que separar. En CSS no hay forma de saber si una
+> fila flex ha envuelto, así que en vez de perseguir el punto exacto se hace
+> explícito. El corte va en 600 —uno que ya existe— y no en 495: entre esos dos
+> anchos la fila aún cabría, pero vale más que atar el diseño a un número que
+> depende del largo de los metadatos.
+
+#### Responsive del rediseño, medido
+
+| Ventana | Destacado | Imagen | Tarjetas | Filete |
+|---|---|---|---|---|
+| 1440 | 2 col · 500,4 / 611,6 | 611,6×407,7 (3:2) | 3 col · 365,3 | sí |
+| 1085 | 2 col · **448,6** / 548,4 | 548,4 | 3 col · 327 | sí |
+| 1000 | **1 col**, imagen arriba | 560×373,3 (3:2) | **2 col** · 462 | sí |
+| 480 | 1 col, imagen arriba | 432 | 1 col | sí · 89 y 176 |
+| 375 | 1 col, imagen arriba | 327×218 (3:2) | 1 col · 327 | **no** |
+
+El destacado se apila en el **mismo corte que las tarjetas, 1084**, y el número
+no es prestado: la columna de texto necesita 448 px, lo que pide 1082,2 px de
+ventana, y el 1084 que ya existía cae 1,8 px por encima. Que las dos cosas se
+apilen a la vez es además lo coherente: la página entera pasa a modo estrecho en
+un punto en vez de degradarse por partes.
+
+La banda de suscripción **ya se apilaba con el botón a todo el ancho** en su
+corte de 900, de antes del rediseño. No hizo falta tocarla. Sin scroll
+horizontal en ninguno de los anchos medidos.
+
+> **El destacado existe para hacer de transición**, y de ahí viene su forma. El
+> hero es una imagen a sangre de 520 px y debajo hay una rejilla: la pieza va
+> **abierta**, sobre `--papel`, **sin fondo y sin filete**. Así la densidad crece
+> hacia abajo en vez de saltar, y no compite con el hero porque no tiene cerco.
+>
+> **No es una tarjeta más**, y se separa de las de abajo en tres cosas:
+> horizontal frente a vertical, reparto desigual 45/55 frente a columnas
+> iguales, e imagen en 3:2 frente a 16:9.
+>
+> ⚠️ **Lo que ya NO la separa es la entradilla.** Aquí decía «entradilla
+> completa frente a la recortada», y de las cuatro diferencias esa era la única
+> de contenido. Desde el rediseño la entradilla del destacado **se recorta a
+> tres líneas con `line-clamp`**, así que se lee igual de corta que la de una
+> tarjeta.
+>
+> La diferencia que queda es de otro tipo, y conviene no perderla: **el texto
+> completo sigue en el HTML** y solo se recorta al pintarlo. En la tarjeta el
+> extracto es corto de verdad, escrito así. Aquí están las palabras del autor
+> enteras y el límite es visual, o sea que quitar el clamp del CSS las devuelve
+> sin tocar el marcado. **No se reescribe ni se acorta ese párrafo.**
+>
+> Y desde que las tarjetas de la portada son `.tarjeta--abierta`, tampoco las
+> separa la caja ni el radio: ninguna de las dos tiene.
 
 > ⚠️ **El titular va en `clamp` y no en 36 px fijos.** El `h1` del hero también
 > es fluido y en móvil baja a **35,2**; con 36 fijos aquí, a 375 el destacado

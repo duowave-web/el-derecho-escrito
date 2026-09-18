@@ -1409,6 +1409,295 @@ body:has(.portada--video) .cabecera--con-linea {
   color: var(--tinta-suave);
 }
 
+/* ============================================================
+   REDISENO DE PORTADA · todo lo que sigue va prefijado con .inicio
+   ============================================================
+
+   El prefijo NO es cosmetico. Estos tres componentes los comparten otras
+   paginas, y sin el gancho el rediseno se les colaria:
+
+     · .lista__titulo--destacado lo usa «Continua leyendo» del articulo
+     · .entrada__meta lo usan las tarjetas del listado y la ficha del articulo
+     · .destacado__* solo vive en la portada, pero se prefija igual para que el
+       bloque se lea como una unidad y se pueda desprefijar de golpe
+
+   Lo que este rediseno NO toca, a peticion expresa: --papel, --papel-alt,
+   --ancho-amplio, los textos del hero y su altura de 520px. El fondo sigue
+   siendo blanco puro y la banda de suscripcion sigue en --papel-alt frio, que
+   es una decision del cliente y esta razonada en CLAUDE.md. */
+
+/* Filete que sale del rotulo hasta el borde del contenedor. El rotulo se queda
+   en --tinta y NO pasa al acento: el peso que le faltaba lo da esta linea, y
+   asi el verdigris sigue reservado a la categoria y al enlace «ver todos», que
+   es la regla de usarlo con contencion. Esta comparado en CLAUDE.md.
+
+   Va en ::after de un contenedor flex, con flex:1, en vez de un <hr> o un
+   borde: asi la linea mide lo que sobra despues del texto, sea el que sea, y no
+   hay que calcular nada al cambiar el rotulo.
+
+   En «Ultimos articulos» el rotulo vive dentro de .lista__encabezado, que es
+   flex con space-between, asi que la linea se detiene sola antes del enlace de
+   «ver todos». No hace falta un caso aparte. */
+
+.inicio .lista__titulo--destacado {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+/* ⚠️ `flex: 1 1 auto` Y NO `flex: 1`. Parecen lo mismo y no lo son: `flex: 1`
+   es `flex-basis: 0%`, asi que el rotulo puede encogerse hasta cero y se queda
+   en una fila con el enlace «ver todos» cueste lo que cueste.
+
+   Medido a 480px: con basis 0 el rotulo se quedaba en ~190px, «Últimos
+   artículos» —que pide 236,2— envolvia a DOS lineas y el filete se quedaba en
+   cero. El mismo destrozo que el del tramo movil, pero por otra causa y en un
+   ancho donde el otro rotulo funcionaba bien: uno con filete y el de al lado
+   partido en dos.
+
+   Con basis auto el tamano base del rotulo es su max-content, asi que cuando
+   los dos no caben es el ENLACE el que baja de fila —que es lo que tiene que
+   pasar, porque .lista__encabezado ya trae flex-wrap— y el rotulo recupera el
+   ancho entero para su linea. */
+
+.inicio .lista__encabezado .lista__titulo--destacado {
+  flex: 1 1 auto;
+}
+
+.inicio .lista__titulo--destacado::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--borde);
+
+  /* El filete se alinea con la ALTURA DE MAYUSCULA, no con el centro de la
+     caja de texto. El rotulo va en versales de Cormorant a 20px con
+     line-height 1.3: su caja mide 26px pero las letras solo ocupan los 14,2 de
+     cap-height, centrados mas arriba que la caja. Sin este desplazamiento la
+     linea cruza por debajo del pie de las letras y se lee como subrayado.
+
+     Medido: 2px lo deja a la mitad de la altura de mayuscula. */
+  transform: translateY(2px);
+}
+
+/* ⚠️ POR DEBAJO DE 430px EL FILETE SE RETIRA, y el numero esta medido.
+
+   El rotulo mas largo —«La lectura recomendada»— pide 322,5px en Cormorant 20
+   versales con 0.10em de tracking, y eso no baja: el cuerpo del rotulo es fijo.
+   Sumando los 20 del hueco y un minimo de 40 para que la linea se lea como un
+   filete y no como un guion, hacen falta 382,5 de rotulo, o sea 430,5 de
+   ventana. Medido, lo que sobra para la linea:
+
+     375 → −15,5   ·   400 → 9,5   ·   430 → 39,5   ·   480 → 89,5
+
+   Con el negativo pasaba algo peor que quedarse sin linea: el texto ENVOLVIA A
+   DOS LINEAS —64px de alto en vez de 32— porque el hueco de 20 y el ::after le
+   robaban sitio. Un rotulo partido en dos con la linea invisible.
+
+   Volviendo a `display: block` el texto recupera su unica linea: 322,5 caben en
+   los 327 de la columna a 375. O sea que quitar el filete no es una perdida,
+   es lo que arregla el rotulo.
+
+   El otro rotulo, «Ultimos articulos», aguanta de sobra —pide 236,2 y le sobran
+   70,8 a 375— pero se retira tambien: dos rotulos hermanos con distinto
+   tratamiento en el mismo tramo se leen como un error, no como un ajuste. */
+
+@media (max-width: 430px) {
+  .inicio .lista__titulo--destacado {
+    display: block;
+  }
+
+  .inicio .lista__titulo--destacado::after {
+    content: none;
+  }
+}
+
+/* Destacado a dos columnas, 45% texto / 55% imagen.
+
+   Deja de ser flex-wrap con `flex: 1 1 340px` y pasa a grid con porcentajes
+   explicitos, porque el reparto que pide la maqueta es desigual y con `flex: 1`
+   las dos columnas salian iguales. El grid tambien hace el apilado explicito
+   —una sola regla en el corte— en vez de depender de cuando decida envolver el
+   flex, que era un numero que no controlaba nadie. */
+
+/* ⚠️ EL SUELO DE 448px NO ES UN NUMERO REDONDO: es el ancho que pide la fila de
+   metadatos para caber en UNA linea —447,4 medidos— redondeado hacia arriba.
+
+   Sin el, el reparto 45/55 dejaba la columna de texto en 448,65 justo en 1085,
+   o sea 1,3px de holgura sobre lo que necesita, y un pelo de diferencia en el
+   renderizado de la fuente partia los metadatos en dos lineas. Medido: la
+   holgura es de 1,3px en 1085, 8 en 1100, 30,5 en 1150 y 74,6 a partir de 1248,
+   donde el contenedor topa en 1200.
+
+   Con el suelo, el texto nunca baja de 448 y la diferencia la absorbe la
+   columna de la imagen, que puede ceder sin que se note. Asi no hace falta
+   inventar un punto de corte nuevo para un tramo de diez pixeles.
+
+   Si alguien cambia el texto de «Leer articulo» o de los minutos, este numero
+   hay que volver a medirlo: sale del contenido, no del diseno. */
+
+.inicio .destacado__pieza {
+  display: grid;
+  grid-template-columns: minmax(448px, 45fr) 55fr;
+  align-items: center;
+  gap: 40px;
+}
+
+/* La imagen se queda en 3:2 y ESO ES LO QUE EVITA EL RECORTE: la foto es
+   1600x1066, o sea 3:2 exactos, asi que con `cover` no se corta ni un pixel y
+   se ve la escultura entera, balanza incluida. Un 8:3 como el de la maqueta
+   original tiraba el 44% del alto y se llevaba la cabeza y los platos.
+
+   El object-position es una RED, no un ajuste: a 3:2 no hace nada porque no hay
+   holgura que repartir. Solo entra en juego si la caja cambia de proporcion
+   —el tramo movil, o si alguien retoca el aspect-ratio—, y entonces conserva la
+   franja que importa y sacrifica la pared vacia de la izquierda.
+
+   El 62% sale de medir sobre la foto: la balanza cae al 43% del ancho y la
+   figura al 69%, asi que 62 es el punto que mantiene las dos dentro. */
+
+.inicio .destacado__imagen {
+  flex: none;
+  max-width: none;
+  border-radius: 0;
+}
+
+.inicio .destacado__imagen img {
+  object-position: 62% center;
+  transition: transform 600ms ease;
+}
+
+/* El antetitulo lleva dos cosas: el rotulo fijo de la pieza y la categoria
+   real, que sigue siendo enlace al filtro. En Inter y versales, como el resto
+   de lo que se consulta, y en acento porque es la etiqueta de la pieza.
+
+   El rotulo va en --acento y la categoria tambien, pero solo la segunda se
+   subraya al pasar: una es texto y la otra es un destino, y esa es la unica
+   diferencia que hay que poder ver. */
+
+.inicio .destacado__antetitulo {
+  margin: 0 0 12px;
+  font-family: var(--ui);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--acento);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.inicio .destacado__antetitulo a {
+  color: inherit;
+}
+
+.inicio .destacado__antetitulo-sep {
+  opacity: 0.55;
+}
+
+/* Tres lineas y el texto completo sigue en el HTML. line-clamp necesita las
+   tres declaraciones juntas —el display de caja, la orientacion y el numero— y
+   sin `overflow: hidden` no recorta nada.
+
+   Se prefiere a un max-height en em porque el clamp corta por LINEAS DE VERDAD:
+   un max-height calculado a ojo deja media linea asomando en cuanto cambia el
+   cuerpo o la fuente, y eso se ve. */
+
+.inicio .destacado__entradilla {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  overflow: hidden;
+}
+
+/* Separadores «|» entre metadatos. Van en ::after porque ::before ya lo ocupan
+   los iconos de calendario y reloj, y en el CSS y no en el marcado para que un
+   lector de pantalla no tenga que ignorar glifos de puntuacion.
+
+   `:not(:last-child)` deja el ultimo sin barra, sea la lectura en una tarjeta o
+   el enlace «Leer articulo» en el destacado, sin saber cual es. */
+
+.inicio .entrada__meta > :not(:last-child)::after {
+  content: "|";
+  margin-left: 12px;
+  color: var(--borde-marcado);
+  font-weight: 400;
+}
+
+/* El enlace de accion del destacado. En acento y sin subrayado: la flecha ya
+   dice que lleva a algun sitio, y el subrayado competiria con el filete del
+   rotulo que tiene encima.
+
+   La flecha va en un <span> propio y no suelta en el texto para tener elemento
+   que animar, igual que en .boton--contorno. Y se mueve con transform y no con
+   margin, que dispararia reflow en cada hover. */
+
+.inicio .destacado__leer {
+  color: var(--acento);
+  font-weight: 600;
+}
+
+.inicio .destacado__leer:hover {
+  text-decoration: none;
+  color: var(--acento-oscuro);
+}
+
+.inicio .destacado__flecha {
+  display: inline-block;
+  margin-left: 4px;
+  transition: transform 220ms ease;
+}
+
+.inicio .destacado__leer:hover .destacado__flecha {
+  transform: translateX(4px);
+}
+
+/* ⚠️ EN ESTRECHO EL ENLACE BAJA DE FILA A PROPOSITO, y con el se va la barra
+   que lo precede.
+
+   La fila de metadatos pide 447px para caber entera, asi que por debajo de unos
+   495px de ventana envuelve sola. Y al envolver, la barra que separa los
+   minutos del enlace se quedaba COLGANDO AL FINAL DE LA PRIMERA LINEA: un
+   separador sin nada que separar, que se lee como un error de maquetacion.
+
+   No hay forma en CSS de saber si una fila flex ha envuelto, asi que en vez de
+   perseguir el punto exacto del envoltorio se hace explicito: el enlace pasa a
+   ocupar su propia fila y la barra anterior desaparece. Determinista, y de paso
+   la accion gana su propia linea, que se lee mejor.
+
+   El corte va en 600 —uno que ya existe— y no en 495: entre esos dos anchos la
+   fila aun cabria de una pieza, pero forzarla antes vale mas que atar el diseno
+   a un numero que depende del largo del texto de los metadatos. */
+
+@media (max-width: 600px) {
+  .inicio .destacado .entrada__meta .lectura::after {
+    content: none;
+  }
+
+  .inicio .destacado__leer {
+    flex-basis: 100%;
+  }
+}
+
+/* Separador entre bloques. Va en la seccion y no en un <hr>: el <hr> seria un
+   elemento mas en el arbol de accesibilidad para decir algo que es puramente
+   visual, y ademas habria que mantener su margen aparte del de la seccion.
+
+   ⚠️ El :not() NO es opcional: la seccion de la suscripcion TAMBIEN es .lista
+   —comparte su relleno vertical— asi que sin la exclusion se llevaria el filete
+   tambien, y ahi no hace falta: ya es una caja con fondo, que se separa sola.
+   Dos lineas seguidas, una a 1px del canto de la caja.
+
+   Cuando «Ultimos articulos» va con [hidden] no pinta nada, asi que en el
+   estado de hoy no hay ningun filete suelto entre el destacado y la banda. */
+
+.inicio .lista:not(.lista--cierre) {
+  border-top: 1px solid var(--borde);
+}
+
 /* --------------------------------------------------------- Artículos ---- */
 
 .lista {
@@ -2021,6 +2310,150 @@ main > .lista:last-child {
 
 .tarjeta--caja .tarjeta__imagen {
   background: var(--borde);
+}
+
+/* ------------------------------------------- Tarjeta abierta (portada) --- */
+
+/* La tarjeta del rediseno de portada: sin fondo, sin filete y sin relleno, con
+   la imagen mas panoramica y el enlace extendido a toda la superficie.
+
+   ES UN MODIFICADOR NUEVO Y NO UN CAMBIO EN .tarjeta, y eso importa: .tarjeta y
+   .tarjeta--caja los usa tambien articulos/index.html —diez veces— y el bloque
+   «Continua leyendo» de cada articulo, que CLONA esas tarjetas por fetch. Si el
+   rediseno hubiera entrado en la clase base, el listado perdia sus cajas y se
+   invalidaban dos medidas documentadas: el min-height de «Proximamente»
+   (574/580, atado a la altura de una tarjeta con caja) y el corte de 1084, que
+   sale del padding de 28. Aqui el listado no se entera.
+
+   No lleva el prefijo .inicio porque el nombre ya la acota: solo se pone en la
+   portada, y si algun dia se usa en otro sitio sera porque alli tambien se
+   quiere abierta. */
+
+.tarjeta--abierta {
+  position: relative;
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+/* 16:9 en vez del 3:2 de la clase base. La maqueta pedia 3:1, que en una
+   columna de 365px deja una tira de 122px de alto: a esa altura la escultura
+   de la unica foto que hay no se distingue. 16:9 es lo mas panoramico que
+   aguanta el material. Cuando haya fotos anchas de verdad, es un numero.
+
+   Radio 0 porque la maqueta lo pide sin redondeos, y el 3px de la clase base
+   no se hereda: se anula aqui. */
+
+.tarjeta--abierta .tarjeta__imagen {
+  aspect-ratio: 16 / 9;
+  border-radius: 0;
+  background: var(--papel-alt);
+}
+
+/* El zoom va en la IMAGEN y el overflow lo recorta el hueco, que ya lo trae de
+   .tarjeta__imagen. 1.03 y 600ms: a 1.05 el movimiento se nota como un salto y
+   compite con el cambio de color del titular, que es la senal principal. */
+
+.tarjeta--abierta .tarjeta__imagen img {
+  transition: transform 600ms ease;
+}
+
+.tarjeta--abierta:hover .tarjeta__imagen img {
+  transform: scale(1.03);
+}
+
+.tarjeta--abierta:hover .entrada__titulo a {
+  color: var(--acento);
+}
+
+/* ENLACE EXTENDIDO · toda la tarjeta se puede pulsar con UN SOLO enlace.
+
+   El ::after del titular se estira sobre la tarjeta entera. Es el patron
+   estandar, y se prefiere a envolver la tarjeta en un <a> por dos razones: un
+   <a> alrededor no puede contener el enlace de la categoria —anidar enlaces no
+   es valido— y ademas el nombre accesible del bloque pasaria a ser todo el
+   texto de la tarjeta leido del tiron.
+
+   Asi el area pulsable es la tarjeta y el nombre accesible sigue siendo solo el
+   titular. */
+
+/* ⚠️ LOS DOS z-index SON EXPLICITOS A PROPOSITO. Sin ellos la capa funciona en
+   casi toda la tarjeta y falla en una franja de ~8px sobre la fila de
+   metadatos: ahi ganaba el <time> y el punto quedaba muerto.
+
+   El motivo es que .entrada__meta es un contenedor flex, y sus hijos se pintan
+   como unidades atomicas aunque no esten posicionados, con lo que el orden
+   frente a un ::after absoluto de z-index: auto deja de ser el que uno supone.
+   Apilar a mano quita la duda en vez de depender de ese orden.
+
+   Escala: 1 la capa, 2 la categoria, que tiene que seguir encima de la capa. */
+
+.tarjeta--abierta .entrada__titulo a::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+/* La categoria tiene que quedar POR ENCIMA de esa capa o deja de poder
+   pulsarse: es el unico otro destino de la tarjeta y lleva al filtro del
+   listado, no al articulo.
+
+   position: relative es imprescindible ademas del z-index — sin el, el z-index
+   no aplica y el enlace se queda debajo sin que nada avise.
+
+   ⚠️ VA EN EL <a> Y NO EN EL <p class="etiqueta">, y la diferencia se ve solo
+   probando a pulsar. El <p> es de ancho completo, asi que subiendolo entero se
+   llevaba por encima de la capa TAMBIEN su hueco vacio: la franja a la derecha
+   de «FUNDAMENTO» —unos 270 de los 365px de la tarjeta— dejaba de abrir el
+   articulo. Un agujero muerto en mitad de una tarjeta que se anuncia como
+   pulsable entera.
+
+   Subiendo solo el enlace, el texto de la categoria lleva al filtro y todo lo
+   que lo rodea sigue llevando al articulo. Comprobado con hit-testing en seis
+   puntos: no se detecta mirando, porque las dos versiones se ven idénticas. */
+
+.tarjeta--abierta .etiqueta a {
+  position: relative;
+  z-index: 2;
+}
+
+/* ------------------------------------------- Tarjeta de ejemplo --------- */
+
+/* Atrezo visual de la portada: la tarjeta abierta con la interaccion apagada.
+   Se usa JUNTO a .tarjeta--abierta, no en su lugar, porque el aspecto tiene que
+   ser exactamente el de una tarjeta real — para eso esta.
+
+   ⚠️ SE BORRA CUANDO HAYA ARTICULOS REALES, con las tres tarjetas que la llevan.
+   Esta en CLAUDE.md y marcado en index.html entre EJEMPLO y FIN EJEMPLO.
+
+   Casi todo lo que la hace no-interactiva viene de NO tener enlaces en el
+   marcado, no de aqui: sin <a> no hay cursor de mano, ni subrayado, ni foco, y
+   el titular se queda en --tinta y la categoria en --acento porque esos colores
+   los ponen .entrada__titulo y .etiqueta, no sus enlaces. Tambien queda muerta
+   la capa del enlace extendido, que cuelga de .entrada__titulo a::after.
+
+   Lo unico que hay que apagar a mano es el zoom, porque cuelga de :hover de la
+   tarjeta y no de ningun enlace. Y hay que apagarlo: una tarjeta que reacciona
+   al raton promete que lleva a algun sitio. La quietud es la senal de que no. */
+
+.tarjeta--ejemplo:hover .tarjeta__imagen img {
+  transform: none;
+}
+
+/* Con prefers-reduced-motion se va el zoom y se queda el color. Lo que informa
+   es que el titular cambie de tono, no que la foto se mueva. */
+
+@media (prefers-reduced-motion: reduce) {
+  .tarjeta--abierta .tarjeta__imagen img,
+  .inicio .destacado__imagen img,
+  .inicio .destacado__flecha {
+    transition: none;
+  }
+
+  .tarjeta--abierta:hover .tarjeta__imagen img {
+    transform: none;
+  }
 }
 
 /* ------------------------------------------- Tarjeta de proximamente ----- */
@@ -3491,6 +3924,43 @@ body:has(.progreso) .cabecera {
 @media (max-width: 1084px) {
   .tarjetas {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  /* El destacado se apila en el MISMO corte que las tarjetas, y el numero no es
+     prestado: la columna de texto necesita 448px para que los metadatos quepan
+     en una linea, lo que pide 1082,2px de ventana. El 1084 que ya existia cae
+     1,8px por encima, asi que sirve tal cual y no hay que sumar un corte mas.
+
+     Que las dos cosas se apilen a la vez es ademas lo coherente: la pagina
+     entera pasa a modo estrecho en un solo punto en vez de degradarse por
+     partes. */
+
+  .inicio .destacado__pieza {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+
+  /* LA IMAGEN SUBE, y es la unica vez que este rediseno usa `order`.
+
+     En dos columnas el orden visual lo da el MARCADO —texto primero—, para que
+     coincida con el orden de lectura. Apilado, la maqueta pide la imagen
+     arriba, y ahi invertir el marcado habria estropeado el caso de escritorio.
+
+     No se pierde nada por hacerlo con CSS: la imagen va aria-hidden y
+     tabindex="-1", asi que para el teclado y para un lector de pantalla este
+     bloque es idéntico en los dos tramos. El unico orden que cambia es el que
+     se ve. */
+
+  .inicio .destacado__imagen {
+    order: -1;
+
+    /* A ancho completo y 3:2, la foto se iria a 690px de alto en una tablet: un
+       tercio de pantalla para una imagen de apoyo. El tope la deja en 373.
+
+       Se prefiere limitar el ANCHO y no recortar con un ratio mas panoramico
+       porque el encargo era explicito en no cortar la escultura. Asi la foto
+       sigue viendose entera, solo mas pequena. */
+    max-width: 560px;
   }
 }
 

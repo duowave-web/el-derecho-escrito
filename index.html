@@ -86,7 +86,18 @@
 }
 </script>
 </head>
-<body>
+<!-- La clase `inicio` es el GANCHO DE ALCANCE del rediseño de portada, no un
+     estilo en sí. Todas las reglas nuevas cuelgan de ella porque los componentes
+     que retoca los comparten otras páginas:
+
+       · .lista__titulo--destacado lo usa «Continúa leyendo» del artículo
+       · .entrada__meta lo usan las tarjetas del listado y la ficha del artículo
+       · .suscripcion--banda la usa el lateral del artículo
+
+     Sin el gancho, tocar cualquiera de los tres cambiaría articulos/ y las
+     páginas de artículo a la vez. Si algún día la portada deja de ser especial,
+     se quita la clase y se desprefijan las reglas de golpe. -->
+<body class="inicio">
 
 <a class="saltar" href="#contenido">Saltar al contenido</a>
 
@@ -186,7 +197,71 @@
 
       <h2 id="destacado-titulo" class="lista__titulo lista__titulo--destacado">La lectura recomendada</h2>
 
+      <!-- ⚠️ EL TEXTO VA PRIMERO EN EL DOM, y es deliberado. La maqueta pide
+           texto a la izquierda e imagen a la derecha, y se resuelve con el
+           ORDEN DEL MARCADO en vez de con `order` en el CSS: así el orden de
+           lectura —teclado, lector de pantalla, página sin CSS— coincide con el
+           visual en escritorio.
+
+           La única excepción es el móvil, donde la maqueta pide la imagen
+           arriba. Ahí sí se usa `order: -1`, porque invertir el marcado por un
+           tramo rompería los otros dos. Y no se pierde nada: la imagen es
+           decorativa y va aria-hidden, o sea que para un lector de pantalla
+           este bloque es el mismo en los dos casos. -->
       <div class="destacado__pieza">
+
+        <div class="destacado__texto">
+
+          <!-- La etiqueta es DOS COSAS con un punto medio: el rótulo fijo de la
+               pieza y la categoría real del artículo, que sigue siendo un
+               enlace al filtro del listado.
+
+               El rótulo va en <span> y la categoría en <a>: solo una de las dos
+               lleva a algún sitio, y la que lleva tiene que ser la que se puede
+               pulsar. El punto medio va aria-hidden porque es separación
+               visual, no contenido — sin eso un lector de pantalla leería
+               «punto» entre las dos.
+
+               Ojo: la clave del href va en minúsculas y sin acentos, distinta
+               de la etiqueta visible. Un grep de «Fundamento» no la encuentra. -->
+          <p class="destacado__antetitulo">
+            <span>Artículo destacado</span>
+            <span class="destacado__antetitulo-sep" aria-hidden="true">·</span>
+            <a href="./articulos/?categoria=fundamento"><span class="oculto">Ver artículos de </span>Fundamento</a>
+          </p>
+
+          <!-- h3 y no h2: cuelga del h2 del rótulo, que a su vez cuelga del h1
+               del hero. Misma jerarquía que las tarjetas de «Últimos
+               artículos», que también van en h3. -->
+          <h3 class="destacado__titulo">
+            <a href="./articulos/principio-de-legalidad-penal/">El principio de legalidad penal: qué protege y dónde se rompe</a>
+          </h3>
+
+          <!-- ⚠️ LA ENTRADILLA VA COMPLETA EN EL HTML Y SE RECORTA CON CSS.
+               Son las palabras del autor: no se reescriben ni se acortan aquí.
+               El límite de tres líneas lo pone `line-clamp` en .destacado__
+               entradilla, así que el texto entero sigue estando en la página
+               —para un buscador y para quien mire el código— y lo único que
+               cambia es cuánto se pinta.
+
+               Si alguna vez hay que enseñarla entera, se quita el clamp del
+               CSS y no se toca este párrafo. -->
+          <p class="destacado__entradilla">Nullum crimen sine lege es una de las garantías más citadas del derecho penal y una de las peor entendidas. Un repaso a sus cuatro exigencias y a los casos donde el legislador las tensiona.</p>
+
+          <!-- Los separadores «|» entre metadatos NO están aquí: los pone el CSS
+               con ::after, porque ::before ya lo ocupan los iconos de calendario
+               y reloj. Así no hay glifos de puntuación en el marcado que un
+               lector de pantalla tenga que ignorar. -->
+          <div class="entrada__meta">
+            <time datetime="2026-08-20">20 agosto 2026</time>
+            <span class="lectura">7 min de lectura</span>
+            <!-- Tercer enlace al mismo artículo, y el único con texto de acción.
+                 No estorba al de la imagen porque ese va aria-hidden, así que
+                 para un lector de pantalla esta pieza ofrece dos destinos: el
+                 titular y este. -->
+            <a class="destacado__leer" href="./articulos/principio-de-legalidad-penal/">Leer artículo <span class="destacado__flecha" aria-hidden="true">&rarr;</span></a>
+          </div>
+        </div>
 
         <!-- ⚠️ aria-hidden Y tabindex="-1" VAN JUNTOS, y el alt vacío depende
              de los dos. Sin ellos esto serían dos enlaces seguidos al mismo
@@ -210,45 +285,32 @@
                width="1600" height="1066" loading="lazy" decoding="async">
         </a>
 
-        <div class="destacado__texto">
-          <p class="etiqueta etiqueta--plana">
-            <a href="./articulos/?categoria=fundamento"><span class="oculto">Ver artículos de </span>Fundamento</a>
-          </p>
-          <!-- h3 y no h2: cuelga del h2 del rótulo, que a su vez cuelga del h1
-               del hero. Misma jerarquía que las tarjetas de «Últimos
-               artículos», que también van en h3. -->
-          <h3 class="destacado__titulo">
-            <a href="./articulos/principio-de-legalidad-penal/">El principio de legalidad penal: qué protege y dónde se rompe</a>
-          </h3>
-          <!-- La entradilla COMPLETA, no la recortada de la tarjeta de abajo.
-               Es una de las cosas que separan esta pieza de aquellas. -->
-          <p class="destacado__entradilla">Nullum crimen sine lege es una de las garantías más citadas del derecho penal y una de las peor entendidas. Un repaso a sus cuatro exigencias y a los casos donde el legislador las tensiona.</p>
-          <div class="entrada__meta">
-            <time datetime="2026-08-20">20 agosto 2026</time>
-            <span class="lectura">7 min</span>
-          </div>
-        </div>
-
       </div>
     </div>
   </section>
 
-  <!-- ═══ ÚLTIMOS ARTÍCULOS — HOY APAGADO, Y ES EL ESTADO CORRECTO ═══
+  <!-- ═══ ÚLTIMOS ARTÍCULOS — ENCENDIDO CON TARJETAS DE EJEMPLO ═══
 
-       Con un solo artículo publicado esta sección NO se enseña: el artículo ya
-       es el destacado de arriba, y repetirlo aquí abajo sería el mismo titular
-       y la misma foto dos veces en la misma pantalla.
+       ⚠️ LAS TRES TARJETAS DE DENTRO SON DE EJEMPLO Y SE BORRAN. Están solo
+       para que el cliente vea la maqueta de la sección con contenido; sus
+       artículos NO existen. Van marcadas con `.tarjeta--ejemplo` y entre las
+       marcas de INICIO y FIN de más abajo, así que se quitan de golpe.
 
-       LA REGLA: se enciende cuando haya al menos UN artículo que no sea el
-       destacado. Esta sección lista los OTROS, nunca el destacado.
+       LA REGLA DE FONDO no cambia: esta sección lista los artículos que NO son
+       el destacado, y se enseña cuando haya al menos uno. Hoy no hay ninguno
+       —solo existe el artículo destacado—, así que lo que se ve es atrezo.
 
-       PARA ENCENDERLA: se quita el atributo `hidden` de la <section> y se pega
-       una tarjeta por artículo dentro de .tarjetas. Nada más — el aire y la
-       banda de suscripción se recolocan solos, que para eso van en secciones
-       separadas.
+       CUANDO HAYA ARTÍCULOS REALES: se borran las tres tarjetas de ejemplo y se
+       pega una tarjeta real por artículo, con la plantilla que hay en el
+       comentario de dentro. Si se publican artículos y NO se borran, la portada
+       enseñará artículos inventados junto a los de verdad.
 
-       Está explicado en CLAUDE.md, con la cuenta de cuántas tarjetas van. -->
-  <section class="lista" hidden aria-labelledby="ultimos-titulo">
+       SI SE QUISIERA VOLVER A APAGAR la sección entera, se le devuelve el
+       atributo `hidden` a la <section>. El aire y la banda de suscripción se
+       recolocan solos, que para eso van en secciones separadas.
+
+       Está explicado en CLAUDE.md, en «Las tarjetas de ejemplo de la portada». -->
+  <section class="lista" aria-labelledby="ultimos-titulo">
     <div class="contenedor contenedor--amplio">
 
       <div class="lista__encabezado">
@@ -275,7 +337,7 @@
            PLANTILLA DE TARJETA · se copia dentro de .tarjetas, una por
            artículo, la más reciente primero. Sustituye lo que va en MAYÚSCULAS:
 
-           <article class="tarjeta tarjeta--caja">
+           <article class="tarjeta tarjeta--abierta">
              <div class="tarjeta__imagen">
                <img src="./img/ARCHIVO.jpg"
                     alt="DESCRIPCIÓN DE LO QUE ENSEÑA ESTE ENCUADRE"
@@ -294,8 +356,13 @@
              </div>
            </article>
 
-           Tres avisos sobre esa plantilla:
+           Cuatro avisos sobre esa plantilla:
 
+           · Va en `.tarjeta--abierta`, NO en `.tarjeta--caja`. La caja es la
+             del listado de articulos/; la abierta es la de la portada, sin
+             fondo ni filete y con la imagen en 16:9. Son dos modificadores del
+             mismo componente a propósito: el listado tiene medidas atadas a su
+             caja y no debe cambiar.
            · La CLAVE del href de la categoría va en minúsculas y sin acentos
              («fundamento»), distinta de la CATEGORÍA visible («Fundamento»).
              Un grep de la etiqueta visible no encuentra el href.
@@ -304,9 +371,97 @@
              enlaces. Va en un <span> y no en aria-label para que el nombre
              CONTENGA el texto visible, que es lo que pide el control por voz.
            · El alt describe ESTE encuadre, no el del artículo. La tarjeta
-             recorta en 3:2 y la cabecera del artículo en 21:9, así que se
-             repite la imagen pero no la descripción. -->
-      <div class="tarjetas"></div>
+             recorta en 16:9 y la cabecera del artículo en 21:9, así que se
+             repite la imagen pero no la descripción.
+
+           No hay que añadir nada para que la tarjeta entera sea pulsable: lo
+           hace el ::after del titular, que está en el CSS. Tampoco separadores
+           «|» en los metadatos — los pone el CSS.
+
+           ⚠️ OJO A LA DIFERENCIA CON LAS TARJETAS DE EJEMPLO DE ABAJO: una
+           tarjeta real lleva DOS enlaces —el titular y la categoría— y no lleva
+           `.tarjeta--ejemplo`. Las de ejemplo no llevan ninguno. Al sustituir,
+           no basta con cambiar los textos: hay que envolver el titular y la
+           categoría en sus <a> y quitar la clase de ejemplo. -->
+      <div class="tarjetas">
+
+        <!-- ╔══════════════════════════════════════════════════════════════╗
+             ║  EJEMPLO — BORRAR CUANDO HAYA ARTÍCULOS REALES               ║
+             ╚══════════════════════════════════════════════════════════════╝
+
+             Las tres tarjetas que siguen son ATREZO VISUAL. Sus artículos no
+             existen: no están en articulos/, ni en el sitemap, ni en el feed,
+             ni en el buscador, ni en los datos estructurados. Y es correcto que
+             no estén — son ejemplos, no contenido.
+
+             POR ESO NO LLEVAN NINGÚN ENLACE, y es la diferencia que importa:
+             ni el titular ni la categoría. Un enlace daría 404, y uno que
+             apuntara al artículo real mentiría sobre lo que abre. Sin <a> no
+             hay cursor de mano ni subrayado, así que nada invita a pulsarlas.
+
+             `.tarjeta--ejemplo` apaga además el zoom de la imagen al pasar el
+             ratón: una tarjeta que reacciona pero no lleva a ningún sitio es
+             peor que una quieta. El resto del aspecto lo da `.tarjeta--abierta`,
+             el mismo modificador que usarán las tarjetas reales.
+
+             Las imágenes son las que ya había en img/ y NO tienen relación con
+             los titulares inventados. Al poner artículos reales, cada uno trae
+             la suya.
+
+             PARA BORRARLAS: se quita todo lo que hay entre esta marca y la de
+             FIN EJEMPLO. Si al hacerlo no queda ninguna tarjeta, hay que
+             devolver el atributo `hidden` a la <section> de arriba. -->
+
+        <article class="tarjeta tarjeta--abierta tarjeta--ejemplo">
+          <div class="tarjeta__imagen">
+            <img src="./img/damajusticia.jpg"
+                 alt="Figura de bronce de la justicia con los ojos vendados y los dos platos de la balanza"
+                 width="1600" height="1066" loading="lazy" decoding="async">
+          </div>
+          <p class="etiqueta etiqueta--plana">Ensayo</p>
+          <h3 class="entrada__titulo">La discrecionalidad técnica de la Administración</h3>
+          <p class="entrada__extracto">Análisis de los límites de la discrecionalidad técnica en la toma de decisiones públicas y su control jurisdiccional.</p>
+          <div class="entrada__meta">
+            <time datetime="2026-05-20">20 mayo 2026</time>
+            <span class="lectura">12 min</span>
+          </div>
+        </article>
+
+        <article class="tarjeta tarjeta--abierta tarjeta--ejemplo">
+          <div class="tarjeta__imagen">
+            <img src="./img/damajusticia.jpg"
+                 alt="Figura de bronce de la justicia con los ojos vendados y los dos platos de la balanza"
+                 width="1600" height="1066" loading="lazy" decoding="async">
+          </div>
+          <p class="etiqueta etiqueta--plana">Comentario</p>
+          <h3 class="entrada__titulo">El interés legítimo en el recurso contencioso-administrativo</h3>
+          <p class="entrada__extracto">A propósito de la jurisprudencia reciente sobre legitimación activa y el concepto de interés legítimo.</p>
+          <div class="entrada__meta">
+            <time datetime="2026-04-22">22 abril 2026</time>
+            <span class="lectura">14 min</span>
+          </div>
+        </article>
+
+        <article class="tarjeta tarjeta--abierta tarjeta--ejemplo">
+          <div class="tarjeta__imagen">
+            <img src="./img/damajusticia.jpg"
+                 alt="Figura de bronce de la justicia con los ojos vendados y los dos platos de la balanza"
+                 width="1600" height="1066" loading="lazy" decoding="async">
+          </div>
+          <p class="etiqueta etiqueta--plana">Fundamento</p>
+          <h3 class="entrada__titulo">El control judicial de los planes parciales: límites y estándares</h3>
+          <p class="entrada__extracto">Sobre el alcance del control judicial en la revisión de los planes parciales y los estándares de motivación exigibles.</p>
+          <div class="entrada__meta">
+            <time datetime="2026-04-15">15 abril 2026</time>
+            <span class="lectura">11 min</span>
+          </div>
+        </article>
+
+        <!-- ╔══════════════════════════════════════════════════════════════╗
+             ║  FIN EJEMPLO — hasta aquí lo que hay que borrar              ║
+             ╚══════════════════════════════════════════════════════════════╝ -->
+
+      </div>
       <!-- FIN LISTADO -->
 
     </div>
