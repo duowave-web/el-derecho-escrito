@@ -2150,18 +2150,45 @@ main > .lista:last-child {
 
 /* ------------------------------------------------ Índice del artículo --- */
 
+/* Vive en la COLUMNA del articulo, entre la entradilla y el primer apartado, y
+   se escribe A MANO en el HTML de cada uno. Antes lo generaba js/main.js en el
+   lateral, y el cambio tiene dos motivos que conviene no deshacer.
+
+   El primero es donde caia. El lateral no se oculta en pantalla estrecha: baja
+   DEBAJO del articulo, asi que por debajo de 932px el indice aparecia cuando
+   ya estaba todo leido. Un indice que llega al final no es un indice.
+
+   El segundo es que ahora existe sin JavaScript, que es la regla del proyecto:
+   el contenido va en el HTML y el JS solo enriquece. Un indice generado no lo
+   ve ni quien navega sin scripts ni un buscador.
+
+   El precio es mantenimiento —hay que escribir la lista y los id a mano en
+   cada artículo— y esta contado en CLAUDE.md, con la receta.
+
+   Se fusionaron aqui la caja base y el antiguo modificador .indice--lateral,
+   que era quien traia las filas con filete. Ya no existe: habia un solo uso. */
+
 .indice {
   background: var(--papel-alt);
+  border: 1px solid var(--borde);
   border-radius: 4px;
-  padding: 24px 28px;
+  padding: 26px 30px;
   margin: 36px 0 44px;
-  font-family: var(--ui);
 }
 
-/* Especificidad reforzada: el indice vive dentro de .articulo y si no,
-   la regla .articulo h2 lo pisaria. */
+/* El filete de 1px NO es decoracion: --papel-alt esta a ΔE 2,3 del blanco de la
+   pagina, por debajo del umbral en el que dos superficies planas se distinguen,
+   asi que la caja sin contorno se lee como si no lo tuviera. El canto lo dibuja
+   la linea y el relleno se queda en lo que es, un matiz. Mismo criterio que en
+   .tarjeta--caja, y esta razonado en CLAUDE.md.
 
-.articulo .indice h2,
+   .referencias lleva exactamente lo mismo —filete, radio y padding— y no por
+   casualidad: son los dos paneles de la columna del articulo y tienen que ser
+   la misma caja. Si se toca uno, se toca el otro. */
+
+/* Especificidad reforzada: el indice vive dentro de .articulo y sin esto la
+   regla .articulo h2 —Source Serif a 32px— lo pisaria. */
+
 .articulo .indice h2,
 .indice h2 {
   font-family: var(--ui);
@@ -2170,18 +2197,87 @@ main > .lista:last-child {
   line-height: 1.3;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  margin: 0 0 14px;
+  margin: 0 0 6px;
   color: var(--acento);
 }
 
-.indice ol {
+/* La lista va en la serif de lectura y no en Inter, al reves que el rotulo. No
+   es un metadato que se consulte de un vistazo: son los titulares de los
+   apartados, el mismo texto que luego se lee en el cuerpo. A 17px queda por
+   debajo de los 18 del parrafo, que es lo que la mantiene como aparato y no
+   como texto. */
+
+/* ⚠️ El prefijo .articulo de las tres reglas siguientes NO es adorno, y quitarlo
+   descuadra la caja sin dar ningun error.
+
+   Mas abajo en este archivo estan «.articulo ul, .articulo ol { margin: 0 0 22px;
+   padding-left: 24px }» y «.articulo li { margin-bottom: 9px }», que son las
+   listas del cuerpo del texto. Tienen la MISMA especificidad que un .indice ol
+   a secas —(0,1,1)— y van DESPUES, asi que ganaban por orden: la lista se metia
+   24px hacia dentro, se despegaba del rotulo y cada fila sumaba 9px por debajo
+   del filete, que es lo que descolocaba las divisorias.
+
+   El modificador viejo .indice--lateral no tenia este problema por casualidad:
+   vivia al final del archivo y ganaba por orden. Al traer el componente aqui
+   arriba, el empate lo pierde. Mismo caso que .boton--contorno:hover, que esta
+   documentado en CLAUDE.md.
+
+   Se arregla con especificidad y no moviendo el bloque de sitio: asi aguanta
+   aunque alguien reordene el archivo. */
+
+.articulo .indice ol {
+  list-style: none;
   margin: 0;
-  padding-left: 20px;
-  font-size: 14px;
+  padding: 0;
+  counter-reset: indice;
+  font-size: 1.0625rem;
 }
 
-.indice li {
-  margin-bottom: 7px;
+.articulo .indice li {
+  counter-increment: indice;
+  display: flex;
+  gap: 14px;
+  margin: 0;
+  padding: 13px 0;
+  border-bottom: 1px solid var(--borde);
+}
+
+/* Sin filete tras el ultimo: ahi cierra el padding de la caja, no una linea. */
+
+.articulo .indice li:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+/* El numero va en el acento a proposito: es el MISMO que .articulo__cuerpo
+   h2::before pone delante del apartado, tambien en acento. Asi el «3.» del
+   indice y el «3.» del epigrafe se reconocen como la misma cosa. Si alguien
+   cambia uno de los dos, tiene que cambiar el otro. */
+
+.indice li::before {
+  content: counter(indice) ".";
+  flex: none;
+  font-weight: 600;
+  color: var(--acento);
+}
+
+/* En --tinta y no en el acento: son cinco enlaces seguidos y pintarlos todos de
+   color convertiria la caja en un semaforo, justo lo contrario de la regla de
+   usar el acento con contencion. El color queda para el numero y el rotulo. */
+
+.indice a {
+  color: var(--tinta);
+  line-height: 1.45;
+}
+
+/* Sin subrayado al pasar: la senal la da el tono. Mismo criterio que
+   .etiqueta--tag —un subrayado dentro de una caja con filete se lee como un
+   fallo de maquetacion— y por eso hay que anular el text-decoration que pone
+   la regla global de a:hover. */
+
+.indice a:hover {
+  color: var(--acento);
+  text-decoration: none;
 }
 
 /* Va en --tinta, como el cuerpo, y no en --tinta-suave. La entradilla no es un
@@ -2883,14 +2979,40 @@ body:has(.progreso) .cabecera {
 }
 
 /* Numeracion automatica de los apartados. Va en ::before, asi que no entra en
-   el textContent y el indice lateral la genera sin arrastrar el numero. */
+   el textContent: al copiar el titular de un <h2> al indice, el numero no se
+   arrastra. El indice pone el suyo con su propio contador.
+
+   ⚠️ Por este counter-increment el <nav class="indice"> tiene que quedarse
+   FUERA de .articulo__cuerpo: dentro, su <h2> se llevaria el numero 1 y correria
+   todos los apartados. No da error, solo se ven mal los numeros. */
 
 .articulo__cuerpo {
   counter-reset: seccion;
 }
 
+/* El salto desde el indice tiene que dejar el epigrafe POR DEBAJO de lo que hay
+   fijo arriba, que en un articulo son dos cosas apiladas: la banda de progreso
+   (30px, fixed) y la cabecera pegajosa, que se apoya en ella.
+
+   El alto de la cabecera NO es constante —cambia de una fila a dos en 716px— y
+   por eso hay un escalon. Los valores estan MEDIDOS en el navegador, no
+   calculados, y llevan ~16px de aire para que el titulo no quede lamiendo el
+   filete de la cabecera.
+
+   Esto no reabre el problema de la vieja --alto-cabecera, que se retiro porque
+   la portada la RESTABA y cualquier desvio descuadraba la franja en silencio.
+   Aqui es una holgura, no un ajuste exacto: pasarse unos pixeles no se nota y
+   quedarse corto se ve al instante, que es el modo de fallar que interesa. */
+
 .articulo__cuerpo h2 {
   counter-increment: seccion;
+  scroll-margin-top: 118px;
+}
+
+@media (max-width: 716px) {
+  .articulo__cuerpo h2 {
+    scroll-margin-top: 154px;
+  }
 }
 
 .articulo__cuerpo h2::before {
@@ -2924,12 +3046,26 @@ body:has(.progreso) .cabecera {
   color: var(--acento);
 }
 
-/* Caja de citas y referencias: mismo tratamiento de panel que .indice. */
+/* Caja de citas y referencias: mismo tratamiento de panel que .indice, y
+   «mismo» aqui quiere decir identico —relleno, filete, radio y padding—. Son
+   los dos unicos paneles de la columna del articulo y se leen uno detras de
+   otro, asi que cualquier diferencia entre ellos se ve como un descuido y no
+   como una distincion.
+
+   El filete llego con el indice y se copio aqui por eso. No es decoracion:
+   --papel-alt esta a ΔE 2,3 del blanco de la pagina, por debajo del umbral en
+   el que dos superficies planas se distinguen, asi que sin contorno la caja se
+   lee como si no lo tuviera. Esta razonado en CLAUDE.md.
+
+   El padding subio de 24/28 a 26/30 en el mismo movimiento, que es lo que
+   tenia el indice. Eran 2px de diferencia: invisibles por separado y una
+   desalineacion de 3px del texto —con el filete— entre dos cajas iguales. */
 
 .referencias {
   background: var(--papel-alt);
+  border: 1px solid var(--borde);
   border-radius: 4px;
-  padding: 24px 28px;
+  padding: 26px 30px;
   margin: 40px 0;
   font-family: var(--ui);
   font-size: 14px;
@@ -3023,54 +3159,14 @@ body:has(.progreso) .cabecera {
   text-transform: uppercase;
 }
 
-/* Indice lateral: se apoya en .indice pero suelta el fondo de panel y cambia
-   la lista numerada por filas separadas con el numero en el color de acento. */
+/* Aqui vivia .indice--lateral, el indice de la columna de apoyo, con sus siete
+   reglas. Se retira entero: el indice se ha mudado a la columna del articulo y
+   no queda ningun uso. Las filas con filete que traia este modificador son las
+   que hoy lleva .indice de serie.
 
-.indice--lateral {
-  background: none;
-  border-radius: 0;
-  padding: 0;
-  margin: 0;
-}
-
-.indice--lateral ol {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  counter-reset: indice;
-  font-size: 14px;
-}
-
-.indice--lateral li {
-  counter-increment: indice;
-  display: flex;
-  gap: 12px;
-  margin: 0;
-  padding: 11px 0;
-  border-bottom: 1px solid var(--borde);
-}
-
-.indice--lateral li:last-child {
-  border-bottom: none;
-  padding-bottom: 0;
-}
-
-.indice--lateral li::before {
-  content: counter(indice) ".";
-  flex: none;
-  font-weight: 600;
-  color: var(--acento);
-}
-
-.indice--lateral a {
-  color: var(--tinta);
-  line-height: 1.45;
-}
-
-.indice--lateral a:hover {
-  color: var(--acento);
-  text-decoration: none;
-}
+   Si alguien lo echa de menos, el motivo de la mudanza esta escrito arriba,
+   junto a .indice: el lateral no se oculta en estrecho, BAJA, y ahi el indice
+   llegaba despues del texto que venia a resumir. */
 
 /* Etiquetas: la pildora ya la da .etiqueta; aqui solo se baja el tono y se
    quitan las versales, porque son terminos, no rotulos. */

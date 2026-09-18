@@ -19,7 +19,6 @@
   buscadorDeArticulos();
   buscadorDeCabecera();
   lineaDeCabecera();
-  indiceDelArticulo();
   barraDeProgreso();
   fondoDePortada();
   copiarEnlace();
@@ -898,47 +897,21 @@
 
   /* ------------------------------------------- Índice del artículo ----- */
 
-  /* Se arma desde los <h2> del cuerpo para no tener que escribirlo a mano en
-     cada artículo. Los <h2> que ya traen id lo conservan: así no se rompen los
-     enlaces de artículos ya publicados ni los que apunten desde fuera. */
+  /* Aquí vivía indiceDelArticulo(), que armaba el índice del lateral leyendo
+     los <h2> del cuerpo y les ponía un id al vuelo si no lo traían.
 
-  function indiceDelArticulo() {
-    const lista = document.getElementById("indice-lista");
-    const cuerpo = document.querySelector(".articulo__cuerpo");
-    if (!lista || !cuerpo) return;
+     Se retira entera, con sus dos ayudantes —crearId() e idLibre()—, que no
+     los usaba nadie más. El índice se escribe ahora a mano en el HTML de cada
+     artículo, y con él los id de los <h2>.
 
-    const titulos = Array.prototype.slice.call(cuerpo.querySelectorAll("h2"));
-    const bloque = lista.closest(".indice");
+     El cambio es a propósito y va contra lo que parece: generarlo era menos
+     trabajo, pero el índice no existía sin JavaScript, y la regla del proyecto
+     es que el contenido va en el HTML. Está razonado en CLAUDE.md y en el
+     comentario de .indice en el CSS.
 
-    // Sin apartados no hay índice que mostrar: se quita el bloque entero en
-    // lugar de dejar un rótulo colgando sobre una lista vacía.
-    if (!titulos.length) {
-      if (bloque) bloque.hidden = true;
-      return;
-    }
-
-    // Se parte de los id que ya existen en la página para no duplicar ninguno.
-    const usados = new Set(
-      Array.prototype.map.call(document.querySelectorAll("[id]"), function (el) {
-        return el.id;
-      })
-    );
-
-    titulos.forEach(function (titulo) {
-      if (!titulo.id) {
-        titulo.id = idLibre(crearId(titulo.textContent), usados);
-        usados.add(titulo.id);
-      }
-
-      const enlace = document.createElement("a");
-      enlace.href = "#" + titulo.id;
-      enlace.textContent = titulo.textContent.trim();
-
-      const fila = document.createElement("li");
-      fila.appendChild(enlace);
-      lista.appendChild(fila);
-    });
-  }
+     Si alguna vez se vuelve a generar, hay que recordar que los <h2> deben
+     conservar los id que ya tengan: puede haber enlaces apuntando desde fuera
+     y no se pueden reescribir. */
 
   /* -------------------------------------------- Progreso de lectura ---- */
 
@@ -1289,18 +1262,4 @@
       .replace(/[\u0300-\u036f]/g, ""); // ignora acentos
   }
 
-  function crearId(texto) {
-    return (
-      normalizar(texto.trim())
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/^-+|-+$/g, "") || "apartado"
-    );
-  }
-
-  function idLibre(base, usados) {
-    let id = base;
-    let n = 2;
-    while (usados.has(id)) id = base + "-" + n++;
-    return id;
-  }
 })();

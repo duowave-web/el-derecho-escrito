@@ -80,8 +80,10 @@ Al publicar un artículo nuevo hay que actualizar a mano, siempre:
 3. `index.html` — añadir la tarjeta al listado de portada.
 4. `articulos/index.html` — añadir la entrada al listado completo, **con su
    `data-etiquetas`**.
+5. **El índice del propio artículo** — un `<li>` por cada `<h2>`. Ver abajo.
 
 Si no, el artículo existe pero es invisible para buscadores y lectores de RSS.
+El paso 5 es la excepción: ese no se ve fuera, se ve dentro.
 
 > **El paso 4 pesa más que los otros tres, y conviene saberlo.**
 > `articulos/index.html` **es el índice del sitio**: el bloque «Continúa
@@ -95,6 +97,101 @@ Si no, el artículo existe pero es invisible para buscadores y lectores de RSS.
 >
 > **Lo que NO hay que tocar al publicar es el bloque «Continúa leyendo»** de
 > ningún artículo. Se rellena solo.
+
+#### TODO artículo lleva índice, y se escribe a mano
+
+Va en la **columna del artículo**, entre la entradilla y el primer apartado, y
+es obligatorio en cada artículo nuevo. Se copia esta estructura:
+
+```html
+<nav class="indice" aria-labelledby="indice-titulo">
+  <h2 id="indice-titulo">Índice del artículo</h2>
+  <ol role="list">
+    <li><a href="#origen">De dónde viene el principio de legalidad</a></li>
+    <li><a href="#exigencias">Las cuatro exigencias</a></li>
+  </ol>
+</nav>
+```
+
+La receta, en cuatro puntos:
+
+1. **Un `<li>` por cada `<h2>` del cuerpo, en orden y con el mismo texto.** Solo
+   los `<h2>`: los `<h3>` no entran, o el índice acaba siendo tan largo como el
+   artículo.
+2. **Cada `<h2>` necesita un `id`**: minúsculas, sin tildes, con guiones
+   (`prohibicion-de-analogia`). **Si ya tiene uno, se respeta** — puede haber
+   enlaces apuntando desde fuera y no se pueden reescribir.
+3. **Los números no se escriben.** Los pone el CSS con un contador, igual que
+   los del propio epígrafe.
+4. **No se toca el CSS.** Todo el aspecto vive en `.indice`, en `styles.css`.
+
+> ⚠️ **Tres reglas del componente van prefijadas con `.articulo` y hay que
+> dejarlas así**: `.articulo .indice ol`, `.articulo .indice li` y su
+> `:last-child`. Sin el prefijo, las listas del cuerpo —`.articulo ul,
+> .articulo ol` y `.articulo li`, que están **más abajo en el archivo y con la
+> misma especificidad (0,1,1)**— ganan por orden.
+>
+> El destrozo es silencioso y no evidente: la lista se mete 24 px hacia dentro y
+> deja de alinear con el rótulo, y cada fila suma 9 px por debajo de su filete,
+> con lo que las divisorias dejan de repartir el espacio. Se ve raro sin que
+> nada apunte a la causa.
+>
+> `.indice--lateral` no lo sufría **por casualidad**: vivía al final del archivo
+> y ganaba el empate por orden. Al subir el componente, el empate se pierde. Es
+> el mismo caso que `.boton--contorno:hover`, documentado más abajo.
+>
+> Se arregló con especificidad y **no moviendo el bloque de sitio**, para que
+> aguante si alguien reordena el archivo.
+
+> ⚠️ **El `<nav>` va FUERA de `.articulo__cuerpo`, y esto es lo único de aquí
+> que rompe algo si se hace mal.** Dentro, su `<h2>` entraría en el
+> `counter-increment: seccion` del cuerpo y **se llevaría el número 1**,
+> corriendo la numeración de todos los apartados: el primero pasaría a ser el 2.
+>
+> No da ningún error ni descoloca nada. Solo se ven mal los números, y hay que
+> estar mirándolos para darse cuenta.
+
+> **Se escribe a mano a propósito, y antes no era así.** Lo generaba
+> `indiceDelArticulo()` en `js/main.js`, que leía los `<h2>` y hasta les ponía
+> `id` al vuelo. Esa función ya no existe, ni sus dos ayudantes —`crearId()` e
+> `idLibre()`—, que no usaba nadie más.
+>
+> El motivo es la regla dura del proyecto: **el contenido va en el HTML y el JS
+> solo enriquece.** Un índice generado no existe sin JavaScript y no lo ve un
+> buscador, y un índice es justo de las cosas que un buscador usa para entender
+> la estructura de la página.
+>
+> El desplazamiento suave **no se pierde**: lo da `scroll-behavior: smooth` en
+> `html`, que es CSS y funciona sin scripts. Y con `prefers-reduced-motion` pasa
+> a salto seco, como el resto del sitio.
+
+> **Y se mudó del lateral a la columna, que es el cambio que más cuesta
+> reinventar.** Estaba en `.articulo__lateral`, y el lateral **no se oculta en
+> pantalla estrecha: baja debajo del artículo.** Así que por debajo de 932 px el
+> índice aparecía *después* de todo el texto que venía a resumir. Un índice que
+> llega al final no es un índice.
+>
+> Por eso `.indice--lateral` ya no existe: sus filas con filete son las que hoy
+> lleva `.indice` de serie.
+
+**El salto tiene que dejar el epígrafe por debajo de lo que hay fijo arriba**, y
+en un artículo son dos cosas apiladas: la banda de progreso (30 px, `fixed`) y
+la cabecera pegajosa, que se apoya en ella. Lo resuelve `scroll-margin-top` en
+`.articulo__cuerpo h2`, con **un escalón en 716 px** porque ahí la cabecera pasa
+de una fila a dos. Medido:
+
+| Ancho | Cabecera | Obstrucción | `scroll-margin-top` | Aire |
+|---|---|---|---|---|
+| 1440 | 72,2 | 102,2 | 118 | 15,8 |
+| 717 | 72,2 | 102,2 | 118 | 16,0 |
+| 700 | **108,2** | 138,2 | **154** | 15,7 |
+| 375 | 103,4 | 133,4 | **154** | 20,4 |
+
+> **Esto no reabre el problema de la vieja `--alto-cabecera`**, que se retiró
+> porque la portada la **restaba** y cualquier desvío descuadraba la franja en
+> silencio. Aquí es una **holgura, no un ajuste exacto**: pasarse unos píxeles
+> no se nota —de ahí los 20,4 de la última fila, y nadie los ve— y quedarse
+> corto tapa el titular al instante. El modo de fallar es el bueno.
 
 #### El aviso de cierre del artículo tiene una fórmula fija
 
@@ -1114,12 +1211,25 @@ Inter para lo que se consulta.**
 > |---|---|---|
 > | «Últimos artículos» | portada | `--destacado` |
 > | «Continúa leyendo» | fin del artículo | `--destacado` |
-> | «Autor», «Índice del artículo», «Etiquetas» | lateral | base |
+> | «Autor», «Etiquetas» | lateral | base |
 > | «Citas y referencias» | cuerpo del artículo | base |
+> | «Índice del artículo» | cuerpo del artículo | **ninguna** — lo pinta `.indice h2` |
+>
+> Los dos del cuerpo son además **la misma caja**: `.indice` y `.referencias`
+> comparten relleno `--papel-alt`, filete de 1 px en `--borde`, radio 4 y
+> padding 26/30. Son los únicos dos paneles de esa columna y se leen uno
+> detrás de otro, así que cualquier diferencia se ve como un descuido y no como
+> una distinción. **Si se toca uno, se toca el otro.**
 >
 > «Citas y referencias» es el caso que más se presta a duda: está en la columna
 > principal, como «Continúa leyendo», pero es una lista pegada al texto que
 > acaba de leerse, no una sección nueva. Apoya. Por eso va en la base.
+>
+> El índice es el único que no lleva `.lista__titulo`, y no es un descuido: su
+> `<h2>` lo viste `.indice h2`, que da exactamente el mismo resultado —Inter 12,
+> 600, versales, `0.08em`, acento— porque el componente se dibuja entero desde
+> su propia clase. Ponerle además `.lista__titulo` no cambiaría nada hoy y
+> dejaría dos reglas peleándose por el mismo texto mañana.
 >
 > El rótulo destacado tiene que sostenerse frente a una rejilla de cuatro
 > columnas; en el lateral, en cambio, compite con el texto y debe ceder.

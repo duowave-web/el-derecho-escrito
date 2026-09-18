@@ -212,10 +212,39 @@
 
           <p class="entradilla"><em>Nullum crimen, nulla poena sine lege.</em> No hay delito ni pena sin ley. Es probablemente la fórmula latina más repetida en cualquier facultad de derecho, y también una de las que peor se entienden: se cita como si fuera un eslogan cuando en realidad es una estructura con cuatro exigencias distintas, cada una con su propia lógica y sus propios puntos de fricción.</p>
 
+          <!-- PLANTILLA · ÍNDICE DEL ARTÍCULO. Se escribe A MANO, uno por
+               artículo, y lo lleva todo artículo nuevo. Está en CLAUDE.md.
+
+               Va en el HTML y no lo genera el JS: así se ve sin JavaScript y lo
+               lee un buscador. El desplazamiento suave lo pone el CSS
+               (scroll-behavior en html), también sin scripts.
+
+               ⚠️ VA FUERA DE .articulo__cuerpo, y no es un detalle de gusto.
+               Dentro, su <h2> entraría en `counter-increment: seccion` y se
+               llevaría el número 1, corriendo la numeración de TODOS los
+               apartados. No da ningún error: solo se ven mal los números.
+
+               Un <li> por cada <h2> del cuerpo, EN ORDEN y con el mismo texto.
+               El href apunta al id del <h2>; los id van en minúsculas, sin
+               tildes y con guiones. Si un <h2> ya tiene id, se respeta: puede
+               haber enlaces de fuera apuntando ahí.
+
+               Los números los pone el CSS con un contador; no se escriben. -->
+          <nav class="indice" aria-labelledby="indice-titulo">
+            <h2 id="indice-titulo">Índice del artículo</h2>
+            <ol role="list">
+              <li><a href="#origen">De dónde viene el principio de legalidad</a></li>
+              <li><a href="#exigencias">Las cuatro exigencias</a></li>
+              <li><a href="#tension">Dónde se tensiona hoy</a></li>
+              <li><a href="#importancia">Por qué importa fuera del aula</a></li>
+            </ol>
+          </nav>
+
           <!-- PLANTILLA · El cuerpo va envuelto en .articulo__cuerpo y no es
-               opcional: de ahí saca el JS los <h2> del índice lateral y la
-               altura del progreso de lectura. Los <h2> se numeran solos por
-               CSS; no escribas el número en el texto. -->
+               opcional: de ahí saca el JS la altura del progreso de lectura, y
+               de ahí salen los <h2> que hay que listar en el índice de arriba.
+               Los <h2> se numeran solos por CSS; no escribas el número en el
+               texto. -->
           <div class="articulo__cuerpo">
 
             <h2 id="origen">De dónde viene el principio de legalidad</h2>
@@ -416,13 +445,12 @@
             <a class="autor__enlace" href="../../sobre/">Ver perfil &rarr;</a>
           </div>
 
-          <!-- PLANTILLA · El índice lo genera js/main.js desde los <h2> del
-               cuerpo. El <ol> se deja vacío a propósito: no se escribe a mano.
-               Si el artículo no tuviera <h2>, el bloque se oculta solo. -->
-          <nav class="lateral__bloque indice indice--lateral" aria-labelledby="indice-titulo">
-            <h2 id="indice-titulo" class="lista__titulo">Índice del artículo</h2>
-            <ol id="indice-lista"></ol>
-          </nav>
+          <!-- Aquí vivía el índice del artículo, que generaba js/main.js. Se
+               ha mudado a la columna, justo debajo de la entradilla.
+
+               El motivo es que este lateral NO se oculta en pantalla estrecha:
+               baja debajo del artículo. Así que por debajo de 932 px el índice
+               salía cuando ya estaba leído todo lo que resumía. -->
 
           <div class="lateral__bloque">
             <h2 class="lista__titulo">Etiquetas</h2>
