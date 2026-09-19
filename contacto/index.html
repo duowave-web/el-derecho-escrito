@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <title>Contacto | El Derecho Escrito</title>
-<meta name="description" content="Escríbeme: correcciones y sugerencias sobre los artículos, o un asunto profesional. Lo que se publica aquí es divulgación; los casos concretos se tratan aparte.">
+<meta name="description" content="Formulario y correo de contacto de El Derecho Escrito: consultas, comentarios sobre una publicación, sugerencias, colaboraciones y avisos de correcciones.">
 <link rel="canonical" href="https://elderechoescrito.es/contacto/">
 <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
 <meta name="author" content="El Derecho Escrito">
@@ -16,14 +16,14 @@
 <meta property="og:locale" content="es_ES">
 <meta property="og:url" content="https://elderechoescrito.es/contacto/">
 <meta property="og:title" content="Contacto | El Derecho Escrito">
-<meta property="og:description" content="Correcciones y sugerencias sobre los artículos, o un asunto profesional.">
+<meta property="og:description" content="Consultas, comentarios sobre una publicación, sugerencias y correcciones.">
 <meta property="og:image" content="https://elderechoescrito.es/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Contacto | El Derecho Escrito">
-<meta name="twitter:description" content="Correcciones y sugerencias sobre los artículos, o un asunto profesional.">
+<meta name="twitter:description" content="Consultas, comentarios sobre una publicación, sugerencias y correcciones.">
 <meta name="twitter:image" content="https://elderechoescrito.es/og.png">
 
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
@@ -39,7 +39,7 @@
       "@id": "https://elderechoescrito.es/contacto/#webpage",
       "url": "https://elderechoescrito.es/contacto/",
       "name": "Contacto | El Derecho Escrito",
-      "description": "Formulario y correo de contacto: correcciones sobre los artículos o un asunto profesional.",
+      "description": "Formulario y correo de contacto de El Derecho Escrito.",
       "inLanguage": "es-ES",
       "isPartOf": { "@id": "https://elderechoescrito.es/#website" }
     }
@@ -56,7 +56,7 @@
     <a class="marca" href="../">El Derecho Escrito</a>
     <nav class="nav" aria-label="Navegación principal">
       <a href="../articulos/">Artículos</a>
-      <a href="../sobre/">Sobre mí</a>
+      <a href="../sobre/">Acerca de</a>
       <a href="../contacto/" class="activo" aria-current="page">Contacto</a>
 
       <!-- Sin JS es un enlace al listado. Con JS, main.js lo sustituye por un
@@ -104,6 +104,11 @@
         Alternativa si usas Cloudflare Pages: puedes montar una Pages Function
         en /functions/contacto.js y apuntar el action a /contacto.
       -->
+      <!-- Entradilla del formulario. No existía: la página abría directamente
+           con los campos. «El Derecho Escrito» va en cursiva por ser una
+           mención dentro de un texto. -->
+      <p class="entradilla">Puedes utilizar este formulario para plantear una consulta, comentar una publicación, formular una sugerencia, proponer una colaboración o contactar por cualquier otra cuestión relacionada con <em>El Derecho Escrito</em> y las materias que aborda.</p>
+
       <!-- NOMBRE Y CORREO VAN EN PAREJA y el resto a ancho completo. Aprovechar
            el ancho no es estirarlo todo: un campo de una sola línea de 576px
            son unos 76 caracteres, y para un nombre o un correo eso es espacio
@@ -154,51 +159,37 @@
       </form>
 
       <aside class="contacto__aparte">
-        <h2>También por email</h2>
+        <h2>También por correo electrónico</h2>
 
-        <!-- ================================================================
-             PROVISIONAL: dirección inventada, sustituir antes de entregar
-             ================================================================
+        <!-- ⚠️ LA DIRECCIÓN SE ESCRIBE DOS VECES y hay que cambiar las dos: el
+             href del mailto y el texto visible. Cambiar solo el texto deja un
+             enlace que enseña una dirección y envía a otra, y eso no da ningún
+             error: el enlace se ve bien y abre el gestor de correo.
 
-             ⚠️ hola@elderechoescrito.es NO EXISTE. Es un marcador.
+             Aquí vivía hola@elderechoescrito.es, que era un marcador inventado
+             y no existía. Ya no: jcontera@icam.es es la dirección real.
 
-             Es de las cosas que se publican sin querer, porque no da error:
-             el enlace se ve bien, abre el gestor de correo y el mensaje se
-             manda a una dirección que no recibe nadie. No hay forma de
-             enterarse desde el sitio.
-
-             SE ESCRIBE DOS VECES EN LA MISMA LÍNEA y hay que cambiar las dos:
-             una en el href del mailto y otra en el texto visible. Cambiar
-             solo el texto deja un enlace que enseña la buena y envía a la
-             mala, que es peor que no tocarlo.
-
-             Es la única dirección de correo del sitio: el mailto de los
-             botones de compartir del artículo no lleva destinatario, solo
-             asunto y cuerpo. -->
-        <p>Si prefieres escribir directamente:<br>
-          <a href="mailto:hola@elderechoescrito.es">hola@elderechoescrito.es</a>
+             Sigue siendo la única dirección de correo del sitio. El mailto de
+             los botones de compartir del artículo NO lleva destinatario, solo
+             asunto y cuerpo, así que no hay una segunda copia que mantener. -->
+        <p>Si lo prefieres, puedes escribir directamente a
+          <a href="mailto:jcontera@icam.es">jcontera@icam.es</a>
         </p>
-        <!-- ========== FIN PROVISIONAL: dirección de correo ========== -->
 
-        <!-- Este bloque decía que para un caso concreto «hace falta un
-             profesional colegiado que conozca todos los detalles», hablando del
-             especialista como de un tercero. El especialista es quien firma la
-             web: es abogado en ejercicio, y esta página es también su escaparate
-             profesional. Lo que separa una cosa de la otra no es quién atiende,
-             es el marco: un artículo explica una figura general, un encargo pesa
-             los detalles de un asunto. -->
+        <!-- Este apartado tenía un párrafo y ahora tiene dos: el segundo es el
+             que estaba en «Este primer mensaje», que desaparece como epígrafe
+             propio porque el documento del cliente junta las dos ideas aquí.
+
+             Las dos cautelas siguen siendo las que le protegen como colegiado:
+             que el contenido no sustituye al análisis de un asunto concreto, y
+             que no debe llegar documentación sensible por un canal que todavía
+             no lo es. -->
         <h2>Antes de escribir</h2>
-        <p>Lo que se publica aquí es divulgación, no asesoramiento: un artículo explica una figura general y no puede pesar los detalles de un asunto concreto, que es de lo que casi todo depende. Si lo que tienes entre manos es uno de esos asuntos, escríbeme y lo vemos: eso ya no es una duda sobre un artículo, es un encargo profesional, y se trata como tal.</p>
+        <p>Los contenidos de <em>El Derecho Escrito</em> tienen carácter informativo y divulgativo y no sustituyen el análisis jurídico de un asunto concreto.</p>
+        <p>Si tu mensaje se refiere a una situación particular, basta con una descripción general. Por prudencia, evita adjuntar documentación o incluir información confidencial o datos sensibles en este primer contacto. Las cuestiones de carácter profesional se canalizarán, cuando proceda, por la vía correspondiente.</p>
 
-        <!-- Las dos cautelas van redactadas en la voz de la casa y no como un
-             bloque legal aparte, pero son las que le protegen como colegiado: el
-             mensaje no crea todavía relación abogado-cliente, y no debe llegar
-             documentación sensible por un canal que aún no lo es. -->
-        <h2>Este primer mensaje</h2>
-        <p>Escribirme por aquí todavía no crea una relación de abogado y cliente: eso se formaliza después, si hay encargo. Por eso conviene que este primer mensaje diga de qué se trata y poco más, sin documentación ni datos sensibles, hasta que hayamos acordado por dónde seguir.</p>
-
-        <h2>Correcciones</h2>
-        <p>Si detectas un error en un artículo, dímelo. Lo corrijo y lo hago constar en el propio texto.</p>
+        <h2>Comentarios y correcciones</h2>
+        <p>Si detectas algún error o imprecisión en una publicación, puedes comunicarlo a través del formulario o del correo electrónico. Las correcciones relevantes se harán constar en el propio artículo.</p>
       </aside>
 
     </div>
@@ -210,7 +201,7 @@
   <div class="contenedor">
     <nav class="pie__nav" aria-label="Navegación del pie">
       <a href="../articulos/">Artículos</a>
-      <a href="../sobre/">Sobre mí</a>
+      <a href="../sobre/">Acerca de</a>
       <a href="../contacto/">Contacto</a>
       <a href="../feed.xml">RSS</a>
     </nav>

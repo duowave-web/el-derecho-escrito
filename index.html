@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>El Derecho Escrito | Análisis y artículos jurídicos en español</title>
-<meta name="description" content="Blog jurídico independiente: derecho penal, civil, constitucional, laboral y mercantil explicados con rigor y sin jerga. Análisis de normas y sentencias en español.">
+<title>El Derecho Escrito | Derecho administrativo y urbanismo</title>
+<meta name="description" content="Análisis de Derecho administrativo, urbanismo y jurisdicción contencioso-administrativa: conceptos, normativa, jurisprudencia y práctica procesal.">
 <link rel="canonical" href="https://elderechoescrito.es/">
 <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
 <meta name="author" content="El Derecho Escrito">
@@ -15,16 +15,16 @@
 <meta property="og:site_name" content="El Derecho Escrito">
 <meta property="og:locale" content="es_ES">
 <meta property="og:url" content="https://elderechoescrito.es/">
-<meta property="og:title" content="El Derecho Escrito | Análisis y artículos jurídicos en español">
-<meta property="og:description" content="Blog jurídico independiente: derecho penal, civil, constitucional, laboral y mercantil explicados con rigor y sin jerga.">
+<meta property="og:title" content="El Derecho Escrito | Derecho administrativo y urbanismo">
+<meta property="og:description" content="Análisis de Derecho administrativo, urbanismo y jurisdicción contencioso-administrativa, con rigor y criterio propio.">
 <meta property="og:image" content="https://elderechoescrito.es/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="El Derecho Escrito — blog de análisis jurídico">
+<meta property="og:image:alt" content="El Derecho Escrito — análisis de Derecho administrativo y urbanismo">
 
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="El Derecho Escrito | Análisis y artículos jurídicos">
-<meta name="twitter:description" content="Blog jurídico independiente: derecho penal, civil, constitucional, laboral y mercantil explicados con rigor y sin jerga.">
+<meta name="twitter:title" content="El Derecho Escrito | Derecho administrativo">
+<meta name="twitter:description" content="Análisis de Derecho administrativo, urbanismo y jurisdicción contencioso-administrativa.">
 <meta name="twitter:image" content="https://elderechoescrito.es/og.png">
 
 <link rel="icon" href="./favicon.svg" type="image/svg+xml">
@@ -40,7 +40,7 @@
       "@id": "https://elderechoescrito.es/#website",
       "url": "https://elderechoescrito.es/",
       "name": "El Derecho Escrito",
-      "description": "Blog de análisis y artículos jurídicos en español.",
+      "description": "Análisis de Derecho administrativo, urbanismo y jurisdicción contencioso-administrativa.",
       "inLanguage": "es-ES",
       "publisher": { "@id": "https://elderechoescrito.es/#publisher" },
       "potentialAction": {
@@ -69,7 +69,7 @@
       "@id": "https://elderechoescrito.es/#blog",
       "url": "https://elderechoescrito.es/",
       "name": "El Derecho Escrito",
-      "description": "Análisis de normas, sentencias y debates jurídicos explicados con rigor.",
+      "description": "Conceptos, normativa, jurisprudencia y práctica procesal del Derecho público, explicados con rigor.",
       "inLanguage": "es-ES",
       "publisher": { "@id": "https://elderechoescrito.es/#publisher" }
     },
@@ -77,7 +77,7 @@
       "@type": "WebPage",
       "@id": "https://elderechoescrito.es/#webpage",
       "url": "https://elderechoescrito.es/",
-      "name": "El Derecho Escrito | Análisis y artículos jurídicos en español",
+      "name": "El Derecho Escrito | Derecho administrativo y urbanismo",
       "isPartOf": { "@id": "https://elderechoescrito.es/#website" },
       "about": { "@id": "https://elderechoescrito.es/#blog" },
       "inLanguage": "es-ES"
@@ -106,7 +106,7 @@
     <a class="marca" href="./">El Derecho Escrito</a>
     <nav class="nav" aria-label="Navegación principal">
       <a href="./articulos/">Artículos</a>
-      <a href="./sobre/">Sobre mí</a>
+      <a href="./sobre/">Acerca de</a>
       <a href="./contacto/">Contacto</a>
 
       <!-- Sin JS la lupa es un enlace al listado, que ya tiene su buscador.
@@ -149,11 +149,20 @@
 
     <div class="contenedor contenedor--amplio portada__interior">
       <div class="portada__texto">
-        <h1>El derecho, explicado como merece ser explicado</h1>
-        <p class="portada__entradilla">Análisis de normas, sentencias y debates legales con rigor y sin la jerga que hace que casi ningún texto jurídico se entienda a la primera.</p>
+        <!-- La línea de áreas va en CAJA NORMAL: las versales las pone el CSS
+             con text-transform, igual que en las categorías. Escribirla en
+             mayúsculas en el HTML haría que algunos lectores de pantalla la
+             deletrearan letra a letra.
+
+             ⚠️ Su ancho manda sobre la maqueta del hero: pide 619 px para ir
+             en una línea, y de ahí sale la columna de 620 px del CSS. Si se
+             alarga este texto, hay que volver a medirlo. -->
+        <p class="portada__antetitulo">Derecho administrativo &middot; Urbanismo &middot; Jurisdicción contencioso-administrativa</p>
+        <h1>El Derecho público, desde sus fundamentos hasta su aplicación</h1>
+        <p class="portada__entradilla">Un espacio de análisis y reflexión sobre Derecho administrativo, urbanismo y jurisdicción contencioso-administrativa, orientado a comprender sus instituciones, interpretar sus normas y su jurisprudencia, y examinar con rigor y criterio propio los problemas que plantea su aplicación práctica.</p>
         <div class="portada__acciones">
-          <a class="boton boton--principal" href="./articulos/">Leer los artículos</a>
-          <a class="boton" href="./sobre/">Sobre mí</a>
+          <a class="boton boton--principal" href="./articulos/">Explorar artículos</a>
+          <a class="boton" href="./sobre/">Conocer El Derecho Escrito</a>
         </div>
       </div>
     </div>
@@ -496,15 +505,22 @@
         </svg>
 
         <div class="suscripcion__texto">
-          <p class="suscripcion__reclamo" id="suscripcion-titulo">Recibe los nuevos artículos en tu correo</p>
-          <p class="suscripcion__apoyo">Un aviso cuando se publica algo nuevo. Nada más.</p>
+          <!-- «El Derecho Escrito» va en <em> aquí y en el lateral del
+               artículo. El documento del cliente solo lo marcaba en cursiva en
+               el segundo, pero se unifica por decisión suya: el nombre va en
+               cursiva siempre que aparece DENTRO de un texto.
+
+               En los rótulos de página NO: el <h1> de «Acerca de» y los
+               <title> llevan el nombre en redonda. -->
+          <p class="suscripcion__reclamo" id="suscripcion-titulo">Sigue las publicaciones de <em>El Derecho Escrito</em></p>
+          <p class="suscripcion__apoyo">Suscríbete para recibir los nuevos artículos sobre Derecho administrativo, urbanismo y jurisdicción contencioso-administrativa.</p>
         </div>
 
         <div class="suscripcion__accion">
           <label class="oculto" for="correo-banda">Correo electrónico</label>
-          <input type="email" id="correo-banda" placeholder="Tu correo electrónico" disabled>
+          <input type="email" id="correo-banda" placeholder="Correo electrónico" disabled>
           <button class="boton boton--principal" type="button" disabled>Suscribirme</button>
-          <p class="suscripcion__nota">Sin spam. Cancela cuando quieras.</p>
+          <p class="suscripcion__nota">Recibirás un correo con cada nueva publicación. Puedes darte de baja en cualquier momento.</p>
         </div>
       </aside>
 
@@ -525,7 +541,7 @@
   <div class="contenedor">
     <nav class="pie__nav" aria-label="Navegación del pie">
       <a href="./articulos/">Artículos</a>
-      <a href="./sobre/">Sobre mí</a>
+      <a href="./sobre/">Acerca de</a>
       <a href="./contacto/">Contacto</a>
       <a href="./feed.xml">RSS</a>
     </nav>

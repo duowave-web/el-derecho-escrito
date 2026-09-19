@@ -789,11 +789,18 @@
     boton.innerHTML = lupa.innerHTML;
     lupa.replaceWith(boton);
 
-    // Debe coincidir con el corte que oculta .busca__campo en el CSS. Por
+    // ⚠️ Debe coincidir con el corte que oculta .busca__campo en el CSS. Por
     // debajo de ese ancho el campo no cabe junto a la marca, así que la lupa
     // vuelve a comportarse como el enlace que era en el HTML.
+    //
+    // Subió de 934 a 944 al cambiar «Sobre mí» por «Acerca de» en el menú: son
+    // 11,6 px más de navegación, y con el campo desplegado la marca se partía
+    // en dos líneas. Está medido y razonado junto a la regla del CSS.
+    //
+    // Si se cambia aquí, hay que cambiarlo allí: con los dos desincronizados la
+    // lupa intenta desplegar un campo que el CSS ya ha ocultado.
     function estrecha() {
-      return window.matchMedia("(max-width: 934px)").matches;
+      return window.matchMedia("(max-width: 944px)").matches;
     }
 
     function abierta() {

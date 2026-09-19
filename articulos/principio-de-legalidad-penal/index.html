@@ -70,7 +70,7 @@
           "height": 400
         },
         "jobTitle": "Abogado",
-        "description": "Abogado especializado en Derecho Administrativo, Urbanismo y Jurisdicción Contencioso-Administrativa."
+        "description": "Abogado colegiado en Madrid. Ejerce en el Departamento de Derecho Procesal de Sterling Abogados: litigación contencioso-administrativa, urbanismo y expropiaciones."
       },
       "publisher": { "@id": "https://elderechoescrito.es/#publisher" },
       "isPartOf": { "@id": "https://elderechoescrito.es/#blog" }
@@ -134,7 +134,7 @@
     <a class="marca" href="../../">El Derecho Escrito</a>
     <nav class="nav" aria-label="Navegación principal">
       <a href="../../articulos/">Artículos</a>
-      <a href="../../sobre/">Sobre mí</a>
+      <a href="../../sobre/">Acerca de</a>
       <a href="../../contacto/">Contacto</a>
 
       <!-- Sin JS es un enlace al listado. Con JS, main.js lo sustituye por un
@@ -364,22 +364,20 @@
                entrada dice esto con sus palabras, acaban conviviendo cuatro
                versiones de la misma advertencia y ninguna es la buena.
 
-               Decía «Para un caso concreto, consulta con un profesional
-               colegiado», que hablaba del especialista como de un tercero
-               cuando el especialista es quien firma la web. La frontera no está
-               en QUIÉN atiende sino en el MARCO, y es la misma que se usa en
-               contacto/: un artículo explica una figura general, un encargo
-               pesa los detalles de un asunto.
+               Es texto del cliente, así que tampoco se retoca el estilo: ni se
+               acorta, ni se parte en dos, ni se cambia «página de contacto» por
+               otra cosa.
 
-               ⚠️ TIENE QUE SEGUIR SIENDO UN AVISO. Quien lee un artículo viene
-               a aprender, no a contratar. De ahí que la salida sea una sola
-               palabra enlazada y no una invitación: nada de «puedo ayudarte»,
-               ni ventajas, ni segunda frase. Si alguien amplía esto, el
-               artículo empieza a parecer un reclamo.
+               ⚠️ VA ENTERO EN <em>, incluido el enlace. La cursiva es lo que lo
+               separa del cuerpo del artículo: sin ella se lee como un párrafo
+               más y deja de funcionar como aviso.
 
-               El enlace es relativo con ../../ porque cada artículo vive dos
-               niveles por debajo de la raíz. -->
-          <p class="aviso"><em>Este artículo es divulgación, no asesoramiento: explica una figura general y no puede pesar los detalles de un asunto concreto. Si tienes uno entre manos, <a href="../../contacto/">escríbeme</a>.</em></p>
+               ⚠️ EL ENLACE ES RELATIVO, ../../contacto/, porque cada artículo
+               vive dos niveles por debajo de la raíz. El documento del cliente
+               lo traía como URL absoluta a duowave-web.github.io; copiarla así
+               habría atado el enlace al dominio de pruebas y se habría roto al
+               conectar elderechoescrito.es. -->
+          <p class="aviso"><em>Este artículo tiene carácter informativo y divulgativo y no constituye asesoramiento jurídico. La valoración de un asunto concreto requiere analizar sus circunstancias particulares. Si deseas plantear una consulta relacionada con su contenido o con las materias que aborda, puedes hacerlo a través de la <a href="../../contacto/">página de contacto</a>.</em></p>
 
           <!-- PLANTILLA · Continúa leyendo. NO SE RELLENA A MANO: las tarjetas
                las construye articulosRelacionados() en js/main.js leyendo por
@@ -441,7 +439,7 @@
                    width="400" height="400" loading="lazy" decoding="async">
             </div>
             <p class="autor__nombre">Juan Contera Miranda</p>
-            <p class="autor__bio">Abogado especializado en Derecho Administrativo, Urbanismo y Jurisdicción Contencioso-Administrativa.</p>
+            <p class="autor__bio">Abogado colegiado en Madrid. Ejerce en el Departamento de Derecho Procesal de Sterling Abogados: litigación contencioso-administrativa, urbanismo y expropiaciones.</p>
             <a class="autor__enlace" href="../../sobre/">Ver perfil &rarr;</a>
           </div>
 
@@ -489,11 +487,24 @@
               <rect x="2" y="5" width="20" height="14" rx="2"></rect>
               <path d="m2 7 10 6 10-6"></path>
             </svg>
-            <p class="suscripcion__reclamo">Recibe los nuevos artículos en tu correo electrónico</p>
+            <!-- PLANTILLA · Los textos de este bloque son los mismos en todos
+                 los artículos y se copian tal cual.
+
+                 ⚠️ NO SON LOS DE LA BANDA DE LA PORTADA, y la diferencia es
+                 deliberada: aquí el título es «Sigue El Derecho Escrito» y la
+                 nota empieza por «Un correo…», mientras que en la portada son
+                 «Sigue las publicaciones de…» y «Recibirás un correo…». Los dos
+                 vienen así del documento del cliente — la versión corta es la
+                 de esta columna, que mide 300 px.
+
+                 Lo que sí es igual en los dos: «El Derecho Escrito» en cursiva
+                 y el placeholder «Correo electrónico». -->
+            <p class="suscripcion__reclamo">Sigue <em>El Derecho Escrito</em></p>
+            <p class="suscripcion__apoyo">Suscríbete para recibir los nuevos artículos sobre Derecho administrativo, urbanismo y jurisdicción contencioso-administrativa.</p>
             <label class="oculto" for="correo">Correo electrónico</label>
-            <input type="email" id="correo" placeholder="Tu correo electrónico" disabled>
+            <input type="email" id="correo" placeholder="Correo electrónico" disabled>
             <button class="boton boton--principal" type="button" disabled>Suscribirme</button>
-            <p class="suscripcion__nota">Sin spam. Cancela cuando quieras.</p>
+            <p class="suscripcion__nota">Un correo con cada nueva publicación. Puedes darte de baja en cualquier momento.</p>
           </div>
 
         </aside>
@@ -507,7 +518,7 @@
   <div class="contenedor">
     <nav class="pie__nav" aria-label="Navegación del pie">
       <a href="../../articulos/">Artículos</a>
-      <a href="../../sobre/">Sobre mí</a>
+      <a href="../../sobre/">Acerca de</a>
       <a href="../../contacto/">Contacto</a>
       <a href="../../feed.xml">RSS</a>
     </nav>

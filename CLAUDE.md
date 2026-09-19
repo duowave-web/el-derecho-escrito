@@ -7,6 +7,38 @@ Dominio final previsto: `elderechoescrito.es`.
 
 ---
 
+## Los textos visibles son del cliente — no se reescriben
+
+El hero, la banda de suscripción, `sobre/`, `contacto/`, el aviso de cierre del
+artículo y el bloque de suscripción del lateral llevan **textos definitivos
+entregados por el cliente**. Se copiaron literalmente.
+
+**No se reescriben, no se acortan y no se les corrige el estilo**, ni siquiera
+para ajustar una línea que rompe mal. Si un texto no cabe, se cambia el diseño
+—como se hizo con la columna del hero, que pasó de 556 a 620 px— o se pregunta.
+Si hay una errata, se avisa; no se corrige por iniciativa propia.
+
+Dos convenciones suyas que conviene no «arreglar»:
+
+- **«El Derecho Escrito» va en cursiva cuando aparece dentro de un texto** y sin
+  ella en los títulos de página. Así que `sobre/` se titula «Sobre El Derecho
+  Escrito» en redonda, y el nombre va en `<em>` en la banda de suscripción, en
+  la apertura de `sobre/`, en `contacto/` y en el lateral del artículo.
+- **Escribe «Derecho administrativo» y «jurisdicción contencioso-administrativa»**,
+  con minúscula tras «Derecho». La cabecera de este archivo las capitaliza; el
+  criterio del cliente manda en los textos.
+
+**Lo que NO venía en su documento y sigue como estaba**: las etiquetas de
+sección de la portada, el artículo de ejemplo entero, el 404 y las etiquetas del
+formulario de contacto. Está listado en la sección de deuda pendiente.
+
+Lo demás se ha ido resolviendo en pasadas posteriores: los `<title>`, las meta
+descriptions, Open Graph, Twitter y el JSON-LD se reescribieron para las
+materias reales; el menú y el pie pasaron de «Sobre mí» a **«Acerca de»**; y el
+aviso de `sobre/` adoptó la fórmula del artículo.
+
+---
+
 ## Stack — reglas duras
 
 - **HTML, CSS y JavaScript puro.** Sin frameworks, sin build, sin dependencias, sin npm.
@@ -197,27 +229,74 @@ de una fila a dos. Medido:
 
 #### El aviso de cierre del artículo tiene una fórmula fija
 
-Se copia **tal cual** al publicar. No se reescribe con otras palabras:
+**Es texto del cliente.** Se copia **tal cual** al publicar: no se reescribe con
+otras palabras, no se acorta y no se corrige el estilo.
 
-> Este artículo es divulgación, no asesoramiento: explica una figura general y
-> no puede pesar los detalles de un asunto concreto. Si tienes uno entre manos,
-> [escríbeme](../../contacto/).
+> *Este artículo tiene carácter informativo y divulgativo y no constituye
+> asesoramiento jurídico. La valoración de un asunto concreto requiere analizar
+> sus circunstancias particulares. Si deseas plantear una consulta relacionada
+> con su contenido o con las materias que aborda, puedes hacerlo a través de la
+> [página de contacto](../../contacto/).*
 
-Decía «Para un caso concreto, consulta con un profesional colegiado», que
-hablaba del especialista **como de un tercero cuando el especialista es quien
-firma la web**. La frontera no está en *quién* atiende sino en el **marco**, y
-es la misma que usa `contacto/`: un artículo explica una figura general, un
-encargo pesa los detalles de un asunto.
+Dos cosas del marcado que no son decorativas:
 
-> ⚠️ **Tiene que seguir siendo un aviso, no un reclamo.** Quien lee un artículo
-> viene a aprender, no a contratar. Por eso la salida es **una sola palabra
-> enlazada** y no una invitación: nada de «puedo ayudarte», ni ventajas, ni una
-> segunda frase. Ampliarlo convierte cada artículo en publicidad.
+1. **Va entero en `<em>`, el enlace incluido.** La cursiva es lo que lo separa
+   del cuerpo; sin ella se lee como un párrafo más y deja de funcionar como
+   aviso.
+2. **El enlace es relativo, `../../contacto/`.** El documento del cliente lo
+   traía como URL absoluta a `duowave-web.github.io`; copiarla habría atado el
+   enlace al dominio de pruebas y se rompería al conectar `elderechoescrito.es`.
 
-**Y el de `sobre/` es el mismo salvo por una cosa: va sin enlace.** Justo debajo
-tiene «¿Quieres escribirme? Ve a Contacto», así que ponerlo serían dos enlaces
-al mismo sitio en dos líneas seguidas. En el artículo el enlace sí hace falta,
-porque allí no hay ninguna otra salida cerca.
+> ⚠️ **Esta sección decía lo contrario y hay que saberlo.** La fórmula anterior
+> era «Este artículo es divulgación, no asesoramiento… Si tienes uno entre
+> manos, **escríbeme**», y aquí se argumentaba que la salida tenía que ser **una
+> sola palabra enlazada** para que el aviso no se convirtiera en reclamo: «nada
+> de puedo ayudarte, ni ventajas, ni una segunda frase».
+>
+> El texto nuevo del cliente **tiene tres frases y enlaza «página de contacto»**,
+> así que esa regla ya no describe lo que hay. Lo que sí se conserva es el
+> fondo del argumento: sigue siendo un aviso en cursiva al pie, no una llamada a
+> contratar. Quien lo amplíe con ventajas o con un «puedo ayudarte» sí rompería
+> el criterio.
+>
+> Y decae también la frontera que se explicaba aquí —«no está en quién atiende
+> sino en el marco»—: el texto nuevo no habla de encargos, solo dice que valorar
+> un asunto concreto requiere ver sus circunstancias.
+
+**El de `sobre/` vuelve a ser el mismo, con una variante de texto y una de
+ruta.** Estuvo un tiempo descolgado —conservaba la fórmula vieja, «Todo lo que
+se publica en este blog es divulgación…»— y ya está igualado:
+
+> *Los contenidos de El Derecho Escrito tienen carácter informativo y divulgativo
+> y no sustituyen el análisis jurídico de un asunto concreto. Si deseas plantear
+> una consulta, puedes hacerlo a través de la [página de contacto](../contacto/).*
+
+Dos diferencias con el del artículo, las dos necesarias:
+
+1. **La ruta es `../contacto/`, un solo nivel.** `sobre/` está a un nivel de la
+   raíz y el artículo a dos.
+2. **La segunda frase es más corta** —no repite «relacionada con su contenido o
+   con las materias que aborda»—, porque aquí no hay un artículo al que
+   referirse. Es el texto que dio el cliente.
+
+> ⚠️ **«El Derecho Escrito» va en `<em>` DENTRO de un `<em>`, y eso necesita una
+> regla de CSS para verse.** El aviso entero va en cursiva, y el nombre también
+> debe ir en cursiva por la convención del sitio. Los navegadores **no alternan
+> solos**: verificado, un `<em>` dentro de otro se queda en `italic`, así que el
+> nombre quedaba marcado en el HTML y sin distinguirse en pantalla.
+>
+> Lo resuelve `em em, i em, em i { font-style: normal }`, que es además la
+> convención tipográfica: dentro de un texto en cursiva, lo que se destaca se
+> compone en **redonda**. Verificado que el nombre sale en redonda y el resto en
+> cursiva.
+>
+> La regla va sin prefijo porque vale en cualquier sitio donde pase lo mismo.
+> Hoy hay un solo caso.
+
+> **Y hay tres enlaces a `contacto/` en esa pantalla**: este aviso, el botón
+> «Contacto» de debajo y el del menú. Se acepta porque uno es una frase legal al
+> pie y otro una acción, pero si alguna vez molesta, el que sobra es el del
+> aviso — que es justo el que antes no estaba.
 
 ### El destacado de la portada NO es un quinto paso del checklist
 
@@ -432,12 +511,16 @@ tarjetas— que el hueco contra la banda y contra el pie no se mueve.
 > retiró la franja de «Áreas del derecho». Ahora «Últimos artículos» tiene otra
 > sección detrás, que es exactamente el caso para el que existen.
 
-Medido en los dos estados, a 1440 y a 375:
+Medido en los dos estados, a 1440, 1000 y 375:
 
-| | Destacado → banda | Rejilla → banda | Banda → pie |
-|---|---|---|---|
-| Apagado (hoy) | **56 px** | — | **80 px** |
-| Encendido | — | **80 px** | **80 px** |
+| | Destacado → rótulo | Destacado → banda | Rejilla → banda | Banda → pie |
+|---|---|---|---|---|
+| Con «Últimos» visible (hoy) | **80** (74 a 375) | — | **80** | **80** |
+| Con `[hidden]` | — | **56** | — | **80** |
+
+Los espaciados del estado visible cambiaron al retirar el filete de sección que
+separaba el destacado de «Últimos artículos»; está razonado más abajo, en la
+sección de los filetes de la portada.
 
 ### La categoría de un artículo se repite en 9 sitios
 
@@ -640,9 +723,10 @@ pulsado. Y si `data-etiquetas` del listado no coincide con la píldora del
 artículo, esa etiqueta simplemente no aparece en el desplegable.
 
 > **Balance por artículo, para tenerlo en un sitio:** la categoría se repite en
-> **9** puntos, la autoría en **8** y cada etiqueta en **3**. Las etiquetas son
-> las más baratas de las tres y las únicas cuyo despiste degrada en silencio a
-> «no filtra» en vez de a «se ve mal».
+> **9** puntos, la autoría en **8** —más **2** en `sobre/`, que no son por
+> artículo— y cada etiqueta en **3**. Las etiquetas son las más baratas de las
+> tres y las únicas cuyo despiste degrada en silencio a «no filtra» en vez de a
+> «se ve mal».
 
 > ⚠️ **Y hay DOS listas más con forma de etiqueta que NO son estas**, en la
 > cabecera del artículo. Es la confusión más fácil de cometer:
@@ -1145,16 +1229,38 @@ reglas.
 >
 > Hoy no devuelve nada.
 
-## Autoría — se repite en 8 sitios por artículo
+## Autoría — 8 sitios por artículo, más 2 en `sobre/`
 
-> ⚠️ **El nombre y la bio actuales son de la maqueta de referencia, no del
-> cliente.** «Juan Contera Miranda» y su bio salen del diseño que se usó para
-> montar la plantilla de artículo. **Están pendientes de confirmar.** No se
-> deben dar por buenos ni replicar en artículos nuevos sin preguntar antes.
+> ✅ **El nombre YA ESTÁ CONFIRMADO por el cliente, y esta sección decía lo
+> contrario.** Aquí se avisaba de que «Juan Contera Miranda» y su bio venían de
+> la maqueta de referencia y estaban pendientes de confirmar. Los textos
+> definitivos del cliente traen el nombre y una biografía propia —colegio,
+> despacho, formación—, así que el nombre es real.
+>
+> ⚠️ **Lo que NO coincide es la bio.** La del lateral del artículo sigue siendo
+> la de la maqueta: «Abogado especializado en Derecho Administrativo, Urbanismo
+> y Jurisdicción Contencioso-Administrativa». La de `sobre/` es la nueva, de
+> tres párrafos. El documento no daba una bio corta para el lateral, así que se
+> dejó la vieja — **hay que pedírsela al cliente.**
 
 Sin build no hay una sola fuente de verdad: cada artículo repite el nombre, la
 bio y el retrato a mano. Al publicar —o al cambiar de autor— hay que tocar los
 ocho.
+
+> ⚠️ **Y desde que `sobre/` tiene retrato, la cuenta ya no acaba en el
+> artículo.** Esa página añade **dos** puntos más: el `src` del `<img>` dentro
+> de `.sobre__retrato` y su `alt`, que también lleva el nombre escrito. Son los
+> puntos 9 y 10, y no salen en los `grep` de abajo porque esos buscan dentro de
+> `articulos/`.
+>
+> El retrato de `sobre/` reutiliza **el mismo archivo** que el del lateral,
+> `img/juanconteramiranda.jpeg`, y comparte la clase `.autor__retrato`. Así que
+> el nombre del autor está dentro del nombre del archivo y cambiarlo arrastra
+> los dos `src` a la vez. Para encontrarlos todos:
+>
+> ```sh
+> grep -rn 'juanconteramiranda' --include='*.html' .
+> ```
 
 **En la cabecera:**
 
@@ -1581,25 +1687,39 @@ Los tres están **medidos**, no elegidos:
 
 | Corte | Qué pasa | Por qué ahí |
 |---|---|---|
-| **934 px** | se oculta el campo del buscador | hasta ahí cabe la fila con el campo desplegado; por debajo, abrirlo partiría la marca en dos líneas |
-| **716 px** | la cabecera pasa a dos filas | lo mismo con el buscador cerrado, con la navegación en 322,2 |
+| **944 px** | se oculta el campo del buscador | hasta ahí cabe la fila con el campo desplegado; por debajo, abrirlo partiría la marca en dos líneas |
+| **724 px** | la cabecera pasa a dos filas | lo mismo con el buscador cerrado. Ahí ya no hay nada que ocultar y la única salida es apilar |
 | **400 px** | el hueco entre enlaces baja a 10 px | con hueco de 28 la navegación se parte por debajo de 371, y eso alcanza a 360 |
 
-> **Los tres bajaron al pasar la navegación de 14 px a 12.** La fila entera se
-> estrechó 32,2 px, así que aguanta 32 px más de ventana antes de romperse:
-> 966 → 934 y 748 → 716. El de 400 se queda donde estaba pero cambia lo que
-> hace, porque ya no tiene que bajar el cuerpo —la base ya es 12— ni apretar el
-> tracking.
+> **Han cambiado dos veces, y las dos por el texto del menú.** Primero bajaron
+> al pasar la navegación de 14 px a 12 —la fila se estrechó 32,2 px—: 966 → 934
+> y 748 → 716. Después **volvieron a subir al cambiar «Sobre mí» por «Acerca
+> de»**, que es 11,6 px más ancho: **934 → 944** y **716 → 724**.
+>
+> El de 400 no se ha movido en ninguno de los dos cambios.
 >
 > **Se miden barriendo anchos, no calculando.** El método se validó antes de
 > fiarse de él: forzando la navegación a 14 px, el mismo barrido devuelve 746 y
 > 964, es decir los 748 y 966 anteriores menos los 2 px de margen que usó la
 > medición original.
 
-> ⚠️ **El 934 está repetido en `js/main.js`**, en la función `estrecha()` de
+> ⚠️ **CAMBIAR EL TEXTO DE UN ENLACE DEL MENÚ MUEVE ESTOS DOS CORTES, y el fallo
+> es silencioso.** Es la lección que ya ha costado dos veces, así que conviene
+> tenerla escrita con el destrozo medido.
+>
+> Al poner «Acerca de» sin rebarrer, entre 717 y 724 px la marca «El Derecho
+> Escrito» **se partía en dos líneas** y la cabecera pasaba de 72,2 a **103,4
+> px**. Lo mismo con el campo del buscador desplegado entre 935 y 944. No da
+> ningún error: solo crece la barra y arrastra la página entera.
+>
+> Barrido de verificación tras el cambio: rompe a 724 y aguanta a 725; con el
+> campo abierto rompe a 944 y aguanta a 945.
+
+> ⚠️ **El 944 está repetido en `js/main.js`**, en la función `estrecha()` de
 > `buscadorDeCabecera`, que decide si la lupa despliega el campo o vuelve a ser
 > un enlace al listado. Los dos números tienen que ir a la par: si el CSS oculta
 > el campo y el JS cree que aún cabe, la lupa intenta desplegar algo invisible.
+> Verificado a 944: el campo está oculto y la lupa ya no intenta abrirlo.
 
 > **El de 748 dejó de compartirse con las tarjetas… y ahora sí están
 > separados.** Compartirlo fue una comodidad mientras los dos números
@@ -1752,6 +1872,50 @@ clase base las invalidaba las dos.
 > `document.elementFromPoint` sobre una malla de la tarjeta y contando adónde
 > lleva cada punto: hoy **120 de 120 van al artículo** y el texto de la
 > categoría al filtro.
+
+#### En la portada hay UN tipo de filete, no dos
+
+Y conviene distinguirlos porque hubo los dos y se retiró uno:
+
+| | Dónde | Estado |
+|---|---|---|
+| **Filete del rótulo** | sale del texto de «LA LECTURA RECOMENDADA» y «ÚLTIMOS ARTÍCULOS» hasta el borde | **se queda** |
+| ~~Filete de sección~~ | cruzaba la página entera entre el destacado y «Últimos artículos» | **retirado** |
+
+> ⚠️ **El de sección se retiró porque sobraba, y el aire lo hace ahora el
+> relleno.** Era un `border-top` en `.inicio .lista:not(.lista--cierre)`.
+>
+> El problema es que **la imagen del destacado ya cierra el bloque con su propio
+> canto**, así que la línea caía a pocos píxeles de otro borde horizontal y se
+> leía como un subrayado de la foto, no como una división. Y el rótulo de
+> «Últimos artículos» trae su propio filete, con lo que quedaban **dos líneas
+> casi seguidas y de distinta longitud**.
+>
+> **Al quitarla hubo que subir la separación**, porque los 55 px que había
+> bastaban solo mientras la línea marcaba el corte: una foto tiene canto propio
+> y necesita más aire que un texto. `.inicio .lista:not(.lista--cierre)` pasa de
+> los 48 px que trae `.lista` a **74**, que son **80 medidos** entre el canto de
+> la imagen y la caja del rótulo.
+>
+> **80 no es un número nuevo:** es el mismo hueco que hay entre las tarjetas y
+> la banda, y el mismo con el que cierran `.articulo`, `sobre/` y el listado
+> contra el pie.
+
+Medido en los dos estados:
+
+| Ancho | Fin del destacado → rótulo | Con `[hidden]` → banda |
+|---|---|---|
+| 1440 | **80** | 56 |
+| 1000 | **80** | 56 |
+| 375 | **74** | 56 |
+
+Los 74 de móvil no son un descuido: los 6 px de diferencia son el interlineado
+del rótulo, que por debajo de 430 px pasa a `display: block` y pierde la caja
+flex. A esa escala no se distingue.
+
+**Con la sección en `[hidden]` nada de esto aplica**: ese relleno no pinta, así
+que el hueco sigue siendo el `margin-top: 56px` de la propia banda. Verificado
+que los 56 no se mueven en los tres anchos.
 
 #### El filete de los rótulos tiene dos puntos de corte medidos
 
@@ -1965,23 +2129,67 @@ de recorte cambia a horizontal— así que lo paga solo el escritorio ancho.
 El vídeo es un **bucle ping-pong**: medido, el primer y el último fotograma
 difieren en **1,23 sobre 255**, o sea que el salto del `loop` no se ve.
 
-El bloque de la portada es **titular, entradilla y dos botones**, sin antetítulo
-encima. Llevó uno —«BLOG JURÍDICO»— y se retiró.
+El bloque de la portada es **antetítulo, titular, subtítulo y dos botones**.
 
-> **`.portada__antetitulo` sigue en el CSS y no está muerta.** La usa
-> `404.html` para el rótulo «Error 404», que es el único caso que queda. Quien
-> la busque desde la portada no la encontrará y pensará que sobra.
+> ⚠️ **EL ANTETÍTULO VOLVIÓ, y esta sección decía que no había.** Aquí se
+> explicaba que el bloque iba «sin antetítulo encima», que llevó uno —«BLOG
+> JURÍDICO»— y se retiró, y que por eso se había retirado también
+> `.portada--video .portada__antetitulo`.
 >
-> Lo que sí se retiró con el elemento es `.portada--video .portada__antetitulo`,
-> que lo oscurecía a `--acento-oscuro` porque sobre el vídeo el acento se
-> quedaba en 2,50:1. Ese modificador solo lo lleva la portada del inicio, así
-> que sin antetítulo ahí no le quedaba ningún caso. En el 404 no hace falta: va
-> sobre blanco, donde `--acento` da 5,91:1.
+> Los textos definitivos del cliente traen una **línea de áreas** en ese sitio:
+> «Derecho administrativo · Urbanismo · Jurisdicción contencioso-administrativa».
+>
+> **Con ella ha vuelto la regla de contraste, y no es opcional.** Sobre el vídeo
+> `--acento` se queda en **2,50:1** y no llega a AA; `--acento-oscuro` lo
+> arregla. Medido con el antetítulo puesto: **5,24–5,44:1** entre 932 y 1440 px.
+> Si alguien vuelve a quitar la línea de áreas, la regla se va con ella; si
+> alguien la pone sin la regla, el rótulo se publica ilegible y nada avisa.
+>
+> **`.portada__antetitulo` también la sigue usando `404.html`** para el rótulo
+> «Error 404». Allí va sobre blanco, donde `--acento` da 5,91:1 y no hace falta
+> oscurecerlo.
+
+> **La línea de áreas se escribe en caja normal, no en mayúsculas.** Las
+> versales las pone `text-transform` en el CSS, igual que en las categorías.
+> Escribirla en mayúsculas en el HTML haría que algunos lectores de pantalla la
+> deletrearan letra a letra. El documento del cliente la traía en caps, pero eso
+> era una indicación de estilo, no el contenido.
 
 El bloque se centra solo: `.portada` es flex con `align-items: center`, así que
-al quitar el antetítulo el texto se recolocó sin tocar nada. Verificado que la
-franja sigue en 520 px —lo garantiza el `min-height`— y que el desvío respecto
-al reparto del padding es 0 en 1440, 900, 600 y 375.
+los elementos se recolocan sin tocar nada. Verificado que la franja sigue en
+520 px en 1440, 1084, 1000, 960 y 932 —lo garantiza el `min-height`— y que el
+desvío respecto al reparto del padding es 0.
+
+#### La columna del hero mide 620 px, y los textos del cliente la fijaron
+
+La rejilla del hero estuvo en `1fr 1fr`, que a 1440 reparte **556** a cada lado.
+Con los textos definitivos eso **no cabía en la franja de 520**: la línea de
+áreas se partía en dos, el titular se iba a 3 líneas y el subtítulo a 6.
+
+| Ancho | Con 556 | Con 620 |
+|---|---|---|
+| 1440 | 605,7 px | **520 exactos** |
+| 1000 | 635,2 px | **520 exactos** |
+| 375 | 746,8 px | 686,6 px (una columna) |
+
+**620 es el mínimo, y lo fija la línea de áreas**: pide **619 px** para ir en
+una sola línea. La casualidad útil es que ese mismo ancho baja el titular a 2
+líneas y el subtítulo a 5. Por debajo de 620 se rompe lo primero.
+
+Va en `minmax(0, 620px) 1fr` y no en una fracción porque el ancho que hace falta
+es **absoluto** —lo pide un texto— y no una proporción del contenedor. La
+segunda columna se queda con lo que sobre, que es el hueco por donde se ve la
+figura: 492 px a 1440 y 292 a 1000.
+
+> ⚠️ **Si se alarga el texto de la línea de áreas, este número hay que volver a
+> medirlo.** Sale del contenido, no del diseño.
+
+> ⚠️ **En móvil el hero crece y se acepta.** A 375 ocupa **686,6 px**, el 84,6 %
+> de una pantalla de 812. No se corta nada —para eso es `min-height`— pero llena
+> casi toda la pantalla. Lo que lo recorta es el subtítulo, que baja a 16 px por
+> debajo de 600: 18,4 daba 746,8 px y el 92 %. El resto del alto lo ponen el
+> titular (4 líneas) y la línea de áreas (2), y esos se dejan al cuerpo que les
+> toca.
 
 Cada tarjeta va **dentro de una caja** con fondo `--papel-alt`, filete de 1 px
 en `--borde` y 28 px de padding: imagen arriba en 3:2, categoría en versales de
@@ -2065,9 +2273,9 @@ real bajo cada caja de texto**, en cada ancho, porque `cover` cambia el encuadre
 con la proporción de la caja.
 
 > ⚠️ **Guarda: el 14,03 vale para los títulos de ahora**, que miden entre 151 y
-> 157 px —«Artículos», «Sobre mí», «Contacto»—. Medido, hay sitio hasta unos
-> **450 px** de título (12,71). A partir de ahí el texto empieza a invadir los
-> bordes oscuros:
+> 166 px —«Artículos», «Acerca de» (165,6), «Contacto»—. Medido, hay sitio hasta
+> unos **450 px** de título (12,71). A partir de ahí el texto empieza a invadir
+> los bordes oscuros:
 >
 > | Ancho del título | Contraste sin velo |
 > |---|---|
@@ -2079,6 +2287,11 @@ con la proporción de la caja.
 >
 > Un título de sección más largo que 450 px obliga a volver a medir, o a
 > devolver el velo.
+>
+> **Y estuvo a punto de hacer falta.** `sobre/` se tituló un tiempo «Sobre El
+> Derecho Escrito», que medía **417,8 px**: dentro del límite, pero a solo 32 px
+> de él. Hoy dice «Acerca de» y baja a 165,6, con lo que el margen vuelve a ser
+> amplio. Si algún día se alarga otra vez, el número a vigilar es ese 450.
 
 Se probó y se descartó encuadrar solo el centro claro con un zoom del 220 %:
 contrasta de sobra pero deja la banda casi blanca, sin veteado, ni libro, ni
@@ -2127,40 +2340,97 @@ que es otro serif. O se instala la fuente antes, o se exporta desde el navegador
   `#fbfaf7`, no el blanco puro que declara el sistema.
 - Falta el bloque «Sobre el autor» en portada, que el cliente quiere y aún no
   existe en ninguna versión. La banda de newsletter ya está.
-- `sobre/index.html` tiene texto de relleno entre corchetes. **Ahora pesa más
-  que antes**: desde que `contacto/` dice que el autor atiende asuntos como
-  abogado en ejercicio, `sobre/` es la única página donde el visitante podría
-  saber quién es y en qué ejerce, y sigue vacía.
-- ⚠️ **La web no dice en qué materias ejerce, y hay una contradicción sobre
-  ellas.** La cabecera de este archivo las da por buenas —Derecho
-  Administrativo, Urbanismo y Jurisdicción Contencioso-Administrativa— y así
-  aparecen en la bio del artículo y en su JSON-LD; pero la sección de autoría
-  marca esa bio como **de la maqueta de referencia y pendiente de confirmar**.
-  Mientras las dos cosas se contradigan, **no se escriben materias en textos
-  nuevos**: el de `contacto/` está redactado para no necesitarlas. Hay que
-  confirmarlas con el cliente y, entonces, decidir si van también en contacto.
-- Tampoco hay colegio, número de colegiado, tarifas ni plazos de respuesta.
-  Ninguno aparece en el proyecto y no se han inventado.
+- ~~`sobre/index.html` tiene texto de relleno entre corchetes.~~ **RESUELTO**
+  con los textos definitivos del cliente: la página tiene apertura, «Contenido»,
+  «Sobre el autor» con retrato, y los dos botones de salida. Ya no queda ningún
+  corchete en el sitio.
+- ~~La web no dice en qué materias ejerce~~ **RESUELTO, y con ello se cierra la
+  contradicción que había aquí.** Los textos del cliente las nombran en cuatro
+  sitios: la línea de áreas del hero, su subtítulo, la apertura de `sobre/` y su
+  apartado «Contenido». Son Derecho administrativo, urbanismo y jurisdicción
+  contencioso-administrativa, o sea las que la cabecera de este archivo daba por
+  buenas.
+
+  Ojo a la **grafía del cliente**, que no es la que usa este archivo: él escribe
+  «Derecho administrativo» y «jurisdicción contencioso-administrativa», con
+  minúscula después de «Derecho». Se respeta tal cual en los textos.
+- ✅ **Ya hay colegio y despacho**: Ilustre Colegio de la Abogacía de Madrid y
+  Sterling Abogados, en `sobre/`. **Siguen faltando** número de colegiado,
+  tarifas y plazos de respuesta, y no se inventan.
 - **Ninguna de las dos suscripciones envía nada**, ni la banda de la portada ni
   la del lateral del artículo: comparten componente y las dos van sin `<form>`
   y con los controles deshabilitados, a propósito, para que no se pueda enviar
   por accidente. Al conectar backend hay que tocar las dos.
+
+  ⚠️ **Y desde los textos definitivos, las dos NO dicen lo mismo.** El cliente
+  dio una versión para cada una y se respetan:
+
+  | | Portada (banda) | Artículo (lateral) |
+  |---|---|---|
+  | Título | Sigue las publicaciones de *El Derecho Escrito* | Sigue *El Derecho Escrito* |
+  | Nota | **Recibirás** un correo con cada… | **Un correo** con cada… |
+
+  El apoyo («Suscríbete para recibir…») y el placeholder («Correo electrónico»)
+  sí son idénticos. La versión corta es la de la columna de 300 px.
 - El formulario de contacto tampoco tiene backend: no envía nada. Su `action`
   apunta a `formspree.io/f/TU_ENDPOINT_AQUI`, que es literalmente un marcador.
-- ⚠️ **`hola@elderechoescrito.es` no existe.** Es la dirección del bloque
-  «También por email» de `contacto/`, y es de las cosas que se publican sin
-  querer **porque no dan error**: el enlace se ve bien, abre el gestor de correo
-  y manda el mensaje a una dirección que no recibe nadie.
+- ✅ **El correo ya es real: `jcontera@icam.es`.** Aquí había un aviso de que
+  `hola@elderechoescrito.es` no existía y era un marcador que se publicaba sin
+  dar error. Ya no está en el HTML.
 
-  **Se escribe dos veces en la misma línea** —el `href` del `mailto` y el texto
-  visible— y hay que cambiar las dos. Cambiar solo el texto deja un enlace que
-  enseña la buena y envía a la mala, que es peor que no tocarlo.
+  **Lo que sigue vigente es la trampa**: la dirección se escribe **dos veces en
+  la misma línea** —el `href` del `mailto` y el texto visible— y hay que cambiar
+  las dos. Cambiar solo el texto deja un enlace que enseña una dirección y envía
+  a otra, y eso no da ningún error.
 
-  Está marcada en el HTML entre `PROVISIONAL` y `FIN PROVISIONAL`. Es la única
-  dirección de correo del sitio: el `mailto` de los botones de compartir del
-  artículo no lleva destinatario, solo asunto y cuerpo.
+  Sigue siendo la única dirección de correo del sitio: el `mailto` de los
+  botones de compartir del artículo no lleva destinatario, solo asunto y cuerpo.
 - `_headers` y `_redirects` son de Netlify. GitHub Pages los ignora. Se
   mantienen por si se mueve el hosting.
+
+### Pendiente de consultar con el cliente
+
+Textos visibles que **no venían en su documento** y siguen como estaban:
+
+| Dónde | Qué dice hoy | Por qué preguntar |
+|---|---|---|
+| Portada | «LA LECTURA RECOMENDADA», «ÚLTIMOS ARTÍCULOS», «VER TODOS LOS ARTÍCULOS →» | El documento los daba por buenos explícitamente |
+| Pie | «Contenido divulgativo. No constituye asesoramiento jurídico.» | Convive con el aviso nuevo del artículo, que dice lo mismo más largo |
+| Formulario de `contacto/` | Etiquetas «Nombre», «Email», «Asunto», «Mensaje», botón «Enviar mensaje» | El documento solo daba la entradilla |
+| Artículo de ejemplo | Cuerpo, titular, entradilla, `keywords`, `FAQPage` y sus metadatos | Se borra al entregar, así que no se reescribió nada de él |
+| `sobre/`, apartado «Contenido» | Los tres puntos en `<strong>` | Confirmar que la negrita va solo en el término y no en la coma |
+
+**Resuelto en pasadas posteriores** y por tanto fuera ya de esta lista: el menú
+y el pie —ahora «Acerca de»—, el aviso de `sobre/` —ya en la fórmula del
+artículo—, la bio corta del lateral, y los `<title>`, meta descriptions, Open
+Graph, Twitter y JSON-LD de las cinco páginas indexables.
+
+> ⚠️ **Lo que más pesaba de esta lista eran las meta descriptions y el JSON-LD**,
+> que seguían anunciando «derecho penal, civil, constitucional, laboral y
+> mercantil». Ya no. **Y había una copia más que no estaba apuntada aquí: el
+> `<description>` del canal en `feed.xml`**, que un lector de RSS enseña igual
+> que Google la meta description. Apareció al grepear las materias viejas, no
+> revisando el HTML.
+>
+> Si algún día vuelve a cambiar el discurso del sitio, hay que buscar en los
+> **cuatro** sitios: HTML visible, metadatos, JSON-LD y `feed.xml`.
+
+### SEO de un artículo nuevo — la regla
+
+| Campo | Regla |
+|---|---|
+| `<title>` | **El titular a secas, SIN sufijo de marca.** Con «\| El Derecho Escrito» —20 caracteres— cualquier titular real se pasa de 60. Consecuencia: **el titular debe medir ≤60** |
+| `description` | **140–160** caracteres, resumen del artículo |
+| `og:title` y `twitter:title` | Iguales que el `<title>` |
+| `og:description` | Puede ser más corta que la meta; no hay límite duro |
+| `article:section` y `articleSection` | La **categoría real**, y las dos tienen que coincidir |
+| `keywords` | Frases largas de cola, propias del artículo. No son las etiquetas de navegación |
+| `author.description` | **La bio corta**, idéntica a `.autor__bio` del lateral |
+
+> ⚠️ **El artículo de ejemplo NO cumple esta regla, y es a propósito.** Su
+> `<title>` mide 61, su `description` 184 y sus `keywords` son de Derecho penal.
+> No se tocó porque se borra al entregar. Si alguien lo usa de plantilla, tiene
+> que ajustar esos tres campos.
 
 ## Convenciones
 

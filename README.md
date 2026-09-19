@@ -49,7 +49,7 @@ Cada página vive en su propia carpeta como `index.html`, así la URL queda limp
 - Portada: `WebSite` con `SearchAction`, `Organization` y `Blog`.
 - Listado: `CollectionPage` + `ItemList` + `BreadcrumbList`.
 - Artículo: `BlogPosting` completo (fechas, sección, keywords, wordCount, imagen, autor, editor) + `BreadcrumbList` + `FAQPage`.
-- Sobre mí: `AboutPage`. Contacto: `ContactPage`.
+- Acerca de: `AboutPage`. Contacto: `ContactPage`.
 
 El `FAQPage` del artículo es el que puede darte resultados enriquecidos en Google. Merece la pena mantenerlo en artículos que respondan preguntas concretas.
 

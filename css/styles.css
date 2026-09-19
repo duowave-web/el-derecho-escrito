@@ -487,14 +487,23 @@ body:has(.portada--video) .cabecera--con-linea {
    se queda en 2.59:1 e incumple; oscurecerla es lo que permite bajar el velo y
    que el video se vea. El resto del sitio conserva la jerarquia tonal.
 
-   Aqui habia tambien un .portada--video .portada__antetitulo en
-   --acento-oscuro, porque en --acento se quedaba en 2.50:1. Se retira con el
-   antetitulo «Blog juridico», que era su unico caso: --video solo lo lleva la
-   portada del inicio.
+   ⚠️ LA REGLA DEL ANTETITULO VOLVIO, y no es opcional. Estuvo aqui, se retiro
+   con el antetitulo «Blog juridico» —era su unico caso— y ha vuelto con la
+   linea de areas de los textos definitivos.
+
+   El motivo por el que existe no ha cambiado: sobre el video, --acento se
+   queda en 2,50:1 y no llega ni a AA para texto pequeno. --acento-oscuro es lo
+   que lo salva. Si alguien quita la linea de areas otra vez, esta regla se va
+   con ella; si alguien la pone sin esta regla, el rotulo se publica ilegible y
+   nada avisa.
 
    La clase base .portada__antetitulo NO se toca: la sigue usando 404.html para
    el rotulo «Error 404», y alli va sobre blanco, donde --acento cumple de
    sobra. */
+
+.portada--video .portada__antetitulo {
+  color: var(--acento-oscuro);
+}
 
 .portada--video .portada__entradilla {
   color: var(--tinta);
@@ -639,10 +648,31 @@ body:has(.portada--video) .cabecera--con-linea {
 /* Position relative para que quede por encima del velo sin recurrir a z-index:
    los tres son hermanos posicionados y este va el ultimo en el HTML. */
 
+/* ⚠️ LA COLUMNA DE TEXTO LLEGA A 620px Y ESE NUMERO ESTA MEDIDO, no elegido.
+
+   Estuvo en `1fr 1fr`, que a 1440 reparte 556 a cada lado. Con los textos
+   definitivos del cliente eso no cabia en la franja de 520: la linea de areas
+   se partia en DOS, el titular se iba a 3 lineas y el subtitulo a 6, y el hero
+   crecia a 605,7px. Medido tambien a 1000 (635,2) y a 375 (746,8).
+
+   620 es el MINIMO que lo arregla, y lo fija la linea de areas: «Derecho
+   administrativo · Urbanismo · Jurisdiccion contencioso-administrativa» pide
+   619px para ir en una sola linea. La casualidad util es que ese mismo ancho
+   baja el titular a 2 lineas y el subtitulo a 5, con lo que el hero vuelve a
+   520 EXACTOS a 1440 y a 1000. Por debajo de 620 se rompe lo primero.
+
+   Va en `minmax(0, 620px) 1fr` y no en una fraccion porque el ancho que hace
+   falta es absoluto —lo pide un texto— y no una proporcion del contenedor. La
+   segunda columna se queda con lo que sobre, que es el hueco por donde se ve la
+   figura del video: a 1440 le quedan 492 y a 1000, 292.
+
+   Si cambia el texto de la linea de areas, este numero hay que volver a
+   medirlo: sale del contenido, no del diseno. */
+
 .portada__interior {
   position: relative;
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 620px) 1fr;
   gap: 40px;
   width: 100%;
 }
@@ -675,11 +705,37 @@ body:has(.portada--video) .cabecera--con-linea {
   margin: 0 0 24px;
 }
 
+/* ⚠️ EL max-width ES UNA MEDIDA DE CONTRASTE, no de comodidad de lectura, y
+   por eso bajo de 34em a 31em. Quien lo suba otra vez rompe algo que no se ve.
+
+   Con 34em y los textos definitivos, la CUARTA linea del subtitulo llegaba a
+   622px mientras las otras cuatro paraban en 584, 598, 534 y 326. Esa cola
+   entraba en el plato izquierdo de la balanza del video, y ahi el velo esta en
+   su zona mas floja —es un degradado `to left` que solo alcanza el 45% a partir
+   del 46% desde la derecha—. Contraste medido bajo las cajas de linea reales:
+
+     1440 → 9,83  ·  1084 → 2,73 ✗  ·  1000 → 2,62 ✗  ·  932 → 1,78 ✗
+
+   A 1440 no pasa porque la figura escala con la ventana y se aparta; el fallo
+   aparece por debajo de ~1100, donde la columna sigue fija en 620 y la figura
+   se acerca.
+
+   Con 31em la cuarta linea rompe antes y para en 584, donde paran las demas:
+
+     1440 → 9,83  ·  1084 → 9,71  ·  1000 → 9,76  ·  960 → 9,76  ·  932 → 9,75
+
+   Y no cuesta nada: el hero sigue en 520 exactos y el subtitulo en 5 lineas.
+   Probado 32em (2,85 ✗) y 30em (3,45 ✗ y se va a 6 lineas).
+
+   `text-wrap: balance` tambien lo arregla (9,75) pero NO sirve como unica
+   solucion: donde no se soporte vuelve el 1,78:1, y una degradacion silenciosa
+   a un fallo de contraste no es aceptable. Este limite es determinista. */
+
 .portada__entradilla {
   color: var(--tinta-suave);
   font-size: 1.15rem;
   margin: 0 auto;
-  max-width: 34em;
+  max-width: 31em;
 }
 
 .portada__acciones {
@@ -1682,20 +1738,39 @@ body:has(.portada--video) .cabecera--con-linea {
   }
 }
 
-/* Separador entre bloques. Va en la seccion y no en un <hr>: el <hr> seria un
-   elemento mas en el arbol de accesibilidad para decir algo que es puramente
-   visual, y ademas habria que mantener su margen aparte del de la seccion.
+/* AQUI HABIA UN FILETE A TODO EL ANCHO entre el destacado y «Ultimos
+   articulos» —un border-top en .inicio .lista:not(.lista--cierre)—. Se retira.
 
-   ⚠️ El :not() NO es opcional: la seccion de la suscripcion TAMBIEN es .lista
-   —comparte su relleno vertical— asi que sin la exclusion se llevaria el filete
-   tambien, y ahi no hace falta: ya es una caja con fondo, que se separa sola.
-   Dos lineas seguidas, una a 1px del canto de la caja.
+   El motivo es que sobraba: la imagen del destacado ya cierra el bloque con su
+   propio canto, asi que la linea caia a pocos pixeles de otro borde horizontal
+   y se leia como un subrayado de la foto, no como una division entre secciones.
+   Y el rotulo de «Ultimos articulos» trae ademas su propio filete, con lo que
+   quedaban dos lineas casi seguidas a distinta longitud.
 
-   Cuando «Ultimos articulos» va con [hidden] no pinta nada, asi que en el
-   estado de hoy no hay ningun filete suelto entre el destacado y la banda. */
+   ⚠️ NO SE TOCAN los filetes que salen DETRAS de los rotulos: esos son otra
+   cosa —el ::after de .lista__titulo--destacado— y se quedan. Lo que se fue es
+   el que cruzaba la pagina entera.
+
+   El aire que hacia la linea lo hace ahora el relleno, justo debajo. */
+
+/* Separacion entre el destacado y «Ultimos articulos». Sube de los 48 que trae
+   .lista a 74, que son 80 MEDIDOS entre el canto de la imagen y la caja del
+   rotulo —los 6 de diferencia son el interlineado del propio rotulo—.
+
+   80 no es un numero nuevo: es el mismo hueco que hay entre las tarjetas y la
+   banda de suscripcion, y el mismo que cierra .articulo, sobre/ y el listado
+   contra el pie. Es el valor con el que este sitio separa bloques.
+
+   Con el filete, la distancia era de 55: bastaba porque la linea marcaba el
+   corte. Sin ella, 55 dejaba la foto del destacado casi pegada al rotulo
+   siguiente, y una foto tiene canto propio: necesita mas aire que un texto.
+
+   ⚠️ Solo aplica a «Ultimos articulos», no a .lista--cierre. Con la seccion en
+   [hidden] este relleno no pinta, asi que el hueco entre el destacado y la
+   banda sigue siendo el de la banda: 56 px de su margin-top. */
 
 .inicio .lista:not(.lista--cierre) {
-  border-top: 1px solid var(--borde);
+  padding-top: 74px;
 }
 
 /* --------------------------------------------------------- Artículos ---- */
@@ -2746,6 +2821,26 @@ main > .lista:last-child {
   color: var(--tinta-suave);
 }
 
+/* CURSIVA DENTRO DE CURSIVA: vuelve a redonda. Es la convencion tipografica
+   —dentro de un texto en italica, lo que se destaca se compone en redonda— y
+   aqui ademas arregla un marcado que si no seria invisible.
+
+   El caso concreto: el aviso de cierre de sobre/ va entero en <em>, y dentro
+   lleva «El Derecho Escrito» tambien en <em> porque la regla del sitio es que
+   el nombre va en cursiva cuando aparece en un texto. Los navegadores NO
+   alternan solos: verificado, un <em> dentro de otro <em> se queda en italic,
+   asi que el nombre quedaba marcado en el HTML y sin distinguirse en pantalla.
+
+   Va sin prefijo porque la regla vale en cualquier sitio donde pase lo mismo.
+   Hoy hay un solo caso; si algun dia se escribe el nombre dentro de otro texto
+   en cursiva, se compone bien sin tener que acordarse de nada. */
+
+em em,
+i em,
+em i {
+  font-style: normal;
+}
+
 /* ------------------------------------------------------- Compartir ------ */
 
 /* Enlaces planos, sin scripts de terceros. Los iconos van por mask, como el
@@ -2877,6 +2972,25 @@ main > .lista:last-child {
   padding-top: 48px;
   padding-bottom: 64px;
   align-items: start;
+}
+
+/* ⚠️ LA ENTRADILLA TIENE QUE CRUZAR LAS DOS COLUMNAS, y sin esto la pagina se
+   descoloca entera.
+
+   .contacto .contenedor es una rejilla de dos columnas, asi que un parrafo
+   suelto dentro de ella se convierte en el PRIMER ITEM y se queda en la columna
+   izquierda: el formulario se iba a la derecha y el aside caia debajo, en una
+   tercera fila. Verificado midiendo: entradilla en x=42 con 609 de ancho,
+   formulario en x=707 y aside en y=798.
+
+   Ocupa toda la fila y ademas se limita a la medida de lectura: a 609px de
+   ancho el parrafo son ~95 caracteres por linea, muy por encima de lo que se
+   lee comodo, y ademas no tiene por que alinear con el formulario. */
+
+.contacto .entradilla {
+  grid-column: 1 / -1;
+  max-width: 34em;
+  margin: 0;
 }
 
 .formulario {
@@ -3583,6 +3697,50 @@ body:has(.progreso) .cabecera {
   object-fit: cover;
 }
 
+/* Retrato del autor en sobre/. Se apoya en .autor__retrato —circulo, recorte y
+   fondo de respaldo— y solo cambia lo que aqui es distinto: en el lateral del
+   articulo la foto va centrada sobre una columna de 300px, y aqui va en fila
+   junto a tres parrafos, en una columna de lectura de 760.
+
+   Se reutiliza la clase en vez de duplicar el circulo para que el retrato del
+   sitio sea uno, no dos que se parecen: si cambia el recorte o el filete, se
+   cambia en .autor__retrato y los dos siguen iguales. */
+
+.sobre__autor {
+  display: flex;
+  align-items: flex-start;
+  gap: 28px;
+  margin: 0 0 8px;
+}
+
+.sobre__retrato {
+  flex: none;
+  margin: 6px 0 0;
+}
+
+/* Los parrafos del bloque no llevan el margen de arriba del primero, que ya lo
+   pone el flex, y el ultimo cierra sin margen para que el filete de abajo no
+   quede a distinta altura que el retrato. */
+
+.sobre__autor-texto > p:first-child {
+  margin-top: 0;
+}
+
+/* Por debajo de 600 el retrato se pone encima y el texto debajo: en una columna
+   de ~330px, 132 de foto mas 28 de hueco dejan el parrafo en 170, que parte las
+   palabras largas de este texto —«contencioso-administrativa»— en cada linea. */
+
+@media (max-width: 600px) {
+  .sobre__autor {
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .sobre__retrato {
+    margin: 0;
+  }
+}
+
 .autor__nombre {
   font-family: var(--display);
   font-size: 1.35rem;
@@ -4072,24 +4230,47 @@ body:has(.progreso) .cabecera {
 
    Bajaron cuando la navegacion paso de 14px a 12px en versales: la fila entera
    se estrecho 32,2 px, asi que aguanta 32 px mas de ventana antes de romperse.
+   Y VOLVIERON A SUBIR al cambiar «Sobre mi» por «Acerca de», que son 11,6 px
+   mas: de 934 a 944 y de 716 a 724.
 
-   934px: hasta aqui cabe la fila con el campo del buscador desplegado. Por
+   944px: hasta aqui cabe la fila con el campo del buscador desplegado. Por
    debajo, abrir el buscador partiria la marca en dos lineas, asi que el campo
-   se oculta. Estaba en 966. No se estrecha el campo en vez de ocultarlo porque
-   a 800px cabrian 52px de campo, que no sirven para nada.
+   se oculta. Paso por 966 y por 934. No se estrecha el campo en vez de
+   ocultarlo porque a 800px cabrian 52px de campo, que no sirven para nada.
 
    OJO: este numero esta repetido en js/main.js, en la funcion estrecha() de
    buscadorDeCabecera, que decide si la lupa despliega el campo o vuelve a ser
    un enlace al listado. Si se cambia aqui hay que cambiarlo alli.
 
-   716px: lo mismo con el buscador ya cerrado, con la navegacion en 322,2. Ahi
-   ya no hay nada que ocultar y la unica salida es apilar. Estaba en 748.
+   724px: lo mismo con el buscador ya cerrado. Ahi ya no hay nada que ocultar y
+   la unica salida es apilar. Paso por 748 y por 716.
 
    El metodo se valido antes de fiarse de el: con la navegacion forzada a 14px,
    el mismo barrido devuelve 746 y 964, o sea los 748 y 966 documentados menos
-   los 2 px de margen que uso la medicion original. */
+   los 2 px de margen que uso la medicion original.
 
-@media (max-width: 934px) {
+   ⚠️ LA LECCION, que ya ha costado dos veces: CAMBIAR EL TEXTO DE UN ENLACE DEL
+   MENU MUEVE ESTOS DOS CORTES. No da ningun error — la marca se parte en dos
+   lineas y la cabecera crece 31 px sin que nada avise. Hay que rebarrerlos. */
+
+/* ⚠️ ESTE 944 SUBIO DE 934 AL CAMBIAR «Sobre mi» POR «Acerca de», y el numero
+   esta MEDIDO barriendo anchos, no calculado.
+
+   «Acerca de» mide 75,6 px contra los 64 de «Sobre mi»: 11,6 px mas de
+   navegacion. Con el campo desplegado eso dejaba de caber donde antes cabia, y
+   el fallo no era sutil — la marca «El Derecho Escrito» se partia en DOS lineas
+   y la cabecera pasaba de 72,2 a 103,4 px. Medido: rompia a 944 y aguantaba a
+   945, asi que el corte va en 944.
+
+   ⚠️ ESTE NUMERO ESTA DUPLICADO EN js/main.js, en la funcion estrecha() de
+   buscadorDeCabecera, que decide si la lupa despliega el campo o vuelve a ser
+   un enlace al listado. LOS DOS TIENEN QUE IR A LA PAR: si el CSS oculta el
+   campo y el JS cree que aun cabe, la lupa intenta desplegar algo invisible.
+
+   Y si alguien vuelve a cambiar el texto de un enlace del menu, hay que
+   rebarrer los dos cortes de la cabecera: este y el de 724. */
+
+@media (max-width: 944px) {
   .busca__campo {
     display: none;
   }
@@ -4127,7 +4308,20 @@ body:has(.progreso) .cabecera {
   }
 }
 
-@media (max-width: 716px) {
+/* ⚠️ ESTE 724 SUBIO DE 716 POR EL MISMO MOTIVO que el de 944: «Acerca de» es
+   11,6 px mas ancho que «Sobre mi».
+
+   Con el campo del buscador ya oculto, la marca y la navegacion dejaban de
+   caber en una fila antes de que el corte llegara. Medido barriendo: a 717
+   —justo por encima del corte viejo— la marca se partia en dos lineas y la
+   cabecera se iba a 103,4 px cuando deberia estar en 72,2. Rompe a 724 y
+   aguanta a 725, asi que el corte va en 724.
+
+   Es el fallo que mejor ilustra por que estos numeros se barren y no se
+   calculan: el texto del menu creció un caracter y se llevo por delante dos
+   puntos de corte a la vez, sin dar ningun error. */
+
+@media (max-width: 724px) {
   .cabecera__interior {
     flex-direction: column;
     align-items: flex-start;
@@ -4144,11 +4338,42 @@ body:has(.progreso) .cabecera {
     padding: 48px 0 44px;
   }
 
+  /* El subtitulo del hero baja de 18,4px a 16 SOLO en estrecho, y es lo unico
+     que recorta el alto del hero ahi.
+
+     Con los textos definitivos el hero deja de caber en sus 520 por debajo de
+     unos 550px de ventana: a 500 se iba a 584,1 y a 375 a 746,8, o sea el 92%
+     de la pantalla de un movil. No se corta nada —la franja es min-height, y
+     esta puesta asi justamente para que crezca— pero llenar la pantalla entera
+     de portada deja el resto de la pagina fuera de la vista.
+
+     Medido a 375x812, bajando solo el subtitulo:
+
+       18,4px → 9 lineas · hero 746,8 · 92% de pantalla
+       17px   → 9 lineas · hero 726,6 · 89,5%
+       16px   → 8 lineas · hero 686,6 · 84,6%   ← este
+       15,2px → 8 lineas · hero 676,4 · 83,3%
+
+     16 es donde se gana una linea entera. Bajar a 15,2 solo arranca 10px mas y
+     ya queda por debajo del texto mas pequeno del sitio, asi que no compensa.
+
+     El resto del alto lo ponen el titular (4 lineas a 375) y la linea de areas
+     (2 lineas), y esos no se tocan: son los textos del cliente al cuerpo que
+     les toca.
+
+     El corte va en 600, que ya existia, y no en 550: entre los dos el hero aun
+     cabe, pero ahi el subtitulo pasa de 6 lineas a 5 sin mover el alto, asi que
+     aplicarlo antes aprieta el bloque sin coste. */
+
+  .portada__entradilla {
+    font-size: 1rem;
+  }
+
   /* Aqui habia un .cabecera-seccion con su relleno de movil. Se va con la
      clase; el equivalente de la banda esta en el corte de 900. */
 
   /* La disposicion en columna y el ocultado del campo ya vienen de los cortes
-     de 716px y 934px de arriba; aqui solo se ajusta el tamano. */
+     de 724px y 944px de arriba; aqui solo se ajusta el tamano. */
 
   .marca {
     font-size: 22px;
