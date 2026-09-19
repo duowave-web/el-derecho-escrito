@@ -272,16 +272,38 @@ body:has(.portada--video) .cabecera--con-linea {
   gap: 12px;
 }
 
-/* La balanza se pinta con mask para que herede el color del enlace. */
+/* EL LOGO VA POR background-image Y NO POR mask, y el cambio no es opcional.
+
+   Aqui habia la balanza pintada con `mask` + `background-color: currentColor`,
+   que era lo correcto para un icono de un solo trazo: heredaba el color del
+   enlace y no hacia falta duplicar el archivo para tenirlo.
+
+   Con el logo nuevo eso NO sirve: una mascara se queda solo con el canal alfa,
+   asi que el cuadrado verde con la figura blanca se aplanaria a un RECTANGULO
+   MACIZO del color del texto. El logo tiene dos colores y tiene que llegar
+   entero.
+
+   Efecto lateral que conviene saber: al soltar `currentColor`, el logo YA NO
+   cambia de color al pasar el raton. .marca:hover sigue tinendo el texto. Es lo
+   correcto para una marca —un logotipo no se recolorea— pero es un cambio de
+   comportamiento respecto a la balanza.
+
+   VA EN ::before Y NO EN UN <img>, y eso resuelve solo el punto de
+   accesibilidad: un pseudoelemento no entra en el arbol de accesibilidad, asi
+   que el lector de pantalla lee «El Derecho Escrito» UNA vez, la del texto del
+   enlace. Con un <img alt="El Derecho Escrito"> al lado lo diria dos veces.
+
+   El tamano va en em para que siga al cuerpo de la marca: 1.5em de alto sobre
+   los 26px del logotipo son 39px, y bajan a 33 cuando la marca cae a 22px por
+   debajo de 600. El 1.64 de ancho es 1.5 x la proporcion del archivo
+   (1312/1199 = 1.0942), asi que no deforma. */
 
 .marca::before {
   content: "";
   flex: none;
-  width: 1.05em;
-  height: 1em;
-  background-color: currentColor;
-  -webkit-mask: url(../balanza.svg) center / contain no-repeat;
-  mask: url(../balanza.svg) center / contain no-repeat;
+  width: 1.64em;
+  height: 1.5em;
+  background: url(../img/logo.svg) center / contain no-repeat;
 }
 
 .marca:hover {
@@ -2584,8 +2606,17 @@ main > .lista:last-child {
   }
 }
 
-/* La balanza del sitio por mask, igual que .marca::before: el SVG hereda
-   currentColor y no hay que duplicar el archivo para teñirlo. */
+/* El logo del sitio por background-image y NO por mask, por el mismo motivo que
+   en .marca::before: una mascara se queda solo con el canal alfa y convertiria
+   el cuadrado verde con la figura blanca en un bloque macizo de --acento.
+
+   ⚠️ LA CAJA SIGUE MIDIENDO 46x44 Y NO SE TOCA: de ella depende el min-height
+   documentado de «Proximamente» —574 px en tres columnas, 580 en dos—, que esta
+   medido contra la altura total de la tarjeta. Cambiar este alto lo invalida.
+
+   Con `contain` y la proporcion del logo (1312/1199 = 1.0942), dentro de esos
+   46x44 el dibujo ocupa 46x42 centrado: sobra 1px arriba y otro abajo, que no
+   se ve y evita deformarlo. */
 
 .tarjeta--proxima::before {
   content: "";
@@ -2593,9 +2624,7 @@ main > .lista:last-child {
   width: 46px;
   height: 44px;
   margin-bottom: 4px;
-  background-color: var(--acento);
-  -webkit-mask: url(../balanza.svg) center / contain no-repeat;
-  mask: url(../balanza.svg) center / contain no-repeat;
+  background: url(../img/logo.svg) center / contain no-repeat;
 }
 
 /* Va como <p> y no como encabezado: no debe entrar en el esquema del documento
@@ -3555,10 +3584,15 @@ body:has(.progreso) .cabecera {
    fijo arriba, que en un articulo son dos cosas apiladas: la banda de progreso
    (30px, fixed) y la cabecera pegajosa, que se apoya en ella.
 
-   El alto de la cabecera NO es constante —cambia de una fila a dos en 716px— y
-   por eso hay un escalon. Los valores estan MEDIDOS en el navegador, no
-   calculados, y llevan ~16px de aire para que el titulo no quede lamiendo el
-   filete de la cabecera.
+   El alto de la cabecera NO es constante —cambia de una fila a dos— y por eso
+   hay un escalon. Los valores estan MEDIDOS en el navegador, no calculados, y
+   llevan ~16px de aire para que el titulo no quede lamiendo el filete.
+
+   ⚠️ SUBIERON DE 118/154 A 126/162 AL PONER EL LOGO EN LA CABECERA. El logo
+   mide 39px de alto y la caja de texto de la marca 31,2, asi que la cabecera
+   crecio 7,8px: de 72,2 a 80 en una fila, y de 108,2 a 116 en dos. Los dos
+   valores se movieron exactamente esos 7,8. Si se cambia el alto del logo, hay
+   que volver a medirlos.
 
    Esto no reabre el problema de la vieja --alto-cabecera, que se retiro porque
    la portada la RESTABA y cualquier desvio descuadraba la franja en silencio.
@@ -3567,12 +3601,12 @@ body:has(.progreso) .cabecera {
 
 .articulo__cuerpo h2 {
   counter-increment: seccion;
-  scroll-margin-top: 118px;
+  scroll-margin-top: 126px;
 }
 
 @media (max-width: 716px) {
   .articulo__cuerpo h2 {
-    scroll-margin-top: 154px;
+    scroll-margin-top: 162px;
   }
 }
 
@@ -4233,7 +4267,7 @@ body:has(.progreso) .cabecera {
    Y VOLVIERON A SUBIR al cambiar «Sobre mi» por «Acerca de», que son 11,6 px
    mas: de 934 a 944 y de 716 a 724.
 
-   944px: hasta aqui cabe la fila con el campo del buscador desplegado. Por
+   959px: hasta aqui cabe la fila con el campo del buscador desplegado. Por
    debajo, abrir el buscador partiria la marca en dos lineas, asi que el campo
    se oculta. Paso por 966 y por 934. No se estrecha el campo en vez de
    ocultarlo porque a 800px cabrian 52px de campo, que no sirven para nada.
@@ -4242,7 +4276,7 @@ body:has(.progreso) .cabecera {
    buscadorDeCabecera, que decide si la lupa despliega el campo o vuelve a ser
    un enlace al listado. Si se cambia aqui hay que cambiarlo alli.
 
-   724px: lo mismo con el buscador ya cerrado. Ahi ya no hay nada que ocultar y
+   740px: lo mismo con el buscador ya cerrado. Ahi ya no hay nada que ocultar y
    la unica salida es apilar. Paso por 748 y por 716.
 
    El metodo se valido antes de fiarse de el: con la navegacion forzada a 14px,
@@ -4253,7 +4287,7 @@ body:has(.progreso) .cabecera {
    MENU MUEVE ESTOS DOS CORTES. No da ningun error — la marca se parte en dos
    lineas y la cabecera crece 31 px sin que nada avise. Hay que rebarrerlos. */
 
-/* ⚠️ ESTE 944 SUBIO DE 934 AL CAMBIAR «Sobre mi» POR «Acerca de», y el numero
+/* ⚠️ ESTE 959 SUBIO DE 944 AL CAMBIAR «Sobre mi» POR «Acerca de», y el numero
    esta MEDIDO barriendo anchos, no calculado.
 
    «Acerca de» mide 75,6 px contra los 64 de «Sobre mi»: 11,6 px mas de
@@ -4270,7 +4304,7 @@ body:has(.progreso) .cabecera {
    Y si alguien vuelve a cambiar el texto de un enlace del menu, hay que
    rebarrer los dos cortes de la cabecera: este y el de 724. */
 
-@media (max-width: 944px) {
+@media (max-width: 959px) {
   .busca__campo {
     display: none;
   }
@@ -4308,7 +4342,7 @@ body:has(.progreso) .cabecera {
   }
 }
 
-/* ⚠️ ESTE 724 SUBIO DE 716 POR EL MISMO MOTIVO que el de 944: «Acerca de» es
+/* ⚠️ ESTE 740 SUBIO DE 724 POR EL MISMO MOTIVO que el de 944: «Acerca de» es
    11,6 px mas ancho que «Sobre mi».
 
    Con el campo del buscador ya oculto, la marca y la navegacion dejaban de
@@ -4321,7 +4355,7 @@ body:has(.progreso) .cabecera {
    calculan: el texto del menu creció un caracter y se llevo por delante dos
    puntos de corte a la vez, sin dar ningun error. */
 
-@media (max-width: 724px) {
+@media (max-width: 740px) {
   .cabecera__interior {
     flex-direction: column;
     align-items: flex-start;
@@ -4373,7 +4407,7 @@ body:has(.progreso) .cabecera {
      clase; el equivalente de la banda esta en el corte de 900. */
 
   /* La disposicion en columna y el ocultado del campo ya vienen de los cortes
-     de 724px y 944px de arriba; aqui solo se ajusta el tamano. */
+     de 740px y 959px de arriba; aqui solo se ajusta el tamano. */
 
   .marca {
     font-size: 22px;

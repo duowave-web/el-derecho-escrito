@@ -59,7 +59,7 @@ Por eso todas las rutas internas son **relativas**, no absolutas:
 | `index.html` | `./` |
 | `articulos/index.html`, `sobre/index.html`, `contacto/index.html` | `../` |
 | `articulos/<slug>/index.html` | `../../` |
-| `css/styles.css` (url de `balanza.svg`) | `../` |
+| `css/styles.css` (url de `img/logo.svg`) | `../` |
 
 Excepción: `404.html` usa rutas absolutas con el prefijo `/el-derecho-escrito/`,
 porque GitHub Pages lo sirve desde cualquier profundidad y una ruta relativa se
@@ -216,7 +216,7 @@ de una fila a dos. Medido:
 
 | Ancho | Cabecera | Obstrucción | `scroll-margin-top` | Aire |
 |---|---|---|---|---|
-| 1440 | 72,2 | 102,2 | 118 | 15,8 |
+| 1440 | 80 | 110 | 126 | 15,8 |
 | 717 | 72,2 | 102,2 | 118 | 16,0 |
 | 700 | **108,2** | 138,2 | **154** | 15,7 |
 | 375 | 103,4 | 133,4 | **154** | 20,4 |
@@ -1687,8 +1687,8 @@ Los tres están **medidos**, no elegidos:
 
 | Corte | Qué pasa | Por qué ahí |
 |---|---|---|
-| **944 px** | se oculta el campo del buscador | hasta ahí cabe la fila con el campo desplegado; por debajo, abrirlo partiría la marca en dos líneas |
-| **724 px** | la cabecera pasa a dos filas | lo mismo con el buscador cerrado. Ahí ya no hay nada que ocultar y la única salida es apilar |
+| **959 px** | se oculta el campo del buscador | hasta ahí cabe la fila con el campo desplegado; por debajo, abrirlo partiría la marca en dos líneas |
+| **740 px** | la cabecera pasa a dos filas | lo mismo con el buscador cerrado. Ahí ya no hay nada que ocultar y la única salida es apilar |
 | **400 px** | el hueco entre enlaces baja a 10 px | con hueco de 28 la navegación se parte por debajo de 371, y eso alcanza a 360 |
 
 > **Han cambiado dos veces, y las dos por el texto del menú.** Primero bajaron
@@ -2322,15 +2322,191 @@ pierde. Sería peso para no enseñar la imagen.
 
 ## Logotipo
 
-Balanza vectorial (`balanza.svg`) a la izquierda del nombre en versales. Se
-pinta con `mask` desde CSS para que herede `currentColor`, así que cambia de
-color solo al pasar el ratón. No duplicar el archivo por color.
+El logo es **`img/logo.svg`**: un cuadrado redondeado en `--acento` con el rostro
+vendado en blanco. Se usa en la cabecera, a la izquierda del nombre en versales,
+y en la tarjeta de «Próximamente».
 
-La tarjeta social `og.png` no se edita a mano: se regenera exportando `og.svg`,
-que es su fuente. Al exportar, ojo con la tipografía: Cormorant Garamond no
-viene con el sistema y el `@import` que lleva el SVG dentro **solo lo resuelve
-un navegador**. Illustrator, Figma o `rsvg-convert` lo ignoran y caen a Georgia,
-que es otro serif. O se instala la fuente antes, o se exporta desde el navegador.
+Sale de vectorizar con potrace el logo que entregó el cliente. Medido sobre el
+original (1312×1199): **radio de esquina 90 px**, ajustado con detección de
+borde subpíxel; la superelipse converge a **n = 2,00**, o sea que es una
+circunferencia limpia y un `<rect rx>` la reproduce exacta.
+
+**Pesa 15,6 KB** con `floatPrecision: 0` en svgo. Se midió: la precisión 2 pesa
+109,8 KB y la 1 son 59,1, y la desviación entre la 0 y la 2 es de 2 333 píxeles
+sobre 1,57 M al renderizar a tamaño completo. A 40 px no se distingue.
+
+> ⚠️ **El color del archivo es `--acento` (#2F6E68), NO el del logo original.**
+> El verde del JPEG es **#006E68**, muestreado sobre 678 000 píxeles de zona
+> lisa. La diferencia está solo en el rojo —0 frente a 47—: G y B son idénticos.
+> ΔE2000 = 3,26, por encima del umbral de percepción, así que puestos uno al
+> lado del otro se distinguen. Se eligió `--acento` para no tener dos verdes.
+
+### El logo va por background-image, nunca por mask
+
+La balanza anterior se pintaba con `mask` + `currentColor`, que es lo correcto
+para un icono de un trazo: hereda el color y no hay que duplicar el archivo.
+
+**Con el logo eso no vale.** Una máscara se queda solo con el canal alfa, así que
+el cuadrado verde con la figura blanca se aplanaría a un **rectángulo macizo**
+del color del texto. Hay dos sitios y los dos usan `background`:
+
+| Dónde | Regla | Caja |
+|---|---|---|
+| Cabecera | `.marca::before` | 1.64em × 1.5em (42,6 × 39 a 26 px) |
+| «Próximamente» | `.tarjeta--proxima::before` | 46 × 44 px |
+
+Efecto lateral: al soltar `currentColor`, **el logo ya no cambia de color al
+pasar el ratón**. Es lo correcto para una marca, pero es un cambio respecto a la
+balanza.
+
+> **Va en `::before` y no en un `<img>`, y eso resuelve solo la accesibilidad.**
+> Un pseudoelemento no entra en el árbol de accesibilidad, así que el lector de
+> pantalla lee «El Derecho Escrito» **una vez**, la del texto del enlace. Con un
+> `<img alt="El Derecho Escrito">` al lado lo diría dos veces.
+
+> ⚠️ **PONER EL LOGO SUBIÓ LA CABECERA DE 72,2 A 80 px**, y eso arrastró cuatro
+> números medidos. El logo mide 39 px de alto y la caja de texto de la marca
+> 31,2, así que la cabecera crece esos 7,8 px:
+>
+> | | Antes | Ahora |
+> |---|---|---|
+> | Cabecera, una fila | 72,2 | **80** |
+> | Cabecera, dos filas | 108,2 | **116** |
+> | Corte del buscador | 944 | **959** |
+> | Corte de dos filas | 724 | **740** |
+> | `scroll-margin-top` ancho | 118 | **126** |
+> | `scroll-margin-top` estrecho | 154 | **162** |
+>
+> Los dos cortes se movieron porque la marca es 15,3 px más ancha; los dos
+> `scroll-margin` porque la obstrucción creció 7,8. Rebarrido: rompe a 959 y
+> aguanta a 960; rompe a 740 y aguanta a 741. Aire del salto restaurado a ~16 px
+> en los dos tramos.
+>
+> **Si se cambia el alto del logo, hay que rehacer los seis números.**
+
+### Favicon
+
+`favicon.svg` es la **versión simplificada** del logo: venda + perfil, sin los
+mechones interiores. No es un recorte: son los paths 6 y 10 del trazado de
+potrace, que resultaron ser exactamente la venda y el rostro.
+
+**El logo completo no sirve de favicon.** Medido el porcentaje de píxeles de
+tono intermedio —lo que emborrona una marca pequeña—:
+
+| | 16 px | 32 px | 48 px |
+|---|---|---|---|
+| Logo completo | **40,2** | 23,0 | 16,9 |
+| Favicon simplificado | 19,1 | **10,1** | **7,5** |
+
+> ⚠️ **A 16 px no se reconoce como un rostro, y conviene saberlo.** Su 19,1 % es
+> el mismo que tenía la balanza, pero nitidez no es legibilidad: la balanza a
+> 16 px se leía como una balanza; esto se lee como una mancha. De 32 px en
+> adelante funciona bien. Fue una decisión consciente del cliente.
+
+Los PNG se generan con `@resvg/resvg-js` desde los SVG:
+
+```sh
+node r.mjs favicon.svg favicon-32.png 32
+node r.mjs favicon.svg favicon-16.png 16
+node r.mjs img/apple-touch-src.svg apple-touch-icon.png 180 '#2F6E68'
+```
+
+> ⚠️ **El apple-touch-icon va SIN esquinas redondeadas y opaco**, y por eso
+> existe `img/apple-touch-src.svg`: es el favicon con el `rx` quitado. iOS
+> aplica su propia máscara al icono, así que si se le da uno ya redondeado
+> quedan huecos transparentes en las puntas.
+>
+> `qlmanage` de macOS **no sirve** para generar estos PNG: aplana la
+> transparencia a blanco.
+
+**No hay manifest**, así que no se han generado los 192/512.
+
+### La tarjeta social ya lleva el logo
+
+`og.svg` tenía el path de la balanza inline y ahora tiene el del logo, con los
+dos elementos copiados de `img/logo.svg`: el `<rect rx="90">` y el `<path>` de
+la figura.
+
+**Va inline y no con `<image href>`** para que la tarjeta siga siendo un solo
+archivo exportable sin arrastrar dependencias. Es el mismo criterio que tenía la
+balanza.
+
+| | Valor | De dónde sale |
+|---|---|---|
+| Alto del logo | **120 px** | 2,1 × la altura de mayúscula del logotipo (57 px) |
+| Base | **y = 311** | la misma que tenía la balanza, así el hueco de 56 px al texto no se mueve |
+| Escala | **0,100083** | 120 / 1199, el alto del logo original |
+
+Se compararon 100, 120 y 140: con 100 el logo se queda pequeño al lado del
+texto y con 140 le come protagonismo.
+
+> ⚠️ **`og.png` NO se regenera con resvg, y esta es la trampa que cuesta caro.**
+> El texto va en Cormorant Garamond, que **no está instalada en el sistema** y
+> que el `@import` del SVG **solo resuelve un navegador**. resvg cae a Georgia:
+> las letras salen más anchas y más pesadas, y la tarjeta cambia de aire.
+>
+> Se comprobó generando las dos y comparándolas.
+>
+> **Cómo se regeneró:** se conservó el `og.png` anterior —que sí tenía el texto
+> en Cormorant—, se borró la zona de la balanza rellenándola con el fondo
+> `#fbfaf7`, y se compuso encima el logo rasterizado con resvg:
+>
+> ```sh
+> node r.mjs img/logo.svg /tmp/logo-120.png 120   # fitTo height
+> # y en Python: pegar sobre og.png en (535, 191), tras limpiar (520,160)-(680,312)
+> ```
+>
+> **Si algún día hay que rehacer el texto**, las opciones son instalar la fuente
+> y usar resvg, o exportar `og.svg` desde un navegador. Lo que no vale es
+> rasterizar con resvg tal cual.
+
+### El publisher.logo apunta al logo, no a la tarjeta social
+
+`img/logo-512.png` es un lienzo de **512×512 transparente con el logo centrado**
+(512×468, con 22 px de margen arriba y abajo). Lo usa `publisher.logo` del
+JSON-LD, en `index.html`, que es donde se define la `Organization` una sola vez.
+
+Antes apuntaba a `og.png`, que es el **banner social de 1200×630**, no un
+logotipo. Funcionaba, pero le estaba dando a Google una imagen que no es la
+marca.
+
+### Los archivos fuente y qué hacer con cada uno
+
+En `img/` conviven el logo servido y tres fuentes que **no se sirven nunca** pero
+que hay que conservar: sin ellas no se puede rehacer nada.
+
+| Archivo | Qué es | Para qué sirve |
+|---|---|---|
+| `img/logo.svg` | **el logo, en producción** | cabecera y tarjeta de «Próximamente» |
+| `img/logo-512.png` | **en producción** | `publisher.logo` del JSON-LD |
+| `favicon.svg` | **en producción** | pestaña; es el logo simplificado |
+| `favicon-16/32.png`, `apple-touch-icon.png` | **en producción** | respaldos de mapa de bits |
+| `img/logo_elderechoescrito.jpeg` | original del cliente | **fuente de todo.** De aquí salieron el radio de 90 px y el verde medido |
+| `img/logo-figura.svg` | trazado crudo de potrace | **fuente del favicon**: sus paths 6 y 10 son la venda y el rostro |
+| `img/apple-touch-src.svg` | el favicon sin `rx` | **fuente del apple-touch-icon**, que va sin esquinas redondeadas |
+
+> **Se borraron** `balanza.svg`, `favicon-balanza-anterior.svg`, las dos
+> propuestas de favicon y `logo-figura.bmp` (1,7 MB, el intermedio de potrace).
+> Comprobado antes: cero referencias vivas en HTML, CSS, JS, XML y SVG.
+
+**Cómo se regenera cada cosa**, con `@resvg/resvg-js` —`qlmanage` de macOS **no
+sirve**, aplana la transparencia a blanco—:
+
+```sh
+# favicon de mapa de bits
+node r.mjs favicon.svg favicon-32.png 32
+node r.mjs favicon.svg favicon-16.png 16
+
+# apple-touch: OPACO y SIN redondeo, porque iOS aplica su propia máscara
+node r.mjs img/apple-touch-src.svg apple-touch-icon.png 180 '#2F6E68'
+
+# logo para el JSON-LD: 512 de ancho y luego centrar en un lienzo 512x512
+node r.mjs img/logo.svg /tmp/logo-w512.png 512
+```
+
+> ⚠️ **`img/logo-figura.svg` no se puede borrar aunque parezca un intermedio.**
+> El favicon NO es un recorte del logo: son dos de los veinte paths de ese
+> trazado. Sin él no se puede rehacer ni ajustar.
 
 ---
 
