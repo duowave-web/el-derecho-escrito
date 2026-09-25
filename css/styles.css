@@ -2812,6 +2812,33 @@ main > .lista:last-child {
   color: var(--acento);
 }
 
+/* ⚠️ Y ESTE ES «EL OTRO» DEL AVISO DE ARRIBA. Cuando el texto trae su propia
+   numeracion de apartados —«I.», «II.»—, el epigrafe apaga su contador y el
+   indice tiene que apagar el suyo en el mismo movimiento, o el indice diria
+   «1.» donde el apartado dice «III.».
+
+   La marca pasa a escribirse en .indice__marca, que replica exactamente lo que
+   ponia el ::before: misma columna por el `flex: none`, mismo peso y mismo
+   acento. La diferencia es que el texto sale del articulo y no de un contador.
+
+   Las dos clases las pone la plantilla a la vez, mirando si alguna seccion
+   trae numero_original: no se pueden desincronizar desde el JSON. */
+
+.indice--sin-contador li::before {
+  content: none;
+}
+
+.articulo .indice--sin-contador li {
+  counter-increment: none;
+}
+
+.indice__marca {
+  flex: none;
+  font-weight: 600;
+  color: var(--acento);
+  font-variant-numeric: tabular-nums;
+}
+
 /* En --tinta y no en el acento: son cinco enlaces seguidos y pintarlos todos de
    color convertiria la caja en un semaforo, justo lo contrario de la regla de
    usar el acento con contencion. El color queda para el numero y el rotulo. */
@@ -2947,6 +2974,15 @@ em i {
 .compartir__icono--correo {
   -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='1.8' y='3.4' width='12.4' height='9.2' rx='1.6'/%3E%3Cpath d='m2.4 4.6 5.6 4 5.6-4'/%3E%3C/svg%3E") center / contain no-repeat;
   mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='1.8' y='3.4' width='12.4' height='9.2' rx='1.6'/%3E%3Cpath d='m2.4 4.6 5.6 4 5.6-4'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+/* El del PDF es de linea, como el de correo y el de enlace, y NO lleva las
+   letras «PDF» dentro: a 15px no se leerian y el texto del boton ya lo dice.
+   Es una hoja con la esquina doblada y tres renglones. */
+
+.compartir__icono--pdf {
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9.2 1.8H4.4a1.6 1.6 0 0 0-1.6 1.6v9.2a1.6 1.6 0 0 0 1.6 1.6h7.2a1.6 1.6 0 0 0 1.6-1.6V5.8z'/%3E%3Cpath d='M9.2 1.8v4h4'/%3E%3Cpath d='M5.6 9h4.8M5.6 11.4h3.2'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9.2 1.8H4.4a1.6 1.6 0 0 0-1.6 1.6v9.2a1.6 1.6 0 0 0 1.6 1.6h7.2a1.6 1.6 0 0 0 1.6-1.6V5.8z'/%3E%3Cpath d='M9.2 1.8v4h4'/%3E%3Cpath d='M5.6 9h4.8M5.6 11.4h3.2'/%3E%3C/svg%3E") center / contain no-repeat;
 }
 
 .compartir__icono--enlace {
@@ -3604,7 +3640,17 @@ body:has(.progreso) .cabecera {
   scroll-margin-top: 126px;
 }
 
-@media (max-width: 716px) {
+/* ⚠️ ESTE CORTE TIENE QUE SER EL MISMO QUE EL DE .cabecera__interior, hoy 740.
+
+   Estuvo en 716 mientras la cabecera tambien rompia ahi. Al subir la cabecera a
+   724 y luego a 740 —por «Acerca de» primero y por el logo despues— este se
+   quedo atras, y entre 717 y 740 pasaba lo peor: la cabecera ya iba en DOS
+   filas (146px de obstruccion) pero el salto seguia usando el valor de una
+   sola (126). Medido a 730: el titulo quedaba TAPADO 20,1px.
+
+   No da ningun error y solo se ve saltando desde el indice en ese tramo. */
+
+@media (max-width: 740px) {
   .articulo__cuerpo h2 {
     scroll-margin-top: 162px;
   }
@@ -3677,6 +3723,174 @@ body:has(.progreso) .cabecera {
 
 .referencias li:last-child {
   margin-bottom: 0;
+}
+
+/* Las referencias generadas van en <ul> y no en <ol>, y NO es un descuido.
+
+   El numero de una referencia es un DATO del texto —es el que aparece entre
+   corchetes en la llamada— y no una posicion en la lista. Con un <ol> los dos
+   numeros pueden separarse en silencio: basta una referencia sin numero, como
+   la LOPJ del articulo de MASC, para que el <ol> siga contando y a partir de
+   ahi ensene un numero que no es el que citan las llamadas.
+
+   Asi que la numeracion se escribe, en .ref__numero, y la lista no cuenta. */
+
+.referencias ul {
+  list-style: none;
+  margin: 0;
+  padding-left: 0;
+}
+
+.ref__numero {
+  color: var(--acento);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Los grupos —Normativa, Jurisprudencia, Doctrina— son opcionales: un articulo
+   puede traer una lista suelta. Cuando los hay, el primero no lleva el aire de
+   arriba porque ya lo pone el rotulo de la caja. */
+
+/* ⚠️ Va prefijado con .referencias y NO a secas. Es un <h3>, y «.articulo h3»
+   —que lo pone en Cormorant a 24px— pesa (0,1,1) frente a los (0,1,0) de la
+   clase sola: gana por especificidad, no por orden.
+
+   Se vio en el PDF antes que en pantalla: el rotulo salia en versales, porque
+   el text-transform si se aplicaba, pero con el cuerpo y la familia de un
+   epigrafe de seccion. Parecia un apartado nuevo dentro de la caja. */
+
+.referencias .referencias__grupo {
+  margin: 20px 0 10px;
+  font-family: var(--ui);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--tinta-suave);
+}
+
+.referencias .referencias__grupo:first-of-type {
+  margin-top: 14px;
+}
+
+/* La llamada de referencia. Va en <sup> con su aria-label, y CADA NUMERO ES SU
+   PROPIO ENLACE: [1, 6] son dos anclas distintas, no una. Los corchetes y la
+   coma los escribe la plantilla fuera de los <a> para que no formen parte de
+   la superficie pulsable ni del texto del enlace.
+
+   El tamano va en `em` para que siga al del parrafo, y el line-height a 0 para
+   que un volado no abra el interlineado de la linea en la que cae. */
+
+.llamada {
+  font-size: 0.72em;
+  line-height: 0;
+  color: var(--acento);
+  white-space: nowrap;
+}
+
+.llamada a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.llamada a:hover,
+.llamada a:focus-visible {
+  text-decoration: underline;
+}
+
+/* La diana de una llamada es diminuta —dos o tres pixeles de glifo— asi que el
+   padding la ensancha sin mover el texto, que es para lo que esta el margen
+   negativo. */
+
+.articulo .llamada a {
+  padding: 6px 3px;
+  margin: -6px -3px;
+}
+
+/* El ancla de destino tiene que quedar por debajo de la cabecera fija, igual
+   que los epigrafes. Aqui basta menos holgura porque una linea de lista es mas
+   baja que un <h2>, pero se usa el mismo numero para no tener dos. */
+
+.referencias li[id] {
+  scroll-margin-top: 126px;
+}
+
+@media (max-width: 740px) {
+  .referencias li[id] {
+    scroll-margin-top: 162px;
+  }
+}
+
+/* La referencia recien saltada se marca un momento. Sin esto, saltar a [6] en
+   una lista de once deja al lector buscando cual era: el navegador coloca la
+   linea arriba y nada la senala. */
+
+.referencias li[id]:target {
+  background: rgba(47, 110, 104, 0.09);
+  box-shadow: 0 0 0 6px rgba(47, 110, 104, 0.09);
+  border-radius: 2px;
+}
+
+/* La fuente de una cita destacada. Va alineada con el texto de la cita —los
+   mismos 54px de sangria que deja la comilla— y no centrada ni a la derecha:
+   se lee como continuacion de la cita, no como un pie. */
+
+.articulo .cita__fuente {
+  margin: -24px 0 36px;
+  padding-left: 54px;
+  font-family: var(--ui);
+  font-size: 13px;
+  letter-spacing: 0.02em;
+  color: var(--tinta-suave);
+}
+
+/* Lista con marcadores escritos —«1.º», «2.º»—. Un <ol> nativo no sabe poner
+   la «º», asi que cuando el texto los trae se apaga la numeracion automatica y
+   se escriben en un <span>.
+
+   El colgado se hace con sangria francesa y no con un flex: asi, si un item
+   ocupa varias lineas, la segunda alinea con la primera palabra y no con el
+   marcador. */
+
+.articulo .lista--marcada {
+  list-style: none;
+  padding-left: 34px;
+}
+
+.articulo .lista--marcada li {
+  text-indent: -34px;
+}
+
+.lista__marca {
+  display: inline-block;
+  width: 26px;
+  margin-right: 8px;
+  text-indent: 0;
+  color: var(--acento);
+  font-weight: 600;
+}
+
+/* ⚠️ CUANDO EL TEXTO TRAE SU PROPIA NUMERACION DE APARTADOS —«I.», «II.»— HAY
+   QUE APAGAR LA DEL SITIO, O SALEN LAS DOS.
+
+   El contador de .articulo__cuerpo h2 pinta «1.», «2.»… delante del epigrafe.
+   Si el autor ya escribio «III. Subsanabilidad del requisito», sin esto se
+   leeria «3. III. Subsanabilidad del requisito».
+
+   No basta con quitar el ::before: hay que soltar tambien el counter-increment.
+   Dejarlo puesto no se ve en este articulo, pero el contador es del documento y
+   seguiria avanzando, asi que cualquier otro elemento que lo lea contaria unos
+   apartados que ya no se numeran.
+
+   Lo pone la plantilla sola, mirando si alguna seccion trae numero_original. */
+
+.articulo__cuerpo--sin-contador h2 {
+  counter-increment: none;
+}
+
+.articulo__cuerpo--sin-contador h2::before {
+  content: none;
+  margin-right: 0;
 }
 
 /* ------------------------------------------- Lateral del articulo ------- */
