@@ -509,23 +509,24 @@ body:has(.portada--video) .cabecera--con-linea {
    se queda en 2.59:1 e incumple; oscurecerla es lo que permite bajar el velo y
    que el video se vea. El resto del sitio conserva la jerarquia tonal.
 
-   ⚠️ LA REGLA DEL ANTETITULO VOLVIO, y no es opcional. Estuvo aqui, se retiro
-   con el antetitulo «Blog juridico» —era su unico caso— y ha vuelto con la
-   linea de areas de los textos definitivos.
+   ⚠️ AQUI VIVIA LA REGLA DEL ANTETITULO, Y SE HA IDO POR TERCERA VEZ. El
+   historial importa porque vuelve sola cada vez que alguien repone un rotulo
+   encima del titular: estuvo con el antetitulo «Blog juridico», se retiro al
+   quitarlo, volvio con la linea de areas de los textos definitivos y se va
+   ahora al retirarse esa linea por encargo. El hero ya no tiene antetitulo.
 
-   El motivo por el que existe no ha cambiado: sobre el video, --acento se
-   queda en 2,50:1 y no llega ni a AA para texto pequeno. --acento-oscuro es lo
-   que lo salva. Si alguien quita la linea de areas otra vez, esta regla se va
-   con ella; si alguien la pone sin esta regla, el rotulo se publica ilegible y
-   nada avisa.
+   Decia `.portada--video .portada__antetitulo { color: var(--acento-oscuro) }`
+   y NO era decorativa: sobre el video, --acento se queda en 2,50:1 y no llega
+   ni a AA para texto pequeno. --acento-oscuro es lo unico que lo salva.
 
-   La clase base .portada__antetitulo NO se toca: la sigue usando 404.html para
-   el rotulo «Error 404», y alli va sobre blanco, donde --acento cumple de
-   sobra. */
+   ⚠️ QUIEN VUELVA A PONER UN .portada__antetitulo EN LA PORTADA TIENE QUE
+   REPONER ESTA REGLA EN EL MISMO MOVIMIENTO. Son dos cosas, no una, y el fallo
+   es silencioso: el rotulo se publica ilegible y nada avisa. Es lo contrario
+   de lo que parece al leer el HTML, donde el <p> se ve correcto.
 
-.portada--video .portada__antetitulo {
-  color: var(--acento-oscuro);
-}
+   La clase base .portada__antetitulo NO se toca ni es codigo muerto: la sigue
+   usando 404.html para el rotulo «Error 404», y alli va sobre blanco, donde
+   --acento cumple de sobra y esta regla nunca hizo falta. */
 
 .portada--video .portada__entradilla {
   color: var(--tinta);
@@ -677,19 +678,28 @@ body:has(.portada--video) .cabecera--con-linea {
    se partia en DOS, el titular se iba a 3 lineas y el subtitulo a 6, y el hero
    crecia a 605,7px. Medido tambien a 1000 (635,2) y a 375 (746,8).
 
-   620 es el MINIMO que lo arregla, y lo fija la linea de areas: «Derecho
-   administrativo · Urbanismo · Jurisdiccion contencioso-administrativa» pide
-   619px para ir en una sola linea. La casualidad util es que ese mismo ancho
-   baja el titular a 2 lineas y el subtitulo a 5, con lo que el hero vuelve a
-   520 EXACTOS a 1440 y a 1000. Por debajo de 620 se rompe lo primero.
+   620 lo fijaba la linea de areas: «Derecho administrativo · Urbanismo ·
+   Jurisdiccion contencioso-administrativa» pedia 619px para ir en una sola
+   linea, y de ahi salia el numero.
+
+   ⚠️ ESA LINEA YA NO EXISTE —se retiro del hero por encargo— ASI QUE EL 620 YA
+   NO LO SOSTIENE NINGUN TEXTO. Se conserva igualmente, y no por inercia: es el
+   ancho con el que estan medidos el resto de numeros del hero. El titular
+   nuevo, «Blog juridico especializado en Derecho Administrativo y Urbanismo»,
+   cabe en 2 lineas dentro de el, y el subtitulo lo limita su propio max-width
+   de 31em —unos 570px—, que muerde antes que la columna. O sea que hoy NINGUNO
+   de los dos textos toca este limite.
+
+   La consecuencia practica: bajar el 620 ya no rompe una linea de areas, pero
+   sigue moviendo el titular y, con el, el alto de la franja. Y el contraste del
+   subtitulo sobre el video esta medido con la columna en 620 —esta razonado
+   unas lineas mas abajo, en el max-width de .portada__entradilla—, asi que
+   tocarlo obliga a volver a medir aquello.
 
    Va en `minmax(0, 620px) 1fr` y no en una fraccion porque el ancho que hace
-   falta es absoluto —lo pide un texto— y no una proporcion del contenedor. La
-   segunda columna se queda con lo que sobre, que es el hueco por donde se ve la
-   figura del video: a 1440 le quedan 492 y a 1000, 292.
-
-   Si cambia el texto de la linea de areas, este numero hay que volver a
-   medirlo: sale del contenido, no del diseno. */
+   falta es absoluto y no una proporcion del contenedor. La segunda columna se
+   queda con lo que sobre, que es el hueco por donde se ve la figura del video:
+   a 1440 le quedan 492 y a 1000, 292. */
 
 .portada__interior {
   position: relative;

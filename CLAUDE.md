@@ -9,16 +9,59 @@ Dominio final previsto: `elderechoescrito.es`.
 
 ## Los textos visibles son del cliente — no se reescriben
 
-El hero, la banda de suscripción, `sobre/`, `contacto/`, el aviso de cierre del
-artículo y el bloque de suscripción del lateral llevan **textos definitivos
-entregados por el cliente**. Se copiaron literalmente.
+La banda de suscripción, `sobre/`, `contacto/`, el aviso de cierre del artículo
+y el bloque de suscripción del lateral llevan **textos definitivos entregados
+por el cliente**. Se copiaron literalmente.
 
 **No se reescriben, no se acortan y no se les corrige el estilo**, ni siquiera
 para ajustar una línea que rompe mal. Si un texto no cabe, se cambia el diseño
 —como se hizo con la columna del hero, que pasó de 556 a 620 px— o se pregunta.
 Si hay una errata, se avisa; no se corrige por iniciativa propia.
 
-Dos convenciones suyas que conviene no «arreglar»:
+> ⚠️ **EL HERO SALIÓ DE ESA LISTA, Y ESTA SECCIÓN LO INCLUÍA.** Sus textos eran
+> del cliente y se sustituyeron **por encargo**. Los de ahora son los oficiales
+> y quedan registrados aquí para que ninguna pasada futura los «devuelva» a la
+> versión del cliente creyendo que corrige un descuido.
+>
+> El hero es hoy lo único de esta lista que **no** procede de su documento. Todo
+> lo demás sigue igual y la regla de arriba se les aplica entera.
+
+**El texto oficial del hero**, tal como está en `index.html`:
+
+> **h1** — Blog jurídico especializado en Derecho Administrativo y Urbanismo
+>
+> **entradilla** — Un espacio de análisis para comprender los fundamentos, la
+> jurisprudencia y la práctica del Derecho Público, tanto en vía administrativa
+> como ante los tribunales.
+
+Y dos decisiones del hero que **no son descuidos** y no hay que revertir:
+
+> ⚠️ **1. «Derecho Administrativo» y «Derecho Público» van en MAYÚSCULA, y es
+> intencionado.** Contradice a propósito la convención del cliente que está en
+> la lista de abajo —él escribe «Derecho administrativo»—, y la contradice
+> **solo en el hero**.
+>
+> Es exactamente la clase de cosa que una revisión de estilo «arregla» de camino
+> a otra tarea, porque desde dentro del archivo parece una inconsistencia. No lo
+> es: el titular del hero es el único texto del sitio que no sigue esa
+> convención, y se quiere así.
+
+> ⚠️ **2. El antetítulo del hero —la línea de áreas— se eliminó, y fue
+> deliberado.** Decía «Derecho administrativo · Urbanismo · Jurisdicción
+> contencioso-administrativa» y ocupaba un `<p class="portada__antetitulo">`
+> encima del `<h1>`. **No hay que reponerlo.**
+>
+> Con él se retiró su regla de contraste, `.portada--video .portada__antetitulo`,
+> que existía únicamente por ese caso. Las dos cosas van juntas: **reponer una
+> sin la otra publica el rótulo ilegible y nada avisa** —sobre el vídeo,
+> `--acento` se queda en 2,50:1—. Está razonado en su propia sección, más abajo.
+>
+> **La clase base `.portada__antetitulo` SE CONSERVA y no es código muerto**: la
+> usa `404.html` para el rótulo «Error 404», que va sobre blanco y nunca
+> necesitó la regla de contraste. Quien la vea sin usos en la portada y la borre
+> por limpieza, rompe el 404.
+
+Dos convenciones del cliente que conviene no «arreglar»:
 
 - **«El Derecho Escrito» va en cursiva cuando aparece dentro de un texto** y sin
   ella en los títulos de página. Así que `sobre/` se titula «Sobre El Derecho
@@ -27,6 +70,9 @@ Dos convenciones suyas que conviene no «arreglar»:
 - **Escribe «Derecho administrativo» y «jurisdicción contencioso-administrativa»**,
   con minúscula tras «Derecho». La cabecera de este archivo las capitaliza; el
   criterio del cliente manda en los textos.
+
+  ⚠️ **Con una excepción, el hero**, que va en mayúscula por encargo y está
+  arriba. La regla sigue valiendo en todo lo demás.
 
 **Lo que NO venía en su documento y sigue como estaba**: las etiquetas de
 sección de la portada, el artículo de ejemplo entero, el 404 y las etiquetas del
@@ -2027,11 +2073,20 @@ páginas **no lleva clase**, su «Continúa leyendo» sigue sin filete, su
 filete de 1 px, sus 28 px de relleno y su radio de 3 — con «Próximamente» en los
 **573,8 px** documentados.
 
-**Lo que el rediseño NO toca, por encargo expreso:** `--papel`, `--papel-alt`,
-`--ancho-amplio`, los textos del hero y su altura de 520 px. El fondo sigue
-siendo **blanco puro** y la banda de suscripción sigue en `--papel-alt` frío,
-que es una petición del cliente. Si algún día se pide el fondo crema de la
-maqueta, hay que releer antes la sección del color.
+**Lo que aquel rediseño NO tocó, por encargo expreso:** `--papel`, `--papel-alt`,
+`--ancho-amplio`, los textos que el hero tenía **entonces** y su altura de
+520 px. El fondo sigue siendo **blanco puro** y la banda de suscripción sigue en
+`--papel-alt` frío, que es una petición del cliente. Si algún día se pide el
+fondo crema de la maqueta, hay que releer antes la sección del color.
+
+> ⚠️ **Esto es el inventario de UNA pasada, no una regla en vigor**, y la
+> diferencia importa porque los cinco elementos no han envejecido igual. Los
+> tres tokens y los 520 px siguen vigentes y se pueden seguir leyendo como
+> límites. **Los textos del hero no**: se sustituyeron después, por encargo.
+>
+> El texto oficial de hoy está en **«Los textos visibles son del cliente — no se
+> reescriben»**, al principio de este archivo, junto con las dos decisiones que
+> no hay que revertir.
 
 #### Las tarjetas de la portada son `--abierta`; las del listado, `--caja`
 
@@ -2336,38 +2391,48 @@ de recorte cambia a horizontal— así que lo paga solo el escritorio ancho.
 El vídeo es un **bucle ping-pong**: medido, el primer y el último fotograma
 difieren en **1,23 sobre 255**, o sea que el salto del `loop` no se ve.
 
-El bloque de la portada es **antetítulo, titular, subtítulo y dos botones**.
+El bloque de la portada es **titular, subtítulo y dos botones**.
 
-> ⚠️ **EL ANTETÍTULO VOLVIÓ, y esta sección decía que no había.** Aquí se
-> explicaba que el bloque iba «sin antetítulo encima», que llevó uno —«BLOG
-> JURÍDICO»— y se retiró, y que por eso se había retirado también
-> `.portada--video .portada__antetitulo`.
+> ⚠️ **EL ANTETÍTULO SE FUE POR TERCERA VEZ, Y ESTA SECCIÓN DECÍA QUE HABÍA
+> VUELTO.** El historial importa porque el elemento regresa solo cada vez que
+> alguien decide que al titular le falta un rótulo encima:
 >
-> Los textos definitivos del cliente traen una **línea de áreas** en ese sitio:
-> «Derecho administrativo · Urbanismo · Jurisdicción contencioso-administrativa».
+> | Pasada | Antetítulo | Regla de contraste |
+> |---|---|---|
+> | maqueta | «BLOG JURÍDICO» | puesta |
+> | al retirarlo | — | retirada |
+> | textos del cliente | línea de áreas | **repuesta** |
+> | **hoy, por encargo** | **ninguno** | **retirada** |
 >
-> **Con ella ha vuelto la regla de contraste, y no es opcional.** Sobre el vídeo
-> `--acento` se queda en **2,50:1** y no llega a AA; `--acento-oscuro` lo
-> arregla. Medido con el antetítulo puesto: **5,24–5,44:1** entre 932 y 1440 px.
-> Si alguien vuelve a quitar la línea de áreas, la regla se va con ella; si
-> alguien la pone sin la regla, el rótulo se publica ilegible y nada avisa.
+> La línea de áreas decía «Derecho administrativo · Urbanismo · Jurisdicción
+> contencioso-administrativa». **Se eliminó a propósito y no hay que reponerla**
+> — está registrado arriba, en la sección de los textos del hero.
 >
-> **`.portada__antetitulo` también la sigue usando `404.html`** para el rótulo
-> «Error 404». Allí va sobre blanco, donde `--acento` da 5,91:1 y no hace falta
-> oscurecerlo.
+> ⚠️ **QUIEN VUELVA A PONER UN ANTETÍTULO EN LA PORTADA TIENE QUE REPONER
+> `.portada--video .portada__antetitulo` EN EL MISMO MOVIMIENTO.** Son dos cosas
+> y no una. Sobre el vídeo `--acento` se queda en **2,50:1** y no llega a AA;
+> `--acento-oscuro` lo arregla, y con el antetítulo puesto medía **5,24–5,44:1**
+> entre 932 y 1440 px. Ponerlo sin la regla **publica el rótulo ilegible y nada
+> avisa**: el HTML se ve correcto al leerlo, que es lo que lo hace traicionero.
+>
+> **`.portada__antetitulo`, la clase base, NO se toca**: la sigue usando
+> `404.html` para el rótulo «Error 404». Allí va sobre blanco, donde `--acento`
+> da 5,91:1 y la regla de contraste nunca hizo falta. Verificado que `404.html`
+> usa `.portada` y no `.portada--video`, así que la regla retirada no le
+> aplicaba.
 
-> **La línea de áreas se escribe en caja normal, no en mayúsculas.** Las
-> versales las pone `text-transform` en el CSS, igual que en las categorías.
-> Escribirla en mayúsculas en el HTML haría que algunos lectores de pantalla la
-> deletrearan letra a letra. El documento del cliente la traía en caps, pero eso
-> era una indicación de estilo, no el contenido.
+> **Si alguna vez vuelve una línea de áreas, se escribe en caja normal, no en
+> mayúsculas.** Las versales las pone `text-transform` en el CSS, igual que en
+> las categorías. Escribirla en mayúsculas en el HTML haría que algunos lectores
+> de pantalla la deletrearan letra a letra. El documento del cliente la traía en
+> caps, pero eso era una indicación de estilo, no el contenido.
 
 El bloque se centra solo: `.portada` es flex con `align-items: center`, así que
 los elementos se recolocan sin tocar nada. Verificado que la franja sigue en
 520 px en 1440, 1084, 1000, 960 y 932 —lo garantiza el `min-height`— y que el
 desvío respecto al reparto del padding es 0.
 
-#### La columna del hero mide 620 px, y los textos del cliente la fijaron
+#### La columna del hero mide 620 px, y hoy la sostiene la calibración
 
 La rejilla del hero estuvo en `1fr 1fr`, que a 1440 reparte **556** a cada lado.
 Con los textos definitivos eso **no cabía en la franja de 520**: la línea de
@@ -2379,24 +2444,50 @@ Con los textos definitivos eso **no cabía en la franja de 520**: la línea de
 | 1000 | 635,2 px | **520 exactos** |
 | 375 | 746,8 px | 686,6 px (una columna) |
 
-**620 es el mínimo, y lo fija la línea de áreas**: pide **619 px** para ir en
-una sola línea. La casualidad útil es que ese mismo ancho baja el titular a 2
-líneas y el subtítulo a 5. Por debajo de 620 se rompe lo primero.
+**620 salió de la línea de áreas**: ese texto pedía **619 px** para ir en una
+sola línea, y de ahí el número. La casualidad útil era que el mismo ancho bajaba
+el titular a 2 líneas y el subtítulo a 5.
+
+> ⚠️ **ESA LÍNEA YA NO EXISTE, Y ESTA SECCIÓN LA DABA COMO ORIGEN DEL NÚMERO.**
+> Se eliminó del hero por encargo, así que **el 620 ya no lo sostiene ningún
+> texto**. Aquí decía además «si se alarga el texto de la línea de áreas, este
+> número hay que volver a medirlo»; eso decae con la línea.
+>
+> **El número se mantiene igualmente, y no por inercia: es el ancho con el que
+> está calibrado el resto del hero.** Con los textos de hoy ninguno de los dos
+> llega a tocarlo:
+>
+> | | Línea más larga | ¿Toca los 620? |
+> |---|---|---|
+> | Titular (3 líneas) | 537 px | no |
+> | Subtítulo (3 líneas) | 533 px | no — lo corta antes su `max-width: 31em`, ~570 px |
+>
+> Verificado que la franja sigue en **520 exactos** a 1440, 1084 y 932.
+>
+> ⚠️ **Lo que hace caro bajarlo es el contraste, no la maqueta.** El `max-width`
+> del subtítulo está medido **con la columna en 620**: es una medida de
+> contraste, porque una línea larga mete su cola en el plato de la balanza del
+> vídeo, donde el velo está en su zona más floja, y ahí llegó a **1,78:1**. Está
+> razonado en `styles.css`, sobre `.portada__entradilla`. Quien cambie el 620
+> tiene que volver a medir aquello, no solo mirar si el titular cabe.
+>
+> Medido hoy en el peor caso —muestreando el fotograma **sin** el velo encima,
+> así que el real es mejor—: **5,45:1** a 1084 y **5,32:1** a 932. AA con
+> margen.
 
 Va en `minmax(0, 620px) 1fr` y no en una fracción porque el ancho que hace falta
-es **absoluto** —lo pide un texto— y no una proporción del contenedor. La
-segunda columna se queda con lo que sobre, que es el hueco por donde se ve la
-figura: 492 px a 1440 y 292 a 1000.
+es **absoluto** y no una proporción del contenedor. La segunda columna se queda
+con lo que sobre, que es el hueco por donde se ve la figura: 492 px a 1440 y 292
+a 1000.
 
-> ⚠️ **Si se alarga el texto de la línea de áreas, este número hay que volver a
-> medirlo.** Sale del contenido, no del diseño.
-
-> ⚠️ **En móvil el hero crece y se acepta.** A 375 ocupa **686,6 px**, el 84,6 %
-> de una pantalla de 812. No se corta nada —para eso es `min-height`— pero llena
-> casi toda la pantalla. Lo que lo recorta es el subtítulo, que baja a 16 px por
-> debajo de 600: 18,4 daba 746,8 px y el 92 %. El resto del alto lo ponen el
-> titular (4 líneas) y la línea de áreas (2), y esos se dejan al cuerpo que les
-> toca.
+> **En móvil el hero ya no llena la pantalla, y esta sección decía que sí.**
+> Aquí se registraba que a 375 ocupaba **686,6 px**, el 84,6 % de una pantalla
+> de 812, y se aceptaba a regañadientes. Con los textos nuevos —sin línea de
+> áreas y con un subtítulo más corto— baja a **574,5 px, el 70,8 %**.
+>
+> Lo que lo recortaba sigue en pie: el subtítulo baja a 16 px por debajo de 600,
+> y con 18,4 el hero se iba a 746,8 px y al 92 %. El resto del alto lo pone el
+> titular, que a 375 ocupa 5 líneas.
 
 Cada tarjeta va **dentro de una caja** con fondo `--papel-alt`, filete de 1 px
 en `--borde` y 28 px de padding: imagen arriba en 3:2, categoría en versales de
@@ -2742,15 +2833,37 @@ node r.mjs img/logo.svg /tmp/logo-w512.png 512
   «Sobre el autor» con retrato, y los dos botones de salida. Ya no queda ningún
   corchete en el sitio.
 - ~~La web no dice en qué materias ejerce~~ **RESUELTO, y con ello se cierra la
-  contradicción que había aquí.** Los textos del cliente las nombran en cuatro
-  sitios: la línea de áreas del hero, su subtítulo, la apertura de `sobre/` y su
-  apartado «Contenido». Son Derecho administrativo, urbanismo y jurisdicción
-  contencioso-administrativa, o sea las que la cabecera de este archivo daba por
-  buenas.
+  contradicción que había aquí.** Se nombran en **tres** sitios: el titular del
+  hero, la apertura de `sobre/` y su apartado «Contenido». Son Derecho
+  administrativo, urbanismo y jurisdicción contencioso-administrativa, o sea las
+  que la cabecera de este archivo daba por buenas.
+
+  ⚠️ **Eran cuatro sitios y este apartado listaba dos del hero que ya no
+  valen.** Decía «la línea de áreas del hero, su subtítulo, la apertura de
+  `sobre/` y su apartado "Contenido"», y los dos primeros han decaído:
+
+  | Sitio | Estado |
+  |---|---|
+  | línea de áreas del hero | **ya no existe** — se eliminó a propósito |
+  | subtítulo del hero | **ya no las nombra**: dice «Derecho Público», «vía administrativa» y «ante los tribunales», que es una paráfrasis |
+  | **titular del hero** | las nombra ahora, pero **solo dos**: Derecho Administrativo y Urbanismo |
+  | apertura de `sobre/` | las tres |
+  | apartado «Contenido» | las tres |
+
+  O sea que **la jurisdicción contencioso-administrativa ya no se nombra en la
+  portada**, solo en `sobre/`. No es un descuido que haya que reparar metiéndola
+  de vuelta en el hero: los textos del hero son los que son y están registrados
+  arriba. Se anota porque cambia dónde hay que mirar si algún día se revisa el
+  discurso del sitio.
 
   Ojo a la **grafía del cliente**, que no es la que usa este archivo: él escribe
   «Derecho administrativo» y «jurisdicción contencioso-administrativa», con
   minúscula después de «Derecho». Se respeta tal cual en los textos.
+
+  ⚠️ **Con una excepción, el hero**, que va en mayúscula por encargo —«Derecho
+  Administrativo», «Derecho Público»— y está registrado en la sección de los
+  textos visibles, al principio de este archivo. La regla sigue valiendo en todo
+  lo demás. **No se corrige el hero a minúscula.**
 - ✅ **Ya hay colegio y despacho**: Ilustre Colegio de la Abogacía de Madrid y
   Sterling Abogados, en `sobre/`. **Siguen faltando** número de colegiado,
   tarifas y plazos de respuesta, y no se inventan.
