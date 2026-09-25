@@ -103,23 +103,50 @@ resuelve un tercero**. El resto las lee Google o el navegador del visitante; la
 de LinkedIn la pide LinkedIn desde sus servidores. Una dirección que solo
 funcione en local no da error al pulsarla — devuelve una tarjeta vacía.
 
-## Sin build = mantenimiento manual
+## Publicar: lo hace el generador, no la mano
 
-Al publicar un artículo nuevo hay que actualizar a mano, siempre:
+> ⚠️ **ESTA SECCIÓN DECÍA LO CONTRARIO Y ERA UNA LISTA DE CINCO PASOS MANUALES.**
+> Se titulaba «Sin build = mantenimiento manual» y enumeraba lo que había que
+> tocar a mano al publicar: `sitemap.xml`, `feed.xml`, la portada, el listado y
+> el índice del artículo.
+>
+> **Ya no se toca ninguno de los cinco.** Los escribe `scripts/build.mjs` a
+> partir de un solo archivo, `contenido/articulos/<slug>/articulo.json`. Está
+> explicado entero en **«El generador de artículos»**, al final de este archivo.
+>
+> **Lo que NO ha cambiado es la regla dura del proyecto**: la web publicada
+> sigue siendo HTML, CSS y JS puro, sin dependencias y sin build en el
+> servidor. El generador se ejecuta antes de publicar y deja HTML en el repo;
+> GitHub Pages sigue sirviendo archivos, no compilando nada. Quien lea «hay un
+> build» y deduzca que ya se puede meter un framework, ha leído mal.
 
-1. `sitemap.xml` — añadir la URL.
-2. `feed.xml` — añadir el `<item>`.
-3. `index.html` — añadir la tarjeta a «Últimos artículos» de la portada, **y si
-   la sección está apagada, encenderla**. Ver abajo: no es copiar y pegar sin
-   más, porque esa sección **no lista el destacado** y hoy va con `hidden`.
-4. `articulos/index.html` — añadir la entrada al listado completo, **con su
-   `data-etiquetas`**.
-5. **El índice del propio artículo** — un `<li>` por cada `<h2>`. Ver abajo.
+Al publicar un artículo nuevo se escribe **un** archivo y se ejecuta **un**
+comando:
 
-Si no, el artículo existe pero es invisible para buscadores y lectores de RSS.
-El paso 5 es la excepción: ese no se ve fuera, se ve dentro.
+```sh
+contenido/articulos/<slug>/articulo.json   # el texto
+contenido/articulos/<slug>/portada.jpg     # la imagen
 
-> **El paso 4 pesa más que los otros tres, y conviene saberlo.**
+cd scripts && npm run publicar             # build + PDF
+```
+
+De ahí salen, siempre a la vez:
+
+1. `articulos/<slug>/index.html` — la página entera, índice incluido.
+2. `articulos/<slug>/portada.jpg` — la imagen optimizada.
+3. `articulos/<slug>/<slug>.pdf` — el PDF descargable.
+4. `sitemap.xml` y `feed.xml` — la URL y el `<item>`.
+5. `index.html` — el destacado y las tarjetas de «Últimos artículos».
+6. `articulos/index.html` — la tarjeta del listado, con su `data-etiquetas`, y
+   los botones de categoría.
+
+**Nada de esto se edita a mano.** Los archivos generados llevan un aviso en su
+cabecera y lo que se escriba dentro se pierde en el siguiente build.
+
+> **El razonamiento de por qué `articulos/index.html` es especial sigue
+> valiendo, y ahora vale más.** Se conserva justo debajo.
+
+> **El paso 4 pesaba más que los otros tres, y conviene saberlo.**
 > `articulos/index.html` **es el índice del sitio**: el bloque «Continúa
 > leyendo» de cada artículo se construye leyendo sus tarjetas por `fetch`. Así
 > que saltárselo no solo esconde el artículo del listado — lo deja fuera de los
@@ -129,13 +156,38 @@ El paso 5 es la excepción: ese no se ve fuera, se ve dentro.
 > que mantenerlo, y **si se olvida el fallo se ve al instante**, mientras que un
 > índice paralelo se desincroniza en silencio. Está razonado más abajo.
 >
+> ⚠️ **Y con el generador esto se vuelve una regla de diseño, no una
+> comodidad.** Ahora sí existe un origen de datos aparte —los `articulo.json`—,
+> así que la tentación evidente es que «Continúa leyendo» lea de ahí y se acabe
+> el `fetch`. **No se hace, y el motivo es que los JSON no se publican**: viven
+> en `contenido/`, que no se sirve. El navegador del lector no puede verlos.
+>
+> Lo que sí ha cambiado es de quién es la culpa si se desincroniza: antes era
+> de quien se olvidaba del paso 4, y ahora es del generador, que escribe la
+> tarjeta y la página del artículo en la misma pasada. No puede fallar una sin
+> la otra.
+>
 > **Lo que NO hay que tocar al publicar es el bloque «Continúa leyendo»** de
 > ningún artículo. Se rellena solo.
 
-#### TODO artículo lleva índice, y se escribe a mano
+#### TODO artículo lleva índice, y lo escribe el generador
+
+> ⚠️ **ESTA SECCIÓN DECÍA «Y SE ESCRIBE A MANO».** Lo fue durante un tiempo, y
+> antes de eso lo generaba JavaScript en el navegador. Ahora lo escribe
+> `scripts/build.mjs`, que **es otra cosa**: el índice sigue estando en el HTML
+> publicado —un buscador lo ve, y sin JavaScript también— y lo único que cambia
+> es quién teclea los `<li>`.
+>
+> **La regla dura del proyecto no se toca**: el contenido va en el HTML. Lo que
+> se retiró en su día, `indiceDelArticulo()` en `js/main.js`, generaba el índice
+> **en el navegador del lector**, y eso sí lo dejaba fuera del HTML. No hay que
+> reintroducirlo.
+>
+> Todo lo que sigue describe **lo que el generador produce**, y hay que leerlo
+> si se toca `pintarIndice()` en `scripts/lib/plantilla.mjs`.
 
 Va en la **columna del artículo**, entre la entradilla y el primer apartado, y
-es obligatorio en cada artículo nuevo. Se copia esta estructura:
+lo lleva todo artículo. La estructura es esta:
 
 ```html
 <nav class="indice" aria-labelledby="indice-titulo">
@@ -151,13 +203,38 @@ La receta, en cuatro puntos:
 
 1. **Un `<li>` por cada `<h2>` del cuerpo, en orden y con el mismo texto.** Solo
    los `<h2>`: los `<h3>` no entran, o el índice acaba siendo tan largo como el
-   artículo.
+   artículo. Sale solo: en el JSON los `<h2>` **son** las secciones, y los
+   `<h3>` son bloques de tipo `subtitulo` dentro de una.
 2. **Cada `<h2>` necesita un `id`**: minúsculas, sin tildes, con guiones
-   (`prohibicion-de-analogia`). **Si ya tiene uno, se respeta** — puede haber
-   enlaces apuntando desde fuera y no se pueden reescribir.
-3. **Los números no se escriben.** Los pone el CSS con un contador, igual que
-   los del propio epígrafe.
+   (`prohibicion-de-analogia`). Es el campo `id` de la sección. **No se genera a
+   partir del título, y eso es deliberado**: un `id` derivado del texto cambia
+   en cuanto se retoca una palabra del epígrafe, y ahí se rompen a la vez el
+   índice, las anclas externas y cualquier enlace compartido. Escribiéndolo, el
+   título se puede corregir sin mover el ancla.
+3. **Los números no se escriben… salvo que el texto traiga los suyos.** Ver el
+   punto siguiente, que es la excepción y tiene su propia trampa.
 4. **No se toca el CSS.** Todo el aspecto vive en `.indice`, en `styles.css`.
+
+> ⚠️ **SI EL AUTOR NUMERA SUS APARTADOS —«I.», «II.»— HAY QUE APAGAR DOS
+> CONTADORES, NO UNO, Y SI SE APAGA SOLO UNO NADA DA ERROR.**
+>
+> El sitio numera los apartados con contadores CSS en dos sitios distintos: el
+> epígrafe (`.articulo__cuerpo h2::before`) y el índice (`.indice li::before`).
+> Son independientes. Si el texto ya dice «III. Subsanabilidad», sin apagarlos
+> se lee «3. III. Subsanabilidad», y apagando solo el del epígrafe el índice
+> diría «1.» al lado de un apartado que dice «III.».
+>
+> Lo resuelve el campo **`numero_original`** de cada sección del JSON. Si alguna
+> sección lo trae, la plantilla pone a la vez `.articulo__cuerpo--sin-contador`
+> y `.indice--sin-contador`, y escribe la marca en `.indice__marca`, que replica
+> exactamente lo que ponía el `::before`. **Las dos clases las pone la misma
+> línea de código**, así que no se pueden desincronizar desde el JSON.
+>
+> No basta con quitar el `::before`: hay que soltar también el
+> `counter-increment`. Dejarlo puesto no se ve, pero el contador es del
+> documento y sigue avanzando.
+>
+> El artículo de MASC es el caso real, con sus cinco apartados de I a V.
 
 > ⚠️ **Tres reglas del componente van prefijadas con `.articulo` y hay que
 > dejarlas así**: `.articulo .indice ol`, `.articulo .indice li` y su
@@ -185,15 +262,21 @@ La receta, en cuatro puntos:
 > No da ningún error ni descoloca nada. Solo se ven mal los números, y hay que
 > estar mirándolos para darse cuenta.
 
-> **Se escribe a mano a propósito, y antes no era así.** Lo generaba
-> `indiceDelArticulo()` en `js/main.js`, que leía los `<h2>` y hasta les ponía
-> `id` al vuelo. Esa función ya no existe, ni sus dos ayudantes —`crearId()` e
-> `idLibre()`—, que no usaba nadie más.
+> **No lo genera el navegador, y esa es la distinción que hay que conservar.**
+> Lo hizo `indiceDelArticulo()` en `js/main.js`, que leía los `<h2>` y hasta les
+> ponía `id` al vuelo. Esa función ya no existe, ni sus dos ayudantes
+> —`crearId()` e `idLibre()`—, que no usaba nadie más. **No hay que
+> reintroducirlas ahora que existe un generador**: son dos cosas distintas.
 >
 > El motivo es la regla dura del proyecto: **el contenido va en el HTML y el JS
-> solo enriquece.** Un índice generado no existe sin JavaScript y no lo ve un
-> buscador, y un índice es justo de las cosas que un buscador usa para entender
-> la estructura de la página.
+> solo enriquece.** Un índice montado en el navegador no existe sin JavaScript y
+> no lo ve un buscador, y un índice es justo de las cosas que un buscador usa
+> para entender la estructura de la página. Uno escrito por el build, en cambio,
+> está en el archivo servido: cumple la regla igual que si lo hubiera tecleado
+> alguien.
+>
+> La prueba de que la distinción es la correcta: `scripts/build.mjs` **no se
+> ejecuta en el navegador de nadie** y su salida está en el repositorio.
 >
 > El desplazamiento suave **no se pierde**: lo da `scroll-behavior: smooth` en
 > `html`, que es CSS y funciona sin scripts. Y con `prefers-reduced-motion` pasa
@@ -298,27 +381,48 @@ Dos diferencias con el del artículo, las dos necesarias:
 > pie y otro una acción, pero si alguna vez molesta, el que sobra es el del
 > aviso — que es justo el que antes no estaba.
 
-### El destacado de la portada NO es un quinto paso del checklist
+### El destacado de la portada: por defecto el más reciente, o `"destacado": true`
 
 `index.html` abre con una sección **«La lectura recomendada»**, entre el hero y
-«Últimos artículos», con un solo artículo. **Es una decisión editorial y se
-cambia cuando se decide cambiarla**, no cada vez que se publica. Por eso está
-aquí y no en la lista de arriba: publicar no obliga a tocarlo.
+«Últimos artículos», con un solo artículo. **Es una decisión editorial**, y por
+eso tiene una salida para cuando el más reciente no es el que se quiere
+recomendar.
 
 **No dice «el más leído» ni nada parecido, y no puede decirlo:** no hay
 analítica en el proyecto, así que afirmar popularidad sería inventarse un dato.
 El rótulo nombra a quien recomienda, no a cuánta gente ha leído.
 
-> ⚠️ **El bloque COPIA datos del artículo, y ese es el precio de tenerlo en el
-> HTML.** No se genera solo. Si el artículo destacado cambia, hay que revisar a
-> mano: titular, entradilla, categoría —texto y clave del `href`—, fecha —texto
-> y `datetime`—, minutos, `src` de la imagen y **los dos `href` de destino**,
-> que son el del titular y el de la imagen.
+La regla que aplica `scripts/build.mjs`:
+
+| En los JSON | Qué se destaca |
+|---|---|
+| ninguno con `"destacado": true` | **el más reciente** |
+| uno con `"destacado": true` | **ese** |
+| varios con `"destacado": true` | el más reciente de ellos, **y sale un aviso** |
+
+> **El defecto es el más reciente y no «el marcado», y esa es la decisión de
+> fondo.** Si hubiera que marcar uno siempre, el día que se publicara un
+> artículo nuevo y nadie tocara la marca, la portada recomendaría el anterior:
+> un olvido que **no da ningún error** y que además empeora solo con el tiempo.
+> Con el defecto al revés, no hacer nada da el comportamiento razonable y la
+> marca es lo excepcional.
 >
-> **Nada de esto da error si se queda desfasado**: la portada seguiría
-> enseñando un titular viejo con un enlace que funciona. Se nota leyendo, no
-> probando. El `index.html` lleva la lista completa en un comentario, junto al
-> bloque, con el artículo del que procede escrito arriba.
+> El precio es simétrico y conviene saberlo: **un `"destacado": true` olvidado
+> en un artículo viejo congela la portada**. Por eso lo del aviso cuando hay más
+> de uno — es lo único que puede avisar de que alguien está marcando sin mirar.
+
+> ⚠️ **ESTE APARTADO DECÍA «NO se genera solo» Y LISTABA OCHO DATOS QUE HABÍA
+> QUE COPIAR A MANO**: titular, entradilla, categoría en sus dos formas, fecha
+> en sus dos formas, minutos, `src` de la imagen y los dos `href` de destino. Se
+> avisaba de que ninguno daba error al quedarse desfasado.
+>
+> **Ya no hay nada que copiar.** El bloque entero lo escribe `bloqueDestacado()`
+> en `scripts/lib/plantilla.mjs`, dentro de la región `GENERADO:destacado`, a
+> partir del mismo JSON del que sale la página del artículo. Los ocho datos
+> salen de una sola fuente, así que no pueden discrepar.
+>
+> El comentario que había en `index.html` con la lista de los ocho ya no está:
+> describía un mantenimiento que ya no existe.
 
 > ⚠️ **El destacado NO se repite en «Últimos artículos», y esa es la regla que
 > evita el problema.** Estuvo descrito aquí como un riesgo a esquivar —«no
@@ -522,7 +626,7 @@ Los espaciados del estado visible cambiaron al retirar el filete de sección que
 separaba el destacado de «Últimos artículos»; está razonado más abajo, en la
 sección de los filetes de la portada.
 
-### La categoría de un artículo se repite en 9 sitios
+### La categoría se escribe UNA vez y sale en 9 sitios
 
 > ⚠️ **Y hay TRES ENTRADAS DE EJEMPLO más en `articulos/index.html`**, marcadas
 > con `<!-- PROVISIONAL: entradas de ejemplo, borrar antes de entregar -->` y su
@@ -543,8 +647,17 @@ sección de los filetes de la portada.
 > se deben tomar como referencia editorial: ni el tema, ni la categoría, ni la
 > firma —que es la de la maqueta, según la sección de autoría.
 
-Como con la autoría, sin build no hay una sola fuente de verdad. Al cambiar la
-categoría de un artículo hay que tocar los nueve:
+> ⚠️ **ESTA SECCIÓN DECÍA «se repite en 9 sitios» Y «al cambiarla hay que tocar
+> los nueve».** Ya no: se escribe **una vez**, en el campo `categoria` del
+> `articulo.json`, y de ahí salen los nueve. Cambiarla es cambiar esa línea y
+> volver a ejecutar `npm run build`.
+>
+> **La lista de abajo se conserva entera y sigue haciendo falta**, por dos
+> motivos: es lo que hay que revisar si algún día se toca `plantilla.mjs`, y es
+> la única explicación de por qué la misma palabra aparece en el HTML en dos
+> formas distintas.
+
+Los nueve puntos, que hoy escribe el generador a partir de una sola línea:
 
 | # | Dónde | Qué |
 |---|---|---|
@@ -568,6 +681,21 @@ son justo los que se escapan:
 
 Esa última es la más traicionera, porque hay **dos formas de la misma palabra
 conviviendo en el mismo archivo**: la etiqueta visible y la clave del enlace.
+
+> **Y es justo la asimetría que el JSON conserva.** `categoria` se escribe en
+> **clave** —`"comentario"`— y de ahí salen las dos formas: la clave viaja
+> literal a `data-categoria` y a los `href`, y el texto visible sale de la tabla
+> `CATEGORIAS` de `scripts/lib/plantilla.mjs`. Escribir `"Comentario"` hace
+> fallar el build, que es el modo de fallar bueno.
+>
+> ⚠️ **Añadir una categoría es añadir una línea a esa tabla, y hay que saber que
+> la tabla también pinta los botones del filtro.** No hay lista de categorías en
+> ningún otro sitio: la región `GENERADO:filtros` de `articulos/index.html` se
+> escribe leyéndola. Así se cumple sola la regla de que **ningún filtro va
+> apagado**, tenga artículos o no.
+>
+> Así entró **«Comentario»**, que no existía: es la categoría del artículo de
+> MASC. Fue una línea.
 
 ```sh
 # Las nueve de una vez, contando las variantes sin espacios y en minusculas
@@ -722,11 +850,35 @@ un filtro que no selecciona nada y se ve la lista entera, como si no se hubiera
 pulsado. Y si `data-etiquetas` del listado no coincide con la píldora del
 artículo, esa etiqueta simplemente no aparece en el desplegable.
 
-> **Balance por artículo, para tenerlo en un sitio:** la categoría se repite en
-> **9** puntos, la autoría en **8** —más **2** en `sobre/`, que no son por
-> artículo— y cada etiqueta en **3**. Las etiquetas son las más baratas de las
-> tres y las únicas cuyo despiste degrada en silencio a «no filtra» en vez de a
-> «se ve mal».
+> ⚠️ **ESO YA NO PUEDE PASAR, Y ES EL FALLO QUE MÁS BARATO SALÍA DE EVITAR.**
+> Las tres salen del mismo array `etiquetas` del `articulo.json`, en **texto
+> visible**; la clave la deriva `clave()` al escribir el `href`. Las dos formas
+> no pueden discrepar porque solo se escribe una.
+>
+> **Se guarda el texto y no la clave**, al revés que `categoria`. El motivo está
+> arriba y sigue valiendo: de la clave no se reconstruyen los acentos —de
+> `garantias` no sale «Garantías»— y de ahí salen el nombre de la casilla del
+> desplegable y el de la píldora.
+
+> **Balance por artículo, actualizado.** Este archivo decía que la categoría se
+> repite en **9** puntos, la autoría en **8** y cada etiqueta en **3**, y que
+> las etiquetas eran «las más baratas de las tres».
+>
+> Hoy la cuenta de lo que hay que **escribir** es otra:
+>
+> | | Se escribe | Sale en |
+> |---|---|---|
+> | Categoría | **1** vez, en `categoria` | 9 sitios |
+> | Etiqueta | **1** vez, en `etiquetas` | 3 sitios |
+> | Autoría | **0** veces por artículo | 8 sitios |
+>
+> La autoría es el cambio más grande y tiene su propio aviso en su sección: ya
+> no se escribe en el artículo, está en `plantilla.mjs`.
+>
+> Lo que **sigue siendo cierto** es el modo de fallar: si alguien rompe la
+> plantilla, el despiste de una etiqueta degrada en silencio a «no filtra»,
+> mientras que el de la categoría se ve. Eso no lo cambia el generador; lo que
+> cambia es que ahora se rompe una vez para todos los artículos, no uno a uno.
 
 > ⚠️ **Y hay DOS listas más con forma de etiqueta que NO son estas**, en la
 > cabecera del artículo. Es la confusión más fácil de cometer:
@@ -1237,15 +1389,48 @@ reglas.
 > definitivos del cliente traen el nombre y una biografía propia —colegio,
 > despacho, formación—, así que el nombre es real.
 >
-> ⚠️ **Lo que NO coincide es la bio.** La del lateral del artículo sigue siendo
-> la de la maqueta: «Abogado especializado en Derecho Administrativo, Urbanismo
-> y Jurisdicción Contencioso-Administrativa». La de `sobre/` es la nueva, de
-> tres párrafos. El documento no daba una bio corta para el lateral, así que se
-> dejó la vieja — **hay que pedírsela al cliente.**
+> ⚠️ **ESTE AVISO DECÍA QUE LA BIO DEL LATERAL SEGUÍA SIENDO LA DE LA MAQUETA**
+> —«Abogado especializado en Derecho Administrativo, Urbanismo y Jurisdicción
+> Contencioso-Administrativa»— y que había que pedirle una corta al cliente. Ya
+> no: en la pasada de SEO se escribió una a partir de los tres párrafos de
+> `sobre/` y está aprobada:
+>
+> > Abogado colegiado en Madrid. Ejerce en el Departamento de Derecho Procesal
+> > de Sterling Abogados: litigación contencioso-administrativa, urbanismo y
+> > expropiaciones.
+>
+> Vive en la constante `AUTOR` de `scripts/lib/plantilla.mjs`, con el nombre, el
+> cargo y la ruta del retrato. **No hay ninguna copia**: estuvo escrita dos
+> veces —`.autor__bio` y el `author.description` del JSON-LD— y se extrajo,
+> porque era exactamente «la incoherencia más fácil de dejarse» que esta sección
+> lleva avisando desde el principio. Comprobado que la salida no cambió ni un
+> byte al hacerlo.
+>
+> La de `sobre/` es la larga, de tres párrafos, y esa es a mano.
 
-Sin build no hay una sola fuente de verdad: cada artículo repite el nombre, la
-bio y el retrato a mano. Al publicar —o al cambiar de autor— hay que tocar los
-ocho.
+> ⚠️ **ESTA SECCIÓN DECÍA «cada artículo repite el nombre, la bio y el retrato a
+> mano» Y QUE AL PUBLICAR HABÍA QUE TOCAR LOS OCHO.** Los ocho siguen ahí, pero
+> **no se escriben en el artículo**: están en `scripts/lib/plantilla.mjs`, en
+> literales, y el generador los pone en los ocho sitios a la vez.
+>
+> **Al publicar no hay que tocar ninguno.** Y hay un efecto de fondo: el punto 6
+> —la bio del lateral, que era «literalmente el mismo texto que el punto 3,
+> duplicado» y «la incoherencia más fácil de dejarse»— **ya no se puede
+> desincronizar**, porque las dos salen de `AUTOR.bio`.
+>
+> ⚠️ **Lo que sigue vivo es el punto 8, `.firma`, por otra razón.** Solo se ve
+> por debajo de 900 px, así que quien revise en escritorio no lo verá nunca. Ya
+> no se puede olvidar de escribirlo —lo escribe la plantilla— pero sí se puede
+> romper sin enterarse al tocar el CSS.
+>
+> **Cambiar de autor ya no es tocar ocho sitios por artículo: es tocar
+> `plantilla.mjs` y regenerar.** El workflow `regenerar.yml` existe justamente
+> para eso.
+>
+> **Los dos de `sobre/` NO están cubiertos**: esa página es a mano y el
+> generador no la toca. Siguen siendo los puntos 9 y 10 y se editan a mano.
+
+La lista de los ocho, que hoy escribe la plantilla y hay que revisar si se toca:
 
 > ⚠️ **Y desde que `sobre/` tiene retrato, la cuenta ya no acaba en el
 > artículo.** Esa página añade **dos** puntos más: el `src` del `<img>` dentro
@@ -1290,19 +1475,41 @@ ocho.
    dejarse este sin tocar. No es una copia del punto 5: es un `<p>` distinto,
    con su propio enlace a `sobre/`.
 
-> **No hay archivo de plantilla, y es deliberado.** La plantilla de artículo es
-> `articulos/principio-de-legalidad-penal/index.html`, anotado con comentarios
-> `<!-- PLANTILLA · … -->` en cada bloque que hay que copiar o rellenar. Para
-> publicar se duplica esa carpeta y se sustituye el contenido.
+> ⚠️ **AHORA SÍ HAY UN ARCHIVO DE PLANTILLA, Y ESTA SECCIÓN DECÍA QUE NO LO
+> HABÍA.** Es `scripts/lib/plantilla.mjs`. Aquí se argumentaba que un
+> `post-template.html` aparte sería «un noveno sitio donde se repiten la
+> autoría, la categoría y las URL de compartir», y que **nada avisaría si se
+> quedaba atrás**: una plantilla desfasada que aún dijera «Derecho penal»
+> engañaría más de lo que ayuda.
 >
-> Se descartó crear un `post-template.html` aparte. Sería un noveno sitio donde
-> se repiten la autoría, la categoría y las URL de compartir, **y nada avisaría
-> si se queda atrás**: una plantilla desfasada que aún dijera «Derecho penal» o
-> llevara migas engañaría más de lo que ayuda. El artículo real, en cambio, se
-> actualiza porque se ve.
+> **El argumento era correcto para una plantilla que se copia a mano, y no se
+> aplica a una que se ejecuta.** La diferencia es toda:
+>
+> | | `post-template.html` (descartado) | `plantilla.mjs` (hoy) |
+> |---|---|---|
+> | Al publicar | se **copia** y se rellena | se **ejecuta** |
+> | Si se queda atrás | los artículos nuevos nacen viejos | **ningún artículo la usa a medias** |
+> | Cómo te enteras | **nunca** | regenerando: el diff lo enseña |
+>
+> Una plantilla que se copia diverge del original en cuanto alguien arregla algo
+> en un artículo y no en ella. Una que se ejecuta no puede divergir: no hay dos
+> copias.
+>
+> Y el riesgo que sí queda —que la plantilla se desfase respecto a lo que se
+> quiere— se paga en un sitio, no en N: se arregla y se regenera todo.
+>
+> **La plantilla anotada que había en el artículo de ejemplo ya no existe.** Sus
+> comentarios `<!-- PLANTILLA · … -->` desaparecieron al generarlo, y es
+> correcto: describían un procedimiento —duplicar la carpeta y sustituir el
+> contenido— que ya no se hace.
 
-Referencia de cómo queda: `articulos/principio-de-legalidad-penal/index.html`.
-Para localizar los ocho sin depender de números de línea, que se desactualizan:
+Para localizar los ocho en `plantilla.mjs`, sin depender de números de línea:
+
+```sh
+grep -n 'Juan Contera Miranda\|juanconteramiranda\|Abogado colegiado' scripts/lib/plantilla.mjs
+```
+
+Y para comprobar que el HTML generado los lleva los ocho:
 
 ```sh
 # Cabecera, nombre y bio del HTML visible, mas la firma de movil
@@ -2512,6 +2719,20 @@ node r.mjs img/logo.svg /tmp/logo-w512.png 512
 
 ## Deuda pendiente
 
+- **Las tarjetas de ejemplo siguen puestas, y ahora conviven con contenido
+  real.** Tres en la portada y tres entradas provisionales en el listado. Con un
+  solo artículo de verdad se distinguían; con dos ya no tanto, y la portada
+  enseña **cuatro** tarjetas de las que tres son atrezo. Se borran a mano —cada
+  una tiene su sección— y el generador no las toca porque están fuera de las
+  regiones marcadas.
+- **El PDF no se regenera si solo cambia el CSS de impresión**, salvo que se
+  lance `regenerar.yml` a mano. Es deliberado, pero es una de esas cosas que se
+  olvidan: tocar `css/imprimir.css` y dar por hecho que los PDF publicados ya lo
+  llevan.
+- **El artículo de MASC está en `contenido/` sin que su publicación esté
+  decidida.** Se creó para probar el generador con un texto real. Si no se
+  publica, se borra su carpeta de `contenido/` **y** la de `articulos/`: el
+  build no borra nada.
 - Detalle menor: los trazos de la balanza en `favicon.svg` son marfil
   `#fbfaf7`, no el blanco puro que declara el sistema.
 - Falta el bloque «Sobre el autor» en portada, que el cliente quiere y aún no
@@ -2603,10 +2824,528 @@ Graph, Twitter y JSON-LD de las cinco páginas indexables.
 | `keywords` | Frases largas de cola, propias del artículo. No son las etiquetas de navegación |
 | `author.description` | **La bio corta**, idéntica a `.autor__bio` del lateral |
 
+**De los siete campos, el generador escribe seis solo.** Lo único que hay que
+darle en el JSON son `titulo` —o `titulo_seo`, si el titular pasa de 60— y
+`descripcion`. Del resto:
+
+- `og:title` y `twitter:title` salen del mismo valor que el `<title>`, así que
+  no pueden discrepar.
+- `og:description` y `twitter:description` salen de `descripcion`.
+- `article:section` y `articleSection` salen los dos de `categoria`, que es la
+  clave y no el texto, así que tampoco pueden discrepar.
+- `keywords` sale del array `keywords`, que es un campo aparte de `etiquetas` a
+  propósito. Está razonado arriba: son vocabularios distintos.
+- `author.description` la escribe la plantilla, la misma cadena que pone en
+  `.autor__bio`.
+
+> ⚠️ **`titulo_seo` NO es un titular alternativo, y el nombre engaña.** Es lo
+> que va en el `<title>`, en `og:title` y en el `name` del `WebPage` cuando el
+> titular real no cabe en 60 caracteres. **El `<h1>`, la portada, las tarjetas y
+> el `headline` del JSON-LD siguen usando `titulo`.**
+>
+> El de MASC lo necesita: el titular completo mide 82 y el `titulo_seo` 51.
+
+> ⚠️ **El generador NO comprueba las longitudes, y podría.** Hoy un `<title>`
+> de 80 caracteres pasa sin decir nada. Se dejó así porque la regla de los 60
+> es una recomendación de Google que cambia, y un build que falla por eso
+> bloquearía una publicación por un motivo que no es un error. **Si algún día
+> molesta, el sitio donde añadirlo es `validar()` en `scripts/build.mjs`, y
+> tiene que ser un AVISO, no un error.**
+
 > ⚠️ **El artículo de ejemplo NO cumple esta regla, y es a propósito.** Su
 > `<title>` mide 61, su `description` 184 y sus `keywords` son de Derecho penal.
 > No se tocó porque se borra al entregar. Si alguien lo usa de plantilla, tiene
 > que ajustar esos tres campos.
+
+---
+
+# El generador de artículos
+
+Convierte `contenido/articulos/<slug>/articulo.json` en todo lo que el sitio
+necesita para que ese artículo exista: su página, su imagen, su PDF, su tarjeta
+en el listado y en la portada, su URL en el sitemap y su `<item>` en el feed.
+
+Lo dispara n8n abriendo un PR; también se ejecuta a mano.
+
+> ⚠️ **ESTO NO CONVIERTE EL PROYECTO EN UN SITIO CON BUILD, Y LA DISTINCIÓN NO
+> ES UNA SUTILEZA.** Lo que se publica sigue siendo HTML, CSS y JS puro, sin
+> dependencias, servido tal cual por GitHub Pages. El generador escribe esos
+> archivos **antes** y los deja en el repositorio; nadie compila nada en el
+> servidor ni en el navegador del lector.
+>
+> La prueba: se puede borrar `scripts/` entero y el sitio sigue funcionando
+> igual. Lo que se pierde es la comodidad de publicar, no la web.
+>
+> Quien lea «hay un generador» y deduzca que ya se puede meter un framework, un
+> preprocesador o un componente que se hidrate en el cliente, ha leído justo lo
+> contrario de lo que dice esta sección.
+
+## Los cuatro comandos
+
+```sh
+cd scripts
+npm install                        # una vez
+npx playwright install chromium    # una vez, solo para PDF y capturas
+
+npm run build       # HTML, imágenes, portada, listado, sitemap y feed
+npm run pdf         # los PDF; LEE el HTML, así que va DESPUÉS del build
+npm run publicar    # los dos, en orden. Es el que conviene usar
+node capturas.mjs   # capturas a 1440 y 375 en scripts/.capturas/
+```
+
+Los tres primeros aceptan slugs para trabajar sobre uno solo:
+
+```sh
+npm run pdf -- masc-requisito-procedibilidad
+```
+
+> ⚠️ **`npm run pdf` NO regenera el HTML: lo lee del disco.** Si se edita el
+> JSON y se ejecuta solo `pdf`, sale un PDF del texto anterior y **no avisa de
+> nada**. Por eso existe `publicar`, que encadena los dos, y por eso el PDF se
+> genera en el mismo job del workflow, detrás del build.
+
+## El contrato: `articulo.json`
+
+Un solo archivo por artículo, en `contenido/articulos/<slug>/`, junto a su
+`portada.jpg`. **El nombre de la carpeta y el campo `slug` tienen que
+coincidir**, y el build falla si no —es lo único que ata la URL al contenido.
+
+```jsonc
+{
+  "slug": "masc-requisito-procedibilidad",
+  "titulo": "La falta de MASC como requisito de procedibilidad: entre la inadmisión y la subsanación",
+  "titulo_seo": "La falta de MASC como requisito de procedibilidad",
+  "descripcion": "Cuándo la falta de intento de negociación previa permite inadmitir…",
+  "entradilla": "La exigencia de negociación previa ha abierto una controversia…",
+  "categoria": "comentario",
+  "etiquetas": ["MASC", "LO 1/2025", "Procedibilidad"],
+  "keywords": ["requisito de procedibilidad MASC", "LO 1/2025 negociación previa"],
+  "fecha": "2026-09-20",
+  "destacado": true,
+
+  "secciones": [
+    {
+      "id": "introduccion",
+      "numero_original": "I",
+      "titulo": "Introducción",
+      "bloques": [
+        { "tipo": "parrafo",   "html": "Desde la entrada en vigor de la <strong>LO 1/2025</strong>… {{ref:1-2}}" },
+        { "tipo": "subtitulo", "texto": "Un matiz" },
+        { "tipo": "cita",      "html": "«En todo caso, la decisión de archivo directo es precipitada».",
+                               "fuente_html": "— AAP Alicante 48/2025 {{ref:6}}" },
+        { "tipo": "lista", "ordenada": true, "items": [
+            { "marcador": "1.º", "html": "La inexistencia de cualquier intento negociador previo." }
+        ]}
+      ]
+    }
+  ],
+
+  "referencias_titulo": "Referencias",
+  "referencias": [
+    { "grupo": "Normativa", "items": [
+        { "numero": 1, "html": "Ley Orgánica 1/2025, de 2 de enero…" },
+        { "numero": null, "html": "Ley Orgánica 6/1985, del Poder Judicial." }
+    ]}
+  ],
+
+  "imagen": {
+    "archivo": "portada.jpg",
+    "alt": "Estatua de bronce de la dama de la justicia…",
+    "origen": "cliente"
+  },
+
+  "avisos": ["Errata del original: …"]
+}
+```
+
+### Campos, uno por uno
+
+| Campo | ¿Obligatorio? | Qué hace |
+|---|---|---|
+| `slug` | **sí** | la URL. Tiene que ser el nombre de la carpeta |
+| `titulo` | **sí** | `<h1>`, tarjetas, destacado, `headline` del JSON-LD |
+| `titulo_seo` | no | solo `<title>`, `og:title` y `name` del `WebPage`. Para titulares de más de 60 |
+| `descripcion` | **sí** | meta description, OG, extracto de las tarjetas y entradilla del destacado |
+| `entradilla` | **sí** | el párrafo de apertura del artículo. **No es lo mismo que `descripcion`** |
+| `categoria` | **sí** | una de `ensayo`, `fundamento`, `jurisprudencia`, `comentario`. En **clave**, no en texto |
+| `etiquetas` | no | texto visible. De aquí salen las píldoras, `data-etiquetas` y el desplegable |
+| `keywords` | no | frases de cola para `article:tag` y el JSON-LD. **No son las etiquetas** |
+| `fecha` | **sí** | `YYYY-MM-DD`. Ordena el listado y fija la hora de publicación a las 09:00 +02:00 |
+| `destacado` | no | `true` fuerza la lectura recomendada. Sin ninguno, manda el más reciente |
+| `secciones` | **sí** | los `<h2>` y su contenido |
+| `referencias` | no | agrupadas o sueltas |
+| `imagen` | **sí** | `archivo`, `alt` |
+| `avisos` | no | notas para quien revise el PR. Se imprimen y se comentan; no salen en la web |
+
+> ⚠️ **`descripcion` y `entradilla` NO son el mismo texto, y confundirlas no da
+> ningún error.** La `descripcion` es el resumen de 140–160 caracteres que ven
+> Google y las tarjetas; la `entradilla` es el párrafo con el que abre el
+> artículo, escrito por el autor y normalmente más largo.
+>
+> Ponerlas iguales «funciona»: la página se genera, se ve bien y la entradilla
+> se lee como un resumen seco. Solo se nota leyendo.
+
+> ⚠️ **`categoria` va en CLAVE y `etiquetas` en TEXTO VISIBLE, y es al revés de
+> lo que parece.** Es la misma asimetría que el CLAUDE.md ya documenta para
+> `data-categoria` y `data-etiquetas`, y por el mismo motivo: la clave de una
+> etiqueta no permite reconstruir sus tildes. Escribir `"categoria":
+> "Comentario"` hace fallar el build, que es el modo de fallar bueno.
+
+### Los bloques
+
+Cuatro tipos, y no hay un quinto por ahora. Añadir uno es añadir un caso a
+`pintarBloque()` en `scripts/lib/plantilla.mjs`; el build falla con el nombre
+del tipo si le llega uno que no conoce.
+
+| `tipo` | Campos | Sale como |
+|---|---|---|
+| `parrafo` | `html` | `<p>` |
+| `subtitulo` | `texto` | `<h3>`. **Texto plano, no HTML** |
+| `cita` | `html`, `fuente_html` | `<blockquote class="cita--destacada">` y su `.cita__fuente` |
+| `lista` | `ordenada`, `items[{marcador, html}]` | `<ul>`/`<ol>`, o `.lista--marcada` si hay marcadores |
+
+El `html` de los bloques **es HTML de verdad y no se escapa**: ahí van los
+`<strong>`, `<em>` y `<a>` del texto. Lo que sí se escapa es todo lo demás
+—títulos, `alt`, metadatos—, porque son texto.
+
+> **Los marcadores tipo «1.º» se escriben, y no los pone un `<ol>`.** Un `<ol>`
+> nativo sabe poner `1.`, `a)` o `i.`, pero no la ordinal masculina española. Si
+> algún item trae `marcador`, la lista pasa a `.lista--marcada`, que apaga el
+> `list-style`, y la marca va en un `<span>`.
+>
+> El colgado se hace con sangría francesa y no con flex: así, cuando un item
+> ocupa varias líneas, la segunda alinea con la primera palabra y no con el
+> marcador.
+
+### Las referencias y sus llamadas
+
+Se escriben con **tokens**, no con HTML:
+
+| En el JSON | Sale como |
+|---|---|
+| `{{ref:7}}` | `[7]` |
+| `{{ref:1-2}}` | `[1–2]` — guion corto al escribir, **raya al pintar** |
+| `{{ref:1,6}}` | `[1, 6]` |
+
+**Cada número es su propio enlace**, aunque vayan en rango: `[1–2]` son dos
+anclas, no una. Los corchetes, la raya y la coma los escribe la plantilla
+**fuera** de los `<a>`, para que no formen parte ni de la superficie pulsable ni
+del texto del enlace.
+
+```html
+<sup class="llamada" aria-label="Referencias 1, 6">[<a href="#ref-1">1</a>, <a href="#ref-6">6</a>]</sup>
+```
+
+> ⚠️ **Citar un número que no existe ES UN ERROR y detiene el build; declarar
+> una referencia y no citarla es solo un aviso.** No es una asimetría caprichosa:
+>
+> - Una llamada a una referencia inexistente produce **un enlace roto en la
+>   página publicada**. Es un fallo del sistema y hay que pararlo.
+> - Una referencia declarada y nunca citada es una **errata del texto**. El
+>   artículo se publica perfectamente; lo que hay es una entrada de bibliografía
+>   de más. Parar el build por eso sería bloquear una publicación por una
+>   decisión que es del autor.
+>
+> El artículo de MASC tiene tres —`[4]`, `[5]` y `[11]`—, detectadas solas.
+
+> ⚠️ **Una referencia puede ir SIN número, y entonces no se puede citar.** Es el
+> caso de la LOPJ en el artículo de MASC: `"numero": null`. Sale en la lista,
+> sin marca y **sin `id`**, porque un ancla a la que nadie puede apuntar no
+> sirve de nada.
+>
+> Es una errata del original y está anotada en `avisos`. Se conserva tal cual
+> porque **el texto del cliente no se corrige por iniciativa propia**, que es la
+> regla que abre este archivo.
+
+> **Las referencias van en `<ul>` y no en `<ol>`, y NO es un descuido.** El
+> número de una referencia es un **dato del texto** —el que aparece entre
+> corchetes en la llamada— y no una posición en la lista. Con un `<ol>` los dos
+> números pueden separarse en silencio: basta una referencia sin número, como la
+> LOPJ, para que el `<ol>` siga contando y a partir de ahí enseñe un número que
+> no es el que citan las llamadas.
+>
+> Así que la numeración se escribe, en `.ref__numero`, y la lista no cuenta.
+
+> ⚠️ **`.referencias__grupo` va prefijado con `.referencias` en las DOS hojas de
+> estilo.** Es un `<h3>`, y `.articulo h3` —que lo pone en Cormorant a 24 px—
+> pesa (0,1,1) frente a los (0,1,0) de la clase sola: gana por especificidad, no
+> por orden, así que ponerlo después no basta.
+>
+> **Se vio antes en el PDF que en pantalla**: «DOCTRINA» salía en versales
+> —el `text-transform` sí se aplicaba— pero con el cuerpo y la familia de un
+> epígrafe de sección, y parecía un apartado nuevo dentro de la caja.
+
+### El tiempo de lectura se calcula, a 200 ppm
+
+`minutosDe()` divide las palabras del texto visible entre 200 y redondea hacia
+arriba, con un mínimo de 1. Se descuentan las etiquetas y los tokens de
+referencia, que no se leen.
+
+> ⚠️ **ESTE NÚMERO ES NUEVO Y NO REPRODUCE NADA.** El artículo escrito a mano
+> decía «7 min de lectura» y declaraba `wordCount: 950`, pero tiene **639
+> palabras reales**: el ritmo implícito era de 91 ppm, que no es una medida de
+> nada. Eran cifras de maqueta.
+>
+> Al generarlo, ese artículo pasa a **4 min** y el de MASC sale en **15**, con
+> 2 853 palabras. Si alguien compara con una versión anterior y ve que los
+> minutos «han bajado», es esto.
+
+## Cómo se actualizan los archivos compartidos: regiones marcadas
+
+El generador **no reescribe entero** ningún archivo que tenga contenido escrito
+a mano. Solo sustituye lo que hay entre dos marcas:
+
+```html
+<!-- GENERADO:ultimos inicio — … -->
+   …lo que escribe el build…
+<!-- GENERADO:ultimos fin -->
+```
+
+Hay **seis** regiones:
+
+| Archivo | Región | Contenido |
+|---|---|---|
+| `index.html` | `destacado` | la pieza de «La lectura recomendada» |
+| `index.html` | `ultimos` | las tarjetas de «Últimos artículos» |
+| `articulos/index.html` | `filtros` | los botones de categoría |
+| `articulos/index.html` | `articulos` | las tarjetas del listado |
+| `sitemap.xml` | `articulos` | las `<url>` |
+| `feed.xml` | `articulos` | los `<item>` |
+
+> **Por qué regiones y no reescribir el archivo.** `index.html` y
+> `articulos/index.html` están llenos de decisiones medidas y comentadas —los
+> 448 px del destacado, las dos trampas del enlace extendido, los cortes de
+> cabecera— y de bloques escritos a mano como el hero. Un generador que
+> escribiera el archivo entero se los llevaría por delante, y habría que
+> mantener todo eso en una plantilla, o sea en un sitio donde no se ve al leer
+> la página.
+
+> ⚠️ **QUE FALTE UNA MARCA ES UN ERROR, NO UN AVISO.** Si alguien borra un par
+> de marcas, el build **falla**. Es deliberado: sin eso, el generador dejaría de
+> actualizar ese sitio **en silencio**, y el primer síntoma sería una portada
+> que no cambia al publicar.
+
+> ⚠️ **Las tarjetas de EJEMPLO están FUERA de la región a propósito.** Las tres
+> de la portada y las tres entradas provisionales de `articulos/index.html`
+> viven fuera de las marcas, así que el build ni las toca ni las cuenta. Por eso
+> hoy la portada enseña cuatro tarjetas —tres de ejemplo más la real— y el
+> listado dice «5 artículos publicados».
+>
+> **Se borran a mano cuando toque**, como ya documentan sus propias secciones.
+> El generador no puede borrarlas y no debería: no sabe distinguir una tarjeta
+> de atrezo de una escrita a mano a propósito.
+
+## Es idempotente, y eso hay que mantenerlo
+
+Ejecutar el build dos veces da exactamente el mismo resultado. Se comprueba en
+el workflow del PR, y falla si no.
+
+Dos cosas lo garantizan y ninguna es opcional:
+
+1. **El orden es determinista**: fecha descendente, y el `slug` desempata. Sin
+   el desempate, dos artículos del mismo día podrían salir en distinto orden
+   según el sistema de archivos.
+2. **Ninguna fecha sale del reloj.** Ni la del `<time>`, ni la del `pubDate` del
+   feed, ni la del `lastmod` del sitemap, ni la del `dateModified` del JSON-LD:
+   todas vienen del campo `fecha`.
+
+> ⚠️ **Por eso `headerTemplate` del PDF va vacío y no se quita.** Chromium, sin
+> plantilla de cabecera, pinta la suya: el título de la página y **la fecha del
+> día**. Eso cambiaría el PDF en cada ejecución.
+
+> **Y por eso se escribe solo si cambia.** `escribirSiCambia()` compara antes de
+> tocar el disco, así que una pasada sin novedades no modifica ninguna marca de
+> tiempo y el `git status` sale limpio.
+
+## El PDF
+
+`npm run pdf` abre con Chromium la página **ya generada** y le pide un PDF en
+A4, con márgenes de 20/18/20/20 mm.
+
+> ⚠️ **NO HAY PLANTILLA DE PDF, Y ES LA DECISIÓN CENTRAL.** El documento es la
+> propia página del artículo vista con el medio `print`, revestida por
+> `css/imprimir.css`. Una plantilla aparte sería **un segundo sitio donde vive
+> el artículo**, y se desincronizaría en silencio: el día que alguien añadiera un
+> tipo de bloque nuevo, el PDF lo dejaría fuera sin dar ningún error.
+>
+> Lo único que `pdf.mjs` añade al documento es **la portada**, que es una pieza
+> que en la web no existe.
+
+Qué se imprime y qué no:
+
+| Se va | Se queda |
+|---|---|
+| cabecera, menú, buscador | portada nueva: logo, categoría, titular, entradilla, autor, fecha, foto |
+| barra de progreso | entradilla |
+| lateral entero: autor, etiquetas, suscripción | índice |
+| «Volver a los artículos» ×2 | cuerpo, con sus citas y listas |
+| botones de compartir y de PDF | referencias |
+| «Continúa leyendo» | el aviso legal, al final |
+| pie de la web | pie de página propio: nombre del blog, URL del artículo y `n / total` |
+
+> ⚠️ **EL PIE SALE TAMBIÉN EN LA PORTADA, y no es un descuido.** Chromium aplica
+> `footerTemplate` a **todas** las páginas y no da ninguna forma de saltarse la
+> primera: el número llega como texto dentro de un `<span class="pageNumber">`,
+> así que no hay selector que lo distinga.
+>
+> Las alternativas eran peores. Generar dos PDF y unirlos pide una librería más
+> y descuadra la numeración; renunciar a los números de página sería cambiar
+> algo que se usa por algo que se mira una vez.
+
+> ⚠️ **La plantilla del pie es un DOCUMENTO APARTE**: no hereda ni los estilos
+> de la página ni los márgenes. Por eso repite el padding lateral de 20 mm a
+> mano —para alinear con la mancha de texto— y trae sus propias fuentes.
+
+### La portada del PDF y los dos números que van atados
+
+Ocupa exactamente una página con un `height: 259mm`, que es **297 − 20 − 18**:
+el alto de un A4 menos los márgenes que pone `pdf.mjs`.
+
+> ⚠️ **SI SE CAMBIAN LOS MÁRGENES HAY QUE CAMBIAR ESE NÚMERO**, o la portada
+> empuja una segunda página en blanco.
+
+> ⚠️ **Y ESTO YA FALLÓ UNA VEZ, DE UNA FORMA QUE CONVIENE CONOCER.**
+> `body:has(.progreso)` reserva en `styles.css` los 30 px de la banda de
+> progreso, y pesa (0,1,1) frente a los (0,0,1) de `html, body`: **gana por
+> especificidad, no por orden**, así que el reset de `imprimir.css` no lo
+> desactivaba por estar después.
+>
+> Con esos 30 px la portada empezaba más abajo y su último bloque —la foto—
+> terminaba pasada la caja de la página. **Una imagen es un bloque indivisible:
+> al no caber no se parte, se va ENTERA a la página siguiente.** El PDF salía
+> con una portada sin foto y una segunda página con la foto sola, y nada daba
+> error. Se veía con 10 páginas en vez de 9.
+>
+> Lo arregla `body:has(.progreso) { padding-top: 0 }`, declarado aparte. Y
+> `.pdf-portada` lleva además `overflow: hidden` como red: si algún día un
+> ancestro vuelve a meter relleno, lo que sobre se **recorta** en vez de
+> paginarse. Una portada con la foto tres milímetros más baja se ve rara; una
+> portada sin foto y una página suelta con la foto se ve como un PDF roto.
+
+> ⚠️ **HAY QUE ESPERAR A QUE CARGUE LA FOTO DE LA PORTADA.** La inyección ocurre
+> **después** del `networkidle`, así que el `<img>` empieza a cargarse cuando la
+> página ya se considera quieta. Sin la espera, `page.pdf()` dispara antes y la
+> portada sale con un hueco blanco. **El PDF se genera igual y nada avisa.**
+>
+> El logo no la necesita: va incrustado en base64, y va así justamente porque
+> una ruta rota en CI tampoco daría error, solo un hueco donde iba la marca.
+
+### Los saltos de página
+
+Lo que evita que el PDF se lea como generado sin cuidado:
+
+| Regla | Dónde | Qué evita |
+|---|---|---|
+| `break-after: avoid` | `h2`, `h3`, rótulos de referencias | un epígrafe solo al pie de una página |
+| `break-inside: avoid` | índice, cita, cada referencia, aviso final | cortes por la mitad |
+| `break-before: avoid` | `.cita__fuente` | que la fuente se separe de su cita |
+| `orphans`/`widows: 2` | párrafos y items | una línea suelta al final o al principio |
+
+> ⚠️ **La caja de referencias NO lleva `break-inside: avoid`, y es deliberado.**
+> Con once referencias no cabría en ninguna página y Chromium la empujaría
+> entera a la última, dejando media página en blanco antes. Lo que se protege es
+> **cada referencia por separado**, que es donde el corte se ve mal.
+
+### El botón «Descargar PDF»
+
+Va con los de compartir, como cuarto elemento, con un icono de línea. Apunta a
+`./<slug>.pdf`, en la misma carpeta del artículo.
+
+> ⚠️ **SI EL PDF NO SE HA GENERADO, EL BOTÓN DA 404 Y NADA LO IMPIDE.** La
+> plantilla lo pinta siempre, porque mirar si el archivo existe en el momento
+> del build ataría el HTML al orden en que se ejecutan los dos comandos: la
+> primera vez no existiría y el botón no saldría, la segunda sí.
+>
+> Se resuelve por proceso y no por código: `npm run publicar` encadena los dos,
+> y el workflow los ejecuta en el mismo job. **Quien ejecute solo `npm run
+> build` tiene que acordarse del `pdf`.**
+
+## Los workflows
+
+Dos, y hacen cosas distintas.
+
+### `contenido.yml` — el PR de n8n
+
+Se dispara con `pull_request` cuando el PR toca `contenido/**`, `scripts/**` o
+`css/**`. Instala, genera, **empuja lo generado al mismo PR**, adjunta el PDF y
+las capturas como artefacto y comenta los avisos.
+
+> ⚠️ **ASUME QUE EL PR SE ABRE EN ESTE MISMO REPOSITORIO, NO DESDE UN FORK.** Es
+> lo que permite usar `pull_request` a secas: en un PR desde un fork el
+> `GITHUB_TOKEN` es de solo lectura y el `git push` fallaría. Si algún día el
+> flujo cambia a forks, hay que pasar a `pull_request_target` **y leer antes sus
+> implicaciones de seguridad**, porque ese evento ejecuta el workflow de la rama
+> base con permisos de escritura sobre código que viene de fuera.
+
+Permisos: `contents: write` y `pull-requests: write`. Nada más.
+
+> **El comentario se reutiliza en vez de apilarse.** Un PR con tres correcciones
+> acabaría con tres listas de avisos y habría que mirar la fecha para saber cuál
+> vale. Se busca un comentario con la marca `<!-- avisos-del-build -->` y se
+> edita.
+
+> **Por qué se empuja al PR y no se publica directamente.** Lo generado es
+> revisable: un titular mal cortado o una imagen que recorta donde no debe se
+> ven leyendo, no probando. El PR es el sitio donde mirar eso, y el artefacto
+> con el PDF y las capturas está para poder mirarlo **sin descargar la rama**.
+
+### `regenerar.yml` — a mano, desde Actions
+
+El generador no solo escribe artículos nuevos: reescribe también los viejos. Así
+que cuando cambia algo que afecta a todos —la plantilla, el CSS de impresión, la
+bio del autor del JSON-LD, el ritmo de lectura— hay que volver a pasarlo por
+encima de lo ya publicado. `contenido.yml` no sirve: solo se dispara cuando
+llega contenido nuevo, y un cambio de plantilla no toca `contenido/`.
+
+> ⚠️ **NO se dispara solo al cambiar `scripts/` o `css/` en `main`, y es a
+> propósito.** Un push a `main` ya está publicado, así que una regeneración
+> automática empujaría otro commit encima sin que nadie lo haya mirado. Aquí el
+> paso manual **es** la revisión.
+
+Deja el resultado en una rama y abre un PR; nunca escribe en `main`. Una
+regeneración masiva puede tocar todos los artículos a la vez, y eso es justo lo
+que hay que mirar antes de publicar.
+
+## Qué NO hace el generador
+
+Para que nadie lo busque:
+
+- **No borra.** Quitar un artículo es borrar su carpeta de `contenido/` **y** la
+  de `articulos/`. El build no sabe que la segunda sobra.
+- **No toca las tarjetas de ejemplo**, ni las de la portada ni las
+  provisionales del listado. Están fuera de las regiones.
+- **No escribe `sobre/`, `contacto/`, `404.html` ni el hero.** Son páginas a
+  mano y siguen siéndolo.
+- **No valida longitudes de SEO.** Razonado arriba.
+- **No comprueba los enlaces del texto.** Un `<a>` roto dentro de un párrafo
+  pasa sin decir nada.
+- **No genera variantes de imagen por proporción.** Y no hace falta: el CSS
+  recorta con `object-fit: cover`, así que **la misma foto sirve para el 21:9
+  del artículo, el 3:2 del listado, el 16:9 de la portada y el de la portada del
+  PDF**. Una sola imagen, cuatro encuadres.
+
+## El estado de hoy
+
+Dos artículos en `contenido/`, y **ninguno de los dos es definitivo**:
+
+| Slug | Categoría | Fecha | Min | Palabras | Qué es |
+|---|---|---|---|---|---|
+| `masc-requisito-procedibilidad` | Comentario | 2026-09-20 | 15 | 2 853 | **prueba del sistema**, texto real del cliente |
+| `principio-de-legalidad-penal` | Fundamento | 2026-08-20 | 4 | 639 | el artículo de ejemplo de la maqueta |
+
+El segundo **se borra al entregar**, como ya decía este archivo. Se convirtió a
+JSON para que el generador tuviera dos artículos con los que probarse —sin un
+segundo, «Continúa leyendo» no tiene candidatos y «Últimos artículos» no tiene
+nada que listar.
+
+> ⚠️ **El de MASC está en `contenido/` pero su fecha es la de hoy y su
+> publicación no está decidida.** Se creó para probar el sistema con un texto
+> real: cinco apartados numerados I–V, una cita con fuente, una lista con
+> ordinales, once referencias en tres grupos y diecisiete llamadas. Es
+> exactamente el artículo que hacía falta para que las cuatro cosas raras del
+> formato se probaran a la vez.
+
+---
 
 ## Convenciones
 

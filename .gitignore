@@ -5,3 +5,12 @@ Thumbs.db
 .idea/
 node_modules/
 .claude/
+
+# Subproductos de los scripts. Los dos los consume el workflow del PR dentro
+# del mismo job —los avisos para comentarlos, las capturas para adjuntarlas— y
+# ninguno tiene por que vivir en el repositorio.
+#
+# Los PDF de articulos/ SI se versionan, y es la diferencia que importa: son
+# parte de lo publicado, porque el boton «Descargar PDF» apunta a ellos.
+scripts/.avisos.json
+scripts/.capturas/

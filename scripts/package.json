@@ -1,0 +1,18 @@
+{
+  "name": "el-derecho-escrito-scripts",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Generador de artículos y PDF. No es una dependencia del sitio: la web publicada sigue siendo HTML, CSS y JS puro sin build.",
+  "scripts": {
+    "build": "node build.mjs",
+    "pdf": "node pdf.mjs",
+    "publicar": "node build.mjs && node pdf.mjs"
+  },
+  "dependencies": {
+    "sharp": "^0.33.5"
+  },
+  "devDependencies": {
+    "playwright": "^1.49.0"
+  }
+}
