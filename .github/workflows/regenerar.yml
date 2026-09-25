@@ -1,0 +1,101 @@
+# ==========================================================================
+# Regenera TODO el sitio generado, a mano, desde la pestaña Actions.
+#
+# Para qué sirve: el generador no solo escribe artículos nuevos, también
+# reescribe los viejos. Así que cuando cambia algo que afecta a todos —la
+# plantilla, el CSS de impresión, la bio del autor del JSON-LD, el tiempo de
+# lectura— hay que volver a pasarlo por encima de lo ya publicado.
+#
+# El workflow de PR no sirve para eso: solo se dispara cuando llega contenido
+# nuevo, y un cambio de plantilla no toca contenido/.
+#
+# ⚠️ NO SE DISPARA SOLO al cambiar scripts/ o css/ en main, y es a propósito:
+# un push a main ya está publicado, así que una regeneración automática
+# empujaría otro commit encima sin que nadie lo haya mirado. Aquí el paso
+# manual es la revisión.
+# ==========================================================================
+
+name: Regenerar todo
+
+on:
+  workflow_dispatch:
+    inputs:
+      rama:
+        description: 'Rama donde dejar el resultado. Si no existe, se crea.'
+        required: true
+        default: 'regenerar'
+      pdf:
+        description: 'Regenerar también los PDF'
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  regenerar:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: scripts/package-lock.json
+
+      - name: Instalar dependencias
+        working-directory: scripts
+        run: npm ci
+
+      - name: Instalar Chromium
+        if: inputs.pdf
+        working-directory: scripts
+        run: npx playwright install --with-deps chromium
+
+      - name: Generar
+        working-directory: scripts
+        run: npm run build
+
+      - name: Generar los PDF
+        if: inputs.pdf
+        working-directory: scripts
+        run: npm run pdf
+
+      # El resultado NO se empuja a main: va a su rama y se abre un PR. Una
+      # regeneración masiva puede tocar todos los artículos a la vez, y eso es
+      # justo lo que hay que mirar antes de publicar, no después.
+      - name: Dejar el resultado en una rama y abrir el PR
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RAMA: ${{ inputs.rama }}
+        run: |
+          git config user.name  'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git checkout -B "$RAMA"
+          git add articulos index.html sitemap.xml feed.xml
+          if git diff --cached --quiet; then
+            echo 'Nada ha cambiado: lo publicado ya coincide con lo que genera el build.'
+            exit 0
+          fi
+          git commit -m 'Regenerar todo el contenido'
+          git push --force origin "$RAMA"
+          gh pr create --head "$RAMA" --base "${{ github.ref_name }}" \
+            --title 'Regenerar todo el contenido' \
+            --body 'Regeneración completa lanzada a mano. Revisar el diff artículo por artículo antes de fusionar.' \
+            || gh pr edit "$RAMA" --body 'Regeneración completa lanzada a mano. Revisar el diff artículo por artículo antes de fusionar.'
+
+      - name: Capturas a 1440 y 375
+        working-directory: scripts
+        run: node capturas.mjs
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: revision
+          path: |
+            articulos/**/*.pdf
+            scripts/.capturas/**
+          if-no-files-found: warn
+          retention-days: 14

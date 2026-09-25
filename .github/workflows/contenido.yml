@@ -1,0 +1,164 @@
+# ==========================================================================
+# Se dispara cuando n8n abre un PR que toca contenido/.
+#
+# Qué hace: genera el HTML, las imágenes y los PDF, los añade AL MISMO PR, y
+# deja un comentario con los avisos del build y capturas de cómo ha quedado.
+#
+# ⚠️ EL PR LO ABRE n8n EN ESTE MISMO REPOSITORIO, NO DESDE UN FORK. Es lo que
+# permite usar `pull_request` a secas: en un PR desde un fork el GITHUB_TOKEN
+# es de solo lectura y el `git push` de abajo fallaría. Si algún día el flujo
+# cambia a forks, hay que pasar a `pull_request_target` y leer antes sus
+# implicaciones de seguridad, porque ese evento ejecuta el workflow de la rama
+# BASE con permisos de escritura sobre código que viene de fuera.
+# ==========================================================================
+
+name: Contenido
+
+on:
+  pull_request:
+    paths:
+      - 'contenido/**'
+      - 'scripts/**'
+      - 'css/**'
+
+# Lo mínimo para hacer el trabajo: escribir en la rama del PR y comentar.
+permissions:
+  contents: write
+  pull-requests: write
+
+# Si n8n empuja dos veces seguidas al mismo PR, la primera ejecución se cancela
+# en vez de competir por el push.
+concurrency:
+  group: contenido-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  generar:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar la rama del PR
+        uses: actions/checkout@v4
+        with:
+          # `pull_request` deja el repo en un merge commit desprendido, sin
+          # rama. Sin esto no hay adónde empujar.
+          ref: ${{ github.head_ref }}
+          # El token por defecto no dispara otros workflows con sus pushes, que
+          # es justo lo que interesa: este job empuja y no queremos que se
+          # vuelva a disparar a sí mismo.
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Preparar Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: scripts/package-lock.json
+
+      - name: Instalar dependencias
+        working-directory: scripts
+        run: npm ci
+
+      - name: Instalar Chromium
+        working-directory: scripts
+        # `--with-deps` trae además las librerías de sistema que Chromium
+        # necesita en el runner. Sin ellas arranca y falla al primer render.
+        run: npx playwright install --with-deps chromium
+
+      - name: Generar HTML, imágenes, sitemap y feed
+        working-directory: scripts
+        run: npm run build
+
+      - name: Generar los PDF
+        working-directory: scripts
+        run: npm run pdf
+
+      - name: Comprobar que el build es idempotente
+        working-directory: scripts
+        # Si una segunda pasada cambia algo, el generador depende de algo que no
+        # debería —el reloj, el orden del sistema de archivos— y a partir de ahí
+        # cada PR arrastraría diferencias que nadie ha escrito.
+        run: |
+          git add -A ../articulos ../index.html ../sitemap.xml ../feed.xml
+          npm run build
+          if ! git diff --quiet -- ../articulos ../index.html ../sitemap.xml ../feed.xml; then
+            echo '::error::El build NO es idempotente: una segunda pasada cambia archivos.'
+            echo 'Suele significar que algo depende del reloj o del orden del sistema de archivos.'
+            git --no-pager diff --stat -- ../articulos ../index.html ../sitemap.xml ../feed.xml
+            exit 1
+          fi
+          echo 'Idempotente.'
+
+      - name: Añadir lo generado al PR
+        run: |
+          git config user.name  'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add articulos index.html sitemap.xml feed.xml
+          if git diff --cached --quiet; then
+            echo 'Nada que añadir: lo generado ya estaba al día.'
+          else
+            git commit -m 'Generar artículos, listados y PDF'
+            git push origin HEAD:${{ github.head_ref }}
+          fi
+
+      # ------------------------------------------------------ capturas ----
+      # Se hacen DESPUÉS de generar, sobre el HTML ya escrito. Sirven para ver
+      # el resultado sin descargar la rama: es lo que convierte el PR en algo
+      # revisable por quien no tiene el proyecto montado.
+
+      - name: Capturas a 1440 y 375
+        working-directory: scripts
+        run: node capturas.mjs
+
+      - name: Adjuntar PDF y capturas
+        uses: actions/upload-artifact@v4
+        with:
+          name: revision
+          path: |
+            articulos/**/*.pdf
+            scripts/.capturas/**
+          if-no-files-found: warn
+          retention-days: 14
+
+      # ------------------------------------------------------ comentario --
+      # Los avisos son el único sitio donde el build habla de erratas del texto
+      # —referencias declaradas y no citadas, notas del propio JSON—. En la
+      # salida del job los ve quien abra los logs; aquí los ve quien revisa.
+
+      - name: Comentar los avisos
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const ruta = 'scripts/.avisos.json';
+            const avisos = fs.existsSync(ruta) ? JSON.parse(fs.readFileSync(ruta, 'utf8')) : [];
+
+            const cuerpo = avisos.length
+              ? ['### Avisos del build', '', ...avisos.map(a => `- ${a}`), '',
+                 'Ninguno impide publicar: si hubiera un error, el job habría fallado.',
+                 '', 'El PDF y las capturas a 1440 y 375 van en el artefacto **revision**.'
+                ].join('\n')
+              : ['### Build sin avisos', '',
+                 'El PDF y las capturas a 1440 y 375 van en el artefacto **revision**.'
+                ].join('\n');
+
+            // Se reutiliza el comentario anterior en vez de apilar uno por
+            // push: si no, un PR con tres correcciones acaba con tres listas de
+            // avisos y hay que mirar la fecha para saber cuál vale.
+            const marca = '<!-- avisos-del-build -->';
+            const { data: previos } = await github.rest.issues.listComments({
+              ...context.repo, issue_number: context.payload.pull_request.number,
+            });
+            const mio = previos.find(c => c.body.includes(marca));
+
+            if (mio) {
+              await github.rest.issues.updateComment({
+                ...context.repo, comment_id: mio.id, body: marca + '\n' + cuerpo,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                ...context.repo, issue_number: context.payload.pull_request.number,
+                body: marca + '\n' + cuerpo,
+              });
+            }
