@@ -152,17 +152,24 @@
 
     <div class="contenedor contenedor--amplio portada__interior">
       <div class="portada__texto">
-        <!-- La línea de áreas va en CAJA NORMAL: las versales las pone el CSS
-             con text-transform, igual que en las categorías. Escribirla en
-             mayúsculas en el HTML haría que algunos lectores de pantalla la
-             deletrearan letra a letra.
+        <!-- ⚠️ AQUÍ IBA UNA LÍNEA DE ÁREAS —«Derecho administrativo · Urbanismo
+             · Jurisdicción contencioso-administrativa»—, en un
+             <p class="portada__antetitulo">. Se retiró por encargo, y con ella
+             se fue su regla de contraste .portada--video .portada__antetitulo,
+             que existía solo por este caso.
 
-             ⚠️ Su ancho manda sobre la maqueta del hero: pide 619 px para ir
-             en una línea, y de ahí sale la columna de 620 px del CSS. Si se
-             alarga este texto, hay que volver a medirlo. -->
-        <p class="portada__antetitulo">Derecho administrativo &middot; Urbanismo &middot; Jurisdicción contencioso-administrativa</p>
-        <h1>El Derecho público, desde sus fundamentos hasta su aplicación</h1>
-        <p class="portada__entradilla">Un espacio de análisis y reflexión sobre Derecho administrativo, urbanismo y jurisdicción contencioso-administrativa, orientado a comprender sus instituciones, interpretar sus normas y su jurisprudencia, y examinar con rigor y criterio propio los problemas que plantea su aplicación práctica.</p>
+             Si alguna vez vuelve, son DOS cosas y no una: el <p> de aquí y esa
+             regla. Sin ella, --acento sobre el vídeo se queda en 2,50:1 y el
+             rótulo se publica ilegible sin que nada avise.
+
+             La clase base .portada__antetitulo SIGUE VIVA: la usa 404.html para
+             el rótulo «Error 404», que va sobre blanco y no necesita la regla.
+
+             Y ojo con la columna de 620 px del hero: la fijaba el ancho de esta
+             línea. El número se conserva porque el titular nuevo cabe en él,
+             pero ya no lo sostiene ningún texto. Razonado en styles.css. -->
+        <h1>Blog jurídico especializado en Derecho Administrativo y Urbanismo</h1>
+        <p class="portada__entradilla">Un espacio de análisis para comprender los fundamentos, la jurisprudencia y la práctica del Derecho Público, tanto en vía administrativa como ante los tribunales.</p>
         <div class="portada__acciones">
           <a class="boton boton--principal" href="./articulos/">Explorar artículos</a>
           <a class="boton" href="./sobre/">Conocer El Derecho Escrito</a>
