@@ -429,7 +429,7 @@ Dos diferencias con el del artículo, las dos necesarias:
 
 ### El destacado de la portada: por defecto el más reciente, o `"destacado": true`
 
-`index.html` abre con una sección **«La lectura recomendada»**, entre el hero y
+`index.html` abre con una sección **«Lectura recomendada»**, entre el hero y
 «Últimos artículos», con un solo artículo. **Es una decisión editorial**, y por
 eso tiene una salida para cuando el más reciente no es el que se quiere
 recomendar.
@@ -2141,7 +2141,7 @@ Y conviene distinguirlos porque hubo los dos y se retiró uno:
 
 | | Dónde | Estado |
 |---|---|---|
-| **Filete del rótulo** | sale del texto de «LA LECTURA RECOMENDADA» y «ÚLTIMOS ARTÍCULOS» hasta el borde | **se queda** |
+| **Filete del rótulo** | sale del texto de «LECTURA RECOMENDADA» y «ÚLTIMOS ARTÍCULOS» hasta el borde | **se queda** |
 | ~~Filete de sección~~ | cruzaba la página entera entre el destacado y «Últimos artículos» | **retirado** |
 
 > ⚠️ **El de sección se retiró porque sobraba, y el aire lo hace ahora el
@@ -2187,19 +2187,34 @@ lo da la línea, y así el verdigrís sigue reservado a la categoría y al enlac
 sobre y no hay nada que calcular al cambiar el texto.
 
 > ⚠️ **Por debajo de 430 px el filete se retira, y el número está medido.** El
-> rótulo más largo —«La lectura recomendada»— pide **322,5 px** en Cormorant 20
+> rótulo más largo —«Lectura recomendada»— pide **286,6 px** en Cormorant 20
 > versales, y eso no baja porque el cuerpo es fijo. Con los 20 del hueco y un
 > mínimo de 40 para que la línea se lea como filete y no como un guion, hacen
-> falta 430,5 px de ventana. Lo que sobra para la línea:
+> falta **394,6 px** de ventana. Lo que sobra para la línea:
 >
-> | Ventana | 375 | 400 | 430 | 431 | 480 | 600 |
+> | Ventana | 375 | 395 | 400 | 430 | 480 | 600 |
 > |---|---|---|---|---|---|---|
-> | Filete | **−15,5** | 9,5 | 39,5 | **40,5** | 89,5 | 209,5 |
+> | Filete | **20,4** | **40,4** | 45,4 | 75,4 | 125,4 | 245,4 |
 >
-> Con el negativo pasaba algo peor que quedarse sin línea: **el texto envolvía a
-> dos líneas** —64 px en vez de 32— porque el hueco y el `::after` le robaban
-> sitio. Volviendo a `display: block` el texto recupera su única línea, porque
-> 322,5 caben en los 327 de la columna a 375. **Quitar el filete es lo que
+> ⚠️ **EL CORTE SIGUE EN 430 AUNQUE LA CUENTA PIDA 394,6, y esta sección daba el
+> número anterior.** El rótulo decía **«La lectura recomendada»**, pedía 322,5 px
+> y de ahí salía un corte de 430,5. Al quitarle el artículo baja a 286,6 y el
+> corte exacto baja con él.
+>
+> O sea que **entre 395 y 430 el filete cabría** —sobran de 40,4 a 75,4— y aun
+> así se retira. No rompe nada y los dos rótulos hermanos siguen tratados igual;
+> es holgura, y el modo de fallar es el bueno: pasarse de prudente quita una
+> línea decorativa, quedarse corto parte el rótulo en dos.
+>
+> **Bajarlo a 395 es una decisión de diseño, no una corrección.** Si se baja,
+> hay que volver a mirar los 375: ahí solo sobran 20,4 px y la línea se leería
+> como un guion, que es justo lo que este corte evita.
+>
+> Con un sobrante negativo pasaba algo peor que quedarse sin línea: **el texto
+> envolvía a dos líneas** —64 px en vez de 32— porque el hueco y el `::after` le
+> robaban sitio. **Con el texto de hoy no se llega a ese caso en ningún ancho.**
+> Volviendo a `display: block` el texto recupera su única línea, porque 286,6
+> caben de sobra en los 327 de la columna a 375. **Quitar el filete es lo que
 > arregla el rótulo, no una pérdida.**
 
 > ⚠️ **`flex: 1 1 auto` y no `flex: 1` en el rótulo de «Últimos artículos».**
@@ -2904,7 +2919,8 @@ Textos visibles que **no venían en su documento** y siguen como estaban:
 
 | Dónde | Qué dice hoy | Por qué preguntar |
 |---|---|---|
-| Portada | «LA LECTURA RECOMENDADA», «ÚLTIMOS ARTÍCULOS», «VER TODOS LOS ARTÍCULOS →» | El documento los daba por buenos explícitamente |
+| Portada | «ÚLTIMOS ARTÍCULOS», «VER TODOS LOS ARTÍCULOS →» | El documento los daba por buenos explícitamente |
+| Portada · rótulo del destacado | **«LECTURA RECOMENDADA»** — decía «LA LECTURA RECOMENDADA» y se acortó **por encargo**, no por estilo. No devolverle el artículo | Ya no es «sigue como estaba»: cambió después del documento |
 | Pie | «Contenido divulgativo. No constituye asesoramiento jurídico.» | Convive con el aviso nuevo del artículo, que dice lo mismo más largo |
 | Formulario de `contacto/` | Etiquetas «Nombre», «Email», «Asunto», «Mensaje», botón «Enviar mensaje» | El documento solo daba la entradilla |
 | Artículo de ejemplo | Cuerpo, titular, entradilla, `keywords`, `FAQPage` y sus metadatos | Se borra al entregar, así que no se reescribió nada de él |
@@ -3218,7 +3234,7 @@ Hay **seis** regiones:
 
 | Archivo | Región | Contenido |
 |---|---|---|
-| `index.html` | `destacado` | la pieza de «La lectura recomendada» |
+| `index.html` | `destacado` | la pieza de «Lectura recomendada» |
 | `index.html` | `ultimos` | las tarjetas de «Últimos artículos» |
 | `articulos/index.html` | `filtros` | los botones de categoría |
 | `articulos/index.html` | `articulos` | las tarjetas del listado |
