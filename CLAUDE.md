@@ -3313,6 +3313,50 @@ Hay **seis** regiones:
 > mantener todo eso en una plantilla, o sea en un sitio donde no se ve al leer
 > la página.
 
+#### El `ItemList` del listado NO es una región, y hay que tocarlo a mano
+
+> ⚠️ **ESTE ES EL ÚNICO SITIO DEL PROYECTO DONDE UN ARTÍCULO SE ESCRIBE A MANO,
+> Y YA MORDIÓ UNA VEZ.** El `<head>` de `articulos/index.html` lleva un JSON-LD
+> con un `ItemList` que enumera los artículos:
+>
+> ```json
+> {
+>   "@type": "ItemList",
+>   "numberOfItems": 1,
+>   "itemListElement": [
+>     { "@type": "ListItem", "position": 1,
+>       "url": "https://elderechoescrito.es/articulos/masc-requisito-procedibilidad/",
+>       "name": "La falta de MASC como requisito de procedibilidad: …" }
+>   ]
+> }
+> ```
+>
+> **Está FUERA de las regiones `GENERADO:`** —vive en el `<head>`, y las dos
+> regiones de ese archivo están en el `<body>`— así que **el build no lo toca**.
+> `npm run build` puede reescribir las tarjetas, el sitemap y el feed dejando
+> este bloque apuntando a otra cosa, y **no da ningún error**.
+>
+> **Hay que actualizarlo a mano al añadir Y al borrar un artículo**, y son tres
+> cosas: `numberOfItems`, la `url` y el `name` de cada `ListItem`.
+
+**Cómo mordió:** al eliminar el artículo de ejemplo, el `ItemList` se quedó
+declarándole a Google una URL que pasaba a dar 404. Todo lo demás —portada,
+listado, sitemap y feed— se corrigió solo, porque son regiones. Este no.
+
+No se ve leyendo la página ni probándola: es metadato. Se encuentra así:
+
+```sh
+# Artículos citados en JSON-LD fuera de las regiones generadas
+grep -n 'articulos/[a-z0-9-]*/"' articulos/index.html
+```
+
+> **Por qué no se convirtió en una séptima región.** Se puede, y sería lo
+> coherente. Si algún día se hace, el sitio donde añadirla es `escribirRegion()`
+> en `scripts/build.mjs` y la marca iría dentro del `<script>` del `<head>`.
+> Mientras no se haga, **esta sección es lo único que evita que se vuelva a
+> quedar atrás**, y por eso está escrita aquí y no en un comentario del HTML:
+> quien borra un artículo mira este archivo, no el `<head>` del listado.
+
 > ⚠️ **QUE FALTE UNA MARCA ES UN ERROR, NO UN AVISO.** Si alguien borra un par
 > de marcas, el build **falla**. Es deliberado: sin eso, el generador dejaría de
 > actualizar ese sitio **en silencio**, y el primer síntoma sería una portada
@@ -3505,6 +3549,11 @@ Para que nadie lo busque:
 
 - **No borra.** Quitar un artículo es borrar su carpeta de `contenido/` **y** la
   de `articulos/`. El build no sabe que la segunda sobra.
+- **No toca el `ItemList` del JSON-LD de `articulos/index.html`.** Vive en el
+  `<head>`, fuera de las regiones, y enumera los artículos a mano: `numberOfItems`,
+  `url` y `name`. **Hay que actualizarlo al añadir y al borrar**, y su despiste
+  no da ningún error — le declara a Google una URL que ya no existe. Es el único
+  sitio donde un artículo se escribe a mano y tiene su propia sección arriba.
 - **No toca las tarjetas de ejemplo**, ni las de la portada ni las
   provisionales del listado. Están fuera de las regiones.
 - **No escribe `sobre/`, `contacto/`, `404.html` ni el hero.** Son páginas a
