@@ -3652,6 +3652,56 @@ Deja el resultado en una rama y abre un PR; nunca escribe en `main`. Una
 regeneración masiva puede tocar todos los artículos a la vez, y eso es justo lo
 que hay que mirar antes de publicar.
 
+## El sitio SIN artículos es un estado legítimo, y costó dos fallos
+
+Se pasa por él cada vez que se retira el último artículo —por ejemplo para
+republicarlo por el circuito automático— y el generador no lo contemplaba.
+
+> ⚠️ **FALLO 1: `build.mjs` se salía sin tocar nada.** Tenía un `return` con el
+> mensaje «No hay artículos. Nada que generar», y eso es lo contrario de lo que
+> hace falta: las regiones `GENERADO:` se quedaban con **la tarjeta, la URL del
+> sitemap, el `<item>` del feed y el `ItemList`** del artículo que ya no existe.
+> Cuatro sitios anunciando un 404.
+>
+> **El síntoma era desconcertante:** el build decía que todo iba bien, `git
+> status` salía limpio, y la portada seguía enseñando el artículo borrado. No
+> había nada que hiciera sospechar del generador.
+>
+> Hoy sigue adelante con la lista vacía y las reescribe vacías.
+
+> ⚠️ **FALLO 2: `pdf.mjs` reventaba con un stack trace.** Hacía `readdir` sobre
+> `contenido/articulos/` dando por hecho que existe, y al borrar la carpeta
+> entera saltaba `ENOENT: scandir`. En local se entiende; **en CI deja el job en
+> rojo sin explicar nada**, y como `npm run publicar` encadena con `&&`, un
+> build correcto acababa igualmente en fallo.
+>
+> Hoy tolera la carpeta ausente. Y distingue dos casos que no son lo mismo:
+> pedir un slug que no está **sí** es un error —quien lo pidió se equivocó— pero
+> no encontrar ninguno sin haber pedido nada **no lo es**.
+
+**Lo que se ve con cero artículos**, y es aceptable porque dura lo que tarde en
+publicarse uno:
+
+| | Estado |
+|---|---|
+| Destacado | la `<section>` pinta su rótulo «Lectura recomendada» **sobre un hueco** |
+| «Últimos artículos» | las tres tarjetas de atrezo |
+| Listado | dos de atrezo más «Próximamente» |
+| Contador | «2 artículos publicados» — solo el atrezo |
+| Filtros | los tres, pulsables; Jurisprudencia da cero |
+| Desplegable de etiquetas | **se oculta solo**, no hay ninguna |
+| `ItemList` | `numberOfItems: 0` |
+| Consola | sin errores |
+
+> ⚠️ **EL RÓTULO HUÉRFANO DEL DESTACADO NO LO PUEDE ARREGLAR EL GENERADOR**, y
+> conviene saber por qué antes de intentarlo. La región `GENERADO:destacado`
+> vive **dentro** de la `<section class="destacado">`, así que el build puede
+> vaciar su contenido pero no esconder la sección que la contiene.
+>
+> Esconderla pediría mover las marcas **fuera** de la `<section>`, y eso es un
+> cambio de maqueta, no de generador: el CLAUDE.md ya documenta que para quitar
+> el destacado se borra la sección entera a mano. Se dejó así a propósito.
+
 ## Qué NO hace el generador
 
 Para que nadie lo busque:

@@ -113,15 +113,36 @@ async function main() {
 
   const pedidos = process.argv.slice(2).filter((a) => !a.startsWith('-'));
 
-  const carpetas = (await readdir(CONTENIDO, { withFileTypes: true }))
-    .filter((d) => d.isDirectory())
-    .map((d) => d.name)
-    .filter((n) => !pedidos.length || pedidos.includes(n))
-    .sort();
+  /* ⚠️ `contenido/articulos/` PUEDE NO EXISTIR, y aquí se daba por hecho.
+     `readdir` sobre una ruta ausente lanza ENOENT, así que al retirar el
+     último artículo esto moría con un stack trace de Node:
+
+       Error: ENOENT: no such file or directory, scandir '…/contenido/articulos'
+
+     En local se entiende; en CI deja el job en rojo sin decir qué ha pasado, y
+     como `npm run publicar` encadena con `&&`, un build correcto acababa
+     igualmente en fallo. Un sitio sin artículos no es un error: es un estado
+     por el que se pasa cada vez que se retira el último para republicarlo. */
+
+  const carpetas = (await existe(CONTENIDO))
+    ? (await readdir(CONTENIDO, { withFileTypes: true }))
+        .filter((d) => d.isDirectory())
+        .map((d) => d.name)
+        .filter((n) => !pedidos.length || pedidos.includes(n))
+        .sort()
+    : [];
+
+  /* Pedir un slug que no está SÍ es un error —quien lo pidió se equivocó de
+     nombre, o el artículo no existe— pero no encontrar ninguno sin haber pedido
+     nada no lo es: no hay PDF que hacer y ya está. */
 
   if (!carpetas.length) {
-    console.error(`✗ No hay ningún artículo${pedidos.length ? ` que se llame ${pedidos.join(', ')}` : ''}.`);
-    process.exit(1);
+    if (pedidos.length) {
+      console.error(`✗ No hay ningún artículo que se llame ${pedidos.join(', ')}.`);
+      process.exit(1);
+    }
+    console.log('Sin artículos en contenido/articulos/: ningún PDF que generar.');
+    return;
   }
 
   const logo = await readFile(join(RAIZ, 'img', 'logo.svg'), 'utf8');

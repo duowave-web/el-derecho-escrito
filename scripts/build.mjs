@@ -241,9 +241,26 @@ async function main() {
     process.exit(1);
   }
 
+  /* ⚠️ UN SITIO SIN ARTÍCULOS ES UN ESTADO LEGÍTIMO Y HAY QUE GENERARLO.
+     AQUÍ HABÍA UN `return` Y ERA UN FALLO SERIO.
+
+     Decía «No hay artículos. Nada que generar» y se salía sin tocar nada, que
+     es justo lo contrario de lo que hace falta: al retirar el último artículo,
+     las regiones GENERADO: se quedaban con la tarjeta, la URL del sitemap, el
+     <item> del feed y el ItemList del artículo que ya no existe. O sea que el
+     sitio anunciaba en cuatro sitios algo que da 404, y el build no escribía
+     nada — ni siquiera avisaba.
+
+     Se descubrió al retirar el artículo de MASC para republicarlo por el
+     circuito automático. El síntoma era desconcertante: el build decía que
+     todo iba bien y `git status` salía limpio, mientras la portada seguía
+     enseñando el artículo borrado.
+
+     Ahora sigue adelante con la lista vacía: las regiones se reescriben
+     vacías, que es la representación correcta de «no hay artículos». */
+
   if (!arts.length) {
-    console.log('No hay artículos en contenido/articulos/. Nada que generar.');
-    return;
+    console.log('Sin artículos en contenido/articulos/: se vacían las regiones.');
   }
 
   let escritos = 0;
@@ -285,11 +302,26 @@ async function main() {
   if (arts.filter((a) => a.destacado === true).length > 1) {
     avisos.push('Hay más de un artículo con "destacado": true; manda el más reciente de ellos');
   }
-  const resto = arts.filter((a) => a.slug !== destacado.slug).slice(0, 3);
+
+  /* ⚠️ SIN ARTÍCULOS NO HAY DESTACADO, y `arts[0]` es undefined: leer
+     `destacado.slug` reventaba con un TypeError. Era lo único que impedía que
+     el build funcionara con la lista vacía.
+
+     La región se queda vacía, no con un bloque a medias. Lo que NO puede hacer
+     el build es esconder la <section>: la región vive dentro de ella, así que
+     la sección sigue pintando su rótulo «Lectura recomendada» sobre un hueco.
+     Es feo y transitorio —dura lo que tarde en publicarse un artículo— y
+     esconderla pediría mover las marcas fuera de la <section>, que es un
+     cambio de maqueta y no de generador. Está anotado en el CLAUDE.md. */
+
+  const bloqueDest = destacado
+    ? bloqueDestacado(destacado)
+    : '      <!-- Sin artículos publicados: no hay lectura recomendada. -->';
+  const resto = destacado ? arts.filter((a) => a.slug !== destacado.slug).slice(0, 3) : [];
 
   const portada = join(RAIZ, 'index.html');
   let ph = await readFile(portada, 'utf8');
-  ph = reemplazarRegion(ph, 'destacado', bloqueDestacado(destacado), 'index.html');
+  ph = reemplazarRegion(ph, 'destacado', bloqueDest, 'index.html');
   ph = reemplazarRegion(ph, 'ultimos', resto.map(tarjetaPortada).join('\n\n'), 'index.html');
   if (await escribirSiCambia(portada, ph)) escritos++;
 
