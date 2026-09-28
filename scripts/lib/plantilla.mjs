@@ -18,13 +18,34 @@ export const DOMINIO = 'https://elderechoescrito.es';
    artículo: el CLAUDE.md documenta que ningún filtro va apagado, porque un
    botón deshabilitado no puede explicar por qué lo está.
 
-   Añadir una categoría es añadir una línea aquí. */
+   Añadir una categoría es añadir una línea aquí.
+
+   ⚠️ VAN EN PLURAL, Y SON TRES. Estuvieron en singular y eran cuatro:
+   `ensayo`, `fundamento`, `jurisprudencia` y `comentario`.
+
+   «Comentario» SE ELIMINÓ porque no es una categoría del cliente, no porque
+   sobrara al pluralizar. Quien la eche de menos al ver un artículo que comenta
+   una resolución: eso va en `jurisprudencia`.
+
+   ⚠️ «Jurisprudencia» NO PLURALIZA, y no es un descuido. Es incontable en
+   español jurídico —«jurisprudencias» no existe— así que su plural es ella
+   misma. Los botones del filtro se leen ENSAYOS · FUNDAMENTOS · JURISPRUDENCIA
+   y la asimetría está asumida: un lector jurista no la lee como error, y
+   forzar «Sentencias» o «Resoluciones» sería renombrar la categoría, no
+   pluralizarla.
+
+   La clave y el texto cambian A LA VEZ y tienen que seguir haciéndolo: la
+   clave viaja a `data-categoria`, a `?categoria=` y a `data-filtro`, y el
+   texto es lo que se ve. Ver el CLAUDE.md, que enumera los nueve sitios.
+
+   Las tres NO comparten eje —«Ensayos» es una forma, «Jurisprudencia» una
+   fuente y «Fundamentos» una materia— y eso ya pasaba en singular. Es la
+   taxonomía del cliente y no se arregla por iniciativa propia. */
 
 export const CATEGORIAS = {
-  ensayo: 'Ensayo',
-  fundamento: 'Fundamento',
+  ensayos: 'Ensayos',
+  fundamentos: 'Fundamentos',
   jurisprudencia: 'Jurisprudencia',
-  comentario: 'Comentario',
 };
 
 /* ------------------------------------------------------------ autoría --- */

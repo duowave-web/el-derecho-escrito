@@ -582,7 +582,7 @@ que una tarjeta quieta.
 > etiquetas inventadas en pantalla.
 
 **4. Sí conservan `data-categoria`**, así que cuentan en el contador y entran en
-el filtro de Fundamento. Con dos de atrezo y un artículo real, el contador dice
+el filtro de Fundamentos. Con dos de atrezo y un artículo real, el contador dice
 **«3 artículos publicados»**. Es lo esperado, no un fallo.
 
 > ⚠️ **Si al borrarlas no queda ninguna tarjeta, hay que devolver el `hidden` a
@@ -736,12 +736,43 @@ sección de los filetes de la portada.
 
 ### La categoría se escribe UNA vez y sale en 9 sitios
 
+> ⚠️ **LAS CATEGORÍAS VAN EN PLURAL Y SON TRES. ANTES ERAN CUATRO Y EN
+> SINGULAR**, así que cualquier ejemplo de este archivo que diga `fundamento` o
+> `comentario` está desfasado y no describe lo que hay.
+>
+> | Antes | Hoy |
+> |---|---|
+> | `ensayo` · Ensayo | **`ensayos` · Ensayos** |
+> | `fundamento` · Fundamento | **`fundamentos` · Fundamentos** |
+> | `jurisprudencia` · Jurisprudencia | **`jurisprudencia` · Jurisprudencia** |
+> | `comentario` · Comentario | **eliminada** |
+>
+> **«Comentario» se quitó porque no es una categoría del cliente**, no porque
+> sobrara al pluralizar. Un artículo que comenta una resolución va en
+> `jurisprudencia` — es lo que se hizo con el de MASC, que estaba en
+> «Comentario» y pasó a «Jurisprudencia»: su núcleo es la divergencia entre la
+> AAP de Alicante y la de Barcelona sobre si el defecto es subsanable.
+>
+> ⚠️ **«Jurisprudencia» no pluraliza, y es correcto.** Es incontable en español
+> jurídico. Los botones se leen ENSAYOS · FUNDAMENTOS · JURISPRUDENCIA y la
+> asimetría **está asumida**: no hay que «arreglarla» inventando «Sentencias»,
+> que sería renombrar la categoría y no pluralizarla.
+>
+> **Qué NO rompió el cambio:** ninguna URL de artículo —el slug no contiene la
+> categoría— así que cero 404. Lo que sí decae son los enlaces viejos con
+> `?categoria=comentario`: el JS **descarta** una clave desconocida y enseña la
+> lista entera, o sea que degrada a «sin filtrar» en vez de romperse.
+>
+> **Y no hizo falta tocar `js/main.js`**: las claves válidas las lee del
+> `data-filtro` de los botones, que salen de `CATEGORIAS`. Tampoco el CSS, que
+> no tiene ni un selector por categoría.
+
 > ⚠️ **Y hay DOS ENTRADAS DE ATREZO más en `articulos/index.html`**, marcadas
 > con `<!-- PROVISIONAL: entradas de ejemplo, borrar antes de entregar -->` y su
 > marca de FIN. Están descritas enteras en **«El atrezo»**, más arriba: van sin
 > etiqueta, sin enlace y sin `data-etiquetas`, y se borran antes de entregar.
 >
-> Aquí importan por una sola cosa: **conservan `data-categoria="fundamento"`**,
+> Aquí importan por una sola cosa: **conservan `data-categoria="fundamentos"`**,
 > así que entran en el filtro de esa categoría y en el contador, que dice
 > **«3 artículos publicados»**.
 
@@ -750,7 +781,7 @@ sección de los filetes de la portada.
 > fuente en `contenido/` **se han eliminado**, que era lo que este archivo
 > llevaba pidiendo desde el principio.
 >
-> **El único artículo real es hoy el de MASC**, categoría «Comentario». Ya no
+> **El único artículo real es hoy el de MASC**, categoría «Jurisprudencia». Ya no
 > hay ningún artículo de maqueta del que haya que desconfiar como referencia
 > editorial; lo que queda de atrezo son las cinco tarjetas, que no son
 > artículos y están documentadas arriba.
@@ -783,17 +814,17 @@ Los nueve puntos, que hoy escribe el generador a partir de una sola línea:
 son justo los que se escapan:
 
 - El `article:section` no se ve al leer la página.
-- La píldora del lateral va sin espacios: `#Fundamento`.
+- La píldora del lateral va sin espacios: `#Garantías`.
 - El `data-categoria` y el `href` van **en minúsculas y sin acentos**, porque
-  son claves y no texto: `fundamento`, no «Fundamento».
+  son claves y no texto: `jurisprudencia`, no «Jurisprudencia».
 
 Esa última es la más traicionera, porque hay **dos formas de la misma palabra
 conviviendo en el mismo archivo**: la etiqueta visible y la clave del enlace.
 
 > **Y es justo la asimetría que el JSON conserva.** `categoria` se escribe en
-> **clave** —`"comentario"`— y de ahí salen las dos formas: la clave viaja
+> **clave** —`"jurisprudencia"`— y de ahí salen las dos formas: la clave viaja
 > literal a `data-categoria` y a los `href`, y el texto visible sale de la tabla
-> `CATEGORIAS` de `scripts/lib/plantilla.mjs`. Escribir `"Comentario"` hace
+> `CATEGORIAS` de `scripts/lib/plantilla.mjs`. Escribir `"Jurisprudencia"` hace
 > fallar el build, que es el modo de fallar bueno.
 >
 > ⚠️ **Añadir una categoría es añadir una línea a esa tabla, y hay que saber que
@@ -802,12 +833,13 @@ conviviendo en el mismo archivo**: la etiqueta visible y la clave del enlace.
 > escribe leyéndola. Así se cumple sola la regla de que **ningún filtro va
 > apagado**, tenga artículos o no.
 >
-> Así entró **«Comentario»**, que no existía: es la categoría del artículo de
-> MASC. Fue una línea.
+> ⚠️ **Y quitar una es quitar esa línea.** Así salió **«Comentario»**, que
+> estuvo aquí y **no era una categoría del cliente**: se retiró junto con el
+> paso a plural. Un artículo que comenta una resolución va en `jurisprudencia`.
 
 ```sh
 # Las nueve de una vez, contando las variantes sin espacios y en minusculas
-grep -rni 'fundamento' --include='*.html' --include='*.xml' .
+grep -rni 'jurisprudencia' --include='*.html' --include='*.xml' .
 ```
 
 > **Ya no hay falsos positivos, y antes sí los había.** Aquí decía que
@@ -859,7 +891,7 @@ en la sección de puntos de corte.
 ### Ningún filtro va apagado y la tarjeta de espera no se esconde nunca
 
 Los cuatro botones de categoría de `articulos/` **se pueden pulsar siempre**,
-tengan artículos o no. Estuvieron `disabled` los vacíos —hoy Ensayo y
+tengan artículos o no. Estuvieron `disabled` los vacíos —hoy Ensayos y
 Jurisprudencia— y el motivo de quitarlo es que un botón apagado no puede
 explicarse: quien lo ve no distingue una categoría vacía de una rota, y el
 único sitio donde cabría la explicación es justo el control que no responde.
@@ -918,7 +950,7 @@ Y es lo contrario que `data-categoria`, así que merece explicarse:
 
 | Atributo | Qué guarda | Por qué |
 |---|---|---|
-| `data-categoria` | `fundamento` | viaja **literal** a `?categoria=` y a `data-filtro`: ahí la clave *es* el dato |
+| `data-categoria` | `jurisprudencia` | viaja **literal** a `?categoria=` y a `data-filtro`: ahí la clave *es* el dato |
 | `data-etiquetas` | `Legalidad,Garantías` | de ahí salen el nombre de la casilla y el de la píldora, y **los acentos no se reconstruyen** desde una clave |
 
 Se normaliza al comparar, que es lo que ya hacía el bloque de relacionados, y
@@ -1186,7 +1218,7 @@ y lógica. Lo que queda en cada caso:
 
 | | Categoría vacía | Búsqueda sin resultados |
 |---|---|---|
-| Botón pulsado | **«Ensayo»** encendido | «Todos» |
+| Botón pulsado | **«Ensayos»** encendido | «Todos» |
 | `.filtro-aviso` | — | **«Resultados para «zzz»» con una × que la quita** |
 | `.contador` | **«0 resultados»** | **«0 resultados»** |
 
@@ -1222,7 +1254,7 @@ Medido antes y después, con las cuatro entradas de hoy:
 | Estado | Antes | Ahora |
 |---|---|---|
 | Sin filtro | 4 artículos publicados | **4 artículos publicados** |
-| `?categoria=fundamento` (4 de 4) | 4 artículos publicados ✗ | **4 resultados** |
+| `?categoria=fundamentos` (4 de 4) | 4 artículos publicados ✗ | **4 resultados** |
 | `?etiquetas=legalidad,docencia` (4 de 4) | 4 artículos publicados ✗ | **4 resultados** |
 | `?q=principio` (4 de 4) | 4 artículos publicados ✗ | **4 resultados** |
 | `?etiquetas=docencia` (1) | 1 resultado | 1 resultado |
@@ -1250,7 +1282,7 @@ Lo que **sí** sigue siendo cierto es que no es un resultado: no lleva
 cuenta**. Verificado con doce artículos sintéticos: la página 1 enseña diez
 tarjetas y el contador dice «12 artículos publicados».
 
-Y una consecuencia de mantenimiento: **al publicar el primer Ensayo no hay que
+Y una consecuencia de mantenimiento: **al publicar el primer Ensayos no hay que
 tocar ningún botón.** Antes había que acordarse de quitarle el `disabled`, y
 existía además una excepción en el JS que lo reactivaba si la URL pedía esa
 categoría. Las dos cosas se han ido: el estado sale del contenido.
@@ -3110,7 +3142,7 @@ coincidir**, y el build falla si no —es lo único que ata la URL al contenido.
   "titulo_seo": "La falta de MASC como requisito de procedibilidad",
   "descripcion": "Cuándo la falta de intento de negociación previa permite inadmitir…",
   "entradilla": "La exigencia de negociación previa ha abierto una controversia…",
-  "categoria": "comentario",
+  "categoria": "jurisprudencia",
   "etiquetas": ["MASC", "LO 1/2025", "Procedibilidad"],
   "keywords": ["requisito de procedibilidad MASC", "LO 1/2025 negociación previa"],
   "fecha": "2026-09-20",
@@ -3160,7 +3192,7 @@ coincidir**, y el build falla si no —es lo único que ata la URL al contenido.
 | `titulo_seo` | no | solo `<title>`, `og:title` y `name` del `WebPage`. Para titulares de más de 60 |
 | `descripcion` | **sí** | meta description, OG, extracto de las tarjetas y entradilla del destacado |
 | `entradilla` | **sí** | el párrafo de apertura del artículo. **No es lo mismo que `descripcion`** |
-| `categoria` | **sí** | una de `ensayo`, `fundamento`, `jurisprudencia`, `comentario`. En **clave**, no en texto |
+| `categoria` | **sí** | una de `ensayos`, `fundamentos`, `jurisprudencia`. En **clave** y en PLURAL, no en texto |
 | `etiquetas` | no | texto visible. De aquí salen las píldoras, `data-etiquetas` y el desplegable |
 | `keywords` | no | frases de cola para `article:tag` y el JSON-LD. **No son las etiquetas** |
 | `fecha` | **sí** | `YYYY-MM-DD`. Ordena el listado y fija la hora de publicación a las 09:00 +02:00 |
@@ -3182,7 +3214,7 @@ coincidir**, y el build falla si no —es lo único que ata la URL al contenido.
 > lo que parece.** Es la misma asimetría que el CLAUDE.md ya documenta para
 > `data-categoria` y `data-etiquetas`, y por el mismo motivo: la clave de una
 > etiqueta no permite reconstruir sus tildes. Escribir `"categoria":
-> "Comentario"` hace fallar el build, que es el modo de fallar bueno.
+> "Jurisprudencia"` hace fallar el build, que es el modo de fallar bueno.
 
 ### Los bloques
 
