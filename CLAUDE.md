@@ -75,8 +75,9 @@ Dos convenciones del cliente que conviene no «arreglar»:
   arriba. La regla sigue valiendo en todo lo demás.
 
 **Lo que NO venía en su documento y sigue como estaba**: las etiquetas de
-sección de la portada, el artículo de ejemplo entero, el 404 y las etiquetas del
-formulario de contacto. Está listado en la sección de deuda pendiente.
+sección de la portada, el 404 y las etiquetas del formulario de contacto. Está
+listado en la sección de deuda pendiente. *(El artículo de ejemplo también
+estaba en esta lista y ya no: se eliminó.)*
 
 Lo demás se ha ido resolviendo en pasadas posteriores: los `<title>`, las meta
 descriptions, Open Graph, Twitter y el JSON-LD se reescribieron para las
@@ -491,37 +492,98 @@ porque no queda elemento — verificado, 0 px. Y **si el artículo no tiene
 imagen** se borra solo el `<a class="destacado__imagen">`: el bloque es flex y
 el texto ocupa el ancho entero sin ninguna regla extra.
 
-### Las tarjetas de ejemplo de la portada — BORRAR AL PUBLICAR
+### El atrezo — SIN etiquetas, SIN enlaces y BORRAR ANTES DE ENTREGAR
 
-> ⚠️ **«Últimos artículos» se ve, y las TRES TARJETAS que hay dentro son
-> ATREZO.** Sus artículos no existen: «La discrecionalidad técnica de la
-> Administración», «El interés legítimo en el recurso contencioso-administrativo»
-> y «El control judicial de los planes parciales». Están solo para que el
-> cliente vea la sección con contenido.
->
-> **Se borran cuando se publiquen artículos reales.** Si se publican y no se
-> borran, la portada enseñará artículos inventados junto a los de verdad, y
-> **nada dará error**: se ve leyendo, no probando.
+> ⚠️ **HAY CINCO TARJETAS EN EL SITIO QUE NO SON ARTÍCULOS**, y con un solo
+> artículo real son mayoría. Están para que el cliente no vea un blog vacío.
+> **Se borran antes de entregar.** Si se entregan sin borrar, la web enseñará
+> artículos inventados junto al de verdad y **nada dará error**: se ve leyendo,
+> no probando.
 
-**Cómo quitarlas, en un paso:** en `index.html` se borra todo lo que hay entre
-las dos marcas de caja dentro de `.tarjetas`:
+**Dónde están, y las cinco llevan `.tarjeta--ejemplo`:**
 
-```
-╔════════════════════════════════════════════════╗
-║  EJEMPLO — BORRAR CUANDO HAYA ARTÍCULOS REALES ║   ← desde aquí
-...las tres <article class="… tarjeta--ejemplo">...
-║  FIN EJEMPLO — hasta aquí lo que hay que borrar ║   ← hasta aquí
-╚════════════════════════════════════════════════╝
-```
+| Dónde | Cuántas | Titulares |
+|---|---|---|
+| `index.html`, «Últimos artículos» | **3** | «La discrecionalidad técnica…», «El interés legítimo…», «El control judicial de los planes parciales…» |
+| `articulos/index.html`, tras la región generada | **2** | «El principio de legalidad penal: las cuatro exigencias» y «…por qué importa fuera del aula» |
 
-También se puede localizar por clase, que es más rápido:
+**Todas viven FUERA de las regiones `GENERADO:`**, así que el build ni las toca
+ni las cuenta — por eso hay que borrarlas a mano. Se localizan de una vez:
 
 ```sh
-grep -n 'tarjeta--ejemplo\|EJEMPLO' index.html
+grep -rn 'tarjeta--ejemplo' index.html articulos/index.html
 ```
 
-Y hay que borrar **la regla `.tarjeta--ejemplo`** de `styles.css`, que se queda
-sin uso. Es una sola —el apagado del zoom— y está rotulada como tal.
+Al borrarlas hay que retirar **dos reglas de `styles.css`**, que se quedan sin
+uso: `.tarjeta--ejemplo:hover .tarjeta__imagen img` —el apagado del zoom— y la
+que explica el punto siguiente.
+
+#### Las cuatro decisiones del atrezo, y ninguna es cosmética
+
+**1. No llevan etiqueta de categoría.** Se les quitó por encargo: las únicas
+etiquetas visibles del sitio tienen que ser las reales del artículo de MASC.
+
+> ⚠️ **Quitarla descuadra los titulares, y por eso existe una regla de CSS.**
+> `.etiqueta--plana` ocupa **23,2 px** —19,2 de alto más sus 4 de
+> `margin-bottom`—, así que sin ella el titular sube eso y deja de alinear con
+> el de una tarjeta real en la misma fila. Lo repone:
+>
+> ```css
+> .tarjeta--caja.tarjeta--ejemplo .entrada__titulo { margin-top: 23.2px }
+> ```
+>
+> **Va solo en `.tarjeta--caja`, o sea el listado**, que es la única rejilla
+> donde el atrezo convive con una tarjeta real. En la portada, «Últimos
+> artículos» enseña los artículos que **no** son el destacado, así que con un
+> único artículo real no hay ninguna tarjeta con etiqueta al lado y el hueco
+> sería aire muerto.
+>
+> **Se reponen con margen y no con un `<p>` vacío**: un elemento sin contenido
+> no se ve, pero un lector de pantalla lo recorre igual. Es el mismo criterio
+> que el de las celdas sobrantes de la rejilla.
+>
+> **SE RETIRA CON EL ATREZO.** Cuando desaparezcan las tarjetas, esa regla se
+> queda sin uso. Y si algún día se toca el cuerpo o el margen de
+> `.etiqueta--plana`, **los 23,2 hay que volver a medirlos**: salen de ella y
+> nada los ata.
+
+**2. No llevan enlace, ni en la portada ni en el listado.** En la portada nunca
+lo tuvieron —está razonado justo abajo—. En el listado sí, y apuntaban a rutas
+inventadas que **daban 404**. Se quitaron: un 404 en una demo al cliente es peor
+que una tarjeta quieta.
+
+> ⚠️ **ESO OCULTA «CONTINÚA LEYENDO», Y ES EL COMPORTAMIENTO QUERIDO.** Las
+> entradas del listado existían precisamente para alimentar ese bloque, que
+> descarta toda tarjeta sin `<a>` en el titular:
+>
+> ```js
+> const a = art.querySelector(".entrada__titulo a");
+> if (!a) return false;
+> ```
+>
+> Sin enlaces no son candidatas, así que con un solo artículo real el bloque se
+> queda sin ninguna y **se oculta solo**. No es un fallo y **no hay que
+> devolverles el enlace para «arreglarlo»**: con un artículo publicado, no
+> recomendar nada es lo honesto. El bloque volverá solo en cuanto haya un
+> segundo artículo de verdad.
+>
+> `articulosRelacionados()` **no se toca**: ocultarse cuando no hay candidatos
+> ya era su comportamiento previsto.
+
+**3. No llevan `data-etiquetas`, y el atrezo futuro tampoco debe llevarlo.**
+
+> ⚠️ **Ese atributo alimenta el desplegable de etiquetas del listado**, que se
+> construye leyendo los `data-etiquetas` de las tarjetas. El atrezo llevaba
+> `Docencia` y `Divulgación`, y eso metía **etiquetas falsas en un control
+> visible** — justo lo que el encargo quería evitar. Se le quitaron.
+>
+> Es la trampa menos evidente de las cuatro: se puede quitar la etiqueta de
+> categoría, que se ve, y dejar el atributo, que no — y seguir teniendo
+> etiquetas inventadas en pantalla.
+
+**4. Sí conservan `data-categoria`**, así que cuentan en el contador y entran en
+el filtro de Fundamento. Con dos de atrezo y un artículo real, el contador dice
+**«3 artículos publicados»**. Es lo esperado, no un fallo.
 
 > ⚠️ **Si al borrarlas no queda ninguna tarjeta, hay que devolver el `hidden` a
 > la `<section>`.** Una sección con rótulo, filete y «Ver todos» sobre una
@@ -674,24 +736,24 @@ sección de los filetes de la portada.
 
 ### La categoría se escribe UNA vez y sale en 9 sitios
 
-> ⚠️ **Y hay TRES ENTRADAS DE EJEMPLO más en `articulos/index.html`**, marcadas
+> ⚠️ **Y hay DOS ENTRADAS DE ATREZO más en `articulos/index.html`**, marcadas
 > con `<!-- PROVISIONAL: entradas de ejemplo, borrar antes de entregar -->` y su
-> marca de FIN. Están solo para que el bloque «Continúa leyendo» del artículo
-> tenga candidatos y se pueda ver funcionando con un único artículo publicado.
+> marca de FIN. Están descritas enteras en **«El atrezo»**, más arriba: van sin
+> etiqueta, sin enlace y sin `data-etiquetas`, y se borran antes de entregar.
 >
-> **Sus enlaces dan 404**, y tiene que ser así: si apuntaran al artículo real, la
-> exclusión por `pathname` las descartaría a las tres y el bloque volvería a
-> quedarse vacío. Tampoco se quedan en los relacionados — **se ven en el listado,
-> el contador dice «4 artículos publicados» y entran en el filtro de Fundamento**.
->
-> Al borrarlas no hay que tocar nada más: el bloque del artículo se queda sin
-> candidatos y **se oculta solo**.
+> Aquí importan por una sola cosa: **conservan `data-categoria="fundamento"`**,
+> así que entran en el filtro de esa categoría y en el contador, que dice
+> **«3 artículos publicados»**.
 
-> ⚠️ **El único artículo publicado es un ejemplo provisional.** «El principio de
-> legalidad penal» y su categoría **«Fundamento»** están para que la plantilla
-> tenga contenido con el que probarse, y **se eliminan al entregar la web**. No
-> se deben tomar como referencia editorial: ni el tema, ni la categoría, ni la
-> firma —que es la de la maqueta, según la sección de autoría.
+> ⚠️ **ESTE AVISO DECÍA QUE EL ÚNICO ARTÍCULO PUBLICADO ERA UN EJEMPLO, Y YA NO
+> LO ES.** «El principio de legalidad penal», su carpeta en `articulos/` y su
+> fuente en `contenido/` **se han eliminado**, que era lo que este archivo
+> llevaba pidiendo desde el principio.
+>
+> **El único artículo real es hoy el de MASC**, categoría «Comentario». Ya no
+> hay ningún artículo de maqueta del que haya que desconfiar como referencia
+> editorial; lo que queda de atrezo son las cinco tarjetas, que no son
+> artículos y están documentadas arriba.
 
 > ⚠️ **ESTA SECCIÓN DECÍA «se repite en 9 sitios» Y «al cambiarla hay que tocar
 > los nueve».** Ya no: se escribe **una vez**, en el campo `categoria` del
@@ -837,12 +899,13 @@ desplegable, `?etiquetas=`). Marcar etiquetas no borra la categoría ni al revé
 > llevan **almohadilla**; la categoría va sin ella y en plano. Esa distinción
 > visible ya existía y el filtro solo la respeta.
 >
-> ⚠️ **Queda una colisión sin resolver:** el artículo de ejemplo lleva la
-> etiqueta `#Fundamento`, que es **también** el nombre de una categoría, así que
-> en la misma pantalla hay un botón `FUNDAMENTO` y una píldora `#Fundamento` que
-> filtran cosas distintas. Se deja a propósito —es contenido de un artículo de
-> ejemplo que se borra al entregar— pero **conviene que las etiquetas reales del
-> cliente no repitan nombres de categoría.**
+> ✅ **Aquí se avisaba de una colisión y ya no existe.** El artículo de ejemplo
+> llevaba la etiqueta `#Fundamento`, que es **también** el nombre de una
+> categoría, así que en la misma pantalla convivían un botón `FUNDAMENTO` y una
+> píldora `#Fundamento` que filtraban cosas distintas. Se fue con el artículo.
+>
+> **El aviso sigue valiendo para el futuro**: conviene que las etiquetas reales
+> del cliente no repitan nombres de categoría. Las de MASC no lo hacen.
 
 **La lógica es Y entre criterios y O dentro de las etiquetas.** O sea: búsqueda
 Y categoría Y (etiqueta1 O etiqueta2). Es la convención de filtros por facetas y
@@ -2981,10 +3044,11 @@ darle en el JSON son `titulo` —o `titulo_seo`, si el titular pasa de 60— y
 > molesta, el sitio donde añadirlo es `validar()` en `scripts/build.mjs`, y
 > tiene que ser un AVISO, no un error.**
 
-> ⚠️ **El artículo de ejemplo NO cumple esta regla, y es a propósito.** Su
-> `<title>` mide 61, su `description` 184 y sus `keywords` son de Derecho penal.
-> No se tocó porque se borra al entregar. Si alguien lo usa de plantilla, tiene
-> que ajustar esos tres campos.
+> ⚠️ **AQUÍ SE EXCEPTUABA EL ARTÍCULO DE EJEMPLO, Y YA NO HACE FALTA.** Su
+> `<title>` medía 61, su `description` 184 y sus `keywords` eran de Derecho
+> penal; se toleraba porque se borraba al entregar. **Ya está borrado**, así que
+> la regla no tiene excepciones: el único artículo, el de MASC, la cumple con su
+> `titulo_seo` de 51 caracteres.
 
 ---
 
@@ -3455,24 +3519,41 @@ Para que nadie lo busque:
 
 ## El estado de hoy
 
-Dos artículos en `contenido/`, y **ninguno de los dos es definitivo**:
+**UN artículo en `contenido/`**, y es el único publicado:
 
 | Slug | Categoría | Fecha | Min | Palabras | Qué es |
 |---|---|---|---|---|---|
-| `masc-requisito-procedibilidad` | Comentario | 2026-09-20 | 15 | 2 853 | **prueba del sistema**, texto real del cliente |
-| `principio-de-legalidad-penal` | Fundamento | 2026-08-20 | 4 | 639 | el artículo de ejemplo de la maqueta |
+| `masc-requisito-procedibilidad` | Comentario | 2026-09-20 | 15 | 2 853 | el artículo real, texto del cliente |
 
-El segundo **se borra al entregar**, como ya decía este archivo. Se convirtió a
-JSON para que el generador tuviera dos artículos con los que probarse —sin un
-segundo, «Continúa leyendo» no tiene candidatos y «Últimos artículos» no tiene
-nada que listar.
+Sigue siendo el que prueba el formato entero: cinco apartados numerados I–V, una
+cita con fuente, una lista con ordinales, once referencias en tres grupos y
+diecisiete llamadas. Es exactamente el artículo que hacía falta para que las
+cuatro cosas raras del formato se probaran a la vez.
 
-> ⚠️ **El de MASC está en `contenido/` pero su fecha es la de hoy y su
-> publicación no está decidida.** Se creó para probar el sistema con un texto
-> real: cinco apartados numerados I–V, una cita con fuente, una lista con
-> ordinales, once referencias en tres grupos y diecisiete llamadas. Es
-> exactamente el artículo que hacía falta para que las cuatro cosas raras del
-> formato se probaran a la vez.
+> ⚠️ **ESTA SECCIÓN LISTABA DOS ARTÍCULOS Y DECÍA QUE NINGUNO ERA DEFINITIVO.**
+> El segundo, `principio-de-legalidad-penal`, era el ejemplo de la maqueta y
+> **se ha eliminado**: su carpeta en `articulos/`, su fuente en `contenido/` y
+> sus menciones en este archivo.
+>
+> Decía también que el de MASC estaba «pendiente de decidir». **Ya está
+> decidido: se publica**, y es el único.
+>
+> El ejemplo se había convertido a JSON para que el generador tuviera dos
+> artículos con los que probarse. Con uno solo, dos cosas cambian y **las dos
+> son el comportamiento previsto, no fallos**: «Últimos artículos» se queda sin
+> artículos que listar —enseña el atrezo— y **«Continúa leyendo» se oculta**,
+> porque el destacado no se repite y el atrezo no es candidato. Están razonadas
+> en sus secciones.
+
+> ⚠️ **Quedan DOS URLs muertas, y se asumen.** Al borrar el ejemplo dejan de
+> existir `/articulos/principio-de-legalidad-penal/` y su PDF. **No se pone
+> redirección**: apuntaría a un artículo que nunca fue contenido real, y
+> mandarla al de MASC sería llevar al lector a algo que no buscaba.
+>
+> No hay enlaces entrantes que se rompan —salieron a la vez del sitemap, del
+> feed, de la portada y del listado, que los reescribe el build— y `robots.txt`
+> está en `Disallow: /`, así que tampoco hay nada indexado que reclame esas
+> direcciones.
 
 ---
 

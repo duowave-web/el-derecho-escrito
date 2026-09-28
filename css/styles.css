@@ -2563,6 +2563,36 @@ main > .lista:last-child {
   transform: none;
 }
 
+/* ⚠️ HUECO DE LA ETIQUETA QUE EL ATREZO YA NO LLEVA, y existe para que sus
+   titulares ALINEEN con los de las tarjetas reales, que si la llevan.
+
+   Al atrezo se le quito la etiqueta de categoria por encargo: las unicas
+   etiquetas visibles del sitio tienen que ser las reales. Pero la etiqueta
+   ocupaba sitio —19,2px de alto mas los 4 de `margin-bottom` de
+   .etiqueta--plana, 23,2 en total— y al quitarla el titular subia esos 23,2px.
+   En una fila con una tarjeta real al lado, los titulares dejaban de alinear y
+   se leia como un fallo de maquetacion.
+
+   Se repone con margen y NO con un <p> vacio: un elemento sin contenido no se
+   ve pero un lector de pantalla lo recorre igual, que es el mismo criterio por
+   el que las celdas sobrantes de la rejilla van sin marcado.
+
+   ⚠️ Va SOLO en .tarjeta--caja, o sea el listado, y no en el atrezo de la
+   portada. Es la unica rejilla donde el atrezo convive con una tarjeta real:
+   en la portada, «Ultimos articulos» enseña los articulos que NO son el
+   destacado, asi que con un solo articulo real no hay ninguna tarjeta con
+   etiqueta con la que alinearse y el hueco seria aire muerto.
+
+   ⚠️ Si se toca el cuerpo o el margen de .etiqueta--plana, este numero hay que
+   volver a medirlo: sale de ella y nada los ata.
+
+   SE BORRA CON EL ATREZO. Cuando desaparezcan las tarjetas de ejemplo, esta
+   regla se queda sin uso y hay que retirarla con ellas. */
+
+.tarjeta--caja.tarjeta--ejemplo .entrada__titulo {
+  margin-top: 23.2px;
+}
+
 /* Con prefers-reduced-motion se va el zoom y se queda el color. Lo que informa
    es que el titular cambie de tono, no que la foto se mueva. */
 

@@ -11,8 +11,10 @@ Producción: **https://elderechoescrito.es** (Cloudflare Pages)
 ├── index.html                                   Portada — https://elderechoescrito.es/
 ├── articulos/
 │   ├── index.html                               Listado — /articulos/
-│   └── principio-de-legalidad-penal/
-│       └── index.html                           Artículo — /articulos/principio-de-legalidad-penal/
+│   └── masc-requisito-procedibilidad/
+│       ├── index.html                           Artículo — /articulos/masc-requisito-procedibilidad/
+│       ├── portada.jpg                          Imagen optimizada, la escribe el generador
+│       └── masc-requisito-procedibilidad.pdf    PDF descargable, lo escribe el generador
 ├── sobre/index.html                             /sobre/
 ├── contacto/index.html                          /contacto/
 ├── css/styles.css

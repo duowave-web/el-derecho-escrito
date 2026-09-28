@@ -54,8 +54,8 @@
         {
           "@type": "ListItem",
           "position": 1,
-          "url": "https://elderechoescrito.es/articulos/principio-de-legalidad-penal/",
-          "name": "El principio de legalidad penal: qué protege y dónde se rompe"
+          "url": "https://elderechoescrito.es/articulos/masc-requisito-procedibilidad/",
+          "name": "La falta de MASC como requisito de procedibilidad: entre la inadmisión y la subsanación"
         }
       ]
     }
@@ -159,6 +159,9 @@
            pedía su categoría: era la excepción a una regla que ya no existe. -->
       <div class="filtros" id="filtros" hidden>
         <h2 class="oculto">Filtrar por categoría</h2>
+        <!-- GENERADO:filtros inicio — lo reescribe scripts/build.mjs a partir
+             de CATEGORIAS, en scripts/lib/plantilla.mjs. Añadir una categoría
+             al sitio es añadir una línea allí, no aquí. -->
         <button type="button" class="boton boton--contorno boton--filtro"
                 data-filtro="todos" aria-pressed="true">Todos</button>
         <button type="button" class="boton boton--contorno boton--filtro"
@@ -167,6 +170,9 @@
                 data-filtro="fundamento" aria-pressed="false">Fundamento</button>
         <button type="button" class="boton boton--contorno boton--filtro"
                 data-filtro="jurisprudencia" aria-pressed="false">Jurisprudencia</button>
+        <button type="button" class="boton boton--contorno boton--filtro"
+                data-filtro="comentario" aria-pressed="false">Comentario</button>
+        <!-- GENERADO:filtros fin -->
 
         <!-- ETIQUETAS · Segundo eje de filtrado, INDEPENDIENTE de la categoría:
              los dos se acumulan y ninguno borra al otro. Entre criterios la
@@ -283,65 +289,79 @@
            Al publicar, copia el <article> entero y edítalo. -->
       <div class="tarjetas tarjetas--centrada" id="entradas">
 
-        <article class="tarjeta tarjeta--caja" data-categoria="fundamento"
-                 data-etiquetas="Legalidad,Fundamento,Garantías,Taxatividad,Irretroactividad">
-          <!-- Mismo alt que la tarjeta de portada, y es correcto que se repita:
-               es el mismo recorte 3:2 de la misma foto en el mismo componente.
-               El que sí cambia es el de la cabecera del artículo, que recorta a
-               21:9 y deja fuera los platos de la balanza. -->
+        <!-- GENERADO:articulos inicio — una tarjeta por cada
+             contenido/articulos/<slug>/articulo.json, en orden de fecha
+             descendente. Lo reescribe scripts/build.mjs.
+
+             ⚠️ Las tarjetas de EJEMPLO de más abajo quedan FUERA de esta
+             región a propósito: son atrezo escrito a mano y el generador no
+             debe tocarlas ni borrarlas. -->
+        <article class="tarjeta tarjeta--caja" data-categoria="comentario"
+                 data-etiquetas="MASC,LO 1/2025,Procedibilidad,Subsanación,Contencioso-administrativo">
           <div class="tarjeta__imagen">
-            <img src="../img/damajusticia.jpg"
-                 alt="Figura de bronce de la justicia, con los ojos vendados y los dos platos de la balanza vacíos"
+            <img src="./masc-requisito-procedibilidad/portada.jpg"
+                 alt="Estatua de bronce de la dama de la justicia, con los ojos vendados y sosteniendo la balanza"
                  width="1600" height="1066" loading="lazy" decoding="async">
           </div>
-          <p class="etiqueta etiqueta--plana">Fundamento</p>
+          <p class="etiqueta etiqueta--plana">Comentario</p>
           <h2 class="entrada__titulo">
-            <a href="../articulos/principio-de-legalidad-penal/">El principio de legalidad penal: qué protege y dónde se rompe</a>
+            <a href="./masc-requisito-procedibilidad/">La falta de MASC como requisito de procedibilidad: entre la inadmisión y la subsanación</a>
           </h2>
-          <p class="entrada__extracto">Nullum crimen sine lege es una de las garantías más citadas del derecho penal y una de las peor entendidas. Un repaso a sus cuatro exigencias y a los casos donde el legislador las tensiona.</p>
+          <p class="entrada__extracto">Cuándo la falta de intento de negociación previa permite inadmitir la demanda y cuándo debe abrirse un trámite de subsanación, a la luz de la LO 1/2025.</p>
           <div class="entrada__meta">
-            <time datetime="2026-08-20">20 agosto 2026</time>
-            <span class="lectura">7 min</span>
+            <time datetime="2026-09-20">20 septiembre 2026</time>
+            <span class="lectura">15 min</span>
           </div>
         </article>
+        <!-- GENERADO:articulos fin -->
 
         <!-- ================================================================
              PROVISIONAL: entradas de ejemplo, borrar antes de entregar
              ================================================================
 
-             Las TRES tarjetas de aquí abajo NO son artículos. Existen solo para
-             que el bloque «Continúa leyendo» del artículo tenga candidatos y se
-             pueda ver funcionando con un único artículo publicado.
+             Las DOS tarjetas de aquí abajo NO son artículos. Son atrezo, para
+             que el listado no se vea vacío con un único artículo real.
 
-             ⚠️ SUS ENLACES DAN 404. Los destinos no existen. Tienen que ser
-             rutas distintas de la del artículo real porque, si apuntaran a él,
-             la exclusión por pathname las descartaría a las tres y el bloque
-             volvería a quedarse vacío — que es justo lo que se quería ver.
+             ⚠️ ESTE COMENTARIO DECÍA OTRA COSA Y CONVIENE SABERLO. Eran TRES,
+             llevaban etiqueta de categoría y su titular era un enlace, y se
+             explicaba aquí que sus destinos DABAN 404 a propósito: existían
+             para alimentar el bloque «Continúa leyendo» del artículo, que
+             necesita candidatos con `<a>` en el titular.
 
-             Y no se quedan en el bloque de relacionados: al vivir en el listado
-             SE VEN AQUÍ, cuentan en el contador —que pasa a decir «4 artículos
-             publicados»— y entran en el filtro de Fundamento.
+             Las tres cosas se retiraron por encargo:
 
-             Están puestas para que el orden se note: la primera comparte tres
-             etiquetas, la segunda dos y la tercera ninguna. La tercera es
-             además la más reciente de las tres, así que si aparece la última
-             queda demostrado que manda la afinidad y no la fecha.
+               · la etiqueta, para que las únicas visibles del sitio sean las
+                 reales del artículo de MASC;
+               · el enlace, porque un 404 en una demo al cliente es peor que
+                 una tarjeta quieta;
+               · una de las tres, porque los titulares se repiten demasiado.
 
-             AL BORRARLAS: quitar este comentario y los tres <article> hasta la
-             marca de FIN. No hay que tocar nada más — el bloque del artículo se
-             queda sin candidatos y se oculta solo. -->
+             ⚠️ LA CONSECUENCIA ES QUE «CONTINÚA LEYENDO» YA NO SALE, y es lo
+             buscado. `articulosRelacionados()` descarta toda tarjeta sin `<a>`
+             en el titular, así que estas dos no son candidatas y el bloque se
+             oculta solo. Con un solo artículo real, no recomendar nada es lo
+             honesto. NO hay que devolverles el enlace para «arreglarlo».
 
-        <article class="tarjeta tarjeta--caja" data-categoria="fundamento"
-                 data-etiquetas="Legalidad,Fundamento,Garantías">
+             ⚠️ NO LLEVAN `data-etiquetas`, Y NO SE LES PUEDE PONER. Ese
+             atributo es lo que alimenta el desplegable de etiquetas del
+             listado, así que cualquier atrezo que lo lleve mete etiquetas
+             falsas en un control visible.
+
+             Sí conservan `data-categoria`: cuentan en el contador —que dice
+             «3 artículos publicados»— y entran en el filtro de Fundamento.
+
+             AL BORRARLAS: quitar este comentario y los dos <article> hasta la
+             marca de FIN, y retirar del CSS la regla
+             `.tarjeta--caja.tarjeta--ejemplo .entrada__titulo`, que repone el
+             hueco de la etiqueta y se queda sin uso. -->
+
+        <article class="tarjeta tarjeta--caja tarjeta--ejemplo" data-categoria="fundamento">
           <div class="tarjeta__imagen">
             <img src="../img/damajusticia.jpg"
                  alt="Figura de bronce de la justicia, con los ojos vendados y los dos platos de la balanza vacíos"
                  width="1600" height="1066" loading="lazy" decoding="async">
           </div>
-          <p class="etiqueta etiqueta--plana">Fundamento</p>
-          <h2 class="entrada__titulo">
-            <a href="../articulos/ejemplo-cuatro-exigencias/">El principio de legalidad penal: las cuatro exigencias</a>
-          </h2>
+          <h2 class="entrada__titulo">El principio de legalidad penal: las cuatro exigencias</h2>
           <p class="entrada__extracto">Entrada de ejemplo. Lex scripta, praevia, certa y stricta: cuatro exigencias que se citan juntas y se cumplen por separado.</p>
           <div class="entrada__meta">
             <time datetime="2026-05-12">12 mayo 2026</time>
@@ -349,35 +369,13 @@
           </div>
         </article>
 
-        <article class="tarjeta tarjeta--caja" data-categoria="fundamento"
-                 data-etiquetas="Legalidad,Garantías">
+        <article class="tarjeta tarjeta--caja tarjeta--ejemplo" data-categoria="fundamento">
           <div class="tarjeta__imagen">
             <img src="../img/damajusticia.jpg"
                  alt="Figura de bronce de la justicia, con los ojos vendados y los dos platos de la balanza vacíos"
                  width="1600" height="1066" loading="lazy" decoding="async">
           </div>
-          <p class="etiqueta etiqueta--plana">Fundamento</p>
-          <h2 class="entrada__titulo">
-            <a href="../articulos/ejemplo-donde-se-tensiona/">El principio de legalidad penal: dónde se tensiona hoy</a>
-          </h2>
-          <p class="entrada__extracto">Entrada de ejemplo. Leyes penales en blanco, tipos abiertos y la tentación de dejar que el reglamento complete lo que la ley calla.</p>
-          <div class="entrada__meta">
-            <time datetime="2026-06-18">18 junio 2026</time>
-            <span class="lectura">8 min</span>
-          </div>
-        </article>
-
-        <article class="tarjeta tarjeta--caja" data-categoria="fundamento"
-                 data-etiquetas="Docencia,Divulgación">
-          <div class="tarjeta__imagen">
-            <img src="../img/damajusticia.jpg"
-                 alt="Figura de bronce de la justicia, con los ojos vendados y los dos platos de la balanza vacíos"
-                 width="1600" height="1066" loading="lazy" decoding="async">
-          </div>
-          <p class="etiqueta etiqueta--plana">Fundamento</p>
-          <h2 class="entrada__titulo">
-            <a href="../articulos/ejemplo-fuera-del-aula/">El principio de legalidad penal: por qué importa fuera del aula</a>
-          </h2>
+          <h2 class="entrada__titulo">El principio de legalidad penal: por qué importa fuera del aula</h2>
           <p class="entrada__extracto">Entrada de ejemplo. La garantía no se agota en el manual: aparece cada vez que una administración sanciona sin norma que la ampare.</p>
           <div class="entrada__meta">
             <time datetime="2026-07-30">30 julio 2026</time>

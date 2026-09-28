@@ -8,14 +8,16 @@
     <atom:link href="https://elderechoescrito.es/feed.xml" rel="self" type="application/rss+xml"/>
     <lastBuildDate>Thu, 20 Aug 2026 09:00:00 +0200</lastBuildDate>
 
+    <!-- GENERADO:articulos inicio -->
     <item>
-      <title>El principio de legalidad penal: qué protege y dónde se rompe</title>
-      <link>https://elderechoescrito.es/articulos/principio-de-legalidad-penal/</link>
-      <guid isPermaLink="true">https://elderechoescrito.es/articulos/principio-de-legalidad-penal/</guid>
-      <pubDate>Thu, 20 Aug 2026 09:00:00 +0200</pubDate>
-      <category>Fundamento</category>
-      <description>Nullum crimen sine lege es una de las garantías más citadas del derecho penal y una de las peor entendidas. Un repaso a sus cuatro exigencias y a los casos donde el legislador las tensiona.</description>
+      <title>La falta de MASC como requisito de procedibilidad: entre la inadmisión y la subsanación</title>
+      <link>https://elderechoescrito.es/articulos/masc-requisito-procedibilidad/</link>
+      <guid isPermaLink="true">https://elderechoescrito.es/articulos/masc-requisito-procedibilidad/</guid>
+      <pubDate>Sun, 20 Sep 2026 09:00:00 +0200</pubDate>
+      <category>Comentario</category>
+      <description>Cuándo la falta de intento de negociación previa permite inadmitir la demanda y cuándo debe abrirse un trámite de subsanación, a la luz de la LO 1/2025.</description>
     </item>
+    <!-- GENERADO:articulos fin -->
 
   </channel>
 </rss>
