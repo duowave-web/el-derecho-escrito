@@ -16,7 +16,12 @@
   </url>
 
   <!-- GENERADO:articulos inicio -->
-
+  <url>
+    <loc>https://elderechoescrito.es/articulos/masc-requisito-procedibilidad/</loc>
+    <lastmod>2026-09-28</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
   <!-- GENERADO:articulos fin -->
 
 </urlset>
