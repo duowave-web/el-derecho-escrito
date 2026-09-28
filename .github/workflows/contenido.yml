@@ -21,10 +21,12 @@ on:
       - 'scripts/**'
       - 'css/**'
 
-# Lo mínimo para hacer el trabajo: escribir en la rama del PR y comentar.
+# Lo mínimo para hacer el trabajo: escribir en la rama del PR, comentar y
+# registrar el Deployment que pinta el botón «View deployment».
 permissions:
   contents: write
   pull-requests: write
+  deployments: write
 
 # Si n8n empuja dos veces seguidas al mismo PR, la primera ejecución se cancela
 # en vez de competir por el push.
@@ -43,10 +45,22 @@ jobs:
           # `pull_request` deja el repo en un merge commit desprendido, sin
           # rama. Sin esto no hay adónde empujar.
           ref: ${{ github.head_ref }}
-          # El token por defecto no dispara otros workflows con sus pushes, que
-          # es justo lo que interesa: este job empuja y no queremos que se
-          # vuelva a disparar a sí mismo.
-          token: ${{ secrets.GITHUB_TOKEN }}
+          # ⚠️ AQUÍ IBA `secrets.GITHUB_TOKEN` CON EL ARGUMENTO CONTRARIO: que
+          # sus pushes no disparan workflows y así el job no se relanzaba solo.
+          # Era cierto y era exactamente el problema.
+          #
+          # Al empujar lo generado, la CABEZA del PR pasa a ser el commit del
+          # bot. Con GITHUB_TOKEN ese commit no dispara nada, así que se queda
+          # SIN NINGÚN CHECK — comprobado: 1 check en el commit del autor, 0 en
+          # el del bot. Y un check obligatorio que nunca se reporta en la cabeza
+          # BLOQUEA el merge para siempre: el cliente vería un PR que no puede
+          # publicar y sin explicación.
+          #
+          # Con un PAT el push sí dispara una segunda ejecución, que vuelve a
+          # generar, no encuentra nada que empujar —el build es idempotente— y
+          # deja `generar` en verde sobre la cabeza. El bucle se corta solo por
+          # esa idempotencia, no por una condición que haya que mantener.
+          token: ${{ secrets.PAT_PUBLICAR }}
           # Hace falta historia para comparar con main. Con el fetch-depth 1 de
           # serie no hay base común y el paso siguiente no puede calcularla.
           fetch-depth: 0
@@ -138,10 +152,163 @@ jobs:
             git commit -m 'Generar artículos, listados y PDF'
             git push origin HEAD:${{ github.head_ref }}
           fi
-          # El SHA va al comentario para construir el enlace de vista previa.
-          # Se lee DESPUES del commit: si se leyera antes, el enlace apuntaria
-          # a la version sin generar y la pagina saldria a medias.
+          # El SHA va al comentario para construir el enlace del PDF. Se lee
+          # DESPUES del commit: si se leyera antes, apuntaria a la version sin
+          # generar y el PDF no existiria todavia.
           echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+      # --------------------------------------------------- vista previa ----
+      # El artículo se sirve desde GitHub Pages, en un repositorio aparte, bajo
+      # una carpeta por PR. Y el enlace NO va en el comentario: se registra un
+      # Deployment, que es lo que hace que GitHub pinte el botón nativo
+      # «View deployment» en el recuadro del PR.
+      #
+      # ⚠️ SE COPIA EL SITIO ENTERO, NO SOLO EL ARTÍCULO, y no es por comodidad:
+      # todas las rutas del sitio son relativas —`../../css/styles.css`— así que
+      # un artículo suelto se vería sin estilos, sin tipografías y sin imágenes.
+      # Son ~2,3 MB por PR, que el workflow de limpieza borra al cerrarlo.
+      #
+      # ⚠️ ESTO SUSTITUYE A raw.githack PARA EL HTML. Githack servía el artículo
+      # detrás de una pantalla «One more step» con anuncios y un aviso de no
+      # meter contraseñas: para un cliente parece una alerta de seguridad.
+      # Comprobado que sale SIEMPRE —no hay cookie y responde con `no-store`— y
+      # que `rawcdn.githack.com` tampoco la evita. El PDF sí pasa limpio, por
+      # eso ese enlace se queda donde estaba.
+
+      - name: Averiguar qué artículo trae el PR
+        id: art
+        run: |
+          SLUGS=$(git diff --name-only "origin/${{ github.base_ref }}...HEAD" -- contenido/articulos/ \
+                  | cut -d/ -f3 | sort -u | tr '\n' ' ')
+          echo "slugs=$SLUGS" >> "$GITHUB_OUTPUT"
+          echo "primero=$(echo $SLUGS | awk '{print $1}')" >> "$GITHUB_OUTPUT"
+          echo "Artículos del PR: ${SLUGS:-ninguno}"
+
+      - name: Abrir el deployment
+        id: deploy
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data } = await github.rest.repos.createDeployment({
+              ...context.repo,
+              ref: context.payload.pull_request.head.ref,
+              environment: `vista-previa-pr-${context.payload.pull_request.number}`,
+              /* transient: GitHub lo marca inactivo solo cuando se supera o se
+                 cierra el PR, así que el botón no sobrevive al artículo. */
+              transient_environment: true,
+              auto_merge: false,
+              required_contexts: [],
+              description: 'Vista previa del artículo',
+            });
+            core.setOutput('id', data.id);
+            await github.rest.repos.createDeploymentStatus({
+              ...context.repo, deployment_id: data.id, state: 'in_progress',
+              description: 'Publicando la vista previa…',
+            });
+
+      - name: Copiar la vista previa al repositorio de previews
+        env:
+          PAT: ${{ secrets.PAT_PUBLICAR }}
+          PR: ${{ github.event.pull_request.number }}
+        run: |
+          DEST=/tmp/previews
+          git clone --quiet --depth 1 \
+            "https://x-access-token:$PAT@github.com/${{ github.repository_owner }}/el-derecho-escrito-previews.git" "$DEST"
+
+          rm -rf "$DEST/pr-$PR"
+          mkdir -p "$DEST/pr-$PR"
+          # Todo lo que se sirve. Fuera scripts/, contenido/ y .github/, que no
+          # son parte del sitio, y .git, que no se copia nunca.
+          for x in index.html 404.html robots.txt sitemap.xml feed.xml og.png \
+                   favicon.svg favicon-16.png favicon-32.png apple-touch-icon.png \
+                   css js img video articulos sobre contacto; do
+            [ -e "$x" ] && cp -R "$x" "$DEST/pr-$PR/"
+          done
+
+          # ⚠️ LA VISTA PREVIA VA CON noindex, Y ES LA ÚNICA DIFERENCIA A
+          # PROPÓSITO ENTRE EL PREVIEW Y PRODUCCIÓN.
+          #
+          # El repositorio de previews es público, así que sin esto un borrador
+          # que el cliente todavía no ha aprobado sería rastreable. El
+          # `canonical` apunta a elderechoescrito.es y Google suele consolidar
+          # ahí, pero «suele» no es una garantía para un texto sin publicar.
+          #
+          # Y `robots.txt` no sirve aquí: solo se lee en la RAÍZ del dominio, y
+          # esto vive en un subdirectorio de github.io. Tiene que ir en la
+          # etiqueta, página por página.
+          #
+          # Se SUSTITUYE la etiqueta existente en vez de añadir otra: las seis
+          # páginas del sitio llevan ya un `<meta name="robots">`, y dos
+          # etiquetas contradictorias en la misma página es un comportamiento
+          # que decide el buscador, no nosotros.
+          find "$DEST/pr-$PR" -name '*.html' -print0 \
+            | xargs -0 sed -i'' -E 's|<meta name="robots"[^>]*>|<meta name="robots" content="noindex, nofollow">|'
+
+          # Que no se cuele ninguna indexable: si el marcado cambiara y el
+          # patrón dejara de casar, esto lo dice en vez de publicarlo en
+          # silencio.
+          QUEDAN=$(grep -rl 'name="robots" content="index' "$DEST/pr-$PR" --include='*.html' | wc -l)
+          if [ "$QUEDAN" -ne 0 ]; then
+            echo "::error title=Vista previa indexable::$QUEDAN página(s) del preview conservan «index». Revisa el patrón del sed."
+            exit 1
+          fi
+          echo "Vista previa marcada noindex en $(find "$DEST/pr-$PR" -name '*.html' | wc -l) página(s)."
+
+          cd "$DEST"
+          git config user.name  'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add -A
+          if git diff --cached --quiet; then
+            echo 'La vista previa ya estaba al día.'
+          else
+            git commit --quiet -m "Vista previa del PR #$PR"
+            git push --quiet
+          fi
+
+      # ⚠️ PAGES TARDA EN PROPAGAR, Y POR ESO SE ESPERA AQUÍ. Entre el push y
+      # que la URL responde pasan de 30 s a un par de minutos. Si el deployment
+      # se marcara «success» al empujar, el cliente pulsaría el botón y vería un
+      # 404 — que es peor que no tener botón.
+      #
+      # Sondeando hasta el 200, el botón solo aparece cuando la página existe.
+      - name: Esperar a que Pages sirva la vista previa
+        id: esperar
+        env:
+          PR: ${{ github.event.pull_request.number }}
+          SLUG: ${{ steps.art.outputs.primero }}
+        run: |
+          BASE="https://${{ github.repository_owner }}.github.io/el-derecho-escrito-previews/pr-$PR"
+          URL="$BASE/"
+          [ -n "$SLUG" ] && URL="$BASE/articulos/$SLUG/"
+          echo "url=$URL" >> "$GITHUB_OUTPUT"
+          for i in $(seq 1 30); do
+            CODE=$(curl -s -o /dev/null -w '%{http_code}' --max-time 10 "$URL" || echo 000)
+            if [ "$CODE" = "200" ]; then
+              echo "lista=si" >> "$GITHUB_OUTPUT"
+              echo "Disponible tras ~$((i*10))s: $URL"
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "lista=no" >> "$GITHUB_OUTPUT"
+          echo "::warning title=La vista previa tarda::Pages no ha servido $URL en 5 minutos. El artículo está generado y el PDF disponible; el botón de vista previa aparecerá cuando Pages termine."
+
+      - name: Cerrar el deployment
+        if: always() && steps.deploy.outputs.id
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const lista = '${{ steps.esperar.outputs.lista }}' === 'si';
+            await github.rest.repos.createDeploymentStatus({
+              ...context.repo,
+              deployment_id: ${{ steps.deploy.outputs.id }},
+              /* Solo `success` pinta el botón. Si Pages no ha llegado a tiempo
+                 se queda en `error` a propósito: mejor sin botón que con uno
+                 que lleva a un 404. */
+              state: lista ? 'success' : 'error',
+              environment_url: '${{ steps.esperar.outputs.url }}',
+              description: lista ? 'Vista previa lista' : 'Pages aún no ha propagado',
+            });
 
       # ------------------------------------------------------ capturas ----
       # Se hacen DESPUÉS de generar, sobre el HTML ya escrito. Sirven para ver
@@ -207,14 +374,20 @@ jobs:
 
             const base = `https://raw.githack.com/${context.repo.owner}/${context.repo.repo}/${sha}`;
 
+            /* ⚠️ EL ENLACE DEL ARTÍCULO YA NO VA AQUÍ. Lo pinta GitHub en el
+               recuadro de arriba, como botón «View deployment», porque es donde
+               el cliente lo espera y porque así solo aparece cuando la página
+               existe de verdad —el deployment se marca `success` después de
+               comprobar que Pages responde—.
+               El del PDF sí se queda: lo sirve githack, que para PDF funciona
+               limpio, y así hay algo que mirar aunque Pages tarde. */
             const previa = (sha && slugs.length)
               ? ['## Vista previa del artículo', '',
-                 ...slugs.flatMap(s => ([
-                   `**[▶ Ver el artículo como quedará publicado](${base}/articulos/${s}/)**`,
-                   '',
-                   `[Ver el PDF descargable](${base}/articulos/${s}/${s}.pdf)`,
-                   '',
-                 ])),
+                 'El artículo se abre con el botón **«View deployment»** del recuadro',
+                 'de arriba. Aparece en cuanto la vista previa está lista.',
+                 '',
+                 ...slugs.map(s => `[Ver el PDF descargable](${base}/articulos/${s}/${s}.pdf)`),
+                 '',
                  '### Qué conviene mirar', '',
                  '- Que el **titular** y la **entradilla** sean los correctos.',
                  '- Que la **imagen de portada** sea la que toca.',

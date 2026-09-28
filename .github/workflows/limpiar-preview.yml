@@ -1,0 +1,68 @@
+# ==========================================================================
+# Borra la vista previa cuando el PR se cierra, se mergee o no.
+#
+# Sin esto, cada PR deja ~2,3 MB en el repositorio de previews para siempre:
+# el sitio entero copiado bajo `pr-<N>/`. Con dos artículos al mes eso son
+# ~55 MB al año de páginas que ya no mira nadie y que, además, siguen
+# sirviéndose — un borrador retirado seguiría accesible por su URL.
+#
+# Se dispara con `closed`, que cubre las dos salidas: mergeado y descartado.
+# ==========================================================================
+
+name: Limpiar vista previa
+
+on:
+  pull_request:
+    types: [closed]
+
+# Borrar la carpeta y apagar el botón del PR. Nada más.
+permissions:
+  deployments: write
+
+jobs:
+  limpiar:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Borrar la carpeta del PR en el repositorio de previews
+        env:
+          PAT: ${{ secrets.PAT_PUBLICAR }}
+          PR: ${{ github.event.pull_request.number }}
+        run: |
+          DEST=/tmp/previews
+          git clone --quiet --depth 1 \
+            "https://x-access-token:$PAT@github.com/${{ github.repository_owner }}/el-derecho-escrito-previews.git" "$DEST"
+
+          if [ ! -d "$DEST/pr-$PR" ]; then
+            echo "No había vista previa del PR #$PR. Nada que borrar."
+            exit 0
+          fi
+
+          rm -rf "$DEST/pr-$PR"
+          cd "$DEST"
+          git config user.name  'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit --quiet -m "Retirar la vista previa del PR #$PR"
+          git push --quiet
+          echo "Vista previa del PR #$PR retirada."
+
+      # El botón «View deployment» sobrevive al PR si no se apaga: seguiría
+      # enseñando un enlace a una carpeta que acabamos de borrar. Marcar el
+      # deployment inactivo es lo que lo retira.
+      - name: Apagar el botón de vista previa
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const entorno = `vista-previa-pr-${context.payload.pull_request.number}`;
+            const { data: despliegues } = await github.rest.repos.listDeployments({
+              ...context.repo, environment: entorno,
+            });
+            for (const d of despliegues) {
+              await github.rest.repos.createDeploymentStatus({
+                ...context.repo, deployment_id: d.id, state: 'inactive',
+                description: 'El PR se ha cerrado; la vista previa ya no existe.',
+              });
+            }
+            core.info(`${despliegues.length} deployment(s) marcados inactivos.`);
