@@ -3294,7 +3294,7 @@ a mano. Solo sustituye lo que hay entre dos marcas:
 <!-- GENERADO:ultimos fin -->
 ```
 
-Hay **seis** regiones:
+Hay **siete** regiones:
 
 | Archivo | Región | Contenido |
 |---|---|---|
@@ -3302,6 +3302,7 @@ Hay **seis** regiones:
 | `index.html` | `ultimos` | las tarjetas de «Últimos artículos» |
 | `articulos/index.html` | `filtros` | los botones de categoría |
 | `articulos/index.html` | `articulos` | las tarjetas del listado |
+| `articulos/index.html` | **`itemlist`** | **el `ItemList` del JSON-LD, en el `<head>`** |
 | `sitemap.xml` | `articulos` | las `<url>` |
 | `feed.xml` | `articulos` | los `<item>` |
 
@@ -3313,49 +3314,45 @@ Hay **seis** regiones:
 > mantener todo eso en una plantilla, o sea en un sitio donde no se ve al leer
 > la página.
 
-#### El `ItemList` del listado NO es una región, y hay que tocarlo a mano
+#### El `ItemList` del listado YA es una región, y va en DOS `<script>`
 
-> ⚠️ **ESTE ES EL ÚNICO SITIO DEL PROYECTO DONDE UN ARTÍCULO SE ESCRIBE A MANO,
-> Y YA MORDIÓ UNA VEZ.** El `<head>` de `articulos/index.html` lleva un JSON-LD
-> con un `ItemList` que enumera los artículos:
+> ✅ **ESTA SECCIÓN DECÍA QUE ERA MANUAL Y QUE HABÍA QUE TOCARLO A MANO. YA NO.**
+> El `ItemList` del `<head>` de `articulos/index.html` es la **séptima región**,
+> `GENERADO:itemlist`, y lo escribe `bloqueItemList()` en `plantilla.mjs` a
+> partir de los mismos datos que las tarjetas. No se puede desincronizar.
 >
-> ```json
-> {
->   "@type": "ItemList",
->   "numberOfItems": 1,
->   "itemListElement": [
->     { "@type": "ListItem", "position": 1,
->       "url": "https://elderechoescrito.es/articulos/masc-requisito-procedibilidad/",
->       "name": "La falta de MASC como requisito de procedibilidad: …" }
->   ]
-> }
-> ```
+> Aquí se decía que había que actualizar `numberOfItems`, la `url` y el `name`
+> al añadir y al borrar. **Ya no hay que tocar nada**, y `numberOfItems` se
+> cuenta en vez de escribirse, que era el campo que más fácil se quedaba atrás.
+
+**Mordió una vez, y por eso se convirtió:** al eliminar el artículo de ejemplo,
+el `ItemList` se quedó declarándole a Google una URL que pasaba a dar 404.
+Portada, listado, sitemap y feed se corrigieron solos porque eran regiones.
+Este no, y no se ve leyendo la página ni probándola: es metadato.
+
+> ⚠️ **VA EN SU PROPIO `<script>`, SEPARADO DEL `CollectionPage`, Y ESO NO ES
+> COSMÉTICO: es lo que hace posible que sea una región.**
 >
-> **Está FUERA de las regiones `GENERADO:`** —vive en el `<head>`, y las dos
-> regiones de ese archivo están en el `<body>`— así que **el build no lo toca**.
-> `npm run build` puede reescribir las tarjetas, el sitemap y el feed dejando
-> este bloque apuntando a otra cosa, y **no da ningún error**.
+> Los dos vivían en un solo `<script type="application/ld+json">` compartiendo
+> un `@graph`. Ahí **no se podía marcar**: las marcas de región son comentarios
+> HTML, y un `<!-- -->` dentro de un bloque `ld+json` **rompe el JSON**. El
+> bloque entero deja de parsear y la página se queda sin datos estructurados,
+> sin dar ningún error visible.
 >
-> **Hay que actualizarlo a mano al añadir Y al borrar un artículo**, y son tres
-> cosas: `numberOfItems`, la `url` y el `name` de cada `ListItem`.
+> Partirlo en dos es estándar: varios bloques `ld+json` en la misma página son
+> válidos y el buscador los fusiona. El reparto es el que tiene sentido:
+>
+> | Bloque | Qué es | Quién lo escribe |
+> |---|---|---|
+> | `CollectionPage` | descripción de la página | **a mano** |
+> | `ItemList` | la lista de artículos | **el build** |
+>
+> **Quien vuelva a juntarlos en un `@graph` rompe la región**, y el build
+> fallará diciendo que faltan las marcas — que es el modo de fallar bueno.
 
-**Cómo mordió:** al eliminar el artículo de ejemplo, el `ItemList` se quedó
-declarándole a Google una URL que pasaba a dar 404. Todo lo demás —portada,
-listado, sitemap y feed— se corrigió solo, porque son regiones. Este no.
-
-No se ve leyendo la página ni probándola: es metadato. Se encuentra así:
-
-```sh
-# Artículos citados en JSON-LD fuera de las regiones generadas
-grep -n 'articulos/[a-z0-9-]*/"' articulos/index.html
-```
-
-> **Por qué no se convirtió en una séptima región.** Se puede, y sería lo
-> coherente. Si algún día se hace, el sitio donde añadirla es `escribirRegion()`
-> en `scripts/build.mjs` y la marca iría dentro del `<script>` del `<head>`.
-> Mientras no se haga, **esta sección es lo único que evita que se vuelva a
-> quedar atrás**, y por eso está escrita aquí y no en un comentario del HTML:
-> quien borra un artículo mira este archivo, no el `<head>` del listado.
+Comprobado de las tres formas: corrompiendo el `ItemList` a propósito —el build
+lo repara—, quitándole una marca —el build falla— y verificando que los dos
+bloques parsean por separado.
 
 > ⚠️ **QUE FALTE UNA MARCA ES UN ERROR, NO UN AVISO.** Si alguien borra un par
 > de marcas, el build **falla**. Es deliberado: sin eso, el generador dejaría de
@@ -3497,6 +3494,86 @@ Va con los de compartir, como cuarto elemento, con un icono de línea. Apunta a
 > y el workflow los ejecuta en el mismo job. **Quien ejecute solo `npm run
 > build` tiene que acordarse del `pdf`.**
 
+## El flujo de publicación, de punta a punta
+
+Quien publica es **el cliente**, desde GitHub, sin tocar código ni ejecutar
+nada. El recorrido completo:
+
+```
+1. CLIENTE     sube el .docx y su imagen a una carpeta de Drive
+2. n8n         lee Drive, monta articulo.json + portada.jpg
+                 y abre un PR en GitHub
+3. CHECK       contenido.yml: valida, genera, empuja lo generado AL PR
+                 y comenta con la vista previa
+4. TÚ          miras los avisos del comentario
+5. CLIENTE     abre la vista previa, la revisa y pulsa «Merge pull request»
+6. PUBLICADO   GitHub Pages sirve lo que hay en main
+```
+
+> ⚠️ **EL MERGE ES LA PUBLICACIÓN, Y NO HAY NINGÚN WORKFLOW DETRÁS.** Es la
+> pieza que más cuesta creerse, así que conviene tenerla clara: `contenido.yml`
+> **empuja lo generado a la rama del PR** —`git add articulos index.html
+> sitemap.xml feed.xml`—, así que cuando el cliente mergea, esos archivos ya
+> están hechos y entran en `main` con el merge.
+>
+> No hace falta —y no existe— un workflow que reconstruya al mergear. **Ninguno
+> escucha `push` a `main`**, que es lo que evita el bucle de un generador que se
+> dispara a sí mismo. Si alguien añade uno, que lea antes esto.
+
+**Si el build falla, el cliente no puede publicar a medias.** El check queda en
+rojo, el comentario dice «Vista previa no disponible» en vez de traer enlaces, y
+la protección de rama impide mergear con el check en rojo. Las tres cosas tienen
+que estar: sin la tercera, el botón verde sigue pulsable.
+
+### Los dos checks que protegen el merge
+
+**1. La rama tiene que estar al día con `main`.** Se comprueba antes de generar.
+
+> ⚠️ **ESTE CHECK EVITA UN BORRADO SILENCIOSO, no un conflicto.** Las regiones
+> `GENERADO:` se calculan con los artículos **de la rama**. Si se mergea el PR A
+> y después el PR B, que se generó sin ver a A, las regiones de B no contienen a
+> A: al mergear, el artículo de A **desaparece de la portada, el listado, el
+> sitemap y el feed**, aunque su carpeta siga en `articulos/`. Git no siempre lo
+> ve como conflicto.
+>
+> Se arregla solo: GitHub enseña un botón **«Update branch»**, eso relanza el
+> workflow y las regiones se regeneran ya con A dentro.
+
+**2. El `articulo.json` tiene que ser válido.** Lo comprueba `validar()`, que
+hace `process.exit(1)` y deja el check en rojo. Cubre: campos obligatorios,
+**categoría fuera de la lista**, fecha mal formada, sección sin `id`, `id`
+repetido, cita a una referencia que no existe, JSON inválido, slug que no
+coincide con la carpeta e imagen que falta.
+
+> **Esto es lo que impide que se repita el PR #1**, que traía
+> `"categoria": "comentarios"` —en plural, y no existe—. Hoy tumbaría el build.
+
+> ⚠️ **Los `id` derivados del título son AVISO, no error, y es deliberado.** Un
+> `id` como `finalidad-del-requisito-de-negociacion-previa` funciona; lo que
+> tiene es que al retocar una palabra del epígrafe cambia el ancla y se rompen
+> los enlaces compartidos. Pero la detección es una **heurística** —comparar el
+> `id` con el título normalizado— y puede dar un falso positivo con un epígrafe
+> de una sola palabra. **Un falso positivo que bloquee una publicación legítima
+> del cliente es peor que un `id` largo**, así que sale como aviso en el
+> comentario del PR, donde lo ve quien revisa antes de que él mergee.
+
+### La vista previa
+
+La sirve **raw.githack**, que devuelve los archivos del repositorio con su
+`content-type` real: el HTML se renderiza y el PDF se abre en el navegador. **No
+hay nada que desplegar ni que limpiar**: cuando se borra la rama del PR, el
+enlace muere solo.
+
+> ⚠️ **EL ENLACE VA POR SHA, NO POR NOMBRE DE RAMA.** Las ramas que abre n8n
+> llevan **barra** —`articulo/falta-de-masc-…`— y la URL de githack es
+> `/owner/repo/REF/ruta`: una barra en la ref hace que el servicio parta por
+> donde no es y el enlace da 404. Por SHA es además más fiel, porque apunta al
+> commit exacto que se está revisando.
+
+> **El preview es público**, como el repo. No lleva contraseña. Si algún día un
+> borrador no debe circular antes de publicarse, la vía es Cloudflare Pages con
+> Access, no githack.
+
 ## Los workflows
 
 Dos, y hacen cosas distintas.
@@ -3549,11 +3626,8 @@ Para que nadie lo busque:
 
 - **No borra.** Quitar un artículo es borrar su carpeta de `contenido/` **y** la
   de `articulos/`. El build no sabe que la segunda sobra.
-- **No toca el `ItemList` del JSON-LD de `articulos/index.html`.** Vive en el
-  `<head>`, fuera de las regiones, y enumera los artículos a mano: `numberOfItems`,
-  `url` y `name`. **Hay que actualizarlo al añadir y al borrar**, y su despiste
-  no da ningún error — le declara a Google una URL que ya no existe. Es el único
-  sitio donde un artículo se escribe a mano y tiene su propia sección arriba.
+- ~~**No toca el `ItemList` del JSON-LD.**~~ **Ya sí**: es la séptima región,
+  `GENERADO:itemlist`. Era el único sitio donde un artículo se escribía a mano.
 - **No toca las tarjetas de ejemplo**, ni las de la portada ni las
   provisionales del listado. Están fuera de las regiones.
 - **No escribe `sobre/`, `contacto/`, `404.html` ni el hero.** Son páginas a

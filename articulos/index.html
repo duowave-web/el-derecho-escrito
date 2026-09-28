@@ -33,35 +33,45 @@
 <link rel="alternate" type="application/rss+xml" title="El Derecho Escrito — artículos" href="../feed.xml">
 <link rel="stylesheet" href="../css/styles.css">
 
+<!-- Este bloque describe la PÁGINA y va a mano. El que enumera los artículos
+     es el de abajo, que lo escribe el generador. Son dos <script> y no uno con
+     @graph a propósito: las marcas de región son comentarios HTML y dentro de
+     un ld+json romperían el JSON. Varios bloques ld+json en la misma página
+     son válidos; el buscador los fusiona. -->
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@graph": [
+  "@type": "CollectionPage",
+  "@id": "https://elderechoescrito.es/articulos/#webpage",
+  "url": "https://elderechoescrito.es/articulos/",
+  "name": "Artículos de Derecho administrativo | El Derecho Escrito",
+  "description": "Todos los artículos de El Derecho Escrito sobre Derecho administrativo, urbanismo y jurisdicción contencioso-administrativa.",
+  "inLanguage": "es-ES",
+  "isPartOf": { "@id": "https://elderechoescrito.es/#website" }
+}
+</script>
+
+<!-- GENERADO:itemlist inicio — la lista de artículos para Google, la escribe
+     scripts/build.mjs de los mismos datos que las tarjetas. Se mantuvo a mano
+     y se quedó atrás al borrar un artículo: declaraba una URL que daba 404
+     mientras el resto del sitio se corregía solo. -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "itemListOrder": "https://schema.org/ItemListOrderDescending",
+  "numberOfItems": 1,
+  "itemListElement": [
     {
-      "@type": "CollectionPage",
-      "@id": "https://elderechoescrito.es/articulos/#webpage",
-      "url": "https://elderechoescrito.es/articulos/",
-      "name": "Artículos de Derecho administrativo | El Derecho Escrito",
-      "description": "Todos los artículos de El Derecho Escrito sobre Derecho administrativo, urbanismo y jurisdicción contencioso-administrativa.",
-      "inLanguage": "es-ES",
-      "isPartOf": { "@id": "https://elderechoescrito.es/#website" }
-    },
-    {
-      "@type": "ItemList",
-      "itemListOrder": "https://schema.org/ItemListOrderDescending",
-      "numberOfItems": 1,
-      "itemListElement": [
-        {
-          "@type": "ListItem",
-          "position": 1,
-          "url": "https://elderechoescrito.es/articulos/masc-requisito-procedibilidad/",
-          "name": "La falta de MASC como requisito de procedibilidad: entre la inadmisión y la subsanación"
-        }
-      ]
+      "@type": "ListItem",
+      "position": 1,
+      "url": "https://elderechoescrito.es/articulos/masc-requisito-procedibilidad/",
+      "name": "La falta de MASC como requisito de procedibilidad: entre la inadmisión y la subsanación"
     }
   ]
 }
 </script>
+<!-- GENERADO:itemlist fin -->
 </head>
 <body>
 

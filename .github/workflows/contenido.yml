@@ -47,6 +47,43 @@ jobs:
           # es justo lo que interesa: este job empuja y no queremos que se
           # vuelva a disparar a sí mismo.
           token: ${{ secrets.GITHUB_TOKEN }}
+          # Hace falta historia para comparar con main. Con el fetch-depth 1 de
+          # serie no hay base común y el paso siguiente no puede calcularla.
+          fetch-depth: 0
+
+      # ⚠️ ESTE PASO EXISTE POR UN FALLO QUE NO DA ERROR Y BORRA CONTENIDO.
+      #
+      # Las regiones GENERADO: se calculan con los artículos que hay en la rama.
+      # Si se abre el PR A, se mergea, y después se mergea un PR B que se generó
+      # ANTES —o sea sin ver a A—, las regiones de B no contienen a A: el merge
+      # deja la portada, el listado, el sitemap y el feed sin el artículo de A,
+      # que sigue existiendo en articulos/ pero ya no lo enlaza nadie.
+      #
+      # Git no lo ve como conflicto en todos los casos, así que puede colarse en
+      # silencio. Se corta aquí: si la rama no está al día con main, el check
+      # falla y hay que actualizarla —GitHub tiene un botón «Update branch»—,
+      # lo que relanza este workflow y regenera las regiones ya con A dentro.
+      #
+      # Se comprueba ANTES de generar para no gastar cinco minutos de Chromium
+      # en un PR que hay que actualizar igualmente.
+      - name: Comprobar que la rama está al día con main
+        run: |
+          BASE='${{ github.base_ref }}'
+          git fetch --quiet origin "$BASE"
+          if git merge-base --is-ancestor "origin/$BASE" HEAD; then
+            echo "La rama contiene todo lo que hay en $BASE. Al día."
+            exit 0
+          fi
+          DETRAS=$(git rev-list --count "HEAD..origin/$BASE")
+          echo "::error title=La rama no está al día::Faltan $DETRAS commit(s) de $BASE. Pulsa «Update branch» en el PR y espera a que este check vuelva a pasar."
+          echo ''
+          echo "Commits de $BASE que esta rama no tiene:"
+          git --no-pager log --oneline "HEAD..origin/$BASE"
+          echo ''
+          echo 'Por qué importa: las regiones GENERADO: se calculan con los'
+          echo 'artículos de esta rama. Sin los de main, al mergear se irían de'
+          echo 'la portada, el listado, el sitemap y el feed sin dar ningún error.'
+          exit 1
 
       - name: Preparar Node
         uses: actions/setup-node@v4
@@ -90,6 +127,7 @@ jobs:
           echo 'Idempotente.'
 
       - name: Añadir lo generado al PR
+        id: publicar
         run: |
           git config user.name  'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
@@ -100,6 +138,10 @@ jobs:
             git commit -m 'Generar artículos, listados y PDF'
             git push origin HEAD:${{ github.head_ref }}
           fi
+          # El SHA va al comentario para construir el enlace de vista previa.
+          # Se lee DESPUES del commit: si se leyera antes, el enlace apuntaria
+          # a la version sin generar y la pagina saldria a medias.
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
       # ------------------------------------------------------ capturas ----
       # Se hacen DESPUÉS de generar, sobre el HTML ya escrito. Sirven para ver
@@ -121,27 +163,90 @@ jobs:
           retention-days: 14
 
       # ------------------------------------------------------ comentario --
-      # Los avisos son el único sitio donde el build habla de erratas del texto
-      # —referencias declaradas y no citadas, notas del propio JSON—. En la
-      # salida del job los ve quien abra los logs; aquí los ve quien revisa.
+      # El comentario es LO QUE VE EL CLIENTE, que no es técnico. Por eso abre
+      # con los enlaces de vista previa y con qué hacer, y deja los avisos del
+      # build —erratas del texto, referencias sin citar— al final.
+      #
+      # La vista previa la sirve raw.githack, que devuelve los archivos del
+      # repositorio con su content-type real: el HTML se renderiza y el PDF se
+      # abre en el navegador. No hay nada que desplegar ni que limpiar.
 
-      - name: Comentar los avisos
+      - name: Comentar la vista previa y los avisos
         if: always()
         uses: actions/github-script@v7
+        env:
+          SHA_GENERADO: ${{ steps.publicar.outputs.sha }}
         with:
           script: |
             const fs = require('fs');
             const ruta = 'scripts/.avisos.json';
             const avisos = fs.existsSync(ruta) ? JSON.parse(fs.readFileSync(ruta, 'utf8')) : [];
 
-            const cuerpo = avisos.length
+            /* ⚠️ EL ENLACE VA POR SHA Y NO POR NOMBRE DE RAMA, y no es un
+               detalle: las ramas que abre n8n llevan BARRA
+               —`articulo/falta-de-masc-…`— y en la URL de githack, que es
+               `/owner/repo/REF/ruta`, una barra en la ref hace que el servicio
+               parta por donde no es. El enlace daría 404 y parecería que la
+               vista previa no funciona.
+
+               Por SHA es además más fiel: apunta al commit exacto que se está
+               revisando, no a «lo último que haya en la rama». */
+            const sha = process.env.SHA_GENERADO;
+
+            /* Los slugs salen de los archivos que toca el PR, no de listar
+               contenido/: así se enlaza SOLO el artículo que trae este PR y no
+               todos los del sitio. */
+            const { data: archivos } = await github.rest.pulls.listFiles({
+              ...context.repo, pull_number: context.payload.pull_request.number, per_page: 100,
+            });
+            const slugs = [...new Set(
+              archivos
+                .map(f => (f.filename.match(/^contenido\/articulos\/([^/]+)\//) || [])[1])
+                .filter(Boolean)
+            )];
+
+            const base = `https://raw.githack.com/${context.repo.owner}/${context.repo.repo}/${sha}`;
+
+            const previa = (sha && slugs.length)
+              ? ['## Vista previa del artículo', '',
+                 ...slugs.flatMap(s => ([
+                   `**[▶ Ver el artículo como quedará publicado](${base}/articulos/${s}/)**`,
+                   '',
+                   `[Ver el PDF descargable](${base}/articulos/${s}/${s}.pdf)`,
+                   '',
+                 ])),
+                 '### Qué conviene mirar', '',
+                 '- Que el **titular** y la **entradilla** sean los correctos.',
+                 '- Que la **imagen de portada** sea la que toca.',
+                 '- Que estén **todos los apartados**, en orden y con sus números.',
+                 '- Que las **citas y referencias** del final estén completas.',
+                 '',
+                 '### Si está bien', '',
+                 'Pulsa el botón verde **«Merge pull request»** al final de esta página.',
+                 'Con eso el artículo queda publicado en la web.',
+                 '',
+                 '### Si algo no está bien', '',
+                 '**No pulses el botón.** Escribe aquí abajo qué hay que cambiar y se',
+                 'corrige antes de publicar.',
+                 '',
+                 '---', '',
+                ].join('\n')
+              : ['## Vista previa no disponible', '',
+                 'El artículo no se ha podido generar, así que todavía no hay nada que ver.',
+                 'Revisa más abajo qué ha fallado antes de mergear.',
+                 '', '---', '',
+                ].join('\n');
+
+            const cola = avisos.length
               ? ['### Avisos del build', '', ...avisos.map(a => `- ${a}`), '',
                  'Ninguno impide publicar: si hubiera un error, el job habría fallado.',
-                 '', 'El PDF y las capturas a 1440 y 375 van en el artefacto **revision**.'
+                 '', 'El PDF y las capturas a 1440 y 375 van también en el artefacto **revision**.'
                 ].join('\n')
               : ['### Build sin avisos', '',
-                 'El PDF y las capturas a 1440 y 375 van en el artefacto **revision**.'
+                 'El PDF y las capturas a 1440 y 375 van también en el artefacto **revision**.'
                 ].join('\n');
+
+            const cuerpo = previa + cola;
 
             // Se reutiliza el comentario anterior en vez de apilar uno por
             // push: si no, un PR con tres correcciones acaba con tres listas de

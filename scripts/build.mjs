@@ -28,7 +28,7 @@ import { fileURLToPath } from 'node:url';
 
 import {
   derivar, paginaArticulo, tarjetaListado, tarjetaPortada, bloqueDestacado,
-  botonesCategoria, entradaSitemap, entradaFeed, CATEGORIAS,
+  botonesCategoria, entradaSitemap, entradaFeed, bloqueItemList, clave, CATEGORIAS,
 } from './lib/plantilla.mjs';
 import { llamadasDe } from './lib/refs.mjs';
 import { procesarPortada } from './lib/imagen.mjs';
@@ -78,11 +78,79 @@ function validar(art, ruta) {
   if (art.fecha && !/^\d{4}-\d{2}-\d{2}$/.test(art.fecha)) {
     errores.push(`${ruta}: la fecha debe ser YYYY-MM-DD, y es «${art.fecha}»`);
   }
+
+  /* ⚠️ AVISO Y NO ERROR, Y AQUÍ LA DIFERENCIA IMPORTA MÁS QUE EN NINGÚN OTRO
+     SITIO: el slug es lo único de este archivo que NO se puede corregir
+     después. Al publicarse queda fijado en la URL, y cambiarlo rompe cualquier
+     enlace que alguien haya compartido.
+
+     Aun así no puede ser un error. Un slug largo publica perfectamente y solo
+     es feo; bloquear por eso una publicación legítima sería peor. Lo que hace
+     falta es que se LEA a tiempo, y por eso el texto va dirigido al cliente y
+     dice explícitamente que después ya no tiene arreglo.
+
+     ⚠️ EL UMBRAL ES 40 PORQUE ES EL OBJETIVO, no porque sea el punto donde algo
+     se rompe. La regla que aplica n8n al derivar el slug del título es cortar a
+     ~40 en un guion, así que el aviso salta exactamente cuando esa regla no se
+     ha cumplido. Aviso y objetivo miden lo mismo, que es lo que hace que el
+     aviso signifique algo.
+
+     Estuvo en 45 y era demasiado justo: el slug del PR #1
+     —«falta-de-masc-como-requisito-de-procedibilidad»— mide 46, o sea que lo
+     cazaba por UN carácter. Uno de 45 se habría colado en silencio siendo el
+     mismo problema. Con 40 hay seis de holgura sobre el caso conocido.
+
+     Referencias: el de n8n, 46. El escrito a mano, «masc-requisito-
+     procedibilidad», 29. */
+  if (art.slug && art.slug.length > 40) {
+    avisos.push(
+      `La dirección de este artículo en la web va a ser muy larga: ` +
+      `«${art.slug}» (${art.slug.length} caracteres). Publica bien igualmente, ` +
+      `pero conviene saber que ESTO NO SE PUEDE CAMBIAR DESPUÉS sin romper los ` +
+      `enlaces que se hayan compartido. Si prefieres una más corta, dilo antes ` +
+      `de publicar.`
+    );
+  }
+
+  /* ⚠️ AVISO PARA DEJAR CONSTANCIA, no para frenar nada. La portada se ve en la
+     vista previa, así que no puede colarse una imagen sin que nadie la mire: lo
+     que esto añade es que quede ESCRITO en el PR que la puso la IA y no el
+     cliente, para que no se dé por suya más adelante.
+
+     El build no usa `origen` ni `prompt` para nada más: solo lee `archivo` y
+     `alt`. Son documentación dentro del JSON, y este aviso es lo único que los
+     mira. */
+  if (art.imagen && art.imagen.origen && art.imagen.origen !== 'cliente') {
+    avisos.push(
+      `La imagen de portada de este artículo NO la has aportado tú: la ha ` +
+      `generado la inteligencia artificial. Mírala en la vista previa y, si ` +
+      `prefieres otra, súbela a la carpeta de Drive antes de publicar.`
+    );
+  }
+
   const ids = new Set();
   for (const s of art.secciones || []) {
     if (!s.id) errores.push(`${ruta}: una sección sin id`);
     if (ids.has(s.id)) errores.push(`${ruta}: id de sección repetido «${s.id}»`);
     ids.add(s.id);
+
+    /* ⚠️ ES UN AVISO Y NO UN ERROR, Y LA DIFERENCIA ESTÁ PENSADA. Un `id`
+       derivado del título funciona: el índice enlaza y el ancla resuelve. Lo
+       que tiene es una fragilidad futura —al retocar una palabra del epígrafe
+       cambia el ancla y se rompen los enlaces compartidos— y por eso el
+       proyecto los escribe cortos y a mano.
+
+       Es una heurística, así que puede equivocarse: un epígrafe de una sola
+       palabra da legítimamente un `id` igual a su título normalizado. Si esto
+       fuera un error, un falso positivo bloquearía una publicación correcta
+       del cliente, que es peor que un `id` largo. Como aviso sale en el
+       comentario del PR y lo ve quien revisa antes de mergear. */
+    if (s.id && s.titulo && s.id === clave(s.titulo) && s.id.length > 24) {
+      avisos.push(
+        `${art.slug}: el id «${s.id}» parece derivado del título. ` +
+        'Conviene uno corto y estable: al retocar el epígrafe cambiaría el ancla.'
+      );
+    }
   }
 
   /* Integridad de las referencias. Citar un número que no existe ES un error:
@@ -201,6 +269,9 @@ async function main() {
   let html = await readFile(listado, 'utf8');
   html = reemplazarRegion(html, 'filtros', botonesCategoria(), 'articulos/index.html');
   html = reemplazarRegion(html, 'articulos', arts.map(tarjetaListado).join('\n\n'), 'articulos/index.html');
+  /* El ItemList del <head>. Era el único sitio donde un artículo se escribía a
+     mano, y su despiste no daba error: declaraba a Google una URL muerta. */
+  html = reemplazarRegion(html, 'itemlist', bloqueItemList(arts), 'articulos/index.html');
   if (await escribirSiCambia(listado, html)) escritos++;
 
   /* 3 · portada: destacado + los OTROS en «Últimos artículos».

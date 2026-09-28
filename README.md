@@ -69,35 +69,53 @@ Sin fuentes externas (tipografías del sistema), sin librerías, CSS y JS mínim
 
 ## Publicar un artículo nuevo
 
-1. Crea `articulos/<slug>/index.html` copiando el artículo existente. El slug en minúsculas, sin acentos y con guiones — es parte de la URL, así que que contenga la palabra clave.
+> ⚠️ **ESTA SECCIÓN DESCRIBÍA SEIS PASOS A MANO Y YA NO VALE NINGUNO.** Decía
+> que había que copiar el HTML de otro artículo, reescribir sus metadatos y el
+> JSON-LD, añadir la tarjeta en dos sitios, tocar `sitemap.xml` y `feed.xml`,
+> actualizar el `itemListElement` y hacer push. Y acababa con «Cloudflare Pages
+> despliega solo», que tampoco es cierto: **despliega GitHub Pages desde `main`**.
+>
+> Todo eso lo hace ahora el generador. Lo que sigue es el flujo real.
 
-2. Dentro del archivo, actualiza: `<title>` (50-60 caracteres), `meta description` (150-160), `canonical`, todas las URLs de Open Graph y Twitter, las fechas `article:published_time` y `article:modified_time`, el bloque JSON-LD entero y el contenido.
+**El cliente publica solo, desde GitHub.** No toca código ni ejecuta nada:
 
-3. Añade la tarjeta del artículo **en dos sitios**, entre los comentarios `INICIO LISTADO` / `FIN LISTADO`:
-   - `articulos/index.html` — arriba del todo
-   - `index.html` — arriba del todo, y borra la última si ya hay tres
-
-```html
-<article class="entrada">
-  <div class="entrada__meta">
-    <span class="etiqueta">Derecho civil</span>
-    <time datetime="2026-09-01">1 de septiembre de 2026</time>
-    <span class="lectura">6 min de lectura</span>
-  </div>
-  <h2 class="entrada__titulo">
-    <a href="/articulos/mi-slug/">Título del artículo</a>
-  </h2>
-  <p class="entrada__extracto">Dos o tres frases que resuman de qué va.</p>
-</article>
+```
+1. CLIENTE     sube el .docx y su imagen a una carpeta de Drive
+2. n8n         lee Drive, monta articulo.json + portada.jpg
+                 y abre un PR en GitHub
+3. CHECK       contenido.yml: valida, genera, empuja lo generado AL PR
+                 y comenta con el enlace de vista previa
+4. TÚ          miras los avisos del comentario
+5. CLIENTE     abre la vista previa y pulsa «Merge pull request»
+6. PUBLICADO   GitHub Pages sirve lo que hay en main
 ```
 
-En `index.html` usa `<h3>` en vez de `<h2>` para el título de la tarjeta (allí el `<h2>` es «Últimos artículos»).
+**El merge es la publicación.** `contenido.yml` empuja lo generado a la rama del
+PR, así que al mergear esos archivos entran en `main` ya hechos. **No hay ningún
+workflow que escuche `push` a `main`**, y así se evita el bucle.
 
-4. Añade la URL a `sitemap.xml` y un `<item>` a `feed.xml`.
+### Si publicas tú, a mano
 
-5. Actualiza `numberOfItems` y el `itemListElement` del JSON-LD de `articulos/index.html`.
+Un archivo y un comando:
 
-6. Commit y push. Cloudflare Pages despliega solo.
+```sh
+contenido/articulos/<slug>/articulo.json   # el texto
+contenido/articulos/<slug>/portada.jpg     # la imagen
+
+cd scripts && npm run publicar             # build + PDF
+```
+
+De ahí salen la página, la imagen optimizada, el PDF, las siete regiones
+generadas —portada, listado, `ItemList`, sitemap y feed— y nada más que tocar.
+
+El contrato del `articulo.json` está entero en `CLAUDE.md`.
+
+### Lo que sigue siendo manual
+
+- **Borrar** un artículo: el build no lo hace. Hay que quitar su carpeta de
+  `contenido/` **y** la de `articulos/`.
+- **Las tarjetas de atrezo** de la portada y el listado: viven fuera de las
+  regiones y se borran antes de entregar.
 
 ## Cosas que tienes que rellenar
 

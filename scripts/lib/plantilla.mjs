@@ -665,6 +665,51 @@ export function botonesCategoria() {
 ${botones}`;
 }
 
+/* ⚠️ EL ItemList VA EN SU PROPIO <script>, Y NO ES UNA MANIA: es lo que
+   permite que sea una region generada.
+
+   Estuvo dentro del mismo <script type="application/ld+json"> que el
+   CollectionPage, compartiendo un @graph, y ahi NO se podia marcar: las marcas
+   de region son comentarios HTML, y un <!-- --> dentro de un bloque ld+json
+   rompe el JSON. El bloque entero deja de parsear y Google se queda sin los
+   datos estructurados de la pagina, sin dar ningun error visible.
+
+   Partirlo en dos <script> lo arregla y es estandar: varios bloques ld+json en
+   la misma pagina son validos y el buscador los fusiona. El CollectionPage se
+   queda escrito a mano —es descripcion de la pagina, no una lista de
+   articulos— y este se genera.
+
+   Antes se mantenia A MANO y ya mordio una vez: al borrar un articulo, el
+   ItemList se quedo declarando una URL que pasaba a dar 404 mientras el resto
+   del sitio se corregia solo. Ahora sale de los mismos datos que las tarjetas,
+   asi que no se puede desincronizar.
+
+   `numberOfItems` se cuenta, no se escribe: era el campo que mas facil se
+   quedaba atras. */
+
+export function bloqueItemList(arts) {
+  const items = arts
+    .map((a, i) => `    {
+      "@type": "ListItem",
+      "position": ${i + 1},
+      "url": "${a.url}",
+      "name": ${JSON.stringify(a.titulo)}
+    }`)
+    .join(',\n');
+
+  return `<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "itemListOrder": "https://schema.org/ItemListOrderDescending",
+  "numberOfItems": ${arts.length},
+  "itemListElement": [
+${items}
+  ]
+}
+</script>`;
+}
+
 export function entradaSitemap(art) {
   return `  <url>
     <loc>${art.url}</loc>
