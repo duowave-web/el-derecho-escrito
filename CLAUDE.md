@@ -4363,18 +4363,25 @@ Qué se imprime y qué no:
 
 | Se va | Se queda |
 |---|---|
-| cabecera, menú, buscador | portada nueva: logo, categoría, titular, entradilla, autor, fecha, minutos, **actualización si la hay**, foto |
-| barra de progreso | entradilla |
+| cabecera, menú, buscador | **bloque de título**: logo pequeño, «El Derecho Escrito», categoría, titular, autor, fecha, minutos y **actualización si la hay** |
+| barra de progreso | **resumen**: la entradilla, una sola vez |
 | lateral entero: autor, etiquetas, suscripción | índice |
 | «Volver a los artículos» ×2 | cuerpo, con sus citas y listas |
 | botones de compartir y de PDF | referencias |
 | «Continúa leyendo» | el aviso legal, al final |
-| pie de la web | pie de página propio: nombre del blog, URL del artículo y `n / total` |
+| pie de la web | **cabecera corriente**: título abreviado y autor |
+| **la foto del artículo** | pie propio: nombre del blog, URL del artículo y `n / total` |
 
-> ⚠️ **EL PIE SALE TAMBIÉN EN LA PORTADA, y no es un descuido.** Chromium aplica
-> `footerTemplate` a **todas** las páginas y no da ninguna forma de saltarse la
-> primera: el número llega como texto dentro de un `<span class="pageNumber">`,
-> así que no hay selector que lo distinga.
+> ⚠️ **EL PIE Y LA CABECERA SALEN TAMBIÉN EN LA PRIMERA PÁGINA, y no es un
+> descuido.** Chromium aplica `headerTemplate` y `footerTemplate` a **todas**
+> las páginas y no da ninguna forma de saltarse la primera: el número llega como
+> texto dentro de un `<span class="pageNumber">`, así que no hay selector que lo
+> distinga. Tampoco sirve `@page :first`, porque los márgenes vienen por la API
+> y Chromium ignora los del `@page`.
+>
+> **Se asume para la cabecera igual que ya se asumía para el pie**: en la página
+> 1 la línea del título abreviado queda encima del bloque de título. Es una línea
+> de 7 px en gris claro y funciona como cintillo.
 >
 > Las alternativas eran peores. Generar dos PDF y unirlos pide una librería más
 > y descuadra la numeración; renunciar a los números de página sería cambiar
@@ -4384,13 +4391,70 @@ Qué se imprime y qué no:
 > de la página ni los márgenes. Por eso repite el padding lateral de 20 mm a
 > mano —para alinear con la mancha de texto— y trae sus propias fuentes.
 
-### La portada del PDF y los dos números que van atados
+### El formato es un PAPER: bloque de título, no portada
 
-Ocupa exactamente una página con un `height: 259mm`, que es **297 − 20 − 18**:
-el alto de un A4 menos los márgenes que pone `pdf.mjs`.
+```
+cabecera corriente     título abreviado · · · Juan Contera Miranda
+logo + El Derecho Escrito
+CATEGORÍA
+Titular a 22 pt
+autor · fecha · minutos · actualización
+RESUMEN
+  la entradilla, en cursiva y sangrada a los dos lados
+ÍNDICE DEL ARTÍCULO
+I. Primer apartado…
+pie                    El Derecho Escrito · url · · · n / total
+```
 
-> ⚠️ **SI SE CAMBIAN LOS MÁRGENES HAY QUE CAMBIAR ESE NÚMERO**, o la portada
-> empuja una segunda página en blanco.
+> ⚠️ **ERA UNA PORTADA DE PÁGINA ENTERA Y LA CALIBRACIÓN DE 259 mm YA NO
+> EXISTE.** `.pdf-portada` tenía `height: 259mm` —297 menos los márgenes— y
+> `break-after: page`, con la foto cerrando abajo y un `overflow: hidden` de
+> red. Este archivo avisaba de que **al tocar los márgenes había que recalcular
+> ese número** o la portada empujaba una página en blanco.
+>
+> **Nada de eso aplica ya**: el bloque de título fluye con el texto, así que no
+> hay altura que calibrar ni página que empujar. Con ello desaparece también el
+> fallo que costó una vez —el `padding-top` de la barra de progreso empujaba la
+> portada y mandaba la foto a una página suelta—.
+
+> **Lo que se ganó, medido en el artículo de MASC:** de **9 páginas a 8**, y de
+> 616 KB a 452 KB. La página que se ahorra es la portada; los kilobytes, la
+> foto.
+
+> ⚠️ **EL RESUMEN ES LA ENTRADILLA, Y ANTES EL TEXTO DE APERTURA SALÍA DOS
+> VECES.** La portada llevaba `descripcion` y el cuerpo `entradilla`: dos
+> párrafos distintos con el mismo papel. Hoy el bloque de título no lleva
+> ninguno y el resumen es el `<p class="entradilla">` que ya estaba en el
+> cuerpo.
+>
+> **Eso evita además tener que resolver las llamadas de referencia en
+> `pdf.mjs`**: ese párrafo ya viene con sus `{{ref:n}}` resueltos desde el build.
+>
+> Va en cursiva y con sangría a los **dos** lados, sin recuadro: es la convención
+> del abstract y no estrena ningún color ni filete. El rótulo «RESUMEN» va en
+> `::before` porque es decorativo y porque el `<p>` lo escribe el build para la
+> **web**, donde no hay ningún resumen.
+
+> ⚠️ **CÓMO SE ABREVIA EL TÍTULO DE LA CABECERA.** Se corta a **60 caracteres y
+> siempre en un espacio**: se retrocede al último blanco antes del límite, de
+> modo que no se parte una palabra. Si no hubiera ningún espacio en los primeros
+> 60 se corta en seco, que es el único caso en que puede partirse.
+>
+> Los 60 no aprietan. Verificado con un titular de prueba de **158 caracteres**:
+> queda en 56 más la elisión y la cabecera no desborda —a 7 px Helvetica, sobre
+> los 170 mm útiles menos el nombre del autor, caben del orden de 130—. El
+> límite está para que la cabecera sea una **referencia** y no una segunda
+> portada.
+
+> ⚠️ **EL MARGEN SUPERIOR SUBIÓ DE 20 A 28 mm.** Chromium dibuja la cabecera
+> **dentro** del margen superior, no sobre el texto: sin esos 8 mm de más, la
+> línea del título abreviado se solapa con el cuerpo.
+
+> ⚠️ **LA CABECERA NO PUEDE VOLVER A IR VACÍA.** Estaba en `'<span></span>'`
+> justamente porque **sin plantilla Chromium pinta la suya, con la fecha del
+> día**, y eso rompe el determinismo. Llenarla no abre esa puerta: lo que la
+> mantiene cerrada es que haya **contenido**, no que esté vacía. `conFechasFijas()`
+> no se ha tocado y el PDF sigue saliendo idéntico en dos pasadas.
 
 #### La ficha de la portada lleva «Última actualización» EN LA MISMA LÍNEA
 
@@ -4415,25 +4479,17 @@ versales y los iconos son lo que la desbordan allí.
 > ⚠️ **Si algún día se le ponen versales o iconos a esta ficha, hay que volver a
 > medir**: se come la holgura de golpe.
 
-> **Y si la línea llegara a envolver, no se recorta nada.**
-> `.pdf-portada__texto` lleva `margin-top: auto`, así que el bloque de texto
-> crece **hacia arriba** comiéndose el hueco libre, y la foto sigue cerrando
-> abajo. El `overflow: hidden` solo muerde si el total supera los 259 mm.
-
-Medido con el campo puesto, emulando `print` a 170 × 259 mm:
-
-| | |
-|---|---|
-| Caja de la portada | 259,0 mm |
-| Logo + marca + texto + foto | **158,2 mm** |
-| Hueco libre | **87,2 mm** |
-| La foto termina en | **259,0 mm** — sin recorte |
-| Páginas del PDF | **9**, las mismas que sin el campo |
-
-Verificado además que los cinco elementos de la línea caen todos en la misma
-coordenada vertical, o sea que **no envuelve**: contar líneas dividiendo la
-altura de la ficha entre el interlineado **da 3 y engaña**, porque el
-`padding-top: 12pt` y el filete entran en esa altura.
+> ⚠️ **Y SI LA LÍNEA ENVOLVIERA, HOY NO PASA NADA.** Aquí se explicaba que
+> `.pdf-portada__texto` llevaba `margin-top: auto` y que el bloque crecía hacia
+> arriba comiéndose el hueco libre, con el `overflow: hidden` mordiendo solo si
+> se pasaba de los 259 mm.
+>
+> **Todo eso decae con la portada de página entera**: el bloque de título fluye
+> con el texto, así que una línea de más es simplemente una línea de más.
+>
+> Verificado con un artículo de prueba que llevaba `actualizado` **y** un titular
+> de 158 caracteres: los cinco elementos de la ficha caen en la misma coordenada
+> vertical, o sea que **no envuelve**.
 
 > ⚠️ **Y ESTO YA FALLÓ UNA VEZ, DE UNA FORMA QUE CONVIENE CONOCER.**
 > `body:has(.progreso)` reserva en `styles.css` los 30 px de la banda de
