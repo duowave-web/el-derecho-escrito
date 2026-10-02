@@ -3026,6 +3026,51 @@ Blanco y negro o tonos cálidos apagados, estilo editorial. Todas las miniaturas
 de la cuadrícula, misma proporción. El retrato del autor no es corporativo: luz
 natural, biblioteca o despacho, como una entrevista en *Monocle*.
 
+### La entradilla de `contacto/` se topa en el ancho del formulario
+
+```
+mancheta          h1 «Contacto», a sangre
+entradilla        600 px — el mismo canto derecho que el formulario
+──────────────    <hr> a lo ancho de la fila (1152)
+formulario 600  │  caja de apoyo 487
+```
+
+La rejilla es `1.25fr minmax(0, 1fr)` con `gap: 56px`. Sobre los 1152 de
+interior eso da **609 y 487**, y el formulario se topa en **600** dentro de su
+columna.
+
+> ⚠️ **EL TOPE DE LA ENTRADILLA ERA `34em` —653 px— Y PASA A 600.** El problema
+> no era la medida: a 653 son ~60 caracteres por línea, dentro del rango
+> cómodo. Era que **653 no coincidía con ningún otro canto de la página**. El
+> formulario mide 600 y su columna 609, así que el párrafo sobresalía **53 px**
+> por la derecha: lo justo para leerse como un desajuste y no como una decisión.
+>
+> **Casi alinear es peor que no alinear.** Con 600 comparten canto derecho y
+> bajan a ~55 caracteres por línea.
+
+> ⚠️ **NO SE PONE AL ANCHO DEL CONTENEDOR, aunque sea lo que pide el ojo.** Los
+> 1152 dan **125 caracteres por línea**, muy por encima de lo que se lee cómodo.
+> Lo que hace de «ancho de página» es **el filete**, que sí cruza la fila
+> entera; el párrafo no tiene por qué.
+
+> **El `<hr>` es el mismo que cierra `sobre/`**, y las declaraciones viven
+> agrupadas —`.articulo hr, .contacto hr`— para que el grosor y el color no
+> puedan divergir. `.articulo hr` no alcanzaba a `contacto/`, que no lleva esa
+> clase: allí un `<hr>` habría salido con el relieve por defecto del navegador.
+>
+> ⚠️ **El margen NO se comparte, y por eso va en una regla aparte.** En `sobre/`
+> la línea está en flujo normal y necesita sus 48; en `contacto/` es un item de
+> la rejilla y el aire se lo dan los **56 del `gap`**, arriba y abajo. Con los
+> dos a la vez sumarían 104 por lado.
+
+> **Va en el marcado y no como `border-bottom` de la entradilla**, porque tiene
+> que medir lo que mide la **fila**, no lo que mide el párrafo.
+
+> **El orden del DOM es el visual y no hay ni un `order`**: entradilla, filete,
+> formulario, caja de apoyo. Al apilar por debajo de 932 cae en ese mismo orden
+> —se viene a escribir, y las notas de al lado son secundarias—, que es lo que
+> ya decidía el marcado antes de esto.
+
 ### `sobre/` son dos filas, y el PDF del cliente manda la estructura
 
 La página pasó de una columna de lectura a esto:

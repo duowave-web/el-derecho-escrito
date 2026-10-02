@@ -3230,13 +3230,34 @@ em i {
    tercera fila. Verificado midiendo: entradilla en x=42 con 609 de ancho,
    formulario en x=707 y aside en y=798.
 
-   Ocupa toda la fila y ademas se limita a la medida de lectura: a 609px de
-   ancho el parrafo son ~95 caracteres por linea, muy por encima de lo que se
-   lee comodo, y ademas no tiene por que alinear con el formulario. */
+   ⚠️ EL TOPE ERA `34em` —653px— Y PASA A LOS 600 DEL FORMULARIO, que es lo que
+   quita la sensacion de parrafo descolgado.
+
+   El problema no era la medida: a 653 son ~60 caracteres por linea, dentro del
+   rango comodo. Era que 653 no coincide con NINGUN otro canto de la pagina. El
+   formulario de debajo mide 600 y la columna 609, asi que el parrafo sobresalia
+   53px por la derecha: lo justo para leerse como un desajuste y no como una
+   decision. Casi alinear es peor que no alinear.
+
+   Con 600 comparten canto derecho con el formulario y bajan a ~55 caracteres
+   por linea. Y NO se pone al ancho del contenedor: los 1152 dan 125 caracteres
+   por linea, muy por encima de lo que se lee comodo.
+
+   Debajo va un <hr> que cruza la fila entera. La linea es la que hace de ancho
+   de pagina; el parrafo no tiene por que serlo. */
 
 .contacto .entradilla {
   grid-column: 1 / -1;
-  max-width: 34em;
+  max-width: 600px;
+  margin: 0;
+}
+
+/* El filete cierra la banda de entrada y cruza las dos columnas. Sin margen
+   propio: los 56 del `gap` de la rejilla ya lo separan por arriba y por abajo,
+   y son el mismo hueco que separa las dos columnas entre si. */
+
+.contacto hr {
+  grid-column: 1 / -1;
   margin: 0;
 }
 
@@ -3456,9 +3477,23 @@ em i {
   margin-bottom: 9px;
 }
 
-.articulo hr {
+/* El filete lo comparten el cierre de `sobre/` y la cabecera de `contacto/`. Se
+   agrupan para que el grosor y el color se toquen en UN sitio: son la misma
+   linea. `.articulo hr` no alcanzaba a contacto/, que no lleva esa clase, asi
+   que alli un <hr> habria salido con el relieve por defecto del navegador.
+
+   El margen NO lo comparten, y por eso va aparte: en `sobre/` la linea vive en
+   flujo normal y necesita sus 48; en contacto/ es un item de la rejilla y el
+   aire se lo dan los 56 del `gap`, arriba y abajo. Con los dos sumarian 104 por
+   lado. */
+
+.articulo hr,
+.contacto hr {
   border: none;
   border-top: 1px solid var(--borde);
+}
+
+.articulo hr {
   margin: 48px 0;
 }
 
