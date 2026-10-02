@@ -1640,6 +1640,94 @@ imagen → categoría → título → entradilla → metadatos
 > `articulos/`**, que el build no borra. Al regenerar no queda rastro en el
 > listado, la portada, el sitemap ni el feed.
 
+### «Leer anterior» / «Leer siguiente»: lo escribe el BUILD, no el navegador
+
+Va **después del aviso legal y antes de «Continúa leyendo»**, que es donde la
+página pasa de «este artículo» a «otros artículos». Lo pinta `bloquePaso()` en
+`plantilla.mjs`, y es la diferencia que más conviene tener clara con el bloque
+que tiene justo debajo:
+
+| | «Leer anterior / siguiente» | «Continúa leyendo» |
+|---|---|---|
+| Quién lo monta | **el build** | el navegador, por `fetch` |
+| Criterio | **fecha**, todos los artículos | etiquetas compartidas |
+| Sin JavaScript | **se ve** | no se ve |
+| Cuántos | 1 o 2 | 2 |
+
+**El orden se conoce al generar**, así que no hay motivo para pedírselo a un
+`fetch`: funciona con JavaScript desactivado, al revés que el bloque de abajo.
+
+> ⚠️ **EL ORDEN LLEGA RESUELTO DESDE `build.mjs`, Y LA PLANTILLA NO LO
+> RECALCULA.** Es el mismo de siempre —**fecha descendente, `slug` de
+> desempate**— y por eso se pasa hecho: un segundo criterio aquí podría
+> divergir del primero sin que nada avisara.
+>
+> ⚠️ **Y `arts` VA DE MÁS NUEVO A MÁS VIEJO**, así que el vecino de índice
+> **menor** es el publicado **después**, o sea «siguiente». Es al revés de lo
+> que sugiere el array y es el error fácil de cometer al tocar esto:
+>
+> ```js
+> const vecinos = { siguiente: arts[i - 1], anterior: arts[i + 1] };
+> ```
+
+> ⚠️ **PUBLICAR UN ARTÍCULO REESCRIBE TAMBIÉN EL HTML DEL ANTERIOR**, para
+> añadirle su «Leer siguiente». **Es esperado, no un fallo**: a partir de ahora
+> un PR de publicación toca **dos** páginas de artículo, no una, y el diff del
+> PR lo enseñará. Quien lo vea por primera vez puede pensar que el generador se
+> ha desbocado.
+>
+> **No rompe la idempotencia** —verificado con cuatro artículos: dos pasadas
+> seguidas dan el mismo hash— **ni cambia el PDF del artículo anterior**, que es
+> lo que de verdad podría escocer. Verificado byte a byte: el PDF de MASC es
+> idéntico antes y después de que le apareciera la navegación, porque
+> `imprimir.css` oculta `.paso` junto a `.volver`, `.compartir` y `.continua`.
+
+**Los casos de los extremos**, que son la mitad de lo que hay que probar:
+
+| Artículo | Qué sale |
+|---|---|
+| el más antiguo | **solo «siguiente»**, pegado a la derecha |
+| uno del medio | los dos |
+| el más reciente | **solo «anterior»**, a la izquierda |
+| con un solo artículo | **nada, ni el `<nav>`** |
+
+> ⚠️ **CON UN SOLO ARTÍCULO NO SE EMITE NI UN BYTE, y eso costó un ajuste.**
+> `bloquePaso()` devuelve cadena vacía, pero con el `${…}` en su propia línea de
+> la plantilla el caso vacío **dejaba una línea en blanco de más** en el HTML de
+> todo artículo sin vecinos. Se vio porque el de MASC cambiaba en una línea sin
+> tener nada que enseñar.
+>
+> Se arregla interpolando **pegado al `</p>` del aviso** y metiendo el salto de
+> línea **dentro** del valor devuelto. Verificado: con solo MASC el HTML
+> generado es byte a byte idéntico al de antes del cambio.
+
+> ⚠️ **`margin-left: auto` en `.paso__enlace--siguiente`, y no basta con
+> `justify-content: space-between`.** Con los dos enlaces, `space-between` ya
+> los separa; **con uno solo** —el artículo más antiguo no tiene «anterior»—
+> dejaría el «siguiente» pegado a la izquierda, donde se lee como si fuera el
+> «anterior». El margen automático lo manda a su lado pase lo que pase.
+
+> **El rótulo y el título van en el MISMO `<a>`**, en dos `<span>`. Así el
+> nombre accesible es «Leer anterior, *título*»: dice a la vez qué hace y adónde
+> lleva. Dos enlaces hermanos obligarían a tabular dos veces para el mismo
+> destino.
+
+> **El estilo no estrena nada**: el rótulo es Inter en versales y acento, como
+> `.volver` y `.lista__enlace`; la flecha va en su `<span>` propio para tener
+> algo que animar, y el anillo de foco es **el mismo** que esos dos —`--acento`,
+> `outline-offset: 3px`, `border-radius: 2px`—. Son los tres enlaces de texto
+> con flecha del sitio.
+>
+> El título de destino sí se separa: va en Cormorant y en `--tinta`, para que no
+> se confunda con el rótulo y se lea como lo que es, un titular.
+
+> **Apilados por debajo de 600**, un corte que ya existía. En una columna el
+> `max-width: 48%` dejaría cada enlace a media columna con la mitad vacía, y el
+> `text-align: right` del siguiente lo leería como si apuntara a otro sitio: los
+> dos se sueltan a la vez. Medido a 375: apilados, 327 px cada uno, sin
+> desbordar ni provocar scroll horizontal, y los dos por encima de los 44 px de
+> área de pulsación.
+
 ### Ya no quedan migas en ninguna página
 
 Se retiraron por tandas y siempre por el mismo motivo: **repetían navegación que

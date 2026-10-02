@@ -372,7 +372,50 @@ function jsonLd(art) {
 
 /* --------------------------------------------------------- artículo ----- */
 
-export function paginaArticulo(art) {
+/* Navegación entre artículos contiguos, al final del artículo.
+
+   ⚠️ EL ORDEN NO SE CALCULA AQUÍ: llega resuelto desde build.mjs, que ya ordena
+   por fecha descendente con el slug de desempate. Volver a ordenar aquí sería
+   un segundo criterio que podría divergir del primero sin que nada avisara.
+
+   Como la lista va de más nuevo a más viejo, el vecino de ÍNDICE MENOR es el
+   publicado DESPUÉS —o sea «siguiente»— y el de índice mayor, «anterior». Es
+   al revés de lo que sugiere el array, y es el error fácil de cometer.
+
+   Sin vecinos devuelve cadena vacía, no un contenedor con nada dentro: con un
+   solo artículo publicado no debe quedar ni el <nav>. */
+
+export function bloquePaso({ anterior, siguiente } = {}) {
+  if (!anterior && !siguiente) return '';
+
+  /* El rótulo y el título van en dos <span> dentro del MISMO <a>: así el
+     nombre accesible del enlace es «Leer anterior, <título>», que dice a la vez
+     qué hace y adónde lleva. Dos enlaces hermanos obligarían a tabular dos
+     veces para el mismo destino. */
+
+  const enlace = (art, mod, rotulo, flecha) => `
+            <a class="paso__enlace paso__enlace--${mod}" href="../${art.slug}/">
+              <span class="paso__rotulo">${flecha === 'izq' ? '<span class="paso__flecha" aria-hidden="true">&larr;</span>' : ''}${rotulo}${flecha === 'der' ? '<span class="paso__flecha" aria-hidden="true">&rarr;</span>' : ''}</span>
+              <span class="paso__titulo">${escapar(art.titulo)}</span>
+            </a>`;
+
+  /* ⚠️ EL SALTO DE LÍNEA VA DELANTE Y NO DETRÁS, y la plantilla lo interpola
+     PEGADO al `</p>` del aviso. Con el `${…}` en su propia línea, el caso
+     vacío dejaba una línea en blanco de más en el HTML de todo artículo sin
+     vecinos —comprobado: el de MASC cambiaba en una línea sin que hubiera nada
+     que enseñar—. Así, cuando no hay vecinos no se añade ni un byte. */
+
+  return `
+
+          <nav class="paso" aria-label="Más artículos">${
+            anterior ? enlace(anterior, 'anterior', 'Leer anterior', 'izq') : ''
+          }${
+            siguiente ? enlace(siguiente, 'siguiente', 'Leer siguiente', 'der') : ''
+          }
+          </nav>`;
+}
+
+export function paginaArticulo(art, vecinos) {
   const conNumero = art.secciones.some((s) => s.numero_original);
   const titulo = art.titulo_seo || art.titulo;
   const enc = encodeURIComponent;
@@ -554,7 +597,7 @@ ${pintarReferencias(art)}
             </ul>
           </aside>
 
-          <p class="aviso"><em>Este artículo tiene carácter informativo y divulgativo y no constituye asesoramiento jurídico. La valoración de un asunto concreto requiere analizar sus circunstancias particulares. Si deseas plantear una consulta relacionada con su contenido o con las materias que aborda, puedes hacerlo a través de la <a href="../../contacto/">página de contacto</a>.</em></p>
+          <p class="aviso"><em>Este artículo tiene carácter informativo y divulgativo y no constituye asesoramiento jurídico. La valoración de un asunto concreto requiere analizar sus circunstancias particulares. Si deseas plantear una consulta relacionada con su contenido o con las materias que aborda, puedes hacerlo a través de la <a href="../../contacto/">página de contacto</a>.</em></p>${bloquePaso(vecinos)}
 
           <section class="continua" id="continua" aria-labelledby="continua-titulo" hidden>
             <h2 id="continua-titulo" class="lista__titulo lista__titulo--destacado">Continúa leyendo</h2>

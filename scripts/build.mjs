@@ -335,7 +335,7 @@ async function main() {
   let escritos = 0;
 
   /* 1 · páginas de artículo + portadas */
-  for (const art of arts) {
+  for (const [i, art] of arts.entries()) {
     const dir = join(RAIZ, 'articulos', art.slug);
     await mkdir(dir, { recursive: true });
 
@@ -347,7 +347,23 @@ async function main() {
       errores.push(`${art.slug}: no existe la imagen ${art.imagen.archivo}`);
     }
 
-    if (await escribirSiCambia(join(dir, 'index.html'), paginaArticulo(art))) escritos++;
+    /* ⚠️ `arts` VA DE MÁS NUEVO A MÁS VIEJO, así que el de índice MENOR es el
+       publicado después. Es al revés de lo que sugiere el array y es el error
+       fácil de cometer aquí.
+
+       El orden es el mismo que usa todo lo demás —fecha descendente, slug de
+       desempate— y por eso se pasa resuelto en vez de recalcularlo en la
+       plantilla: un segundo criterio podría divergir sin que nada avisara.
+
+       ⚠️ ESTO HACE QUE PUBLICAR UN ARTÍCULO REESCRIBA TAMBIÉN EL HTML DEL
+       ANTERIOR, para añadirle su «Leer siguiente». Es esperado y está
+       documentado en CLAUDE.md: un PR de publicación toca ahora dos páginas de
+       artículo, no una. No rompe la idempotencia —dos pasadas seguidas dan lo
+       mismo— ni el PDF, que no imprime esta navegación. */
+
+    const vecinos = { siguiente: arts[i - 1], anterior: arts[i + 1] };
+
+    if (await escribirSiCambia(join(dir, 'index.html'), paginaArticulo(art, vecinos))) escritos++;
   }
 
   /* 2 · listado */
