@@ -45,6 +45,28 @@ async function existe(p) {
    tambien en CI sobre una copia del repo: una ruta rota ahi no da error, solo
    deja un hueco blanco donde iba la marca. Incrustado no puede fallar. */
 
+/* ⚠️ «ULTIMA ACTUALIZACION» VA EN LA MISMA LINEA, Y EN LA WEB VA EN LA SUYA.
+   Parece una incoherencia y no lo es: AQUI CABE Y ALLI NO. Medido con el mes
+   mas largo y el dia de dos digitos, que es el peor caso:
+
+     fecha 161,8 + minutos 104,2 + actualizacion 293,5 + dos separadores 37,3
+       = 596,8 px = 157,9 mm,  sobre los 170 mm utiles de un A4 con estos
+         margenes. Holgura: 12,1 mm.
+
+   La misma fila en la web pide 734,6 px sobre una columna de 720. La
+   diferencia no es el ancho —la columna web son 190 mm, mas que estos 170—
+   sino el ESTILO: la ficha de la web va en VERSALES, con tracking de 0,06em y
+   con un icono por dato; la de aqui va en caja baja, sin iconos y con 0,04em.
+   Las versales y los iconos son lo que la desbordan alli.
+
+   Si algun dia se le pusieran versales o iconos a esta ficha, hay que volver a
+   medir: se come la holgura de golpe.
+
+   Y si la linea llegara a envolver, NO se recorta nada: `.pdf-portada__texto`
+   lleva `margin-top: auto`, asi que el bloque de texto crece hacia ARRIBA
+   comiendose el hueco libre, y la foto sigue cerrando abajo. El recorte de
+   `overflow: hidden` solo entra si el total supera los 259 mm. */
+
 async function portada(art, logoDataUri) {
   const img = join(RAIZ, 'articulos', art.slug, art.imagen.archivo);
   const imagen = (await existe(img))
@@ -65,7 +87,9 @@ async function portada(art, logoDataUri) {
       <strong>Juan Contera Miranda</strong>
       <time datetime="${art.fecha}">${art.fechaLarga}</time>
       <span class="pdf-portada__sep" aria-hidden="true">·</span>
-      <span>${art.minutos} min de lectura</span>
+      <span>${art.minutos} min de lectura</span>${art.actualizado ? `
+      <span class="pdf-portada__sep" aria-hidden="true">·</span>
+      <time datetime="${art.actualizado}">Última actualización: ${art.actualizadoLarga}</time>` : ''}
     </div>
   </div>
 ${imagen}
@@ -138,8 +162,28 @@ const HORA_PDF = "090000+02'00'";
 
 const FECHAS = /\/(CreationDate|ModDate)\s*\(D:\d{14}(?:[+-]\d{2}'\d{2}'|Z)?\)/g;
 
+/* ⚠️ LOS DOS CAMPOS YA NO VALEN LO MISMO, Y ANTES SI.
+
+   /CreationDate es cuando se creo el documento —la publicacion— y /ModDate
+   cuando se modifico por ultima vez. Mientras no existio el campo
+   `actualizado`, los dos salian de `fecha` porque era lo unico que habia; con
+   el campo, /ModDate pasa a decir la verdad.
+
+   ⚠️ NO ROMPE EL DETERMINISMO, que es lo unico intocable aqui: la fecha nueva
+   sale del JSON igual que la vieja, nunca del reloj. Y un articulo SIN
+   `actualizado` da exactamente el mismo PDF que antes —verificado byte a
+   byte—, porque `art.actualizado` llega ya normalizado desde derivar(), que lo
+   deja en null cuando falta y tambien cuando es igual a `fecha`.
+
+   Las dos marcas miden los mismos 23 bytes: solo cambian los digitos del dia.
+   La guarda de longitud de abajo sigue cubriendo las dos. */
+
 function conFechasFijas(pdf, art) {
-  const marca = `D:${art.fecha.replaceAll('-', '')}${HORA_PDF}`;
+  const marca = (iso) => `D:${iso.replaceAll('-', '')}${HORA_PDF}`;
+  const fechas = {
+    CreationDate: marca(art.fecha),
+    ModDate: marca(art.actualizado || art.fecha),
+  };
   let halladas = 0;
 
   /* latin1 y no utf8: el PDF es binario y latin1 es el unico round-trip
@@ -149,7 +193,7 @@ function conFechasFijas(pdf, art) {
   const salida = Buffer.from(
     pdf.toString('latin1').replace(FECHAS, (_, campo) => {
       halladas++;
-      return `/${campo} (${marca})`;
+      return `/${campo} (${fechas[campo]})`;
     }),
     'latin1',
   );

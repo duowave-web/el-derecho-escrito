@@ -3821,6 +3821,26 @@ fechas por una derivada del campo `fecha` del `articulo.json`:
 > misma hora, así que **hay una sola hora de publicación en todo el proyecto** y
 > los metadatos del PDF coinciden con lo que declara el HTML.
 
+> ⚠️ **LOS DOS CAMPOS YA NO VALEN LO MISMO, Y ESTA SECCIÓN DECÍA QUE SÍ.**
+> `/CreationDate` es cuándo se creó el documento —la publicación— y `/ModDate`
+> cuándo se modificó por última vez. Mientras no existió el campo `actualizado`
+> los dos salían de `fecha`, porque era lo único que había:
+>
+> | | De dónde sale |
+> |---|---|
+> | `/CreationDate` | **siempre** de `fecha` |
+> | `/ModDate` | de `actualizado`, y de `fecha` si no lo hay |
+>
+> **No rompe el determinismo**, que es lo único intocable aquí: la fecha nueva
+> sale del JSON igual que la vieja, nunca del reloj. Y un artículo **sin**
+> `actualizado` da exactamente el mismo PDF que antes —verificado byte a byte en
+> el mismo entorno local—, porque `art.actualizado` llega ya normalizado desde
+> `derivar()`, que lo deja en `null` cuando falta y también cuando es igual a
+> `fecha`.
+>
+> Las dos marcas miden los mismos 23 bytes —solo cambian los dígitos del día—,
+> así que la guarda de longitud sigue cubriendo las dos.
+
 > ⚠️ **LA SUSTITUCIÓN TIENE QUE MEDIR LO MISMO EN BYTES, y si no, el PDF sale
 > corrupto.** La tabla `xref` del final de un PDF son **offsets absolutos en
 > bytes** desde el principio del archivo: alargar o acortar el `/Info` correría
@@ -3855,7 +3875,7 @@ Qué se imprime y qué no:
 
 | Se va | Se queda |
 |---|---|
-| cabecera, menú, buscador | portada nueva: logo, categoría, titular, entradilla, autor, fecha, foto |
+| cabecera, menú, buscador | portada nueva: logo, categoría, titular, entradilla, autor, fecha, minutos, **actualización si la hay**, foto |
 | barra de progreso | entradilla |
 | lateral entero: autor, etiquetas, suscripción | índice |
 | «Volver a los artículos» ×2 | cuerpo, con sus citas y listas |
@@ -3883,6 +3903,49 @@ el alto de un A4 menos los márgenes que pone `pdf.mjs`.
 
 > ⚠️ **SI SE CAMBIAN LOS MÁRGENES HAY QUE CAMBIAR ESE NÚMERO**, o la portada
 > empuja una segunda página en blanco.
+
+#### La ficha de la portada lleva «Última actualización» EN LA MISMA LÍNEA
+
+Y en la web va en su propia fila. **Parece una incoherencia y no lo es: aquí
+cabe y allí no.** Medido con el mes más largo y el día de dos dígitos, que es el
+peor caso:
+
+| | |
+|---|---|
+| fecha | 42,8 mm |
+| minutos | 27,6 mm |
+| «Última actualización: 30 de septiembre de 2026» | 77,6 mm |
+| con los dos separadores | **≈ 160 mm** |
+| **ancho útil del A4 con estos márgenes** | **170,1 mm** |
+
+La misma fila en la web pide 734,6 px sobre una columna de 720. **La diferencia
+no es el ancho** —la columna web son 190 mm, *más* que estos 170— **sino el
+estilo**: la ficha de la web va en **versales**, con tracking de 0,06em y un
+icono por dato; la de aquí va en caja baja, sin iconos y con 0,04em. Las
+versales y los iconos son lo que la desbordan allí.
+
+> ⚠️ **Si algún día se le ponen versales o iconos a esta ficha, hay que volver a
+> medir**: se come la holgura de golpe.
+
+> **Y si la línea llegara a envolver, no se recorta nada.**
+> `.pdf-portada__texto` lleva `margin-top: auto`, así que el bloque de texto
+> crece **hacia arriba** comiéndose el hueco libre, y la foto sigue cerrando
+> abajo. El `overflow: hidden` solo muerde si el total supera los 259 mm.
+
+Medido con el campo puesto, emulando `print` a 170 × 259 mm:
+
+| | |
+|---|---|
+| Caja de la portada | 259,0 mm |
+| Logo + marca + texto + foto | **158,2 mm** |
+| Hueco libre | **87,2 mm** |
+| La foto termina en | **259,0 mm** — sin recorte |
+| Páginas del PDF | **9**, las mismas que sin el campo |
+
+Verificado además que los cinco elementos de la línea caen todos en la misma
+coordenada vertical, o sea que **no envuelve**: contar líneas dividiendo la
+altura de la ficha entre el interlineado **da 3 y engaña**, porque el
+`padding-top: 12pt` y el filete entran en esa altura.
 
 > ⚠️ **Y ESTO YA FALLÓ UNA VEZ, DE UNA FORMA QUE CONVIENE CONOCER.**
 > `body:has(.progreso)` reserva en `styles.css` los 30 px de la banda de
