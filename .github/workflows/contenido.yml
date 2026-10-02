@@ -57,9 +57,21 @@ jobs:
           # publicar y sin explicación.
           #
           # Con un PAT el push sí dispara una segunda ejecución, que vuelve a
-          # generar, no encuentra nada que empujar —el build es idempotente— y
-          # deja `generar` en verde sobre la cabeza. El bucle se corta solo por
-          # esa idempotencia, no por una condición que haya que mantener.
+          # generar, no encuentra nada que empujar y deja `generar` en verde
+          # sobre la cabeza.
+          #
+          # ⚠️ ESO DEPENDE DE QUE EL GENERADOR SEA IDEMPOTENTE, Y DURANTE UN
+          # TIEMPO NO LO FUE: el PDF llevaba dentro la hora del reloj, así que
+          # cada ejecución lo reescribía, lo empujaba y arrancaba la siguiente.
+          # El PR #4 tiene siete commits del bot seguidos, uno cada ~85 s, y lo
+          # cortó el merge —14 segundos después del último—, no el generador.
+          # GitHub no aplica aquí su protección anti-bucle porque esa protección
+          # solo cubre los pushes con GITHUB_TOKEN, y este va con PAT.
+          #
+          # Así que el bucle se corta por la idempotencia, pero esa no es una
+          # propiedad que se tenga: es una que se comprueba. La comprueba el
+          # paso «Comprobar que build y pdf son idempotentes», y por eso ese
+          # paso cubre los dos comandos y no solo `build`.
           token: ${{ secrets.PAT_PUBLICAR }}
           # Hace falta historia para comparar con main. Con el fetch-depth 1 de
           # serie no hay base común y el paso siguiente no puede calcularla.
@@ -124,21 +136,46 @@ jobs:
         working-directory: scripts
         run: npm run pdf
 
-      - name: Comprobar que el build es idempotente
+      # Si una segunda pasada cambia algo, el generador depende de algo que no
+      # debería —el reloj, el orden del sistema de archivos— y a partir de ahí
+      # cada PR arrastraría diferencias que nadie ha escrito.
+      #
+      # ⚠️ ESTE PASO COMPROBABA SOLO `build`, Y EL FALLO QUE HABÍA QUE COGER
+      # ESTABA EN `pdf`. Corría `npm run build` dos veces, pero el PDF no lo
+      # escribe build: lo escribe pdf. Así que la no-determinación del PDF
+      # —Chromium le estampaba la hora del reloj en /CreationDate— pasaba por
+      # aquí en verde, PR tras PR, mientras el push con PAT relanzaba el
+      # workflow en bucle. Está contado entero en scripts/pdf.mjs.
+      #
+      # ⚠️ Y SE HACÍA UN `git add -A` ANTES DEL DIFF. Funcionaba para lo que
+      # escribe build —el diff comparaba el árbol contra el índice— pero ataba
+      # la comprobación al estado del índice de git, que es un sitio raro donde
+      # guardar una medición. Ahora se compara con huellas sha256 tomadas antes
+      # y después, que no dependen de git y además dicen QUÉ archivo ha
+      # cambiado en vez de solo que algo cambió.
+      #
+      # Son dos pasadas en total, no tres: la primera son los dos pasos de
+      # arriba y esta es la segunda.
+      - name: Comprobar que build y pdf son idempotentes
         working-directory: scripts
-        # Si una segunda pasada cambia algo, el generador depende de algo que no
-        # debería —el reloj, el orden del sistema de archivos— y a partir de ahí
-        # cada PR arrastraría diferencias que nadie ha escrito.
         run: |
-          git add -A ../articulos ../index.html ../sitemap.xml ../feed.xml
+          huellas() {
+            { [ -d ../articulos ] && find ../articulos -type f -exec sha256sum {} + ; } | sort -k2
+            sha256sum ../index.html ../sitemap.xml ../feed.xml
+          }
+
+          huellas > /tmp/huellas-antes.txt
+
           npm run build
-          if ! git diff --quiet -- ../articulos ../index.html ../sitemap.xml ../feed.xml; then
-            echo '::error::El build NO es idempotente: una segunda pasada cambia archivos.'
-            echo 'Suele significar que algo depende del reloj o del orden del sistema de archivos.'
-            git --no-pager diff --stat -- ../articulos ../index.html ../sitemap.xml ../feed.xml
+          npm run pdf
+
+          huellas > /tmp/huellas-despues.txt
+
+          if ! diff -u /tmp/huellas-antes.txt /tmp/huellas-despues.txt; then
+            echo '::error title=El generador no es idempotente::Una segunda pasada de build+pdf cambia archivos. Suele ser algo que depende del reloj o del orden del sistema de archivos. El diff de arriba dice cuáles.'
             exit 1
           fi
-          echo 'Idempotente.'
+          echo 'Idempotente: build y pdf dan el mismo resultado byte a byte.'
 
       - name: Añadir lo generado al PR
         id: publicar
