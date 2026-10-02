@@ -4441,6 +4441,55 @@ body:has(.progreso) .cabecera {
   border-top: 1px solid var(--borde);
 }
 
+/* ⚠️ EL TITULAR DE ESTAS TARJETAS SE ESTABA PINTANDO COMO UN EPIGRAFE DEL
+   CUERPO, Y NO SE VEIA VENIR.
+
+   adaptarTarjeta() baja el titular de <h2> a <h3> por jerarquia de
+   encabezados —aqui cuelga del <h2> «Continua leyendo»—. El efecto lateral es
+   que pasa a casar con `.articulo h3`, que pesa (0,1,1) frente a los (0,1,0)
+   de `.entrada__titulo`: GANA POR ESPECIFICIDAD, no por orden, asi que ponerlo
+   despues no arreglaba nada.
+
+   Lo que se veia, medido: Source Serif en vez de Cormorant, 24px en vez de 28
+   y, sobre todo, un `margin-top: 32px` que no pinta ningun titular de tarjeta
+   del sitio. Ese margen era el 90% del hueco de 37px que habia entre la
+   categoria y el titular.
+
+   Se devuelve el componente a su propio estilo con (0,2,0), que gana sin
+   depender del orden del archivo. */
+
+.continua .entrada__titulo {
+  font-family: var(--display);
+  font-size: 28px;
+  line-height: 1.15;
+  margin: 0 0 8px;
+}
+
+/* El aire de dentro de la tarjeta, recortado por encargo al entrar la
+   entradilla: con cinco elementos en una columna de 346px, los huecos de la
+   portada dejaban la tarjeta demasiado suelta.
+
+   Va TODO prefijado con `.continua`. Las tarjetas de la portada y las del
+   listado comparten estas mismas clases —`.tarjeta__imagen`,
+   `.entrada__titulo`, `.entrada__meta`— y sin el prefijo el recorte se colaria
+   en las dos. Verificado que no se mueven.
+
+     imagen -> categoria     18 -> 12
+     categoria -> titular     4 ->  4   (ya era el minimo; lo que sobraba eran
+                                         los 32 del h3 ajeno, arriba)
+     titular -> entradilla   10 ->  8
+     entradilla -> metadatos 16 -> 12
+
+   Los cuatro valores siguen en la escala de 4 del proyecto. */
+
+.continua .tarjeta__imagen {
+  margin-bottom: 12px;
+}
+
+.continua .tarjeta .entrada__meta {
+  padding-top: 12px;
+}
+
 /* DOS columnas y no tres. Aqui la rejilla no vive en la reticula de 1200 sino
    dentro de .articulo__cuerpo, que son 720 px, asi que a tres las tarjetas
    salen a 221,3 px y a dos a 346.

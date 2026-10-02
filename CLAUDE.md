@@ -1569,6 +1569,77 @@ el listado cuelga del `<h1>` de la página; aquí cuelga del `<h2>` «Continúa
 leyendo», así que un `<h2>` saltaría el nivel. Verificado con siete artículos
 sintéticos: **cero saltos de jerarquía** en toda la página.
 
+#### Qué enseña cada tarjeta, y el efecto lateral del `<h3>`
+
+Los cinco elementos de una tarjeta de la portada, en el mismo orden:
+
+```
+imagen → categoría → título → entradilla → metadatos
+```
+
+> ⚠️ **AQUÍ SE BORRABA LA ENTRADILLA, Y YA NO.** `adaptarTarjeta()` la quitaba
+> con el argumento de que «son 346 px de ancho y lo que hace falta aquí es
+> reconocer el artículo, no resumirlo». **Se cambió por encargo**, y con ella se
+> recortó el aire de dentro de la tarjeta para compensar el alto que suma. No
+> hay que volver a quitarla.
+
+> ⚠️ **LA CATEGORÍA ES UN ENLACE AQUÍ Y NO LO ES EN EL LISTADO, de donde se
+> clona.** El listado la escribe en texto plano —es el punto 2 de los «9
+> sitios», y el `href` solo lo documentan la portada y el artículo—, así que el
+> enlace lo monta `adaptarTarjeta()`.
+>
+> **No se inventa la clave**: sale de `data-categoria` de la tarjeta clonada,
+> que es la misma que usa el `href` de la portada. Por eso se lee **antes** de
+> quitar el atributo, unas líneas más abajo en la misma función.
+>
+> **El listado no se tocó.** Hacerlo habría sido más corto —el clon heredaría el
+> enlace— pero cambia una página que no entraba en el encargo.
+
+> ⚠️ **EL TITULAR SE ESTABA PINTANDO COMO UN EPÍGRAFE DEL CUERPO, Y NO SE VEÍA
+> VENIR.** Es el efecto lateral del `<h2>` → `<h3>` de arriba: al pasar a `h3`,
+> el titular casa con **`.articulo h3`**, que pesa (0,1,1) frente a los (0,1,0)
+> de `.entrada__titulo`. **Gana por especificidad, no por orden**, así que
+> declararlo después no arreglaba nada.
+>
+> Lo que se veía, medido: **Source Serif en vez de Cormorant, 24 px en vez de
+> 28 y un `margin-top: 32px`** que no lleva ningún titular de tarjeta del sitio.
+> Ese margen era el 90 % del hueco de **37 px** que había entre la categoría y
+> el titular.
+>
+> Lo arregla `.continua .entrada__titulo`, con (0,2,0): gana sin depender del
+> orden del archivo.
+
+**El aire de dentro, recortado por encargo:**
+
+| Hueco | Antes | Ahora |
+|---|---|---|
+| imagen → categoría | 18 | **12** |
+| categoría → titular | 4 (+32 del `h3` ajeno = 37) | **4** |
+| titular → entradilla | 10 | **8** |
+| entradilla → metadatos | 16 | **12** |
+
+> ⚠️ **TODO VA PREFIJADO CON `.continua`, Y SIN ESO SE COLA EN DOS SITIOS MÁS.**
+> Las tarjetas de la portada y las del listado comparten estas mismas clases
+> —`.tarjeta__imagen`, `.entrada__titulo`, `.entrada__meta`—, así que el recorte
+> sin prefijo las habría cambiado también. Verificado tras el cambio: la portada
+> sigue en 18 · 4 · 10 · 16.
+
+> **Los metadatos siguen anclados abajo**, por el `margin: auto 0 0` de
+> `.tarjeta .entrada__meta`. Con tarjetas de contenido muy desigual eso deja un
+> hueco grande en la más corta —medido, 168 px contra 22 en la larga— y es el
+> comportamiento de siempre de las tarjetas, no algo que introduzca la
+> entradilla: lo que iguala las alturas es la rejilla.
+
+> **`actualizado` no sale aquí, y no hay que hacer nada para que no salga.**
+> `tarjetaListado()` nunca lo escribió —solo `<time>` y `.lectura`— así que el
+> clon no puede traerlo.
+
+> **Para verlo hacen falta DOS artículos más**, porque con uno solo la sección
+> se oculta entera. Se prueba creando carpetas temporales en
+> `contenido/articulos/` y **borrándolas después de `contenido/` Y de
+> `articulos/`**, que el build no borra. Al regenerar no queda rastro en el
+> listado, la portada, el sitemap ni el feed.
+
 ### Ya no quedan migas en ninguna página
 
 Se retiraron por tandas y siempre por el mismo motivo: **repetían navegación que
