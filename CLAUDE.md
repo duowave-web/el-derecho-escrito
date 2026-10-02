@@ -3210,6 +3210,41 @@ Los dos son el mismo `.boton--contorno` con `download`, sin una sola
 declaración de color propia. El segundo lo escribe el generador, así que **al
 tocarlo hay que regenerar**.
 
+> ⚠️ **`.autor__cv` VA PREFIJADO CON `.articulo`, Y SIN ESO EL MARGEN NO SE
+> APLICA.** El botón del lateral es un `<p>` dentro de
+> `<article class="articulo">`, así que le cae **`.articulo p`**, que pesa
+> (0,1,1) frente a los (0,1,0) de la clase sola: **gana por especificidad, no
+> por orden**, y declararlo después no sirve de nada.
+>
+> **Estuvo escrito como `.autor__cv { margin: 18px 0 0 }` y era una regla
+> muerta**: el margen computado seguía siendo el `0 0 22px` de `.articulo p`.
+> No daba ningún error —el botón se veía, solo que pegado a «Ver perfil →»— y
+> **solo se ve mirando el estilo computado, no el archivo**. Es la misma trampa
+> que `.articulo h3` contra `.entrada__titulo` en «Continúa leyendo».
+>
+> Hoy es `.articulo .autor__cv`, con los dos huecos medidos en el bloque de
+> 250 px:
+>
+> | | px |
+> |---|---|
+> | «Ver perfil →» → botón | 28 de margen + 5 de interlineado = **33** |
+> | botón → filete de «Etiquetas» | 22 de margen + 10 del bloque = **32** |
+>
+> El botón queda con el mismo aire arriba y abajo. ⚠️ **El margen de abajo no se
+> puede soltar a 0**: esos 22 los traía `.articulo p` y son la mitad del hueco
+> inferior.
+>
+> Y va **centrado** con `text-align: center` —el botón es `inline-flex`—, igual
+> que el retrato se centra con `margin: 0 auto`. Medido: 44 px a cada lado.
+
+> **El de `sobre/` NO se entera**, y por eso el cambio queda acotado: allí el
+> botón vive en un `<p>` **sin clase** dentro de `.sobre__autor-texto`, así que
+> `.autor__cv` no lo alcanza. Verificado.
+
+> **En móvil el botón sigue ahí, centrado igual.** El lateral **no se oculta**
+> por debajo de 900: baja debajo del artículo, y el bloque pasa de 250 a 277 px
+> de ancho. Medido a 375: 57 px a cada lado del botón.
+
 > ⚠️ **EL PESO ESTÁ ESCRITO A MANO EN LOS DOS SITIOS, y nada lo comprueba.** Va
 > en un `<span class="oculto"> (PDF, 63 KB)</span>`, de modo que el nombre
 > accesible del enlace es «Descargar CV (PDF, 63 KB)» y lo que se ve es

@@ -4451,8 +4451,32 @@ body:has(.progreso) .cabecera {
    18 es el mismo hueco que deja el retrato encima del nombre, asi que la
    columna mantiene su ritmo. */
 
-.autor__cv {
-  margin: 18px 0 0;
+/* ⚠️ VA PREFIJADO CON `.articulo` Y SIN ESO EL MARGEN NO SE APLICA. Es un <p>
+   dentro de <article class="articulo">, asi que le cae `.articulo p`, que pesa
+   (0,1,1) frente a los (0,1,0) de la clase sola: GANA POR ESPECIFICIDAD, no por
+   orden, asi que declararlo despues no servia de nada.
+
+   Estuvo escrito como `.autor__cv { margin: 18px 0 0 }` y era una regla MUERTA:
+   el margen computado seguia siendo el `0 0 22px` de `.articulo p`. No daba
+   ningun error —el boton se veia, solo que pegado al enlace— y solo se ve
+   mirando el estilo computado, no el archivo. Es la misma trampa que
+   `.articulo h3` contra `.entrada__titulo` en «Continua leyendo».
+
+   LOS DOS HUECOS, medidos en el bloque de 250px:
+
+     «Ver perfil» → boton     28 + 5 de interlineado  =  33
+     boton → filete Etiquetas 22 + 10 del bloque      =  32
+
+   O sea que el boton queda con el mismo aire arriba y abajo, que es lo que lo
+   separa del enlace sin dejarlo huerfano. El margen de abajo no se puede soltar
+   a 0: los 22 que traia `.articulo p` son la mitad de ese hueco inferior.
+
+   `text-align: center` centra el boton, que es inline-flex, como `margin: auto`
+   centra el retrato. */
+
+.articulo .autor__cv {
+  margin: 28px 0 22px;
+  text-align: center;
 }
 
 /* Aqui vivia .indice--lateral, el indice de la columna de apoyo, con sus siete
