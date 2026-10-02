@@ -2467,6 +2467,16 @@ ratio más panorámico, porque el encargo era explícito en no cortar la escultu
 > explícito. El corte va en 600 —uno que ya existe— y no en 495: entre esos dos
 > anchos la fila aún cabría, pero vale más que atar el diseño a un número que
 > depende del largo de los metadatos.
+>
+> ⚠️ **LA REGLA LA COMPARTE AHORA LA FICHA DEL ARTÍCULO**, en un solo bloque con
+> dos selectores: `.inicio .entrada__meta > :not(:last-child)::after` y
+> `.articulo__ficha > :not(:last-child)::after`. El carácter, el color y el
+> margen se tocan en **un** sitio. **No se solapan** —`.inicio` no está en el
+> `<body>` del artículo y `.articulo__ficha` no existe en la portada—, así que
+> agrupar no pinta ni una barra de más. Verificado: la portada sigue dando
+> `time| lectura| leer` en el destacado y `time| lectura` en las tarjetas.
+>
+> El artículo tiene **sus propios cortes**, y están en su sección.
 
 #### Responsive del rediseño, medido
 
@@ -3460,6 +3470,68 @@ comportamiento: rellena uno que ya existía con un valor mejor.
 > —«30 de septiembre de 2026»— el bloque mide **327 px exactos**, justo el ancho
 > de la columna, y parte a dos líneas sin desbordar ni provocar scroll
 > horizontal. Verificado.
+
+#### Los separadores de la ficha, y por qué la actualización va en su fila
+
+La ficha lleva barras `|` entre sus datos, **la misma regla que la portada**,
+agrupada con ella. Pero el artículo tiene dos cortes propios, los dos medidos.
+
+> ⚠️ **«ÚLTIMA ACTUALIZACIÓN» VA SIEMPRE EN SU PROPIA FILA, Y NO ES UNA
+> PREFERENCIA: NO CABE AL LADO A NINGÚN ANCHO.** Medido con el mes más largo
+> sobre el artículo de MASC:
+>
+> | | px |
+> |---|---|
+> | fecha | 198 |
+> | minutos | 145,3 |
+> | **«Última actualización: 30 de septiembre de 2026»** | **367,3** |
+> | con los dos huecos de 12 | **734,6** |
+>
+> Y la columna topa en los **720** de `.articulo__principal`. O sea que
+> envolvería igual en un monitor de 2560: lo que la limita es el ancho de
+> lectura, no la ventana.
+>
+> **Con meses cortos sí cabría** —«5 de mayo de 2026» baja la suma a ~667— y esa
+> es justamente la razón de forzarlo: un diseño que se coloca distinto según el
+> mes que lleve la fecha no se puede revisar ni explicar. Lo resuelve
+> `flex-basis: 100%` en `.actualizado`.
+>
+> **Si alguien quiere los tres en una línea, como el mockup, la palanca es
+> acortar el rótulo** —«Actualizado: 30 sep 2026»—, no tocar el `max-width` de
+> la columna, que está puesto por legibilidad.
+
+> ⚠️ **Con ella se va la barra que la precede**, o se queda colgando al final de
+> la primera línea. La apaga `.articulo__ficha > :has(+ .actualizado)::after`,
+> que apunta al elemento **que tenga `.actualizado` justo detrás** en vez de a
+> `.lectura` por su nombre: si cambia el orden de la ficha, la regla sigue
+> sirviendo sola.
+
+> ⚠️ **Por debajo de 748 px no hay separadores, y el número está medido.** Ahí
+> abajo la ficha gana la firma —aparece por debajo de 900— y la fila pasa a
+> pedir **582,9 px**: firma 215,6 + fecha 198 + minutos 145,3 y sus dos huecos.
+> La columna es la ventana menos 48, así que **envuelve por debajo de ~631** y
+> vuelve la barra colgando.
+>
+> El corte va en el **748 que ya existe** —el de las tarjetas— y no en 631:
+> entre esos dos anchos la fila aún cabe de una pieza, pero vale más pasarse de
+> prudente que atar el corte al largo de la fecha y del nombre del mes.
+> Perderse una barra decorativa no se nota; una barra colgada sí.
+
+Barrido de verificación, con el campo y sin él:
+
+| Ancho | Sin `actualizado` | Con `actualizado` |
+|---|---|---|
+| 1440 / 1280 | `fecha \| minutos` | `fecha \| minutos` + fila propia |
+| 901 | `fecha \| minutos` | `fecha \| minutos` + fila propia |
+| 900 | `firma \| fecha \| minutos` | `firma \| fecha \| minutos` + fila propia |
+| 749 | `firma \| fecha \| minutos` | `firma \| fecha \| minutos` + fila propia |
+| **748** | sin barras, una fila | sin barras + fila propia |
+| 375 | sin barras, tres filas | sin barras, cuatro filas |
+
+**Cero separadores colgando en los doce casos.** Se comprueba mirando si el
+*último elemento de cada fila renderizada* tiene `::after`, que es lo único que
+distingue una barra correcta de una colgada; contar hijos no sirve, porque el
+envoltorio no cambia el DOM.
 
 > ⚠️ **`descripcion` y `entradilla` NO son el mismo texto, y confundirlas no da
 > ningún error.** La `descripcion` es el resumen de 140–160 caracteres que ven

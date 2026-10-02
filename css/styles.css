@@ -1731,7 +1731,15 @@ body:has(.portada--video) .cabecera--con-linea {
    `:not(:last-child)` deja el ultimo sin barra, sea la lectura en una tarjeta o
    el enlace «Leer articulo» en el destacado, sin saber cual es. */
 
-.inicio .entrada__meta > :not(:last-child)::after {
+/* La regla la comparten la portada y la ficha de cabecera del articulo. Se
+   agrupan para que el caracter, el color, la opacidad y el espaciado se toquen
+   en UN sitio: son el mismo separador, y dos copias divergen en cuanto alguien
+   ajuste una. Los dos selectores no se solapan —`.inicio` no esta en el <body>
+   del articulo y `.articulo__ficha` no existe en la portada—, asi que agrupar
+   no pinta ni una barra de mas. */
+
+.inicio .entrada__meta > :not(:last-child)::after,
+.articulo__ficha > :not(:last-child)::after {
   content: "|";
   margin-left: 12px;
   color: var(--borde-marcado);
@@ -3711,6 +3719,60 @@ body:has(.progreso) .cabecera {
 
 .articulo__ficha {
   margin: 22px 0 28px;
+}
+
+/* ⚠️ «ULTIMA ACTUALIZACION» VA SIEMPRE EN SU PROPIA FILA, Y NO ES UNA
+   PREFERENCIA: ES QUE NO CABE AL LADO A NINGUN ANCHO. Medido con el mes mas
+   largo —«30 de septiembre de 2026»— sobre el articulo de MASC:
+
+     fecha 198 + 12 + minutos 145,3 + 12 + actualizacion 367,3  =  734,6 px
+
+   y la columna topa en los 720 de `.articulo__principal`. O sea que la fila
+   envolveria igual en un monitor de 2560, porque lo que la limita es el ancho
+   de lectura y no la ventana.
+
+   Con meses cortos si cabria —«5 de mayo de 2026» baja la suma a ~667— y esa
+   es justamente la razon de forzarlo: un diseno que se coloca distinto segun el
+   mes que tenga la fecha no se puede revisar ni explicar. Se hace explicito,
+   que es lo que ya hizo la portada con «Leer articulo» y esta razonado en
+   CLAUDE.md.
+
+   `flex-basis: 100%` y no un <br> ni un contenedor aparte: el elemento sigue
+   siendo un item mas de la misma fila flex, asi que hereda el gap vertical y
+   no hay que recolocar nada. */
+
+.articulo__ficha .actualizado {
+  flex-basis: 100%;
+}
+
+/* Y con ella se va el separador que la precede, que si no se queda COLGANDO al
+   final de la primera linea: una barra sin nada que separar.
+
+   Se apunta al elemento que tiene `.actualizado` justo detras, en vez de a
+   `.lectura` por su nombre: si algun dia cambia el orden de la ficha, la regla
+   sigue sirviendo sola. Es el mismo fallo y la misma cura que
+   `.inicio .destacado .entrada__meta .lectura::after` por debajo de 600. */
+
+.articulo__ficha > :has(+ .actualizado)::after {
+  content: none;
+}
+
+/* ⚠️ POR DEBAJO DE 749 NO HAY SEPARADORES, y el numero esta medido.
+   Ahi abajo la ficha gana la firma —aparece por debajo de 900— y la fila pasa a
+   pedir 582,9 px: firma 215,6 + fecha 198 + minutos 145,3 y sus dos huecos.
+   La columna es la ventana menos 48, asi que envuelve por debajo de ~631, y al
+   envolver vuelve el separador colgando.
+
+   El corte va en el 748 que ya existe —el de las tarjetas— y no en 631: entre
+   esos dos anchos la fila aun cabe de una pieza, pero vale mas pasarse de
+   prudente que atar el corte a un numero que depende del largo de la fecha y
+   del nombre del mes. Perderse una barra decorativa no se nota; una barra
+   colgada al final de una linea se lee como un error. */
+
+@media (max-width: 748px) {
+  .articulo__ficha > :not(:last-child)::after {
+    content: none;
+  }
 }
 
 /* 21:9 y no 16:9: en la columna de 720 pasa de 405 a 309 px de alto, 96 menos,
