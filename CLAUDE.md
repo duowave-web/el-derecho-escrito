@@ -1820,14 +1820,62 @@ La lista de los ocho, que hoy escribe la plantilla y hay que revisar si se toca:
 > puntos 9 y 10, y no salen en los `grep` de abajo porque esos buscan dentro de
 > `articulos/`.
 >
-> El retrato de `sobre/` reutiliza **el mismo archivo** que el del lateral,
-> `img/juanconteramiranda.jpeg`, y comparte la clase `.autor__retrato`. Así que
-> el nombre del autor está dentro del nombre del archivo y cambiarlo arrastra
-> los dos `src` a la vez. Para encontrarlos todos:
+> ⚠️ **AQUÍ DECÍA QUE LOS DOS RETRATOS REUTILIZAN EL MISMO ARCHIVO, Y YA NO.**
+> Comparten la clase `.autor__retrato` y el encuadre, pero son **dos archivos**:
+>
+> | Archivo | Tamaño | Peso | Quién lo usa |
+> |---|---|---|---|
+> | `img/juanconteramiranda-264x352.jpg` | 264 × 352 | **16,2 KB** | el círculo de 132 px del lateral del artículo |
+> | `img/juanconteramiranda-600x800.jpg` | 600 × 800 | **60,8 KB** | el rectángulo de 300 × 400 de `sobre/`, y el `author.image` del JSON-LD |
+>
+> **Son dos y no uno por peso, no por encuadre.** El lateral sale en **todas**
+> las páginas de artículo, así que servirle ahí los 600 × 800 costaría **45 KB
+> por página** para enseñar 132 px. Al revés —servir la pequeña en `sobre/`—
+> daría 0,88× en una caja de 300 × 400, que es justo la blandura que este
+> archivo llevaba pidiendo arreglar.
+>
+> Cada uno es **2× su caja**, que es lo que pide una pantalla densa. Si alguna
+> de las dos cajas cambia de tamaño en el CSS, hay que regenerar su archivo.
+>
+> Así que el nombre del autor está dentro del nombre de **los dos** archivos y
+> cambiarlo obliga a renombrar los dos y a tocar los dos `src`. Para
+> encontrarlos:
 >
 > ```sh
-> grep -rn 'juanconteramiranda' --include='*.html' .
+> grep -rn 'juanconteramiranda' --include='*.html' --include='*.mjs' .
 > ```
+>
+> ⚠️ **El `--include='*.mjs'` no es opcional**: el `src` del lateral no está en
+> ningún HTML escrito a mano, sale de `AUTOR.retrato` en `plantilla.mjs`. Un
+> `grep` solo en HTML encuentra el de `sobre/` y el del artículo **generado**, y
+> quien corrija ese último a mano verá cómo el siguiente build se lo deshace.
+>
+> **Se regeneran con `sips`, sin dependencias.** El original del cliente es
+> `foto_juan.jpeg`, 1792 × 2400 y 2,3 MB, **3:4 de origen**, así que no hay que
+> decidir ningún recorte: solo se iguala la proporción al píxel y se reduce.
+>
+> ```sh
+> # 1792 / 0,75 = 2389,33 -> recorte centrado a 3:4 exacto
+> sips -c 2389 1792 foto_juan.jpeg --out base.jpg
+> sips -Z 800 -s format jpeg -s formatOptions 75 base.jpg --out img/juanconteramiranda-600x800.jpg
+> sips -Z 352 -s format jpeg -s formatOptions 75 base.jpg --out img/juanconteramiranda-264x352.jpg
+> ```
+>
+> **La calidad 75 está medida, no elegida de memoria.** Es el primer escalón que
+> cumple los dos techos con holgura y sin artefactos visibles en la piel, que es
+> lo que peor aguanta un JPEG:
+>
+> | Calidad | 600 × 800 | 264 × 352 |
+> |---|---|---|
+> | 60 | 41,0 KB | 12,6 KB |
+> | 70 | 55,9 KB | 16,3 KB |
+> | **75** | **60,8 KB** | **16,2 KB** |
+> | 80 | 64,6 KB | 18,6 KB |
+>
+> ⚠️ **El recorte a 2389 va ANTES de reducir, y el orden importa.** Al revés,
+> `-Z` sobre el original da **597 × 800**, no 600: 1792/2400 es 0,74667 y no
+> 0,75. Los tres píxeles no se ven, pero dejan los atributos `width`/`height`
+> mintiendo y la caja de `sobre/` recortando un pelo donde hoy no recorta nada.
 
 **En la cabecera:**
 
@@ -1909,9 +1957,11 @@ Dos trampas al buscar:
 - `"url"` aparece dos veces dentro de `author`: la del perfil (`sobre/`) y la
   del retrato, anidada en `image`. No son lo mismo.
 
-Y una que no se ve grepeando: **el nombre está también en el nombre del
-archivo** (`img/juanconteramiranda.jpeg`). Al cambiar de autor hay que renombrar
-el archivo, y eso arrastra los puntos 4 y 7 a la vez.
+Y una que no se ve grepeando: **el nombre está también en el nombre de los dos
+archivos de foto** (`img/juanconteramiranda-600x800.jpg` y `-264x352.jpg`). Al
+cambiar de autor hay que renombrar los dos, y eso arrastra los puntos 4 y 7 a la
+vez —pero **a archivos distintos**: el punto 4, que es el JSON-LD, lleva la
+grande, y el punto 7, el `<img>` del lateral, la pequeña.
 
 Dos cosas que conviene no confundir:
 
@@ -3026,6 +3076,28 @@ Blanco y negro o tonos cálidos apagados, estilo editorial. Todas las miniaturas
 de la cuadrícula, misma proporción. El retrato del autor no es corporativo: luz
 natural, biblioteca o despacho, como una entrevista en *Monocle*.
 
+> ⚠️ **EL RETRATO DE HOY NO CUMPLE ESA ÚLTIMA FRASE, y es del cliente.** Es un
+> posado de estudio sobre fondo liso, con traje y corbata: exactamente el
+> «corporativo» que la línea de arriba descarta. **No se sustituye por
+> iniciativa propia** —la foto la pone él— y la frase se conserva porque sigue
+> describiendo a dónde debería ir el sitio si algún día se encarga una sesión.
+
+> ⚠️ **LA FOTO ANTERIOR, `img/juanconteramiranda.jpeg`, SE QUEDÓ SIN NINGÚN USO
+> Y NO SE HA BORRADO.** Era cuadrada de 400 px y 21,7 KB, y la sustituyen las
+> dos versiones nuevas, que están descritas en «Autoría». Comprobado que no la
+> referencia nadie:
+>
+> ```sh
+> grep -rn 'juanconteramiranda\.jpeg' --include='*.html' --include='*.mjs' \
+>      --include='*.css' --include='*.xml' .
+> ```
+>
+> Se deja a propósito, como `fondo-cabecera.jpg`: retirarla es una limpieza
+> aparte. **Quien la borre que vuelva a ejecutar ese `grep` antes**, porque el
+> nombre nuevo lo contiene como prefijo y un `grep` de `juanconteramiranda` a
+> secas devuelve también los dos archivos vivos — el `\.jpeg` es lo que los
+> distingue.
+
 ### La entradilla de `contacto/` se topa en el ancho del formulario
 
 ```
@@ -3162,11 +3234,22 @@ el ancho de lectura —820— dos columnas quedarían a 380 y el texto se parte 
 > forma, el tamaño y el radio. El lateral del artículo no se entera: verificado,
 > **sigue en 132 × 132 y con `border-radius: 50%`**.
 >
-> ⚠️ **LA FUENTE SE QUEDA JUSTA Y NO SE ARREGLA DESDE EL CSS.** El original es
-> **cuadrado de 400 px**, así que recortarlo a 3:4 deja **300 × 400 píxeles
-> útiles** para una caja de 300 × 400: **exactamente 1×**, sin margen para
-> pantalla densa. Se verá blanda en un portátil retina. La única salida es una
-> foto de más resolución, ~600 × 800.
+> ✅ **AQUÍ SE AVISABA DE QUE LA FUENTE SE QUEDABA JUSTA, Y ESO YA DECAE.**
+> Decía que el original era **cuadrado de 400 px**, así que a 3:4 dejaba
+> **300 × 400 útiles** para una caja de 300 × 400 —**exactamente 1×**, blanda en
+> un portátil retina— y que «la única salida es una foto de más resolución,
+> ~600 × 800».
+>
+> **Esa foto llegó.** El cliente entregó un retrato de **1792 × 2400**, que es
+> 3:4 de origen, y de ahí sale `img/juanconteramiranda-600x800.jpg`: **2×
+> justos** para esta caja. Verificado en 1440, 1280 y 375 — caja 300 × 400,
+> **recorte 0 px** en los dos ejes y sin scroll horizontal.
+>
+> ⚠️ **Y el recorte 0 tiene una consecuencia que no se ve:** al coincidir la
+> proporción no hay holgura, así que el `object-position` que `.sobre__retrato`
+> hereda de `.autor__retrato` **aquí no hace nada**. Quien cambie la proporción
+> de esta caja empezará a recortar de golpe, y entonces sí tendrá que mirar por
+> dónde corta.
 
 > ⚠️ **EL TEXTO VA ANTES QUE LA FOTO EN EL MARCADO.** El PDF pone la foto a la
 > derecha, así que el orden de lectura es texto → foto y apilado en móvil cae

@@ -4273,11 +4273,33 @@ body:has(.progreso) .cabecera {
   margin: 0 auto 18px;
 }
 
+/* ⚠️ EL `object-position` NO ES DECORATIVO: SIN EL, EL CIRCULO CORTA EL PELO.
+   La foto es 3:4 y la caja es un cuadrado, asi que `cover` escala por el ancho
+   y descarta una franja vertical. Medido sobre el archivo de 264x352 dentro del
+   circulo de 132: la imagen se dibuja a 132x176 y sobran 44px de alto.
+
+   Con el `50%` de serie la ventana empieza en y=22, y la coronilla esta en
+   y=17,6 —se recortan 4,4px de pelo, que en un circulo se lee como una cabeza
+   aplanada por arriba—. Con `10%` empieza en y=4,4: quedan 13px de aire sobre
+   el pelo, la barbilla cae en y=100 y el centro de la cara al 41% del circulo,
+   que es donde se espera en un retrato.
+
+   ⚠️ APLICA TAMBIEN A `.sobre__retrato`, QUE COMPARTE ESTA REGLA, Y ALLI NO
+   PINTA NADA: su caja es 300x400 y su archivo 600x800, o sea la misma
+   proporcion, asi que no hay holgura que repartir y la Y da igual. Se deja en
+   un solo sitio a proposito —el retrato del sitio es uno— pero quien cambie la
+   proporcion de aquella caja tiene que volver a mirar este numero, porque
+   entonces si empezara a recortar.
+
+   El numero sale de la cara de ESTA foto. Si se sustituye, hay que medir donde
+   caen la coronilla y la barbilla y rehacerlo: nada avisa de que corta. */
+
 .autor__retrato img {
   display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center 10%;
 }
 
 /* Retrato del autor en sobre/. Se apoya en .autor__retrato —circulo, recorte y
@@ -4315,10 +4337,12 @@ body:has(.progreso) .cabecera {
    distinto: la forma, el tamaño y el radio. El lateral del articulo no se
    entera: conserva su circulo de 132.
 
-   ⚠️ LA FUENTE SE QUEDA JUSTA Y HAY QUE SABERLO. El original es CUADRADO de
-   400px, asi que recortarlo a 3:4 deja 300x400 utiles para una caja de 300x400:
-   exactamente 1x, sin margen para pantalla densa. La unica salida es una foto
-   de mas resolucion —~600x800—; desde el CSS no se arregla.
+   ✅ AQUI SE AVISABA DE QUE LA FUENTE SE QUEDABA JUSTA, Y YA NO. El original
+   era CUADRADO de 400px, asi que a 3:4 dejaba 300x400 utiles para una caja de
+   300x400: exactamente 1x, sin margen para pantalla densa. La foto nueva es 3:4
+   de origen y se sirve a 600x800, o sea 2x justos. El aviso decae.
+
+   Y al coincidir la proporcion, `cover` no recorta nada: se ve la foto entera.
 
    El `margin: 0 auto 18px` de la clase base centraba el circulo en el lateral;
    aqui se anula para que la foto alinee con el principio de su columna. */

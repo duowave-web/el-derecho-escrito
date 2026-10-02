@@ -65,12 +65,28 @@ export const CATEGORIAS = {
    Cambiar de autor es cambiar este bloque y regenerar. Lo que NO cubre es
    `sobre/`, que es una página a mano y tiene dos puntos más —el `src` y el
    `alt` de su retrato—. Y ojo: el nombre está también DENTRO del nombre del
-   archivo de la foto, así que cambiarlo obliga a renombrarla. */
+   archivo de la foto, así que cambiarlo obliga a renombrarla.
+
+   ⚠️ HAY DOS ARCHIVOS DE RETRATO Y NO ES UNA DUPLICACIÓN DESPISTADA. Son el
+   mismo encuadre 3:4 a dos tamaños, y cada uno sirve a una caja distinta:
+
+     retrato       264×352, 16 KB  → el círculo de 132px de ESTE lateral
+     retratoGrande 600×800, 61 KB  → el rectángulo de 300×400 de `sobre/`,
+                                     y el `author.image` del JSON-LD
+
+   El lateral sale en TODAS las páginas de artículo, así que servirle ahí los
+   600×800 costaría 45 KB por página para enseñar 132px. El JSON-LD lleva la
+   grande porque es la que ve Google, no el lector.
+
+   Los dos son el doble de su caja, que es lo que pide una pantalla densa. Si
+   alguna de las dos cajas cambia de tamaño en el CSS, hay que regenerar su
+   archivo: el procedimiento está en CLAUDE.md, en «Fotografía». */
 
 const AUTOR = {
   nombre: 'Juan Contera Miranda',
   cargo: 'Abogado',
-  retrato: 'img/juanconteramiranda.jpeg',
+  retrato: 'img/juanconteramiranda-264x352.jpg',
+  retratoGrande: 'img/juanconteramiranda-600x800.jpg',
   /* ⚠️ LAS MAYÚSCULAS DE «Derecho Administrativo» Y «Urbanismo» SON
      INTENCIONADAS. Contradicen a propósito la convención del cliente —él
      escribe «Derecho administrativo», con minúscula— igual que el titular del
@@ -345,11 +361,13 @@ function jsonLd(art) {
           '@type': 'Person',
           name: AUTOR.nombre,
           url: `${DOMINIO}/sobre/`,
+          /* La GRANDE, no la del lateral: esto lo lee Google para construir la
+             entidad de autor y ahí conviene la mejor resolución que haya. */
           image: {
             '@type': 'ImageObject',
-            url: `${DOMINIO}/${AUTOR.retrato}`,
-            width: 400,
-            height: 400,
+            url: `${DOMINIO}/${AUTOR.retratoGrande}`,
+            width: 600,
+            height: 800,
           },
           jobTitle: AUTOR.cargo,
           description: AUTOR.bio,
@@ -641,7 +659,7 @@ ${pintarReferencias(art)}
             <div class="autor__retrato">
               <img src="../../${AUTOR.retrato}"
                    alt="Retrato de ${escapar(AUTOR.nombre)}"
-                   width="400" height="400" loading="lazy" decoding="async">
+                   width="264" height="352" loading="lazy" decoding="async">
             </div>
             <p class="autor__nombre">${escapar(AUTOR.nombre)}</p>
             <p class="autor__bio">${escapar(AUTOR.bio)}</p>

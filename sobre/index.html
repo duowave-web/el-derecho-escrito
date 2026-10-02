@@ -168,10 +168,12 @@
     <section class="sobre__bloque-autor">
       <h2>Sobre el autor</h2>
 
-      <!-- El retrato reutiliza juanconteramiranda.jpeg, la misma foto que el
-           lateral del artículo, y hereda de .autor__retrato el recorte y el
-           fondo de respaldo. La FORMA no: aquí es rectángulo vertical y en el
-           lateral sigue siendo un círculo.
+      <!-- El retrato es la misma foto que el lateral del artículo, pero NO el
+           mismo archivo: aquí va la de 600×800 y allí una de 264×352, porque
+           allí la caja mide 132 px y servirle esta costaría 45 KB en cada
+           página de artículo. Está razonado en plantilla.mjs, sobre AUTOR.
+           De .autor__retrato hereda el recorte y el fondo de respaldo. La
+           FORMA no: aquí es rectángulo vertical y en el lateral un círculo.
 
            ⚠️ ESTUVO EN CÍRCULO Y SE CORRIGIÓ. Se razonó entonces que «el PDF
            marca estructura y contenido, no estilos»; el encargo posterior fue
@@ -186,9 +188,9 @@
            del DOM es el que oyen los lectores de pantalla.
 
            ⚠️ CON ESTO LA AUTORÍA SE REPITE EN UN SITIO MÁS. El nombre del autor
-           está dentro del nombre del archivo, así que al cambiar de autor hay
-           que renombrarlo y tocar el src de los DOS sitios: aquí y el lateral
-           del artículo. Está contado en CLAUDE.md. -->
+           está dentro del nombre de los archivos, así que al cambiar de autor
+           hay que renombrar LOS DOS y tocar el src de los dos sitios: aquí y el
+           lateral del artículo. Está contado en CLAUDE.md. -->
       <div class="sobre__autor">
         <div class="sobre__autor-texto">
           <p><strong>Juan Contera Miranda</strong> es graduado en Derecho y Ciencias Políticas por la UCM, Máster en Gobierno y Dirección Estratégica de Organizaciones Públicas por la UEA y Máster en Derecho de la Ordenación del Territorio y del Urbanismo por la UNIR.</p>
@@ -223,14 +225,19 @@
              del <img>—. Lo que `.sobre__retrato` cambia es la forma: 300×400 y
              radio 0.
 
-             La fuente es CUADRADA de 400 px, así que a 3:4 quedan 300×400
-             píxeles útiles para una caja de 300×400: exactamente 1×. En
-             pantalla densa se verá blanda, y la única salida es una foto de más
-             resolución —~600×800—. Está anotado en CLAUDE.md. -->
+             ✅ AQUÍ DECÍA QUE SE VERÍA BLANDA, Y YA NO. La fuente era CUADRADA
+             de 400 px, así que a 3:4 dejaba 300×400 útiles para una caja de
+             300×400: exactamente 1×. La foto nueva es 3:4 de origen y se sirve
+             a 600×800, o sea 2× justos, que es lo que pide una pantalla densa.
+
+             ⚠️ Y AL SER 3:4 EXACTO, `cover` NO RECORTA NADA. El `object-position`
+             que lleva el círculo del lateral aquí no pinta: no hay holgura que
+             repartir. Si alguien cambia la proporción de esta caja, empezará a
+             recortar y habrá que mirar por dónde. -->
         <div class="autor__retrato sobre__retrato">
-          <img src="../img/juanconteramiranda.jpeg"
+          <img src="../img/juanconteramiranda-600x800.jpg"
                alt="Retrato de Juan Contera Miranda"
-               width="400" height="400" loading="lazy" decoding="async">
+               width="600" height="800" loading="lazy" decoding="async">
         </div>
       </div>
     </section>
