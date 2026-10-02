@@ -3206,6 +3206,12 @@ tocarlo hay que regenerar**.
 > pone lo que solo necesita quien no ve la pantalla, el mismo recurso que el
 > «Ver artículos de » de las categorías.
 
+> ⚠️ **ESTE ARGUMENTO DECAYÓ A MEDIAS: «Descargar PDF» ya no vive en la lista.**
+> Salió de `.compartir` y hoy es un `.boton--contorno` propio, igual que este,
+> **pero conservó su icono**. O sea que la diferencia entre los dos botones de
+> descarga del sitio es hoy solo esa, y es la que habría que revisar si alguna
+> vez se unifican. El razonamiento original se conserva entero debajo.
+
 > ⚠️ **NO LLEVA ICONO, al contrario que «Descargar PDF» del artículo.** Aquel
 > vive en `.compartir`, una lista de cuatro acciones donde el icono distingue
 > una de otra; este es un botón suelto y un icono ahí sería adorno. Si algún día
@@ -4412,8 +4418,54 @@ Lo que evita que el PDF se lea como generado sin cuidado:
 
 ### El botón «Descargar PDF»
 
-Va con los de compartir, como cuarto elemento, con un icono de línea. Apunta a
-`./<slug>.pdf`, en la misma carpeta del artículo.
+Es un `.boton--contorno` propio, **antes** del bloque «Compartir», con el icono
+de línea dentro. Apunta a `./<slug>.pdf`, en la misma carpeta del artículo.
+
+> ⚠️ **ERA EL CUARTO ELEMENTO DE LA LISTA DE COMPARTIR Y SALIÓ DE ELLA.** Allí
+> se veía igual que LinkedIn, WhatsApp y Correo —misma píldora gris— así que se
+> leía como un destino más al que mandar el artículo. **Y no lo es: los otros
+> tres lo envían a otro sitio y este te lo da a ti.**
+>
+> Con `.boton--contorno` pasa a verse como «Descargar CV» de `sobre/` y del
+> lateral: **las dos descargas del sitio se ven igual**, que es la relación que
+> de verdad tienen.
+
+> ⚠️ **VA ANTES DE «COMPARTIR», NO DESPUÉS.** Llevarse el artículo es para uno
+> mismo; compartirlo es para terceros. El orden va de lo propio a lo ajeno, que
+> es también el orden en que se decide.
+>
+> Con él se mudaron los márgenes: los 40 de arriba que tenía `.compartir` los
+> lleva ahora `.descarga`, que es quien abre la fila de acciones, y `.compartir`
+> se queda en `margin: 0 0 32px` con su filete.
+
+> **UNA SOLA UBICACIÓN, y se descartó la segunda.** Arriba, junto a la ficha,
+> competiría con el arranque de la lectura y empujaría el texto: esa columna ya
+> lleva `.volver`, foto, categoría, titular, ficha, entradilla e índice. Y el
+> momento de descargar es **después** de decidir que el artículo interesa, que
+> es justo donde está. Dos puntos de descarga serían además dos sitios que
+> mantener.
+
+> **El icono se queda, y eso cambia lo que decía la sección del CV.** Allí está
+> escrito que el botón del CV no lleva icono «al contrario que Descargar PDF del
+> artículo, que vive en una lista de cuatro acciones donde el icono distingue
+> una de otra». Ese argumento decae: el botón ya no vive en la lista. Se
+> conserva porque aquí distingue «descargar» de un enlace cualquiera, y porque
+> es un `<span aria-hidden>` con `mask` que no entra en el árbol de
+> accesibilidad.
+
+> ⚠️ **NO LLEVA EL PESO EN BYTES, al contrario que «Descargar CV», y no es un
+> olvido.** El del CV se escribe a mano porque el archivo es fijo. El del
+> artículo tendría que calcularlo el build, y **ahí choca con la idempotencia**:
+> `build` escribe el HTML **antes** de que `pdf` escriba el PDF, así que el
+> tamaño que leyera sería siempre el de la pasada anterior. El gate —que vuelve
+> a correr `build; pdf` y compara— lo cazaría como no idempotente justo en la
+> primera publicación de cada artículo, que es cuando el PDF aún no existe.
+>
+> **Para ponerlo haría falta cambiar el orden de publicación** a
+> `build → pdf → build`, o que `pdf.mjs` reescriba el HTML después de generar.
+> Las dos tocan el pipeline, así que es una decisión aparte.
+>
+> El nombre accesible es «Descargar PDF», que ya dice el formato.
 
 > ⚠️ **SI EL PDF NO SE HA GENERADO, EL BOTÓN DA 404 Y NADA LO IMPIDE.** La
 > plantilla lo pinta siempre, porque mirar si el archivo existe en el momento

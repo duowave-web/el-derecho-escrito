@@ -3099,8 +3099,22 @@ em i {
    Los 48 de arriba bajan a 40 para igualar el hueco que la caja de citas deja
    por el otro lado del enlace: 40 y 40. */
 
+/* Descarga del PDF del articulo. Lo unico que declara es la COLOCACION: el
+   boton lo viste `.boton--contorno` entero, igual que «Descargar CV».
+
+   Los 40 de arriba son los mismos que separaban `.compartir` de lo que tiene
+   encima —ahora los lleva este, que paso a ir primero— y los 28 de abajo lo
+   despegan del filete de «Compartir» sin duplicar el hueco. */
+
+.descarga {
+  margin: 40px 0 28px;
+}
+
+/* El filete y el aire de arriba pasan a 0 porque ya no es el primer bloque de
+   la fila de acciones: lo precede `.descarga`, que trae su propio margen. */
+
 .compartir {
-  margin: 40px 0 32px;
+  margin: 0 0 32px;
   padding-top: 28px;
   border-top: 1px solid var(--borde);
 }

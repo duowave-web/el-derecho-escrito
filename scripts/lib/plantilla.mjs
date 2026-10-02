@@ -564,6 +564,39 @@ ${pintarReferencias(art)}
             <span class="volver__flecha" aria-hidden="true">&larr;</span>Volver a los artículos
           </a>
 
+          <!-- ⚠️ ERA EL CUARTO ELEMENTO DE «COMPARTIR» Y SALE DE LA LISTA.
+               Alli se veia igual que LinkedIn, WhatsApp y Correo —misma pildora
+               gris— asi que se leia como un destino mas al que mandar el
+               articulo, y no lo es: los otros tres LO ENVIAN A OTRO SITIO y
+               este TE LO DA A TI. Son dos acciones distintas y ahora se
+               distinguen.
+
+               Pasa a .boton--contorno, el mismo tratamiento que «Descargar CV»
+               en sobre/ y en el lateral: las dos descargas del sitio se ven
+               igual.
+
+               ⚠️ VA ANTES DE «COMPARTIR», no despues, y es deliberado: llevarse
+               el articulo es para uno mismo y compartirlo es para terceros. El
+               orden va de lo propio a lo ajeno, que es tambien el orden en que
+               se decide.
+
+               UNA SOLA UBICACION, no dos. Arriba, junto a la ficha, competiria
+               con el arranque de la lectura y empujaria el texto: esa columna
+               ya tiene volver, foto, categoria, titular, ficha, entradilla e
+               indice. Y el momento de descargar es DESPUES de decidir que el
+               articulo interesa, que es justo donde esta. Dos puntos de
+               descarga ademas serian dos sitios que mantener.
+
+               El icono se queda: es un <span aria-hidden> con mask, no entra en
+               el arbol de accesibilidad y aqui distingue «descargar» de un
+               enlace cualquiera. -->
+          <p class="descarga">
+            <a class="boton boton--contorno" href="./${art.slug}.pdf" download>
+              <span class="compartir__icono compartir__icono--pdf" aria-hidden="true"></span>
+              Descargar PDF
+            </a>
+          </p>
+
           <aside class="compartir" aria-labelledby="compartir-titulo">
             <h2 id="compartir-titulo" class="lista__titulo">Compartir</h2>
             <ul class="compartir__lista">
@@ -586,12 +619,6 @@ ${pintarReferencias(art)}
                    href="mailto:?subject=${tituloEnc}&amp;body=Te%20paso%20este%20art%C3%ADculo%3A%20${urlEnc}">
                   <span class="compartir__icono compartir__icono--correo" aria-hidden="true"></span>
                   <span>Correo</span>
-                </a>
-              </li>
-              <li>
-                <a class="compartir__enlace compartir__enlace--pdf" href="./${art.slug}.pdf" download>
-                  <span class="compartir__icono compartir__icono--pdf" aria-hidden="true"></span>
-                  <span>Descargar PDF</span>
                 </a>
               </li>
             </ul>
