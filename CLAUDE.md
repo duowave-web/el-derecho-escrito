@@ -3003,11 +3003,34 @@ natural, biblioteca o despacho, como una entrevista en *Monocle*.
 
 ### Texto sobre imagen: hay que medir dónde cae, no la media
 
-La mancheta es una **banda a sangre de 170 px** con `img/fondo-cabecera.jpg` de
+La mancheta es una **banda a sangre de 170 px** con `img/fondo-paginas.jpg` de
 fondo y **sin velo**. Abre las tres páginas de sección —`articulos/`, `sobre/` y
 `contacto/`— con el título centrado y nada más. El fondo cruza toda la ventana;
 el título se queda en la rejilla de 1200 gracias al `.contenedor` que lleva
 dentro.
+
+> ⚠️ **LA IMAGEN CAMBIÓ: ERA `img/fondo-cabecera.jpg`.** La nueva está recortada
+> a **4:1 exacto (2560 × 640)** para esta banda, frente al 4,03 de la anterior,
+> y es el mismo veteado de la portada **sin libro ni balanza**.
+>
+> **`fondo-cabecera.jpg` se queda sin ningún uso y NO se ha borrado.** Es el
+> único portador que tenía:
+>
+> ```sh
+> grep -rn 'fondo-cabecera' --include='*.css' --include='*.html' .
+> ```
+>
+> Hoy solo lo nombra el comentario de `styles.css` que explica el cambio.
+
+> ⚠️ **SE DESCARTÓ USAR EL FONDO DE LA PORTADA TAL CUAL, y conviene saber por
+> qué antes de volver a intentarlo.** El de la portada no es una imagen de CSS:
+> es un **`<video>`** con `img/portada-poster.jpg` de póster. Lo único
+> reutilizable era el póster, y **es 1,79:1 contra los 7,42:1 de la banda**, así
+> que `cover` enseñaba el 24 % central de su altura: la estatua salía
+> **decapitada y cortada por las rodillas**, justo al lado del título.
+>
+> El contraste no era el problema —medido, 8,98:1, que pasa AA de sobra para un
+> `h1` de 44 px—. Era la geometría. De ahí el recorte 4:1 propio.
 
 **Dónde cae el texto importa más que cómo de clara sea la imagen**, y esta banda
 lo demuestra en las dos direcciones.
@@ -3017,36 +3040,59 @@ Mientras la mancheta llevaba el título a la izquierda y una entradilla a la
 derecha, el texto caía justo encima: **1,68:1** y **1,02:1**, ilegible. Hizo
 falta un velo blanco al 45 % para salvarlo, y aun así lavaba la imagen.
 
-Con el título **centrado**, cae sobre la franja clara del medio y da **14,03:1
-sin velo ninguno** — idéntico en los seis anchos medidos, porque esa zona es
-uniforme. El velo se retiró: protegía a un texto que ya no está ahí, y sin él la
-imagen recupera el veteado y la balanza.
+Con el título **centrado**, cae sobre la franja clara del medio y no hace falta
+velo ninguno. El velo se retiró: protegía a un texto que ya no está ahí.
+
+Medido sobre la imagen de hoy, el píxel más oscuro bajo la caja del `h1`:
+
+| Ancho de ventana | 1280 | 1440 |
+|---|---|---|
+| Peor contraste | **11,84:1** | **11,93:1** |
+
+> **`background-position` sigue en `center`, y no por inercia.** Se midieron
+> cinco posiciones verticales —0, 25, 50, 75 y 100 %— y las cinco dan entre
+> **11,6 y 12,4:1**, porque el título cae sobre el centro claro pase lo que
+> pase. Mover la Y no mejora nada, así que el cambio se queda en el nombre del
+> archivo.
 
 Una media de luminancia habría dicho las dos veces que no hacía falta velo,
 porque la imagen es clara *de media*. **Lo que sirve es muestrear el recorte
 real bajo cada caja de texto**, en cada ancho, porque `cover` cambia el encuadre
 con la proporción de la caja.
 
-> ⚠️ **Guarda: el 14,03 vale para los títulos de ahora**, que miden entre 151 y
-> 166 px —«Artículos», «Acerca de» (165,6), «Contacto»—. Medido, hay sitio hasta
-> unos **450 px** de título (12,71). A partir de ahí el texto empieza a invadir
-> los bordes oscuros:
+> ✅ **AQUÍ HABÍA UNA GUARDA DE 450 px Y LA IMAGEN NUEVA LA DISUELVE.** Decía que
+> a partir de ahí el título invadía los bordes oscuros: 12,71 a 450, **5,79 a
+> 600 y 2,86 a 800, que ya no cumplía**. Y se avisaba de que `sobre/` estuvo a
+> 32 px del límite cuando se titulaba «Sobre El Derecho Escrito» (417,8 px).
 >
-> | Ancho del título | Contraste sin velo |
-> |---|---|
-> | 160 px | 15,61 |
-> | 300 px | 13,29 |
-> | 450 px | **12,71** |
-> | 600 px | 5,79 |
-> | 800 px | **2,86** ✗ |
+> Medido a 1440 forzando títulos cada vez más anchos:
 >
-> Un título de sección más largo que 450 px obliga a volver a medir, o a
-> devolver el velo.
+> | Ancho del título | `fondo-cabecera` | **`fondo-paginas`** |
+> |---|---|---|
+> | 160 px | 14,64 | **11,81** |
+> | 450 px | 12,88 | **10,79** |
+> | 600 px | 12,88 | **8,15** |
+> | 800 px | 12,00 | **8,15** |
+> | 1000 px | 5,56 | **6,61** |
+> | 1200 px | **2,45** ✗ | **6,61** |
 >
-> **Y estuvo a punto de hacer falta.** `sobre/` se tituló un tiempo «Sobre El
-> Derecho Escrito», que medía **417,8 px**: dentro del límite, pero a solo 32 px
-> de él. Hoy dice «Acerca de» y baja a 165,6, con lo que el margen vuelve a ser
-> amplio. Si algún día se alarga otra vez, el número a vigilar es ese 450.
+> La nueva **no baja de 6,61 ni con un título de 1200 px**, más ancho que
+> cualquier rótulo imaginable. Así que el corte de 450 decae y `sobre/` ya no
+> está al borde de nada.
+>
+> **Lo que no decae es el método**: si algún día se cambia la imagen, hay que
+> volver a medir esta tabla. El número sale de muestrear, no de mirar.
+
+> ⚠️ **AL IMPRIMIR NO SALE, Y LA REGLA VIVE EN `styles.css`, NO EN
+> `imprimir.css`.** Las tres páginas con mancheta **no enlazan `imprimir.css`**:
+> esa hoja la cargan solo las páginas de artículo, para el PDF. Así que
+> `styles.css` es la única desde la que se puede apagar, y por eso tiene ahora
+> su primer y único `@media print`.
+>
+> **Y hace falta decirlo explícitamente.** Los navegadores no imprimen imágenes
+> de fondo por defecto, pero el usuario puede activar «gráficos de fondo», y
+> entonces el `@media (min-width: 901px)` casa igual —el medio `print` también
+> tiene ancho— y la banda saldría tintada.
 
 Se probó y se descartó encuadrar solo el centro claro con un zoom del 220 %:
 contrasta de sobra pero deja la banda casi blanca, sin veteado, ni libro, ni

@@ -1233,23 +1233,58 @@ body:has(.portada--video) .cabecera--con-linea {
    composicion —ni libro, ni balanza—. Seria peso para no ensenar la imagen.
 
    YA NO LLEVA VELO. Tuvo uno blanco al 45% mientras el texto iba a los lados:
-   los manchones oscuros de la imagen estan en los bordes izquierdo y derecho, y
-   ahi el titular se quedaba en 1,68:1. Con el titulo centrado cae sobre la zona
-   clara del centro y da 14,03:1 SIN velo ninguno, identico en los seis anchos
-   medidos porque esa franja es uniforme. El velo protegia a un texto que ya no
-   esta ahi, y quitandolo la imagen recupera el veteado y la balanza.
+   los manchones oscuros estaban en los bordes izquierdo y derecho, y ahi el
+   titular se quedaba en 1,68:1. Con el titulo centrado cae sobre la zona clara
+   del centro y no hace falta velo ninguno.
 
-   GUARDA: ese 14,03 vale para los titulos de ahora, que miden entre 151 y 157
-   px. Medido, hay sitio hasta unos 450 px de titulo (12,71). A 600 baja a 5,79
-   y a 800 se queda en 2,86 y ya no cumple. Un titulo de seccion mas largo que
-   eso obliga a volver a medir, o a devolver el velo. */
+   ⚠️ LA IMAGEN CAMBIO: era `fondo-cabecera.jpg` y ahora es `fondo-paginas.jpg`,
+   recortada a 4:1 exacto (2560x640) para esta banda. Misma familia visual que
+   el veteado de la portada, pero sin libro ni balanza.
+
+   `center` NO SE TOCO, y no por inercia: se midieron cinco posiciones
+   verticales y las cinco dan entre 11,6 y 12,4:1, porque el titulo cae sobre el
+   centro claro pase lo que pase. Mover la Y no mejora nada.
+
+   Contraste del h1 (--tinta sobre el pixel mas oscuro bajo su caja):
+
+     ancho de ventana   1280     1440
+     peor ratio        11,84    11,93
+
+   GUARDA, y con la imagen nueva es mucho mas holgada que antes. Medido a 1440
+   forzando titulos cada vez mas anchos:
+
+     titulo    160    450    600    800   1000   1200 px
+     nuevo   11,81  10,79   8,15   8,15   6,61   6,61
+     viejo   14,64  12,88  12,88  12,00   5,56   2,45  <- incumplia a 1200
+
+   O sea que el corte de 450 px que documentaba la imagen anterior ya no
+   aplica: esta no baja de 6,61 ni con un titulo de 1200 px, que es mas ancho
+   que cualquier rotulo imaginable. Aun asi, si algun dia se cambia la imagen
+   hay que volver a medir esta tabla. */
 
 @media (min-width: 901px) {
   .mancheta {
-    background-image: url(../img/fondo-cabecera.jpg);
+    background-image: url(../img/fondo-paginas.jpg);
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
+  }
+}
+
+/* ⚠️ AL IMPRIMIR NO SALE, Y HACE FALTA DECIRLO AQUI.
+
+   Las tres paginas con mancheta —articulos/, sobre/ y contacto/— NO enlazan
+   `imprimir.css`: esa hoja la cargan solo las paginas de articulo, para el PDF.
+   Asi que esta es la unica hoja desde la que se puede apagar.
+
+   Y hace falta apagarlo explicitamente: los navegadores no imprimen imagenes de
+   fondo POR DEFECTO, pero el usuario puede activar «graficos de fondo», y
+   entonces el `@media (min-width: 901px)` de arriba casa igual —el medio print
+   tambien tiene ancho— y la banda saldria tintada. Con esto no puede pasar. */
+
+@media print {
+  .mancheta {
+    background-image: none;
   }
 }
 
