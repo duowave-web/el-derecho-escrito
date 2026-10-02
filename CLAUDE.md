@@ -233,8 +233,64 @@ cabecera y lo que se escriba dentro se pierde en el siguiente build.
 > Todo lo que sigue describe **lo que el generador produce**, y hay que leerlo
 > si se toca `pintarIndice()` en `scripts/lib/plantilla.mjs`.
 
-Va en la **columna del artículo**, entre la entradilla y el primer apartado, y
-lo lleva todo artículo. La estructura es esta:
+#### El orden de la columna del artículo
+
+Lo monta `paginaArticulo()` en `scripts/lib/plantilla.mjs`, y es este:
+
+```
+.volver              ← Volver a los artículos
+.articulo__portada   la foto, 21:9
+.etiqueta--plana     la categoría, enlazada al filtro
+h1.articulo__titular el titular, con su filete en ::after
+.articulo__ficha     firma, fecha y minutos
+.entradilla
+nav.indice
+.articulo__cuerpo
+```
+
+> ⚠️ **LA FOTO ESTABA EN CUARTO LUGAR, DESPUÉS DE LA FICHA, Y SUBIÓ AL SEGUNDO.**
+> El orden era categoría → titular → ficha → **foto** → entradilla. Se cambió
+> por encargo, para que la página abra con la imagen.
+>
+> **Se movió en el marcado, no con `order` de CSS**, y eso no es un detalle de
+> gusto: el orden del DOM es el que oyen los lectores de pantalla y el que usa
+> el PDF. Un `order` los habría dejado leyendo el orden viejo mientras la
+> pantalla enseñaba el nuevo.
+
+> **El PDF no se entera, y conviene saber por qué antes de tocar nada aquí.**
+> `imprimir.css` oculta los cuatro bloques de cabecera —`.articulo__portada`,
+> `.articulo__principal > .etiqueta--plana`, `.articulo__titular` y
+> `.articulo__ficha`— porque **todos ellos se repiten en la portada del PDF**,
+> que inyecta `pdf.mjs`. Estén en el orden que estén, en papel no se ven.
+>
+> Verificado generando el PDF antes y después del reorden: **byte a byte
+> idéntico**. Ahora esa comprobación significa algo, porque el PDF dejó de
+> llevar la hora del reloj dentro.
+>
+> La consecuencia para el futuro: **el orden de la portada del PDF es
+> independiente del de la web** y vive en `portada()`, en `pdf.mjs`. Cambiar uno
+> no cambia el otro, y no hay nada que los mantenga sincronizados.
+
+> **Ningún espaciado hubo que tocarlo**, y es porque todos los huecos los ponen
+> márgenes propios de cada bloque, no selectores de hermano. Comprobado: no hay
+> ni un `+` ni un `~` en el CSS de esta columna. Medido después del cambio, en
+> 1280 y en 375, idéntico en los dos:
+>
+> | Hueco | px |
+> |---|---|
+> | `.volver` → foto | 24 |
+> | foto → categoría | 32 |
+> | categoría → `h1` | 6 |
+> | `h1` → ficha | 22 |
+> | ficha → entradilla | 28 |
+> | entradilla → índice | 36 |
+>
+> Los 32 de debajo de la foto y los 28 de debajo de la ficha ya existían: antes
+> separaban la foto de la entradilla y la ficha de la foto. Al intercambiarse
+> los bloques cada margen se encontró un vecino distinto y el ritmo salió solo.
+
+El índice va en la **columna del artículo**, entre la entradilla y el primer
+apartado, y lo lleva todo artículo. La estructura es esta:
 
 ```html
 <nav class="indice" aria-labelledby="indice-titulo">
@@ -1836,9 +1892,26 @@ Inter para lo que se consulta.**
 > mira, arriba, con su ficha y su foto. Antes eran lo único de esa columna que
 > no estaba en la familia de lectura.
 >
-> **Ópticamente no se comparan nunca.** Entre el `h1` y el primer `h2` hay
+> ⚠️ **AQUÍ HABÍA UN TERCER ARGUMENTO Y LA MEDICIÓN YA NO LO SOSTIENE.** Decía:
+> «**Ópticamente no se comparan nunca.** Entre el `h1` y el primer `h2` hay
 > **621 px medidos**, con la foto 21:9 de 309 px y la entradilla de 163 en
-> medio. No existe un momento de la lectura en que los dos estén a la vista.
+> medio. No existe un momento de la lectura en que los dos estén a la vista.»
+>
+> **La foto ya no está en medio**: subió por encima del `h1` al reordenar la
+> cabecera. Con ella se fueron 341 px —309 de foto más sus 32 de margen—, así
+> que la distancia bajó de **1141 px a 800**. Medido a 1280 de ancho sobre el
+> artículo de MASC; los 621 de antes eran del artículo de ejemplo, que ya no
+> existe.
+>
+> Y 800 px **sí caben en una pantalla**: con el `h1` arriba del todo, el primer
+> `h2` cae justo en el borde de un viewport de 900. O sea que ahora **se pueden
+> ver los dos a la vez**, que es exactamente lo que este párrafo negaba.
+>
+> **Los otros dos argumentos siguen en pie** —los dos son serif, y los epígrafes
+> son «lo que se lee»— y son los que sostienen la decisión. Este se retira en
+> vez de corregirle el número, porque el número nuevo dice lo contrario que el
+> viejo. Si alguien quiere reabrir la elección de familia, que lo haga por los
+> dos primeros, no por este.
 
 > **Los tamaños no bajan aunque Source Serif pese más, y es deliberado.** El
 > mismo texto pasa de **504,17 a 618,27 px de ancho, un +22,6 %**, y en pantalla

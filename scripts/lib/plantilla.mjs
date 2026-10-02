@@ -449,6 +449,12 @@ ${jsonLd(art)}
             <span class="volver__flecha" aria-hidden="true">&larr;</span>Volver a los artículos
           </a>
 
+          <figure class="articulo__portada">
+            <img src="./${art.imagen.archivo}"
+                 alt="${escapar(art.imagen.alt)}"
+                 width="1600" height="1066">
+          </figure>
+
           <p class="etiqueta etiqueta--plana">
             <a href="../../articulos/?categoria=${clave(art.categoria)}"><span class="oculto">Ver artículos de </span>${escapar(art.categoriaTexto)}</a>
           </p>
@@ -460,12 +466,6 @@ ${jsonLd(art)}
             <time datetime="${art.fechaISO}">${art.fechaLarga}</time>
             <span class="lectura">${art.minutos} min de lectura</span>
           </div>
-
-          <figure class="articulo__portada">
-            <img src="./${art.imagen.archivo}"
-                 alt="${escapar(art.imagen.alt)}"
-                 width="1600" height="1066">
-          </figure>
 
           <p class="entradilla">${resolverLlamadas(art.entradilla)}</p>
 
