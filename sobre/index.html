@@ -185,12 +185,6 @@
            regla que se aplicó al reordenar la cabecera del artículo: el orden
            del DOM es el que oyen los lectores de pantalla.
 
-           ⚠️ AQUÍ IRÍA EL BOTÓN «Descargar CV» del PDF, debajo del texto. NO
-           ESTÁ PORQUE NO HAY ARCHIVO: no existe ningún CV en el repositorio, y
-           un botón apuntando a un PDF inexistente es un 404. Cuando llegue el
-           archivo se añade aquí, con .boton--contorno, `download` y el tipo y
-           el peso.
-
            ⚠️ CON ESTO LA AUTORÍA SE REPITE EN UN SITIO MÁS. El nombre del autor
            está dentro del nombre del archivo, así que al cambiar de autor hay
            que renombrarlo y tocar el src de los DOS sitios: aquí y el lateral
@@ -202,6 +196,26 @@
           <p>Actualmente ejerce como abogado en el Departamento de Derecho Procesal de <strong>Sterling Abogados</strong>. Su área de especialización es el Derecho Administrativo y el Urbanismo. Está colegiado en el Ilustre Colegio de la Abogacía de Madrid y su práctica profesional comprende procedimientos administrativos y judiciales, litigación contencioso-administrativa y asuntos relacionados con licencias, sanciones, urbanismo, expropiaciones y responsabilidad patrimonial.</p>
 
           <p>Desde esta doble perspectiva académica y profesional, escribe en <em>El Derecho Escrito</em> sobre los fundamentos de estas disciplinas, la interpretación de sus fuentes y los problemas que plantea su aplicación práctica.</p>
+
+          <!-- El formato y el peso van en .oculto y no a la vista: el PDF del
+               cliente pone «Descargar CV» a secas, y el sitio ya resuelve así
+               el texto que solo necesita quien no ve la pantalla —es el mismo
+               recurso que el «Ver artículos de » de las categorías—. El nombre
+               accesible queda «Descargar CV (PDF, 63 KB)».
+
+               ⚠️ EL PESO ESTÁ ESCRITO A MANO. Si el cliente actualiza el CV hay
+               que volver a mirarlo: nada lo comprueba y un número desfasado no
+               da ningún error. Está anotado en CLAUDE.md.
+
+               Ruta relativa, como todo el sitio: sobre/ está a un nivel de la
+               raíz. No hay <base> ni rutas absolutas que la rompan, así que
+               funciona igual en el subdirectorio de GitHub Pages y en el
+               dominio final. -->
+          <p>
+            <a class="boton boton--contorno" href="../documentos/CV-Juan-Contera-Miranda.pdf" download>
+              Descargar CV<span class="oculto"> (PDF, 63 KB)</span>
+            </a>
+          </p>
         </div>
 
         <div class="autor__retrato sobre__retrato">

@@ -363,6 +363,23 @@
             <p class="autor__nombre">Juan Contera Miranda</p>
             <p class="autor__bio">Abogado procesalista especializado en Derecho Administrativo y Urbanismo</p>
             <a class="autor__enlace" href="../../sobre/">Ver perfil &rarr;</a>
+
+            <!-- ⚠️ EL SEGUNDO PUNTO DE DESCARGA DEL CV, y el otro está en
+                 sobre/. Los dos apuntan al MISMO archivo, así que sustituirlo
+                 es sustituir uno solo; lo que sí está escrito dos veces es el
+                 PESO, que va a mano en los dos sitios. Está anotado en
+                 CLAUDE.md.
+
+                 Dos niveles de ruta, no uno: el artículo vive en
+                 articulos/<slug>/ y sobre/ cuelga de la raíz.
+
+                 El formato y el peso van en .oculto, como en sobre/: el nombre
+                 accesible queda «Descargar CV (PDF, 63 KB)». -->
+            <p class="autor__cv">
+              <a class="boton boton--contorno" href="../../documentos/CV-Juan-Contera-Miranda.pdf" download>
+                Descargar CV<span class="oculto"> (PDF, 63 KB)</span>
+              </a>
+            </p>
           </div>
 
           <div class="lateral__bloque">

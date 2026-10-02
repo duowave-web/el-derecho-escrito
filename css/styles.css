@@ -4364,6 +4364,20 @@ body:has(.progreso) .cabecera {
   text-transform: uppercase;
 }
 
+/* Descarga del CV en el lateral. Lo unico que declara es la COLOCACION: el
+   boton lo viste `.boton--contorno` entero y aqui no se le toca ni un color.
+
+   Hacen falta los dos margenes, medidos: sin el de arriba el boton quedaba a
+   5px de «Ver perfil →» y se leia pegado, y el de abajo que traia el <p> por
+   defecto —22px— sobraba, porque el bloque ya cierra con su propio relleno.
+
+   18 es el mismo hueco que deja el retrato encima del nombre, asi que la
+   columna mantiene su ritmo. */
+
+.autor__cv {
+  margin: 18px 0 0;
+}
+
 /* Aqui vivia .indice--lateral, el indice de la columna de apoyo, con sus siete
    reglas. Se retira entero: el indice se ha mudado a la columna del articulo y
    no queda ningun uso. Las filas con filete que traia este modificador son las

@@ -3094,6 +3094,53 @@ el ancho de lectura —820— dos columnas quedarían a 380 y el texto se parte 
 > **600**. Uno parte una retícula de texto y el otro despega una foto: no hay
 > motivo para que cedan a la vez.
 
+### El CV vive en `documentos/` y se descarga desde DOS sitios
+
+```
+documentos/CV-Juan-Contera-Miranda.pdf      1 página · 63 KB
+```
+
+Es la única carpeta de descargas del sitio y hoy solo tiene ese archivo. **El
+nombre es parte de la URL**: cambiarlo rompe cualquier enlace que se haya
+compartido, así que al actualizar el CV se **sobrescribe el archivo**, no se
+sube uno con otro nombre.
+
+| Dónde | Ruta | Qué lo pinta |
+|---|---|---|
+| `sobre/`, bajo la biografía | `../documentos/…` | a mano, en `sobre/index.html` |
+| Lateral de cada artículo, bajo «Ver perfil →» | `../../documentos/…` | `plantilla.mjs`, bloque `.lateral__bloque.autor` |
+
+Los dos son el mismo `.boton--contorno` con `download`, sin una sola
+declaración de color propia. El segundo lo escribe el generador, así que **al
+tocarlo hay que regenerar**.
+
+> ⚠️ **EL PESO ESTÁ ESCRITO A MANO EN LOS DOS SITIOS, y nada lo comprueba.** Va
+> en un `<span class="oculto"> (PDF, 63 KB)</span>`, de modo que el nombre
+> accesible del enlace es «Descargar CV (PDF, 63 KB)» y lo que se ve es
+> «Descargar CV» a secas, como en el PDF del cliente.
+>
+> **Al sustituir el archivo hay que volver a mirar el número en los dos.** Un
+> peso desfasado no da ningún error y no se ve en pantalla:
+>
+> ```sh
+> grep -rn 'PDF, .. KB' sobre/index.html scripts/lib/plantilla.mjs
+> ```
+
+> **Las rutas son relativas, como todo el sitio.** Verificado que ninguna de las
+> dos empieza por `/` y que las dos resuelven a `/documentos/…`: así funcionan
+> igual en el subdirectorio de GitHub Pages y en `elderechoescrito.es`. No hay
+> `<base>` en ninguna página.
+
+> **El texto visible no lleva el formato**, y es deliberado: el PDF del cliente
+> pone «Descargar CV» y nada más. El formato y el peso van donde el sitio ya
+> pone lo que solo necesita quien no ve la pantalla, el mismo recurso que el
+> «Ver artículos de » de las categorías.
+
+> ⚠️ **NO LLEVA ICONO, al contrario que «Descargar PDF» del artículo.** Aquel
+> vive en `.compartir`, una lista de cuatro acciones donde el icono distingue
+> una de otra; este es un botón suelto y un icono ahí sería adorno. Si algún día
+> se le pone, va por `mask` en `::before` como los demás, no como `<svg>`.
+
 ### Texto sobre imagen: hay que medir dónde cae, no la media
 
 La mancheta es una **banda a sangre de 170 px** con `img/fondo-paginas.jpg` de
@@ -3432,11 +3479,8 @@ node r.mjs img/logo.svg /tmp/logo-w512.png 512
   lectura —entradilla suelta, «Contenido» y «Sobre el autor»— y hoy son **dos
   filas**: «Enfoque» y «Contenido» a la par, y «Sobre el autor» debajo. Está
   descrito en su propia sección, más abajo.
-- **Falta el CV.** La estructura nueva de `sobre/` prevé un botón «Descargar
-  CV» debajo de la biografía, y **no está puesto porque no hay archivo**: en el
-  repositorio no existe ningún CV. El sitio donde va está marcado con un
-  comentario en `sobre/index.html`. Cuando llegue el PDF se añade ahí, con
-  `.boton--contorno`, `download` y el tipo y el peso.
+- ~~Falta el CV.~~ **RESUELTO**: está en `documentos/` y se descarga desde dos
+  sitios. Tiene su propia sección, más abajo.
 - ~~La web no dice en qué materias ejerce~~ **RESUELTO, y con ello se cierra la
   contradicción que había aquí.** Se nombran en **tres** sitios: el titular del
   hero, la apertura de `sobre/` y su apartado «Contenido». Son Derecho
