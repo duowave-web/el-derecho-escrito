@@ -1730,32 +1730,76 @@ body:has(.portada--video) .cabecera--con-linea {
   font-weight: 400;
 }
 
-/* El enlace de accion del destacado. En acento y sin subrayado: la flecha ya
-   dice que lleva a algun sitio, y el subrayado competiria con el filete del
-   rotulo que tiene encima.
+/* LOS DOS ENLACES DE ACCION DE LA PORTADA, y comparten estilo a proposito:
+   «Leer articulo» en el destacado y «Ver todos los articulos» en el encabezado
+   de «Ultimos articulos». Hacen lo mismo —sacar de la portada hacia un articulo
+   o hacia el listado— asi que se ven igual. Si se toca uno, se toca el otro: por
+   eso las reglas van agrupadas y no en dos sitios del archivo.
+
+   En acento y sin subrayado: la flecha ya dice que lleva a algun sitio, y el
+   subrayado competiria con el filete del rotulo que tienen encima.
 
    La flecha va en un <span> propio y no suelta en el texto para tener elemento
-   que animar, igual que en .boton--contorno. Y se mueve con transform y no con
-   margin, que dispararia reflow en cada hover. */
+   que animar. Y se mueve con transform y no con margin, que dispararia reflow
+   en cada hover.
 
-.inicio .destacado__leer {
+   ⚠️ «VER TODOS LOS ARTICULOS» ERA UN .boton--contorno. Se le quitaron las dos
+   clases de boton, no se redefinieron: .boton--contorno lo siguen usando los
+   botones de filtro y el del desplegable de etiquetas en articulos/, y tocarlo
+   los habria cambiado a los dos.
+
+   ⚠️ DE AQUEL BOTON HAY QUE CONSERVAR EL ALTO DE 44px, Y ESO NO SE VE. Era el
+   minimo de area de pulsacion y lo ponia su min-height; sin el, el enlace se
+   queda en la altura de su linea —unos 17px— y en un movil es un blanco
+   incomodo de acertar. Lo repone .lista__enlace con inline-flex y min-height,
+   que no pintan nada visible y mantienen la diana.
+
+   El resto de la tipografia NO se repone aqui: el cuerpo, el peso, las versales
+   y el tracking ya los pone .lista__mas--enlinea en el <p> de fuera, con los
+   mismos valores que declaraba .boton--contorno. Por eso quitar las clases no
+   cambia ni una letra. */
+
+.inicio .destacado__leer,
+.inicio .lista__enlace {
   color: var(--acento);
   font-weight: 600;
 }
 
-.inicio .destacado__leer:hover {
+.inicio .lista__enlace {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
+
+.inicio .destacado__leer:hover,
+.inicio .lista__enlace:hover {
   text-decoration: none;
   color: var(--acento-oscuro);
 }
 
-.inicio .destacado__flecha {
+.inicio .destacado__flecha,
+.inicio .lista__flecha {
   display: inline-block;
   margin-left: 4px;
   transition: transform 220ms ease;
 }
 
-.inicio .destacado__leer:hover .destacado__flecha {
+.inicio .destacado__leer:hover .destacado__flecha,
+.inicio .lista__enlace:hover .lista__flecha {
   transform: translateX(4px);
+}
+
+/* ⚠️ EL ANILLO VA EN --acento Y NO EN EL --tinta QUE USABA .boton--contorno, y
+   el cambio no es un descuido: alli el anillo era de tinta porque el boton YA
+   era de acento —filete en reposo, relleno en hover— y uno del mismo color
+   habria quedado pegado a su propio borde. Sin filete esa razon decae, y el
+   analogo real pasa a ser .volver, el otro enlace de texto con flecha del
+   sitio, que usa --acento con el mismo offset y el mismo radio. */
+
+.inicio .lista__enlace:focus-visible {
+  outline: 2px solid var(--acento);
+  outline-offset: 3px;
+  border-radius: 2px;
 }
 
 /* ⚠️ EN ESTRECHO EL ENLACE BAJA DE FILA A PROPOSITO, y con el se va la barra
@@ -2596,14 +2640,24 @@ main > .lista:last-child {
 /* Con prefers-reduced-motion se va el zoom y se queda el color. Lo que informa
    es que el titular cambie de tono, no que la foto se mueva. */
 
+/* ⚠️ AQUI SE APAGA TAMBIEN EL DESPLAZAMIENTO DE LAS FLECHAS, Y ANTES NO.
+   El bloque quitaba la transicion pero dejaba el `transform: translateX(4px)`
+   del hover: sin transicion no se anima, pero la flecha SALTA igual 4px. Con
+   reduced-motion eso es justo lo que sobra —y .boton--contorno, el boton que
+   «Ver todos los articulos» acaba de dejar de ser, ya lo apagaba entero—. Al
+   compartir estilo los dos enlaces de accion, se igualan por el mas estricto. */
+
 @media (prefers-reduced-motion: reduce) {
   .tarjeta--abierta .tarjeta__imagen img,
   .inicio .destacado__imagen img,
-  .inicio .destacado__flecha {
+  .inicio .destacado__flecha,
+  .inicio .lista__flecha {
     transition: none;
   }
 
-  .tarjeta--abierta:hover .tarjeta__imagen img {
+  .tarjeta--abierta:hover .tarjeta__imagen img,
+  .inicio .destacado__leer:hover .destacado__flecha,
+  .inicio .lista__enlace:hover .lista__flecha {
     transform: none;
   }
 }

@@ -2617,7 +2617,31 @@ cuarta conviene mirar esta tabla, porque las que hay ya cubren casi todo:
 |---|---|---|---|
 | `.boton` | filete `--borde`, fondo `--papel`, texto `--tinta` | filete y texto a `--acento` | acción secundaria |
 | `.boton--principal` | relleno `--acento`, texto blanco | relleno `--acento-oscuro` | acción principal |
-| `.boton--contorno` | filete y texto `--acento`, **sin fondo** | relleno `--acento`, texto `--papel` | enlace de sección que quiere peso de botón |
+| `.boton--contorno` | filete y texto `--acento`, **sin fondo** | relleno `--acento`, texto `--papel` | **botones de filtro y desplegable de `articulos/`** |
+
+> ⚠️ **LA COLUMNA «PARA QUÉ» DE `--contorno` DECÍA «enlace de sección que quiere
+> peso de botón», Y ESE ERA «VER TODOS LOS ARTÍCULOS», QUE YA NO ES UN BOTÓN.**
+> Pasó a enlace de texto con flecha; está abajo, en su propia sección.
+>
+> Hoy `--contorno` solo lo llevan **controles de verdad**: los cuatro botones de
+> categoría y el del desplegable de etiquetas, todos en `articulos/index.html` y
+> todos `<button>`. Es más coherente de lo que era —un modificador de botón que
+> solo visten botones— pero conviene saberlo antes de tocarlo: **cualquier
+> cambio ahí se ve en los filtros, no en la portada.**
+
+> ⚠️ **`.boton__flecha` SE QUEDÓ SIN USO Y NO SE HA BORRADO.** Era la flecha de
+> «Ver todos los artículos», que era su único portador. Siguen en `styles.css`
+> sus dos reglas —`.boton__flecha` y `.boton--contorno:hover .boton__flecha`— más
+> las dos del bloque de `prefers-reduced-motion`.
+>
+> Se dejan a propósito, no por descuido: retirarlas es una limpieza aparte y no
+> entraba en el encargo de aquel cambio. **Quien las borre que compruebe antes
+> que sigue sin haber ningún `.boton__flecha` en el HTML ni en la plantilla**, y
+> que no las necesita ningún botón nuevo.
+>
+> ```sh
+> grep -rn 'boton__flecha' --include='*.html' --include='*.mjs' .
+> ```
 
 Las tres comparten el `border-radius` de 4 px de `.boton`. **Ninguna declara el
 suyo**, y conviene que siga así: el canto es de la familia, no de la variante.
@@ -2647,6 +2671,61 @@ Cae fuera del botón, sobre el blanco de la página, donde `--tinta` da 16,67:1.
 
 Se distingue del hover **por naturaleza y no por color**: el hover rellena, el
 foco dibuja un anillo por fuera. Pueden darse a la vez sin taparse.
+
+### Los enlaces de acción de la portada NO son botones
+
+Son dos y **comparten estilo a propósito**, con las reglas agrupadas en un solo
+bloque de `styles.css`. Si se toca uno, se toca el otro:
+
+| Enlace | Dónde | Clases |
+|---|---|---|
+| «Leer artículo →» | el destacado | `.destacado__leer` + `.destacado__flecha` |
+| «Ver todos los artículos →» | encabezado de «Últimos artículos» | `.lista__enlace` + `.lista__flecha` |
+
+Acento, sin fondo ni filete, sin subrayado, y la flecha en un `<span>` propio
+que se desplaza 4 px al pasar el ratón. **El subrayado se omite a propósito**:
+la flecha ya dice que lleva a algún sitio, y competiría con el filete del rótulo
+que tienen encima.
+
+> ⚠️ **«VER TODOS LOS ARTÍCULOS» ERA UN `.boton--contorno`**, y el cambio fue
+> por encargo para que se pareciera al mockup. **No se le devuelven las clases**:
+> el encabezado tiene un solo rótulo enfrente y un botón ahí pesaba más que la
+> sección que anuncia.
+>
+> Se resolvió **quitándole las dos clases, no redefiniéndolas**. Es la parte que
+> más fácil se hace mal: `.boton--contorno` lo siguen usando los filtros de
+> `articulos/`, así que tocar esa clase para «arreglar la portada» los cambia a
+> los dos.
+
+> ⚠️ **EL ALTO DE 44 px HAY QUE CONSERVARLO Y NO SE VE.** Lo traía el
+> `min-height` de `.boton--contorno` y es el mínimo de área de pulsación. Sin él
+> el enlace se queda en la altura de su línea —unos 17 px— y en un móvil es un
+> blanco incómodo de acertar; en pantalla no se nota nada, porque el texto se ve
+> igual.
+>
+> Lo repone `.lista__enlace` con `inline-flex` y `min-height: 44px`, que no
+> pintan nada visible. **Quien lo simplifique a un `<a>` pelado porque «no hace
+> falta nada más» rompe la diana sin que nada avise.**
+
+> **La tipografía NO se repone en el enlace**, y por eso quitar las clases no
+> cambió ni una letra: el cuerpo de 12, el peso 600, las versales y el tracking
+> de `0.06em` ya los pone `.lista__mas--enlinea` en el `<p>` de fuera, con
+> exactamente los mismos valores que declaraba `.boton--contorno`.
+
+> ⚠️ **El anillo de foco pasó de `--tinta` a `--acento`, y es coherente.** El
+> `--tinta` de `.boton--contorno` estaba razonado **porque el botón ya era de
+> acento** —filete en reposo, relleno en hover— y un anillo del mismo color
+> habría quedado pegado a su propio borde. Sin filete esa razón decae, y el
+> análogo real pasa a ser **`.volver`**, el otro enlace de texto con flecha del
+> sitio, que usa `--acento` con el mismo `outline-offset: 3px` y el mismo
+> `border-radius: 2px`.
+
+> **Con `prefers-reduced-motion` la flecha no se mueve en absoluto.** El bloque
+> quitaba la transición pero dejaba el `transform`, así que la flecha **saltaba**
+> los 4 px sin animarse — que es justo lo que sobra con esa preferencia.
+> `.boton--contorno` ya lo apagaba entero, así que al compartir estilo los dos
+> enlaces se igualaron por el más estricto. **Afecta también a «Leer artículo»**,
+> que antes sí saltaba.
 
 ## Fotografía
 
