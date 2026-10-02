@@ -80,9 +80,16 @@ export const CATEGORIAS = {
 
    Los dos son el doble de su caja, que es lo que pide una pantalla densa. Si
    alguna de las dos cajas cambia de tamaño en el CSS, hay que regenerar su
-   archivo: el procedimiento está en CLAUDE.md, en «Fotografía». */
+   archivo: el procedimiento está en CLAUDE.md, en «Fotografía».
 
-const AUTOR = {
+   ⚠️ SE EXPORTA PORQUE `pdf.mjs` TAMBIÉN ESCRIBE EL NOMBRE, en dos sitios: la
+   ficha del bloque de título y la cabecera corriente de cada página. Estuvo
+   ahí en literales, así que cambiar de autor dejaba el PDF firmado por el
+   anterior —y eso **no se ve en pantalla**, solo abriendo el documento—.
+   Importarlo de aquí es lo que hace que «cambiar de autor es tocar este bloque
+   y regenerar» siga siendo verdad. */
+
+export const AUTOR = {
   nombre: 'Juan Contera Miranda',
   cargo: 'Abogado',
   retrato: 'img/juanconteramiranda-264x352.jpg',

@@ -876,23 +876,20 @@ body:has(.portada--video) .cabecera--con-linea {
   outline-offset: 3px;
 }
 
-.boton__flecha {
-  display: inline-block;
-  transition: transform 220ms cubic-bezier(0.2, 0.7, 0.3, 1);
-}
+/* ⚠️ AQUÍ VIVÍA `.boton__flecha`, LA FLECHA DEL BOTÓN, Y SE RETIRÓ CON SU ÚNICO
+   PORTADOR. Lo era «Ver todos los artículos» de la portada, que dejó de ser un
+   botón para pasar a enlace de texto. Eran cuatro reglas: la flecha, su
+   desplazamiento de 4px en hover y las dos del bloque de abajo.
 
-.boton--contorno:hover .boton__flecha {
-  transform: translateX(4px);
-}
+   La flecha que hay hoy en la portada NO es esta: son `.lista__flecha` y
+   `.destacado__flecha`, que viven en su propio bloque y comparten estilo.
+
+   Lo que SÍ se queda es el `transition: none` de `.boton--contorno`, porque el
+   botón sigue animando su relleno y su texto. */
 
 @media (prefers-reduced-motion: reduce) {
-  .boton--contorno,
-  .boton__flecha {
+  .boton--contorno {
     transition: none;
-  }
-
-  .boton--contorno:hover .boton__flecha {
-    transform: none;
   }
 }
 
@@ -1718,6 +1715,11 @@ body:has(.portada--video) .cabecera--con-linea {
    encima, asi que decia dos veces lo mismo. Con el se fue la necesidad de
    distinguirlos, porque ya no hay dos.
 
+   ⚠️ Y CON EL SE VA AHORA `.destacado__antetitulo-sep`, el punto medio que los
+   separaba. Se conservo una pasada por si el rotulo volvia; no ha vuelto y no
+   hay nada que separar, asi que se retira. Si alguien repone un rotulo fijo,
+   que reponga tambien su separador: era `opacity: .55` sobre este mismo color.
+
    El flex y el gap se quedan aunque hoy solo haya un hijo: no estorban, y son
    lo que mantiene la fila alineada si algun dia vuelve a haber dos piezas. */
 
@@ -1737,10 +1739,6 @@ body:has(.portada--video) .cabecera--con-linea {
 
 .inicio .destacado__antetitulo a {
   color: inherit;
-}
-
-.inicio .destacado__antetitulo-sep {
-  opacity: 0.55;
 }
 
 /* Tres lineas y el texto completo sigue en el HTML. line-clamp necesita las
@@ -4449,14 +4447,14 @@ body:has(.progreso) .cabecera {
    margen propio: el `margin-top: 48px` de su <h2> ya pone la separacion, el
    mismo hueco que separa los dos h2 de arriba de lo que tengan encima. */
 
-/* El cierre —aviso legal y botones— se topa en el ancho de lectura. El resto de
-   la pagina va a 1200 porque son dos columnas y una fila con foto, pero el
-   aviso es texto de 13px y a 1152 la linea se hacia incomoda. El <hr> queda
-   fuera a proposito: cruza entero porque separa la pagina, no el parrafo. */
+/* ⚠️ AQUI VIVIA `.sobre__cierre` Y SE RETIRA CON SU UNICO PORTADOR. Topaba en
+   720 el cierre de la pagina —aviso legal y los dos botones de salida—, que se
+   quito al reproducir el PDF del cliente tal cual. El <hr> que lo precedia se
+   fue con el.
 
-.sobre__cierre {
-  max-width: 720px;
-}
+   Si alguna vez vuelve un cierre a esta pagina, el argumento sigue valiendo: el
+   resto va a 1200 porque son dos columnas y una fila con foto, pero un texto de
+   13px a 1152 da una linea incomoda de leer. */
 
 /* ⚠️ SE APILAN EN 748, UN CORTE QUE YA EXISTE —el de las tarjetas— y no en el
    600 que usa `.sobre__autor` aqui mismo. Medido: a 748 el contenedor son 700 y

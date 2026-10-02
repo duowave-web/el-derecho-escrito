@@ -541,12 +541,8 @@ La regla que aplica `scripts/build.mjs`:
 > **No hay que reponerlo** creyendo que al destacado le falta un rótulo: el de
 > la sección hace ese trabajo.
 >
-> ⚠️ **Con él se quedó sin uso `.destacado__antetitulo-sep`**, una regla de una
-> línea en `styles.css`. **No se ha borrado**, y era su único portador:
->
-> ```sh
-> grep -rn 'destacado__antetitulo-sep' --include='*.html' --include='*.mjs' .
-> ```
+> ✅ **Con él se quedó sin uso `.destacado__antetitulo-sep`, y ESA REGLA YA SE
+> HA BORRADO** en la limpieza del lote. Aquí decía «no se ha borrado».
 >
 > Y decae lo que razonaba el comentario de esa regla —que el rótulo y la
 > categoría iban los dos en `--acento` y que solo la segunda se subrayaba al
@@ -707,10 +703,15 @@ Comprobado con hit-testing sobre una malla de 80 puntos por tarjeta: **240 de
 >
 > Se probaron las otras combinaciones y ninguna funciona, porque en `img/` solo
 > hay **dos** fotos usables —`damajusticia.jpg` y `portada-poster.jpg`; la
-> tercera, `fondo-cabecera.jpg`, es un lavado casi blanco que en un hueco de
-> 365×205 se lee como una imagen que no ha cargado, y la cuarta es el retrato
-> del autor—. Con dos fotos para tres tarjetas, **cualquier reparto deja una
-> desparejada o dos gemelas contiguas**:
+> tercera que se probó, `fondo-cabecera.jpg`, era un lavado casi blanco que en un
+> hueco de 365×205 se leía como una imagen que no ha cargado, y la cuarta es el
+> retrato del autor—. Con dos fotos para tres tarjetas, **cualquier reparto deja
+> una desparejada o dos gemelas contiguas**:
+>
+> ⚠️ **`fondo-cabecera.jpg` ya ni existe**: se borró en la limpieza del lote, al
+> quedarse sin uso cuando la mancheta pasó a `fondo-paginas.jpg`. Así que hoy no
+> hay ni siquiera una tercera foto que probar — el recuento de «dos usables»
+> sigue siendo el bueno, por otro motivo.
 >
 > | Reparto | Problema |
 > |---|---|
@@ -1771,22 +1772,35 @@ reglas.
 > definitivos del cliente traen el nombre y una biografía propia —colegio,
 > despacho, formación—, así que el nombre es real.
 >
-> ⚠️ **ESTE AVISO DECÍA QUE LA BIO DEL LATERAL SEGUÍA SIENDO LA DE LA MAQUETA**
-> —«Abogado especializado en Derecho Administrativo, Urbanismo y Jurisdicción
-> Contencioso-Administrativa»— y que había que pedirle una corta al cliente. Ya
-> no: en la pasada de SEO se escribió una a partir de los tres párrafos de
-> `sobre/` y está aprobada:
+> ⚠️ **ESTE AVISO DABA POR APROBADA UNA BIO QUE YA NO ES LA QUE SE PUBLICA.**
+> Decía, y citaba textualmente:
 >
-> > Abogado colegiado en Madrid. Ejerce en el Departamento de Derecho Procesal
+> > ~~Abogado colegiado en Madrid. Ejerce en el Departamento de Derecho Procesal
 > > de Sterling Abogados: litigación contencioso-administrativa, urbanismo y
-> > expropiaciones.
+> > expropiaciones.~~
+>
+> **La que hay hoy en `AUTOR.bio` es más corta y no menciona ni el colegio ni el
+> despacho:**
+>
+> > Abogado procesalista especializado en Derecho Administrativo y Urbanismo
+>
+> Es el texto que sale en los dos sitios —`.autor__bio` del lateral y el
+> `author.description` del JSON-LD—, así que **lo que manda es la constante, no
+> esta cita**. Si vuelven a divergir, la de aquí es la que está mal.
+>
+> ⚠️ **Y las mayúsculas de «Derecho Administrativo» y «Urbanismo» son
+> intencionadas**, igual que en el hero y por el mismo encargo. Está anotado
+> sobre la propia constante. **No se corrigen a minúscula.**
 >
 > Vive en la constante `AUTOR` de `scripts/lib/plantilla.mjs`, con el nombre, el
-> cargo y la ruta del retrato. **No hay ninguna copia**: estuvo escrita dos
-> veces —`.autor__bio` y el `author.description` del JSON-LD— y se extrajo,
+> cargo y las rutas de los dos retratos. **No hay ninguna copia**: estuvo escrita
+> dos veces —`.autor__bio` y el `author.description` del JSON-LD— y se extrajo,
 > porque era exactamente «la incoherencia más fácil de dejarse» que esta sección
 > lleva avisando desde el principio. Comprobado que la salida no cambió ni un
 > byte al hacerlo.
+>
+> ⚠️ **Y desde la limpieza del lote, `AUTOR` SE EXPORTA**, porque `pdf.mjs`
+> también escribía el nombre a mano. Está en los puntos de abajo.
 >
 > La de `sobre/` es la larga, de tres párrafos, y esa es a mano.
 
@@ -1904,6 +1918,28 @@ La lista de los ocho, que hoy escribe la plantilla y hay que revisar si se toca:
    artículo en pantalla grande puede cambiar los otros siete, darlo por hecho y
    dejarse este sin tocar. No es una copia del punto 5: es un `<p>` distinto,
    con su propio enlace a `sobre/`.
+
+**En el PDF**, que no está en el HTML y por eso se escapaba del todo:
+
+9. La **ficha del bloque de título**, en `bloqueTitulo()` de `scripts/pdf.mjs`.
+10. La **cabecera corriente** de cada página, en `cabecera()` del mismo archivo.
+
+> ⚠️ **LOS DOS ESTUVIERON EN LITERALES Y YA NO.** Esta lista decía «ocho sitios»
+> y eran diez: `pdf.mjs` escribía «Juan Contera Miranda» a mano, así que cambiar
+> de autor en `plantilla.mjs` y regenerar dejaba **el PDF firmado por el
+> anterior**. No lo veía nadie: la web salía bien y el documento no, y hay que
+> abrirlo para enterarse.
+>
+> Hoy `AUTOR` **se exporta** de `plantilla.mjs` y `pdf.mjs` lo importa, así que
+> los diez salen de la misma constante. Verificado que el PDF no cambió ni un
+> byte al hacerlo.
+>
+> **Esos dos NO salen en los `grep` de abajo**, que buscan dentro de
+> `articulos/`. Para los diez a la vez:
+>
+> ```sh
+> grep -rn 'AUTOR\.nombre\|Juan Contera Miranda' scripts/ articulos/ sobre/
+> ```
 
 > ⚠️ **AHORA SÍ HAY UN ARCHIVO DE PLANTILLA, Y ESTA SECCIÓN DECÍA QUE NO LO
 > HABÍA.** Es `scripts/lib/plantilla.mjs`. Aquí se argumentaba que un
@@ -2972,19 +3008,18 @@ cuarta conviene mirar esta tabla, porque las que hay ya cubren casi todo:
 > solo visten botones— pero conviene saberlo antes de tocarlo: **cualquier
 > cambio ahí se ve en los filtros, no en la portada.**
 
-> ⚠️ **`.boton__flecha` SE QUEDÓ SIN USO Y NO SE HA BORRADO.** Era la flecha de
-> «Ver todos los artículos», que era su único portador. Siguen en `styles.css`
-> sus dos reglas —`.boton__flecha` y `.boton--contorno:hover .boton__flecha`— más
-> las dos del bloque de `prefers-reduced-motion`.
+> ✅ **`.boton__flecha` SE QUEDÓ SIN USO Y YA SE HA BORRADO.** Aquí decía «no se
+> ha borrado» y que retirarla era «una limpieza aparte»; esa limpieza se hizo.
+> Era la flecha de «Ver todos los artículos», su único portador, y se fueron sus
+> cuatro reglas: la flecha, su desplazamiento en hover y las dos del bloque de
+> `prefers-reduced-motion`.
 >
-> Se dejan a propósito, no por descuido: retirarlas es una limpieza aparte y no
-> entraba en el encargo de aquel cambio. **Quien las borre que compruebe antes
-> que sigue sin haber ningún `.boton__flecha` en el HTML ni en la plantilla**, y
-> que no las necesita ningún botón nuevo.
+> ⚠️ **De ese bloque SOLO se fue la flecha.** El `transition: none` de
+> `.boton--contorno` se queda, porque el botón sigue animando su relleno y su
+> texto: quien lo borre entero apaga una animación que sí existe.
 >
-> ```sh
-> grep -rn 'boton__flecha' --include='*.html' --include='*.mjs' .
-> ```
+> **La flecha que hay hoy en la portada no es esta**: son `.lista__flecha` y
+> `.destacado__flecha`, que viven en su propio bloque y comparten estilo.
 
 Las tres comparten el `border-radius` de 4 px de `.boton`. **Ninguna declara el
 suyo**, y conviene que siga así: el canto es de la familia, no de la variante.
@@ -3082,21 +3117,21 @@ natural, biblioteca o despacho, como una entrevista en *Monocle*.
 > iniciativa propia** —la foto la pone él— y la frase se conserva porque sigue
 > describiendo a dónde debería ir el sitio si algún día se encarga una sesión.
 
-> ⚠️ **LA FOTO ANTERIOR, `img/juanconteramiranda.jpeg`, SE QUEDÓ SIN NINGÚN USO
-> Y NO SE HA BORRADO.** Era cuadrada de 400 px y 21,7 KB, y la sustituyen las
-> dos versiones nuevas, que están descritas en «Autoría». Comprobado que no la
-> referencia nadie:
+> ✅ **LA FOTO ANTERIOR, `img/juanconteramiranda.jpeg`, SE HA BORRADO.** Aquí
+> decía «no se ha borrado» y que retirarla era una limpieza aparte; esa limpieza
+> se hizo. Era cuadrada de 400 px y 21,7 KB, y la sustituyen las dos versiones
+> nuevas, descritas en «Autoría».
+>
+> ⚠️ **Al comprobar que no la usaba nadie hubo que escapar el punto**, y conviene
+> saberlo si algún día se repite la operación: el nombre nuevo contiene al viejo
+> como **prefijo**, así que un `grep` de `juanconteramiranda` a secas devuelve
+> también los dos archivos vivos y parecería que sigue en uso. Lo que distingue
+> es el `\.jpeg`:
 >
 > ```sh
 > grep -rn 'juanconteramiranda\.jpeg' --include='*.html' --include='*.mjs' \
 >      --include='*.css' --include='*.xml' .
 > ```
->
-> Se deja a propósito, como `fondo-cabecera.jpg`: retirarla es una limpieza
-> aparte. **Quien la borre que vuelva a ejecutar ese `grep` antes**, porque el
-> nombre nuevo lo contiene como prefijo y un `grep` de `juanconteramiranda` a
-> secas devuelve también los dos archivos vivos — el `\.jpeg` es lo que los
-> distingue.
 
 ### La entradilla de `contacto/` se topa en el ancho del formulario
 
@@ -3181,13 +3216,9 @@ el ancho de lectura —820— dos columnas quedarían a 380 y el texto se parte 
 > de contenido **sin descargo legal** y **sin ninguna salida** hacia el listado
 > o hacia contacto —solo quedan las del menú y el pie—. No es un descuido.
 >
-> ⚠️ **Y deja `.sobre__cierre` sin uso**, una regla de una línea
-> (`max-width: 720px`) en `styles.css`. **No se ha borrado**, y este era su
-> único portador:
->
-> ```sh
-> grep -rn 'sobre__cierre' --include='*.html' --include='*.mjs' .
-> ```
+> ✅ **Y dejó `.sobre__cierre` sin uso, regla que YA SE HA BORRADO** en la
+> limpieza del lote. Aquí decía «no se ha borrado». Era una línea
+> —`max-width: 720px`— y esta página era su único portador.
 
 > ⚠️ **LA BIOGRAFÍA ES EL TEXTO DEL PDF, LITERAL. ESTA SECCIÓN DECÍA QUE ERA UNA
 > COMBINACIÓN.** Durante una pasada se conservaron tres datos que el PDF no
@@ -3373,14 +3404,14 @@ dentro.
 > a **4:1 exacto (2560 × 640)** para esta banda, frente al 4,03 de la anterior,
 > y es el mismo veteado de la portada **sin libro ni balanza**.
 >
-> **`fondo-cabecera.jpg` se queda sin ningún uso y NO se ha borrado.** Es el
-> único portador que tenía:
+> ✅ **`fondo-cabecera.jpg` se quedó sin uso y YA SE HA BORRADO** en la limpieza
+> del lote. Aquí decía «NO se ha borrado». Esta banda era su único portador, y
+> hoy el nombre solo aparece en prosa: en el comentario de `styles.css` que
+> explica el cambio y en la tabla de contraste de más abajo.
 >
 > ```sh
 > grep -rn 'fondo-cabecera' --include='*.css' --include='*.html' .
 > ```
->
-> Hoy solo lo nombra el comentario de `styles.css` que explica el cambio.
 
 > ⚠️ **SE DESCARTÓ USAR EL FONDO DE LA PORTADA TAL CUAL, y conviene saber por
 > qué antes de volver a intentarlo.** El de la portada no es una imagen de CSS:

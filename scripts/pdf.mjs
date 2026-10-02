@@ -19,7 +19,12 @@ import { readdir, readFile, writeFile, access, mkdir } from 'node:fs/promises';
 import { join, dirname, resolve } from 'node:path';
 import { pathToFileURL, fileURLToPath } from 'node:url';
 
-import { derivar, escapar, DOMINIO } from './lib/plantilla.mjs';
+/* ⚠️ `AUTOR` SE IMPORTA, NO SE ESCRIBE. El nombre estuvo en dos literales de
+   este archivo —la ficha del bloque de titulo y la cabecera corriente— y eso
+   hacia que cambiar de autor en plantilla.mjs dejara el PDF firmado por el
+   anterior, sin que nada avisara: la web saldria bien y el documento no. */
+
+import { derivar, escapar, DOMINIO, AUTOR } from './lib/plantilla.mjs';
 
 const RAIZ = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const CONTENIDO = join(RAIZ, 'contenido', 'articulos');
@@ -115,7 +120,7 @@ function bloqueTitulo(art, logoDataUri) {
     <h1 class="pdf-portada__titulo">${escapar(art.titulo)}</h1>
 
     <div class="pdf-portada__ficha">
-      <strong>Juan Contera Miranda</strong>
+      <strong>${escapar(AUTOR.nombre)}</strong>
       <time datetime="${art.fecha}">${art.fechaLarga}</time>
       <span class="pdf-portada__sep" aria-hidden="true">·</span>
       <span>${art.minutos} min de lectura</span>${art.actualizado ? `
@@ -164,7 +169,7 @@ function cabecera(art) {
             font-size:7px;color:#8a857f;display:flex;justify-content:space-between;
             align-items:baseline;">
   <span>${escapar(abreviar(art.titulo))}</span>
-  <span>Juan Contera Miranda</span>
+  <span>${escapar(AUTOR.nombre)}</span>
 </div>`;
 }
 
