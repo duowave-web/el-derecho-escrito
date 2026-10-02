@@ -471,6 +471,32 @@ La regla que aplica `scripts/build.mjs`:
 > El comentario que había en `index.html` con la lista de los ocho ya no está:
 > describía un mantenimiento que ya no existe.
 
+> ⚠️ **EL ANTETÍTULO DEL DESTACADO DECÍA «ARTÍCULO DESTACADO · JURISPRUDENCIA» Y
+> AHORA DICE SOLO LA CATEGORÍA.** El rótulo fijo iba delante, en un `<span>` sin
+> clase, separado por un `·` en `.destacado__antetitulo-sep`.
+>
+> **Se quitó porque repetía al rótulo de la sección**: «LECTURA RECOMENDADA»
+> está justo encima y ya dice que la pieza es la recomendada. Lo que queda es
+> la categoría real, enlazada al filtro, **con el mismo texto, el mismo `href` y
+> el mismo `<span class="oculto">Ver artículos de </span>` que las tarjetas** —
+> sale de `art.categoriaTexto` y `clave(art.categoria)`, igual que en
+> `tarjetaPortada()`.
+>
+> **No hay que reponerlo** creyendo que al destacado le falta un rótulo: el de
+> la sección hace ese trabajo.
+>
+> ⚠️ **Con él se quedó sin uso `.destacado__antetitulo-sep`**, una regla de una
+> línea en `styles.css`. **No se ha borrado**, y era su único portador:
+>
+> ```sh
+> grep -rn 'destacado__antetitulo-sep' --include='*.html' --include='*.mjs' .
+> ```
+>
+> Y decae lo que razonaba el comentario de esa regla —que el rótulo y la
+> categoría iban los dos en `--acento` y que solo la segunda se subrayaba al
+> pasar, «una es texto y la otra es un destino»—. Ya no hay dos cosas que
+> distinguir. El comentario del CSS está reescrito.
+
 > ⚠️ **El destacado NO se repite en «Últimos artículos», y esa es la regla que
 > evita el problema.** Estuvo descrito aquí como un riesgo a esquivar —«no
 > conviene destacar el artículo más reciente», porque el mismo titular y la

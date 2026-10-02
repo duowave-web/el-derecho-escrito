@@ -1670,13 +1670,21 @@ body:has(.portada--video) .cabecera--con-linea {
   transition: transform 600ms ease;
 }
 
-/* El antetitulo lleva dos cosas: el rotulo fijo de la pieza y la categoria
-   real, que sigue siendo enlace al filtro. En Inter y versales, como el resto
-   de lo que se consulta, y en acento porque es la etiqueta de la pieza.
+/* El antetitulo es LA CATEGORIA REAL del articulo, enlazada al filtro del
+   listado. En Inter y versales, como el resto de lo que se consulta, y en
+   acento porque es la etiqueta de la pieza.
 
-   El rotulo va en --acento y la categoria tambien, pero solo la segunda se
-   subraya al pasar: una es texto y la otra es un destino, y esa es la unica
-   diferencia que hay que poder ver. */
+   ⚠️ LLEVABA DOS COSAS Y AHORA LLEVA UNA. Delante de la categoria iba un rotulo
+   fijo, «Articulo destacado», separado por un punto medio; aqui se explicaba
+   que los dos iban en --acento y que solo la categoria se subrayaba al pasar,
+   «una es texto y la otra es un destino».
+
+   Se quito el rotulo: la seccion ya se titula «LECTURA RECOMENDADA» justo
+   encima, asi que decia dos veces lo mismo. Con el se fue la necesidad de
+   distinguirlos, porque ya no hay dos.
+
+   El flex y el gap se quedan aunque hoy solo haya un hijo: no estorban, y son
+   lo que mantiene la fila alineada si algun dia vuelve a haber dos piezas. */
 
 .inicio .destacado__antetitulo {
   margin: 0 0 12px;

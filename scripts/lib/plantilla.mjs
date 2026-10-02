@@ -644,8 +644,6 @@ export function bloqueDestacado(art) {
         <div class="destacado__texto">
 
           <p class="destacado__antetitulo">
-            <span>Artículo destacado</span>
-            <span class="destacado__antetitulo-sep" aria-hidden="true">·</span>
             <a href="./articulos/?categoria=${clave(art.categoria)}"><span class="oculto">Ver artículos de </span>${escapar(art.categoriaTexto)}</a>
           </p>
 
