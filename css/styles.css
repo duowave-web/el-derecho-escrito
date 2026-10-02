@@ -2250,6 +2250,28 @@ main > .lista:last-child {
   mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='8' cy='8' r='6.2'/%3E%3Cpath d='M8 4.4V8l2.6 1.6'/%3E%3C/svg%3E") center / contain no-repeat;
 }
 
+/* «Ultima actualizacion», solo en la ficha del articulo y solo si el JSON trae
+   el campo `actualizado`.
+
+   ⚠️ ES UN <time>, ASI QUE YA LE HA CAIDO EL CALENDARIO de la regla de arriba,
+   y esta la sustituye. El selector lleva la clase ADEMAS del elemento —(0,2,2)
+   contra los (0,1,2) de `.entrada__meta time::before`— para ganar por
+   especificidad y no por orden: asi aguanta si alguien reordena el archivo. Es
+   el mismo criterio que `.boton--contorno:hover` documenta en CLAUDE.md, solo
+   que resuelto del modo que no depende de la posicion.
+
+   El icono son dos flechas en circulo, el gesto de «revisado». Mismo viewBox
+   de 16, mismo stroke-width de 1.6 y los mismos remates redondeados que el
+   calendario, el reloj y la persona, para que la fila no se vea despareja.
+
+   Los dos puntos del final de «Ultima actualizacion:» van en el TEXTO y no en
+   un ::after: son parte de lo que se lee, no decoracion. */
+
+.entrada__meta time.actualizado::before {
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M13.6 6.8a5.8 5.8 0 0 0-10.2-2.4'/%3E%3Cpath d='M2.4 9.2a5.8 5.8 0 0 0 10.2 2.4'/%3E%3Cpath d='M2.2 1.9v2.7h2.7M13.8 14.1v-2.7h-2.7'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M13.6 6.8a5.8 5.8 0 0 0-10.2-2.4'/%3E%3Cpath d='M2.4 9.2a5.8 5.8 0 0 0 10.2 2.4'/%3E%3Cpath d='M2.2 1.9v2.7h2.7M13.8 14.1v-2.7h-2.7'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
 .contador {
   font-family: var(--ui);
   font-size: 12px;

@@ -163,8 +163,29 @@ export function contarPalabras(art) {
 
 /* --------------------------------------------------------- derivados ---- */
 
+/* ⚠️ UNA ACTUALIZACIÓN IGUAL A LA FECHA DE PUBLICACIÓN SE TRATA COMO SI NO
+   EXISTIERA, y es deliberado. En la ficha se leería «28 DE SEPTIEMBRE DE 2026 ·
+   ÚLTIMA ACTUALIZACIÓN: 28 DE SEPTIEMBRE DE 2026»: un dato que ocupa sitio y no
+   dice nada, y que además parece un fallo del generador más que una decisión
+   del autor.
+
+   Aguas abajo tampoco cambia nada: `dateModified` ya vale `datePublished`
+   cuando no hay actualización, que es exactamente lo que daría el campo. Así
+   que descartarlo no pierde información, solo quita ruido.
+
+   Es el caso que va a llegar solo: quien rellene el campo «por completarlo»
+   —o un automatismo que copie `fecha`— produce justo esto. Por eso se descarta
+   aquí, una vez, en vez de comprobarlo en los cuatro sitios que lo consumen.
+
+   No se descarta en SILENCIO: `validar()` saca un aviso diciendo que no se va
+   a ver. */
+
 export function derivar(art) {
   const palabras = contarPalabras(art);
+  const actualizado = art.actualizado && art.actualizado !== art.fecha
+    ? art.actualizado
+    : null;
+
   return {
     ...art,
     palabras,
@@ -174,6 +195,17 @@ export function derivar(art) {
     fechaLarga: fechaLarga(art.fecha),
     fechaCorta: fechaCorta(art.fecha),
     fechaISO: fechaISO(art.fecha),
+
+    /* `actualizado` sustituye a lo que venga en el JSON: si era igual a `fecha`
+       el spread de arriba lo habría dejado puesto. */
+    actualizado,
+    actualizadoLarga: actualizado ? fechaLarga(actualizado) : null,
+    actualizadoISO: actualizado ? fechaISO(actualizado) : null,
+
+    /* Lo que leen los buscadores. Sin actualización, la fecha de modificación
+       ES la de publicación: es lo que ya hacía el sitio y no cambia. */
+    modificadoISO: fechaISO(actualizado || art.fecha),
+    modificadoFecha: actualizado || art.fecha,
   };
 }
 
@@ -298,7 +330,9 @@ function jsonLd(art) {
         url: art.url,
         mainEntityOfPage: { '@id': `${art.url}#webpage` },
         datePublished: art.fechaISO,
-        dateModified: art.fechaISO,
+        /* Sin campo `actualizado` vale lo mismo que datePublished, que es lo
+           que este sitio ha declarado siempre. */
+        dateModified: art.modificadoISO,
         inLanguage: 'es-ES',
         articleSection: art.categoriaTexto,
         keywords: (art.keywords || []).join(', '),
@@ -383,7 +417,7 @@ export function paginaArticulo(art) {
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="article:published_time" content="${art.fechaISO}">
-<meta property="article:modified_time" content="${art.fechaISO}">
+<meta property="article:modified_time" content="${art.modificadoISO}">
 <meta property="article:section" content="${escapar(art.categoriaTexto)}">
 ${etiquetasMeta}
 
@@ -464,7 +498,8 @@ ${jsonLd(art)}
           <div class="entrada__meta articulo__ficha">
             <span class="firma">Por <a href="../../sobre/">${escapar(AUTOR.nombre)}</a></span>
             <time datetime="${art.fechaISO}">${art.fechaLarga}</time>
-            <span class="lectura">${art.minutos} min de lectura</span>
+            <span class="lectura">${art.minutos} min de lectura</span>${art.actualizado ? `
+            <time class="actualizado" datetime="${art.actualizadoISO}">Última actualización: ${art.actualizadoLarga}</time>` : ''}
           </div>
 
           <p class="entradilla">${resolverLlamadas(art.entradilla)}</p>
@@ -732,7 +767,7 @@ ${items}
 export function entradaSitemap(art) {
   return `  <url>
     <loc>${art.url}</loc>
-    <lastmod>${art.fecha}</lastmod>
+    <lastmod>${art.modificadoFecha}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>`;

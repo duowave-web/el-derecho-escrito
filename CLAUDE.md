@@ -3324,6 +3324,7 @@ coincidir**, y el build falla si no —es lo único que ata la URL al contenido.
   "etiquetas": ["MASC", "LO 1/2025", "Procedibilidad"],
   "keywords": ["requisito de procedibilidad MASC", "LO 1/2025 negociación previa"],
   "fecha": "2026-09-20",
+  "actualizado": "2026-10-15",
   "destacado": true,
 
   "secciones": [
@@ -3374,11 +3375,91 @@ coincidir**, y el build falla si no —es lo único que ata la URL al contenido.
 | `etiquetas` | no | texto visible. De aquí salen las píldoras, `data-etiquetas` y el desplegable |
 | `keywords` | no | frases de cola para `article:tag` y el JSON-LD. **No son las etiquetas** |
 | `fecha` | **sí** | `YYYY-MM-DD`. Ordena el listado y fija la hora de publicación a las 09:00 +02:00 |
+| `actualizado` | no | `YYYY-MM-DD`. La revisión posterior. Sin él, nada cambia respecto a hoy |
 | `destacado` | no | `true` fuerza la lectura recomendada. Sin ninguno, manda el más reciente |
 | `secciones` | **sí** | los `<h2>` y su contenido |
 | `referencias` | no | agrupadas o sueltas |
 | `imagen` | **sí** | `archivo`, `alt` |
 | `avisos` | no | notas para quien revise el PR. Se imprimen y se comentan; no salen en la web |
+
+#### `actualizado`: la fecha de revisión, y es opcional de verdad
+
+Se añade cuando un artículo ya publicado se revisa. **Sin el campo, la página
+sale exactamente como salía**: verificado regenerando el artículo de MASC con
+el código nuevo y comprobando que el diff de todo lo generado es cero.
+
+Con el campo, alimenta **cuatro** sitios:
+
+| Dónde | Qué pone |
+|---|---|
+| la ficha del artículo | un `<time class="actualizado">` con «Última actualización: …» |
+| JSON-LD | `dateModified` |
+| Open Graph | `<meta property="article:modified_time">` |
+| `sitemap.xml` | `<lastmod>` |
+
+Sin el campo esos tres últimos valen lo mismo que la fecha de publicación, que
+es **lo que el sitio ha declarado siempre**. O sea que el campo no estrena
+comportamiento: rellena uno que ya existía con un valor mejor.
+
+> ⚠️ **EL `<pubDate>` DEL FEED NO SE TOCA, Y NO ES UN OLVIDO.** En RSS 2.0
+> `pubDate` es **la fecha de publicación** y no hay ningún campo de modificación
+> por `<item>`: eso es de Atom. Ponerle ahí la fecha de revisión volvería a
+> anunciar el artículo como nuevo en todos los lectores, que es justo lo que no
+> se quiere.
+>
+> Si algún día se quiere exponer la revisión en el feed, la vía es
+> **`<atom:updated>`** —el espacio de nombres `xmlns:atom` **ya está declarado**
+> en `feed.xml`— y es una decisión aparte, no parte de este campo.
+
+> ⚠️ **Una `actualizado` IGUAL a `fecha` se trata como si no existiera.** En la
+> ficha se leería «28 DE SEPTIEMBRE DE 2026 · ÚLTIMA ACTUALIZACIÓN: 28 DE
+> SEPTIEMBRE DE 2026», que ocupa sitio y no dice nada, y parece un fallo del
+> generador más que una decisión del autor. Aguas abajo tampoco se pierde nada:
+> `dateModified` ya valía `datePublished`.
+>
+> Se descarta **una vez**, en `derivar()`, y no en los cuatro consumidores. Y
+> **no en silencio**: `validar()` saca un aviso que sale en el comentario del PR.
+
+> ⚠️ **Y una `actualizado` ANTERIOR a `fecha` es un ERROR que para el build.**
+> No es un problema de formato sino de sentido —un artículo no se actualiza
+> antes de existir— y publicaría un `dateModified` previo al `datePublished`.
+
+> ⚠️ **LA VALIDACIÓN COMPRUEBA QUE LA FECHA EXISTE, NO SOLO SU FORMA, Y ESO
+> ARREGLA DE PASO UN AGUJERO QUE TENÍA `fecha`.** El control era un
+> `/^\d{4}-\d{2}-\d{2}$/` a secas, así que **`2026-13-45` pasaba**. Lo que
+> publicaba, sin un solo error:
+>
+> | Dónde | Qué salía |
+> |---|---|
+> | la ficha | **«45 de undefined de 2026»** |
+> | `<time datetime>` | `2026-13-45T09:00:00+02:00` |
+> | `dateModified` | `2026-13-45T09:00:00+02:00` |
+> | `<lastmod>` | `2026-13-45` |
+>
+> El «undefined» sale de `MESES[12]`, que no existe. Lo ve cualquiera que mire
+> la página; los otros tres no los ve nadie hasta que un buscador los descarta.
+>
+> Lo cierra `fechaValida()` en `build.mjs`, que comprueba el día contra el mes
+> de verdad —bisiestos incluidos: `2028-02-29` pasa y `2026-02-30` no—. **Se
+> aplica a los dos campos**: dejar `actualizado` estricto y `fecha` laxo habría
+> sido una incoherencia peor que cualquiera de las dos.
+
+> **La ficha lo pinta con el patrón de la casa, no con un `<svg>` suelto.** El
+> icono —dos flechas en círculo— va por `mask` en `::before`, como el
+> calendario, el reloj y la persona, y está razonado en `styles.css`: un
+> pseudoelemento no entra en el árbol de accesibilidad, así que no hay ningún
+> `aria-hidden` del que acordarse.
+>
+> El selector es `.entrada__meta time.actualizado::before`, con la clase
+> **además** del elemento: es un `<time>`, así que ya le ha caído el calendario,
+> y los (0,2,2) ganan a los (0,1,2) de la regla general **por especificidad y no
+> por orden**, así que aguanta si alguien reordena el archivo.
+
+> **En móvil envuelve, y se ha medido el peor caso.** La fila es flex con
+> `flex-wrap`, así que a 375 px cada dato cae en su línea. Con el mes más largo
+> —«30 de septiembre de 2026»— el bloque mide **327 px exactos**, justo el ancho
+> de la columna, y parte a dos líneas sin desbordar ni provocar scroll
+> horizontal. Verificado.
 
 > ⚠️ **`descripcion` y `entradilla` NO son el mismo texto, y confundirlas no da
 > ningún error.** La `descripcion` es el resumen de 140–160 caracteres que ven
