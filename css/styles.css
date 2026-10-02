@@ -4274,17 +4274,27 @@ body:has(.progreso) .cabecera {
   margin: 0 0 8px;
 }
 
-/* ⚠️ EL RETRATO SE AGRANDA SOLO AQUI. `.autor__retrato` lo deja en 132px, que
-   es su tamaño en la columna de 300 del lateral del articulo; en esta fila se
-   perdia. 240 es el mayor circulo que la fuente aguanta con holgura: el
-   original es de 400px, asi que quedan 1,67x y en pantalla densa sigue nitido.
+/* ⚠️ RECTANGULO VERTICAL Y NO CIRCULO, como en el PDF del cliente. Estuvo en
+   circulo de 240 con el argumento de que «el PDF marca estructura y contenido,
+   no estilos»; el encargo posterior fue reproducirlo tambien en composicion.
+
+   `.autor__retrato` sigue puesto por la MECANICA —overflow, fondo de respaldo y
+   el `object-fit: cover` del <img>— y aqui se cambia solo lo que aqui es
+   distinto: la forma, el tamaño y el radio. El lateral del articulo no se
+   entera: conserva su circulo de 132.
+
+   ⚠️ LA FUENTE SE QUEDA JUSTA Y HAY QUE SABERLO. El original es CUADRADO de
+   400px, asi que recortarlo a 3:4 deja 300x400 utiles para una caja de 300x400:
+   exactamente 1x, sin margen para pantalla densa. La unica salida es una foto
+   de mas resolucion —~600x800—; desde el CSS no se arregla.
 
    El `margin: 0 auto 18px` de la clase base centraba el circulo en el lateral;
-   aqui se anula para que se alinee con el principio de su columna. */
+   aqui se anula para que la foto alinee con el principio de su columna. */
 
 .sobre__retrato {
-  width: 240px;
-  height: 240px;
+  width: 300px;
+  height: 400px;
+  border-radius: 0;
   margin: 6px 0 0;
 }
 

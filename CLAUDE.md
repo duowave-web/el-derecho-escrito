@@ -3083,10 +3083,13 @@ mancheta            h1 «Acerca de», a sangre
 │              │ + 3 líneas ❖ │
 └──────────────┴──────────────┘
 h2 Sobre el autor
-texto (720) · retrato (240)      .sobre__autor
-──────────────────────────────   <hr> a todo el ancho
-aviso legal + 2 botones          .sobre__cierre, 720
+texto (720) + botón CV · retrato 300×400      .sobre__autor
 ```
+
+⚠️ **ESTA PÁGINA REPRODUCE EL PDF DEL CLIENTE TAL CUAL, en contenido Y en
+composición.** Hubo una pasada intermedia que lo trataba como referencia de
+estructura y combinaba su texto con el anterior; se corrigió. **Los textos
+aprobados de `sobre/` son hoy los del PDF, sin añadidos.**
 
 **Va en `.contenedor--amplio` y no en `.contenedor`**, que es lo que usaba: en
 el ancho de lectura —820— dos columnas quedarían a 380 y el texto se parte mal.
@@ -3096,24 +3099,41 @@ el ancho de lectura —820— dos columnas quedarían a 380 y el texto se parte 
 > claridad expositiva…» no están en el PDF del cliente, que fija «Enfoque» en
 > tres párrafos y «Contenido» en uno más la lista. No hay que reponerlos.
 
-> ⚠️ **LO QUE NO ESTÁ EN EL PDF Y SE CONSERVA POR ENCARGO**: el **aviso legal**
-> de cierre y los **dos botones** de salida. El PDF describe el cuerpo de la
-> página, no su pie. El aviso es texto del cliente con fórmula fija —está
-> documentado arriba— y quitarlo dejaría `sobre/` como la única página de
-> contenido sin descargo.
+> ⚠️ **FUERA TODO LO QUE NO ESTÁ EN EL PDF, Y ESTA SECCIÓN DECÍA LO CONTRARIO.**
+> Se conservaban «por encargo» el **aviso legal**, los **dos botones de salida**
+> —«Explorar artículos» y «Contacto»— y el **`<hr>`** que los precedía. El
+> encargo posterior fue reproducir el PDF tal cual, así que **los tres se han
+> retirado**.
+>
+> **Consecuencia que hay que tener presente:** `sobre/` es ahora la única página
+> de contenido **sin descargo legal** y **sin ninguna salida** hacia el listado
+> o hacia contacto —solo quedan las del menú y el pie—. No es un descuido.
+>
+> ⚠️ **Y deja `.sobre__cierre` sin uso**, una regla de una línea
+> (`max-width: 720px`) en `styles.css`. **No se ha borrado**, y este era su
+> único portador:
+>
+> ```sh
+> grep -rn 'sobre__cierre' --include='*.html' --include='*.mjs' .
+> ```
 
-> ⚠️ **LA BIOGRAFÍA ES UNA COMBINACIÓN, NO EL TEXTO DEL PDF TAL CUAL.** El PDF
-> sigue el orden formación → ejercicio → doble perspectiva, y eso se respeta,
-> pero **se conservaron tres datos que el PDF deja caer**:
+> ⚠️ **LA BIOGRAFÍA ES EL TEXTO DEL PDF, LITERAL. ESTA SECCIÓN DECÍA QUE ERA UNA
+> COMBINACIÓN.** Durante una pasada se conservaron tres datos que el PDF no
+> trae; **ya no**. Lo que decía, y que hoy NO describe la página:
 >
-> | Dato | En el PDF | En la página |
-> |---|---|---|
-> | Colegio (ICAM) | — | **se conserva** |
-> | Práctica: licencias, sanciones, expropiaciones, responsabilidad patrimonial | — | **se conserva** |
-> | Universidades | siglas: UCM, UEA, UNIR | **desarrolladas** |
+> | Dato | Hoy en la página |
+> |---|---|
+> | Colegio (ICAM) | **no aparece** |
+> | Práctica: licencias, sanciones, expropiaciones, responsabilidad patrimonial | **no aparece** |
+> | Universidades | **siglas**: UCM, UEA, UNIR |
 >
-> El colegio importa porque este archivo lo registra como un dato que costó
-> conseguir: «✅ Ya hay colegio y despacho».
+> ⚠️ **Eso hace decaer el «✅ Ya hay colegio y despacho» de la deuda pendiente**:
+> el despacho sigue —Sterling Abogados—, pero **el ICAM ya no se nombra en
+> ninguna página**. Sigue en el CV descargable, que es donde el cliente lo puso.
+>
+> Y las mayúsculas del PDF se copian tal cual, incoherencias incluidas:
+> «Derecho **a**dministrativo» en «Enfoque» y «Contenido», pero «el Derecho
+> **A**dministrativo y el Urbanismo» en «Sobre el autor». **No se corrigen.**
 
 > ⚠️ **LOS TRES NOMBRES DE LA LISTA SON ENLACES AL FILTRO**, y es el único sitio
 > donde el texto del cliente coincide **literalmente** con las tres claves de
@@ -3132,15 +3152,21 @@ el ancho de lectura —820— dos columnas quedarían a 380 y el texto se parte 
 > `.lista--marcada`: la segunda línea alinea con la primera palabra, no con el
 > rombo.
 
-> ⚠️ **EL RETRATO ES UN CÍRCULO Y EL PDF LO ENSEÑA RECTANGULAR**, por encargo.
-> El PDF marca estructura y contenido, no estilos, y el círculo es lo que esa
-> foto ya tiene en el lateral del artículo. De paso evita recortar: el original
-> es **cuadrado y de solo 400 px**, así que en 3:4 quedarían 300 × 400 útiles.
+> ⚠️ **EL RETRATO ES UN RECTÁNGULO VERTICAL DE 300 × 400, COMO EL PDF. ESTA
+> SECCIÓN DECÍA QUE ERA UN CÍRCULO**, con el argumento de que «el PDF marca
+> estructura y contenido, no estilos». El encargo posterior fue reproducirlo
+> también en composición.
 >
-> **Se agranda solo aquí**, de los 132 px de `.autor__retrato` a **240**, que
-> con la fuente de 400 deja 1,67× y aguanta pantalla densa. `.sobre__retrato` es
-> el único portador, así que el lateral del artículo no se entera — verificado:
-> sigue en 132 × 132.
+> `.autor__retrato` sigue puesto por la **mecánica** —`overflow`, fondo de
+> respaldo y el `object-fit: cover` del `<img>`—; `.sobre__retrato` cambia la
+> forma, el tamaño y el radio. El lateral del artículo no se entera: verificado,
+> **sigue en 132 × 132 y con `border-radius: 50%`**.
+>
+> ⚠️ **LA FUENTE SE QUEDA JUSTA Y NO SE ARREGLA DESDE EL CSS.** El original es
+> **cuadrado de 400 px**, así que recortarlo a 3:4 deja **300 × 400 píxeles
+> útiles** para una caja de 300 × 400: **exactamente 1×**, sin margen para
+> pantalla densa. Se verá blanda en un portátil retina. La única salida es una
+> foto de más resolución, ~600 × 800.
 
 > ⚠️ **EL TEXTO VA ANTES QUE LA FOTO EN EL MARCADO.** El PDF pone la foto a la
 > derecha, así que el orden de lectura es texto → foto y apilado en móvil cae

@@ -169,14 +169,14 @@
       <h2>Sobre el autor</h2>
 
       <!-- El retrato reutiliza juanconteramiranda.jpeg, la misma foto que el
-           lateral del artículo, y hereda de .autor__retrato el círculo, el
-           filete y el recorte.
+           lateral del artículo, y hereda de .autor__retrato el recorte y el
+           fondo de respaldo. La FORMA no: aquí es rectángulo vertical y en el
+           lateral sigue siendo un círculo.
 
-           ⚠️ EL PDF LA ENSEÑA COMO RECTÁNGULO VERTICAL Y AQUÍ ES UN CÍRCULO,
-           por encargo: el PDF marca estructura y contenido, no estilos, y el
-           círculo es el tratamiento que esta foto ya tiene en el lateral. De
-           paso evita recortar los lados de un original que es CUADRADO y de
-           solo 400 px: en 3:4 quedarían 300×400 útiles y se vería blanda.
+           ⚠️ ESTUVO EN CÍRCULO Y SE CORRIGIÓ. Se razonó entonces que «el PDF
+           marca estructura y contenido, no estilos»; el encargo posterior fue
+           reproducir el PDF también en composición, así que la forma pasa a ser
+           la suya.
 
            ⚠️ EL TEXTO VA ANTES QUE LA FOTO EN EL MARCADO, y no es indiferente.
            El PDF pone la foto a la derecha, así que el orden de lectura es
@@ -191,9 +191,9 @@
            del artículo. Está contado en CLAUDE.md. -->
       <div class="sobre__autor">
         <div class="sobre__autor-texto">
-          <p><strong>Juan Contera Miranda</strong> es graduado en Derecho y Ciencias Políticas por la Universidad Complutense de Madrid, Máster en Gobierno y Dirección Estratégica de Organizaciones Públicas por la Universidad Europea del Atlántico y Máster en Derecho de la Ordenación del Territorio y del Urbanismo por la Universidad Internacional de La Rioja.</p>
+          <p><strong>Juan Contera Miranda</strong> es graduado en Derecho y Ciencias Políticas por la UCM, Máster en Gobierno y Dirección Estratégica de Organizaciones Públicas por la UEA y Máster en Derecho de la Ordenación del Territorio y del Urbanismo por la UNIR.</p>
 
-          <p>Actualmente ejerce como abogado en el Departamento de Derecho Procesal de <strong>Sterling Abogados</strong>. Su área de especialización es el Derecho Administrativo y el Urbanismo. Está colegiado en el Ilustre Colegio de la Abogacía de Madrid y su práctica profesional comprende procedimientos administrativos y judiciales, litigación contencioso-administrativa y asuntos relacionados con licencias, sanciones, urbanismo, expropiaciones y responsabilidad patrimonial.</p>
+          <p>Actualmente ejerce como abogado en el Departamento de Derecho Procesal de Sterling Abogados. Su área de especialización es el Derecho Administrativo y el Urbanismo.</p>
 
           <p>Desde esta doble perspectiva académica y profesional, escribe en <em>El Derecho Escrito</em> sobre los fundamentos de estas disciplinas, la interpretación de sus fuentes y los problemas que plantea su aplicación práctica.</p>
 
@@ -218,6 +218,15 @@
           </p>
         </div>
 
+        <!-- ⚠️ RECTÁNGULO VERTICAL, NO CÍRCULO, y conserva `.autor__retrato`
+             solo por la mecánica —recorte, fondo de respaldo y el dimensionado
+             del <img>—. Lo que `.sobre__retrato` cambia es la forma: 300×400 y
+             radio 0.
+
+             La fuente es CUADRADA de 400 px, así que a 3:4 quedan 300×400
+             píxeles útiles para una caja de 300×400: exactamente 1×. En
+             pantalla densa se verá blanda, y la única salida es una foto de más
+             resolución —~600×800—. Está anotado en CLAUDE.md. -->
         <div class="autor__retrato sobre__retrato">
           <img src="../img/juanconteramiranda.jpeg"
                alt="Retrato de Juan Contera Miranda"
@@ -225,45 +234,6 @@
         </div>
       </div>
     </section>
-
-    <hr>
-
-    <!-- El cierre se topa en el ancho de lectura. El resto de la página va a
-         1200 porque son dos columnas y una fila con foto, pero el aviso es
-         texto de 13 px y a 1152 la línea se hacía incómoda. El filete de arriba
-         sí cruza entero: separa la página, no el párrafo. -->
-    <div class="sobre__cierre">
-
-    <!-- Aviso de cierre, ahora en la MISMA FÓRMULA que el del artículo: texto
-         del cliente, entero en <em> y con «página de contacto» enlazada.
-
-         Aquí había una redacción distinta —«Todo lo que se publica en este blog
-         es divulgación, no asesoramiento…»— y además iba SIN enlace, porque
-         debajo había un «¿Quieres escribirme? Ve a Contacto» y habrían sido dos
-         enlaces seguidos al mismo sitio. Los dos motivos han caído: el texto lo
-         da ahora el cliente y ese enlace suelto lo sustituyeron los botones.
-
-         ⚠️ Queda un tercer enlace a contacto/ en esta pantalla: este y el botón
-         «Contacto» de abajo. Se acepta porque uno es una frase legal al pie y el
-         otro una acción, pero si algún día molesta, el que sobra es este.
-
-         El enlace es ../contacto/ —un solo nivel—, no ../../contacto/ como en
-         el artículo: sobre/ está a un nivel de la raíz y el artículo a dos. -->
-    <p class="aviso"><em>Los contenidos de <em>El Derecho Escrito</em> tienen carácter informativo y divulgativo y no sustituyen el análisis jurídico de un asunto concreto. Si deseas plantear una consulta, puedes hacerlo a través de la <a href="../contacto/">página de contacto</a>.</em></p>
-
-    <!-- Aquí había un enlace suelto, «¿Quieres escribirme? Ve a Contacto →», en
-         .lista__mas. Lo sustituyen los dos botones que pide el documento, que
-         además dan la salida al listado que antes no existía en esta página.
-
-         Mismo par que el hero: el principal relleno y el secundario con filete.
-         Reutilizan .portada__acciones, que es solo la fila flex con su hueco y
-         ya trae el apilado a ancho completo por debajo de 600 px. -->
-    <div class="portada__acciones">
-      <a class="boton boton--principal" href="../articulos/">Explorar artículos</a>
-      <a class="boton" href="../contacto/">Contacto</a>
-    </div>
-
-    </div>
 
   </div>
   </div>
