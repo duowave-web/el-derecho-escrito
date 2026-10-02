@@ -4499,6 +4499,46 @@ de línea dentro. Apunta a `./<slug>.pdf`, en la misma carpeta del artículo.
 > lleva ahora `.descarga`, que es quien abre la fila de acciones, y `.compartir`
 > se queda en `margin: 0 0 32px` con su filete.
 
+> ⚠️ **`.descarga` Y `.compartir__lista` VAN PREFIJADAS CON `.articulo`, Y SIN
+> ESO NO SE APLICAN. LAS DOS ESTUVIERON MUERTAS A LA VEZ.**
+>
+> | Regla | Declaraba | Computaba | Quién ganaba |
+> |---|---|---|---|
+> | `.descarga` | `margin: 40px 0 28px` | `0 0 22px` | `.articulo p` |
+> | `.compartir__lista` | `margin: 0; padding: 0` | `padding-left: 24px` | `.articulo ul` |
+>
+> Las dos son (0,1,0) contra los (0,1,1) del selector del cuerpo: **ganan por
+> especificidad, no por orden**.
+>
+> Lo que se veía: el botón **pegado** a «Volver a los artículos» —hueco medido:
+> **0**— y las píldoras de compartir arrancando **24 px más a la derecha** que
+> el rótulo «COMPARTIR», como si estuvieran sangradas a propósito. **No lo
+> estaban**: era el relleno por defecto de las listas del cuerpo.
+>
+> De las tres declaraciones de `.compartir__lista` solo funcionaba
+> `list-style: none`, porque `.articulo ul` no lo declara.
+>
+> ⚠️ **ES LA TERCERA VEZ QUE MUERDE ESTE PATRÓN**: antes fueron `.articulo h3`
+> contra `.entrada__titulo` en «Continúa leyendo» y `.articulo p` contra
+> `.autor__cv` en el lateral. **Cualquier clase nueva sobre un `<p>`, `<ul>` o
+> `<h3>` dentro del artículo necesita el prefijo**, y el fallo no da ningún
+> error: solo se ve mirando el estilo computado.
+
+> **Los huecos de la zona, ya con las reglas vivas:**
+>
+> | | px |
+> |---|---|
+> | referencias → «Volver» | 40 |
+> | **«Volver» → botón PDF** | **40** |
+> | botón → filete de «Compartir» | 28 |
+> | filete → rótulo | 29 |
+> | rótulo → píldoras | 28 |
+>
+> Los 40 igualan el hueco que ya había encima de «Volver», así que el enlace
+> queda con el mismo aire por los dos lados y se lee como una pieza suelta entre
+> dos bloques. Y **todo alinea a 0** con la columna: «Volver», el botón, el
+> rótulo, las píldoras y el aviso.
+
 > **UNA SOLA UBICACIÓN, y se descartó la segunda.** Arriba, junto a la ficha,
 > competiría con el arranque de la lectura y empujaría el texto: esa columna ya
 > lleva `.volver`, foto, categoría, titular, ficha, entradilla e índice. Y el

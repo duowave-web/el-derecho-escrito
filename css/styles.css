@@ -3106,7 +3106,26 @@ em i {
    encima —ahora los lleva este, que paso a ir primero— y los 28 de abajo lo
    despegan del filete de «Compartir» sin duplicar el hueco. */
 
-.descarga {
+/* ⚠️ VA PREFIJADO CON `.articulo` Y SIN ESO NO SE APLICA NADA. Es un <p> dentro
+   de <article class="articulo">, asi que le cae `.articulo p`, que pesa (0,1,1)
+   frente a los (0,1,0) de la clase sola y GANA POR ESPECIFICIDAD.
+
+   Estuvo escrito como `.descarga { margin: 40px 0 28px }` y era una regla
+   MUERTA: el margen computado seguia siendo el `0 0 22px` de `.articulo p`, con
+   lo que el boton quedaba PEGADO a «Volver a los articulos» —hueco medido: 0—.
+   No daba ningun error y solo se ve mirando el estilo computado.
+
+   Es la tercera vez que muerde el mismo patron: antes fue `.articulo h3` contra
+   `.entrada__titulo` en «Continua leyendo» y `.articulo p` contra `.autor__cv`
+   en el lateral. CUALQUIER clase nueva sobre un <p>, <ul> o <h3> dentro del
+   articulo necesita el prefijo.
+
+   LOS 40 DE ARRIBA igualan el hueco que ya hay entre las referencias y
+   «Volver», asi que el enlace queda con el mismo aire por los dos lados y se
+   lee como lo que es: una pieza suelta entre dos bloques. Los 28 de abajo
+   acompanan al 29 del filete y al 28 del rotulo de «Compartir». */
+
+.articulo .descarga {
   margin: 40px 0 28px;
 }
 
@@ -3119,7 +3138,20 @@ em i {
   border-top: 1px solid var(--borde);
 }
 
-.compartir__lista {
+/* ⚠️ TAMBIEN PREFIJADA, Y POR LO MISMO: `.articulo ul` —(0,1,1)— le ganaba a
+   `.compartir__lista` —(0,1,0)— y le colaba su `margin: 0 0 22px` y su
+   `padding-left: 24px`.
+
+   El efecto visible era que las pildoras arrancaban 24px MAS A LA DERECHA que
+   el rotulo «COMPARTIR», como si estuvieran sangradas a proposito. No lo
+   estaban: era el relleno por defecto de las listas del cuerpo. Medido: rotulo
+   en 0 y primera pildora en 24.
+
+   El `list-style: none` si se aplicaba, porque `.articulo ul` no lo declara.
+   O sea que de las tres declaraciones de este bloque solo funcionaba una, y
+   las otras dos se veian como decisiones de diseno. */
+
+.articulo .compartir__lista {
   list-style: none;
   margin: 0;
   padding: 0;
