@@ -3334,7 +3334,25 @@ em i {
   margin: 0 0 10px;
 }
 
-.contacto__aparte h2 + p {
+/* ⚠️ ERA `h2 + p` Y PINTABA SOLO EL PRIMER PARRAFO DE CADA APARTADO. Se
+   escribio cuando cada <h2> de esta caja tenia exactamente UN parrafo debajo,
+   asi que el selector de hermano adyacente los cubria todos.
+
+   «Antes de escribir» paso a tener dos, y el segundo se quedo fuera: no heredo
+   el gris —caia en el --tinta del cuerpo—, ni el `line-height: 1.6`, ni el
+   margen. Dos parrafos seguidos del mismo apartado en dos colores distintos, y
+   sin que nada avisara: el selector seguia siendo valido, solo que ya no
+   describia el contenido.
+
+   Con `p` a secas cubre los cuatro, y aguanta si manana se anade un tercero.
+
+   ⚠️ EL GRIS SE QUEDA, no se sube todo a --tinta. Esta caja es texto de APOYO
+   —fondo --papel-alt, 0,95rem, al lado del formulario— y el sitio ya pinta en
+   gris lo equivalente: .autor__bio y .suscripcion__apoyo del lateral del
+   articulo son exactamente el mismo papel. Los <h2> se quedan en --tinta, que
+   es lo que da la jerarquia dentro de la caja. */
+
+.contacto__aparte p {
   margin: 0 0 24px;
   color: var(--tinta-suave);
   line-height: 1.6;

@@ -1962,6 +1962,31 @@ un jurista**. El texto manda, la imagen acompaña.
 --borde-marcado:#D8D2C9;  /* linea de la cabecera */
 ```
 
+> **Cuándo va el texto en `--tinta-suave` y cuándo en `--tinta`.** La regla que
+> sigue el sitio: **`--tinta` para lo que se lee y `--tinta-suave` para lo que
+> acompaña**. En gris van los metadatos y el tiempo de lectura, los extractos y
+> entradillas de tarjeta, los contadores y avisos de filtro, los avisos legales,
+> las etiquetas del formulario, las fuentes de cita, y **el texto de las cajas
+> de apoyo**: `.autor__bio`, `.suscripcion__apoyo`, `.suscripcion__nota` y los
+> párrafos de `.contacto__aparte`. Los encabezados de esas cajas sí van en
+> `--tinta`: son lo que da la jerarquía dentro de ellas.
+>
+> ⚠️ **Y ESO SE ROMPIÓ UNA VEZ DE UNA FORMA QUE CONVIENE CONOCER.** La regla de
+> `contacto/` era `.contacto__aparte h2 + p`, escrita cuando cada `<h2>` de esa
+> caja tenía **un** párrafo debajo. «Antes de escribir» pasó a tener dos, y el
+> segundo se quedó fuera del selector: salía en `--tinta` al lado de uno gris,
+> y además sin su `line-height` ni su margen.
+>
+> **No dio ningún error y el selector seguía siendo válido**; lo que pasó es que
+> dejó de describir el contenido. Hoy es `.contacto__aparte p`, que cubre los
+> que haya. **Un selector de hermano adyacente ata el CSS al número de
+> elementos**, y ese número lo cambia quien edita el texto, no quien edita la
+> hoja.
+>
+> Contrastes medidos tras unificarlo, todos AA: `--tinta-suave` sobre
+> `--papel-alt` **5,64:1**, sobre blanco **6,13:1**, y el `--acento` del enlace
+> de correo sobre `--papel-alt` **5,44:1**.
+
 Los dos bordes se diferencian poco a propósito. `--borde` está para separar sin
 que se note; `--borde-marcado` es un paso más oscuro —ΔE 16,4 frente a blanco,
 contra 11,1 del otro— y solo lo usa la línea de la cabecera, que sí tiene que
