@@ -3001,6 +3001,99 @@ Blanco y negro o tonos cálidos apagados, estilo editorial. Todas las miniaturas
 de la cuadrícula, misma proporción. El retrato del autor no es corporativo: luz
 natural, biblioteca o despacho, como una entrevista en *Monocle*.
 
+### `sobre/` son dos filas, y el PDF del cliente manda la estructura
+
+La página pasó de una columna de lectura a esto:
+
+```
+mancheta            h1 «Acerca de», a sangre
+┌──────────────┬──────────────┐
+│ h2 Enfoque   │ h2 Contenido │   .sobre__columnas, 548 px cada una a 1200
+│ 3 párrafos   │ 1 párrafo    │
+│              │ + 3 líneas ❖ │
+└──────────────┴──────────────┘
+h2 Sobre el autor
+texto (720) · retrato (240)      .sobre__autor
+──────────────────────────────   <hr> a todo el ancho
+aviso legal + 2 botones          .sobre__cierre, 720
+```
+
+**Va en `.contenedor--amplio` y no en `.contenedor`**, que es lo que usaba: en
+el ancho de lectura —820— dos columnas quedarían a 380 y el texto se parte mal.
+
+> ⚠️ **SE PERDIERON DOS PÁRRAFOS Y FUE DELIBERADO.** «En esta disciplina
+> confluyen conceptos de difícil delimitación…» y «Los artículos buscan combinar
+> claridad expositiva…» no están en el PDF del cliente, que fija «Enfoque» en
+> tres párrafos y «Contenido» en uno más la lista. No hay que reponerlos.
+
+> ⚠️ **LO QUE NO ESTÁ EN EL PDF Y SE CONSERVA POR ENCARGO**: el **aviso legal**
+> de cierre y los **dos botones** de salida. El PDF describe el cuerpo de la
+> página, no su pie. El aviso es texto del cliente con fórmula fija —está
+> documentado arriba— y quitarlo dejaría `sobre/` como la única página de
+> contenido sin descargo.
+
+> ⚠️ **LA BIOGRAFÍA ES UNA COMBINACIÓN, NO EL TEXTO DEL PDF TAL CUAL.** El PDF
+> sigue el orden formación → ejercicio → doble perspectiva, y eso se respeta,
+> pero **se conservaron tres datos que el PDF deja caer**:
+>
+> | Dato | En el PDF | En la página |
+> |---|---|---|
+> | Colegio (ICAM) | — | **se conserva** |
+> | Práctica: licencias, sanciones, expropiaciones, responsabilidad patrimonial | — | **se conserva** |
+> | Universidades | siglas: UCM, UEA, UNIR | **desarrolladas** |
+>
+> El colegio importa porque este archivo lo registra como un dato que costó
+> conseguir: «✅ Ya hay colegio y despacho».
+
+> ⚠️ **LOS TRES NOMBRES DE LA LISTA SON ENLACES AL FILTRO**, y es el único sitio
+> donde el texto del cliente coincide **literalmente** con las tres claves de
+> `CATEGORIAS`: `fundamentos`, `jurisprudencia` y `ensayos`. Llevan el mismo
+> `href` y el mismo `<span class="oculto">Ver artículos de </span>` que la
+> portada y la ficha del artículo.
+>
+> **La coma queda fuera del `<strong>` y fuera del enlace**: es de la frase, no
+> del nombre de la categoría.
+
+> **La viñeta ❖ va en `::before`, no en `::marker`.** Es decorativa, y un
+> pseudoelemento no entra en el árbol de accesibilidad: un lector de pantalla
+> lee «Fundamentos, mediante artículos…» sin anunciar el glifo. Se descartó
+> `::marker` con `content` porque **Safari no lo soporta en todas las versiones**
+> y ahí la viñeta desaparecería. La sangría francesa es la misma técnica de
+> `.lista--marcada`: la segunda línea alinea con la primera palabra, no con el
+> rombo.
+
+> ⚠️ **EL RETRATO ES UN CÍRCULO Y EL PDF LO ENSEÑA RECTANGULAR**, por encargo.
+> El PDF marca estructura y contenido, no estilos, y el círculo es lo que esa
+> foto ya tiene en el lateral del artículo. De paso evita recortar: el original
+> es **cuadrado y de solo 400 px**, así que en 3:4 quedarían 300 × 400 útiles.
+>
+> **Se agranda solo aquí**, de los 132 px de `.autor__retrato` a **240**, que
+> con la fuente de 400 deja 1,67× y aguanta pantalla densa. `.sobre__retrato` es
+> el único portador, así que el lateral del artículo no se entera — verificado:
+> sigue en 132 × 132.
+
+> ⚠️ **EL TEXTO VA ANTES QUE LA FOTO EN EL MARCADO.** El PDF pone la foto a la
+> derecha, así que el orden de lectura es texto → foto y apilado en móvil cae
+> igual **sin `order`**. Antes estaba al revés. Es la misma regla que el reorden
+> de la cabecera del artículo: el orden del DOM es el que oyen los lectores de
+> pantalla.
+
+> ⚠️ **`.sobre__autor` PASÓ DE FLEX A GRID, Y ESO ROMPIÓ EL APILADO SIN DAR
+> ERROR.** Con flex el texto se quedaba con todo lo que sobraba —**992 px
+> medidos** en el contenedor de 1200— y ahí la línea es incómoda. La rejilla lo
+> topa en los 720 del ancho de lectura.
+>
+> Lo que se escapó: la media query de 600 decía `flex-direction: column`, que
+> **en una grid no pinta nada**. El retrato se quedaba al lado del texto en una
+> columna de 327. No daba ningún error; solo se veía apretado. Hoy apila con
+> `grid-template-columns`.
+
+> **Los dos cortes de esta página no coinciden, y es a propósito.** Las columnas
+> apilan en **748** —el de las tarjetas— porque a 600 bajarían a 248 y
+> «contencioso-administrativa» no cabe; el retrato se despega del texto en
+> **600**. Uno parte una retícula de texto y el otro despega una foto: no hay
+> motivo para que cedan a la vez.
+
 ### Texto sobre imagen: hay que medir dónde cae, no la media
 
 La mancheta es una **banda a sangre de 170 px** con `img/fondo-paginas.jpg` de
@@ -3332,9 +3425,18 @@ node r.mjs img/logo.svg /tmp/logo-w512.png 512
 - Falta el bloque «Sobre el autor» en portada, que el cliente quiere y aún no
   existe en ninguna versión. La banda de newsletter ya está.
 - ~~`sobre/index.html` tiene texto de relleno entre corchetes.~~ **RESUELTO**
-  con los textos definitivos del cliente: la página tiene apertura, «Contenido»,
-  «Sobre el autor» con retrato, y los dos botones de salida. Ya no queda ningún
-  corchete en el sitio.
+  con los textos definitivos del cliente. Ya no queda ningún corchete en el
+  sitio.
+
+  ⚠️ **Y DESDE ENTONCES LA PÁGINA SE REESTRUCTURÓ ENTERA.** Era una columna de
+  lectura —entradilla suelta, «Contenido» y «Sobre el autor»— y hoy son **dos
+  filas**: «Enfoque» y «Contenido» a la par, y «Sobre el autor» debajo. Está
+  descrito en su propia sección, más abajo.
+- **Falta el CV.** La estructura nueva de `sobre/` prevé un botón «Descargar
+  CV» debajo de la biografía, y **no está puesto porque no hay archivo**: en el
+  repositorio no existe ningún CV. El sitio donde va está marcado con un
+  comentario en `sobre/index.html`. Cuando llegue el PDF se añade ahí, con
+  `.boton--contorno`, `download` y el tipo y el peso.
 - ~~La web no dice en qué materias ejerce~~ **RESUELTO, y con ello se cierra la
   contradicción que había aquí.** Se nombran en **tres** sitios: el titular del
   hero, la apertura de `sobre/` y su apartado «Contenido». Son Derecho

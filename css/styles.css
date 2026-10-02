@@ -4190,15 +4190,34 @@ body:has(.progreso) .cabecera {
    sitio sea uno, no dos que se parecen: si cambia el recorte o el filete, se
    cambia en .autor__retrato y los dos siguen iguales. */
 
+/* ⚠️ ERA UN FLEX Y AHORA ES UNA REJILLA, por una medida: con flex el texto se
+   quedaba con todo lo que sobraba —992 px medidos en el contenedor de 1200— y
+   ahi la linea es incomoda de leer. La primera columna se topa en los 720 del
+   ancho de lectura del articulo, que es el mismo numero, y el retrato ocupa lo
+   que queda.
+
+   `align-items: start` para que el retrato no se estire a la altura de los tres
+   parrafos. */
+
 .sobre__autor {
-  display: flex;
-  align-items: flex-start;
-  gap: 28px;
+  display: grid;
+  grid-template-columns: minmax(0, 720px) minmax(0, 1fr);
+  align-items: start;
+  gap: 56px;
   margin: 0 0 8px;
 }
 
+/* ⚠️ EL RETRATO SE AGRANDA SOLO AQUI. `.autor__retrato` lo deja en 132px, que
+   es su tamaño en la columna de 300 del lateral del articulo; en esta fila se
+   perdia. 240 es el mayor circulo que la fuente aguanta con holgura: el
+   original es de 400px, asi que quedan 1,67x y en pantalla densa sigue nitido.
+
+   El `margin: 0 auto 18px` de la clase base centraba el circulo en el lateral;
+   aqui se anula para que se alinee con el principio de su columna. */
+
 .sobre__retrato {
-  flex: none;
+  width: 240px;
+  height: 240px;
   margin: 6px 0 0;
 }
 
@@ -4210,18 +4229,115 @@ body:has(.progreso) .cabecera {
   margin-top: 0;
 }
 
-/* Por debajo de 600 el retrato se pone encima y el texto debajo: en una columna
-   de ~330px, 132 de foto mas 28 de hueco dejan el parrafo en 170, que parte las
-   palabras largas de este texto —«contencioso-administrativa»— en cada linea. */
+/* ⚠️ POR DEBAJO DE 600 SE APILAN, Y AHORA EL TEXTO QUEDA ARRIBA. Antes el
+   retrato iba primero en el marcado y al apilarse caia encima; hoy el orden del
+   DOM es texto → foto, porque el PDF del cliente pone la foto a la derecha y el
+   orden de lectura tiene que coincidir con el visual. No se usa `order`: es la
+   misma regla que se aplico al reordenar la cabecera del articulo.
+
+   El motivo de apilar sigue siendo el de siempre: en una columna de ~330px, 132
+   de foto mas 28 de hueco dejan el parrafo en 170, que parte las palabras
+   largas de este texto —«contencioso-administrativa»— en cada linea. */
+
+/* ⚠️ APILA CON `grid-template-columns`, NO CON `flex-direction`. Esta regla
+   decia `flex-direction: column` de cuando .sobre__autor era un flex, y al
+   pasar a rejilla se quedo SIN EFECTO: en una grid esa propiedad no pinta nada,
+   asi que el retrato seguia al lado del texto en una columna de 327. No daba
+   ningun error; solo se veia apretado. */
 
 @media (max-width: 600px) {
   .sobre__autor {
-    flex-direction: column;
+    grid-template-columns: minmax(0, 1fr);
     gap: 18px;
   }
 
   .sobre__retrato {
     margin: 0;
+  }
+}
+
+/* ------------------------------------------- Acerca de: dos columnas ----- */
+
+/* La primera fila de sobre/ son «Enfoque» y «Contenido» a la par, como en el
+   PDF del cliente. Se va a `.contenedor--amplio` porque en el ancho de lectura
+   —820— dos columnas quedarian a 380 y el texto se parte mal.
+
+   `gap: 56px` es el mismo hueco que separa la columna del articulo de su
+   lateral, asi que las dos retículas de dos columnas del sitio respiran igual.
+
+   minmax(0, 1fr) y no 1fr por el motivo de siempre: con `1fr` una columna que no
+   puede encoger deja de ceder y aplasta a la vecina en vez de desbordar ella.
+   Esta tiene palabras largas —«contencioso-administrativa»— que es justo lo que
+   lo dispara. */
+
+.sobre__columnas {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 56px;
+}
+
+/* Los h2 de las dos columnas y el de «Sobre el autor» arrancan a la misma
+   altura: `.articulo h2` trae `margin-top: 48px`, y el primero de cada columna
+   lo conserva, asi que la fila entra alineada sin tocar nada. */
+
+/* Viñeta de rombo. Decorativa, asi que va en ::before y NO en el marcado: un
+   pseudo-elemento no entra en el arbol de accesibilidad, de modo que un lector
+   de pantalla lee «Fundamentos, mediante articulos…» sin anunciar un glifo que
+   no aporta nada. Es el mismo criterio que los iconos de la ficha.
+
+   Se prefiere ::before a ::marker con `content`, que es lo que pedia el
+   enunciado: `content` en ::marker no esta soportado en todas las versiones de
+   Safari todavia, y ahi la viñeta se caeria del todo.
+
+   La sangria francesa es la tecnica que ya usa `.lista--marcada`: con
+   `padding-left` en la lista y `text-indent` negativo en el item, la segunda
+   linea alinea con la primera PALABRA y no con el rombo. */
+
+.articulo .sobre__lineas {
+  list-style: none;
+  padding-left: 28px;
+}
+
+.articulo .sobre__lineas li {
+  text-indent: -28px;
+  margin-bottom: 16px;
+}
+
+.sobre__lineas li::before {
+  content: "❖";
+  display: inline-block;
+  width: 20px;
+  margin-right: 8px;
+  text-indent: 0;
+  color: var(--acento);
+}
+
+/* El bloque del autor va a todo el ancho, debajo de las dos columnas. No lleva
+   margen propio: el `margin-top: 48px` de su <h2> ya pone la separacion, el
+   mismo hueco que separa los dos h2 de arriba de lo que tengan encima. */
+
+/* El cierre —aviso legal y botones— se topa en el ancho de lectura. El resto de
+   la pagina va a 1200 porque son dos columnas y una fila con foto, pero el
+   aviso es texto de 13px y a 1152 la linea se hacia incomoda. El <hr> queda
+   fuera a proposito: cruza entero porque separa la pagina, no el parrafo. */
+
+.sobre__cierre {
+  max-width: 720px;
+}
+
+/* ⚠️ SE APILAN EN 748, UN CORTE QUE YA EXISTE —el de las tarjetas— y no en el
+   600 que usa `.sobre__autor` aqui mismo. Medido: a 748 el contenedor son 700 y
+   cada columna se queda en 322, que todavia lee bien; a 600 bajarian a 248 y
+   «contencioso-administrativa» ya no cabe en una linea.
+
+   Que los dos cortes de esta pagina no coincidan es a proposito: uno parte una
+   reticula de texto y el otro despega una foto de su parrafo, y no hay motivo
+   para que cedan a la vez. */
+
+@media (max-width: 748px) {
+  .sobre__columnas {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
   }
 }
 
