@@ -3403,10 +3403,16 @@ bloques parsean por separado.
 
 ## Es idempotente, y eso hay que mantenerlo
 
-Ejecutar el build dos veces da exactamente el mismo resultado. Se comprueba en
-el workflow del PR, y falla si no.
+Ejecutar **`build` y `pdf`** dos veces da exactamente el mismo resultado. Se
+comprueba en el workflow del PR, y falla si no.
 
-Dos cosas lo garantizan y ninguna es opcional:
+> ⚠️ **ESTA SECCIÓN DECÍA «el build», Y ERA MEDIA VERDAD QUE COSTÓ UN BUCLE.**
+> El gate del workflow corría `npm run build` dos veces, pero **el PDF no lo
+> escribe build: lo escribe `pdf`**, así que el PDF nunca entraba en la
+> comprobación. Hoy el paso se llama «Comprobar que build y pdf son
+> idempotentes» y encadena los dos. Está contado abajo, en «El PDF».
+
+Tres cosas lo garantizan y ninguna es opcional:
 
 1. **El orden es determinista**: fecha descendente, y el `slug` desempata. Sin
    el desempate, dos artículos del mismo día podrían salir en distinto orden
@@ -3414,10 +3420,17 @@ Dos cosas lo garantizan y ninguna es opcional:
 2. **Ninguna fecha sale del reloj.** Ni la del `<time>`, ni la del `pubDate` del
    feed, ni la del `lastmod` del sitemap, ni la del `dateModified` del JSON-LD:
    todas vienen del campo `fecha`.
+3. **Tampoco las de dentro del PDF**, que son las que se escapan porque no se
+   ven: `/CreationDate` y `/ModDate` del diccionario `/Info`. Las normaliza
+   `pdf.mjs` a la fecha del artículo.
 
 > ⚠️ **Por eso `headerTemplate` del PDF va vacío y no se quita.** Chromium, sin
 > plantilla de cabecera, pinta la suya: el título de la página y **la fecha del
 > día**. Eso cambiaría el PDF en cada ejecución.
+>
+> **Pero eso solo tapa la fecha que se IMPRIME**, y durante un tiempo se dio por
+> hecho que con eso bastaba. La otra va en los metadatos y no se ve al abrir el
+> documento: ver el punto 3.
 
 > **Y por eso se escribe solo si cambia.** `escribirSiCambia()` compara antes de
 > tocar el disco, así que una pasada sin novedades no modifica ninguna marca de
@@ -3436,6 +3449,76 @@ A4, con márgenes de 20/18/20/20 mm.
 >
 > Lo único que `pdf.mjs` añade al documento es **la portada**, que es una pieza
 > que en la web no existe.
+
+### Las fechas de dentro del PDF se normalizan, y es lo que corta el bucle
+
+Chromium escribe en el diccionario `/Info` de cada PDF dos campos con **la hora
+del reloj**:
+
+```
+/CreationDate (D:20260928181252+00'00')
+/ModDate      (D:20260928181252+00'00')
+```
+
+Dos bytes de diferencia bastan para que git vea el archivo modificado. Y el
+efecto no se quedaba en el repositorio: `contenido.yml` **empuja lo generado al
+PR con un PAT**, y un push con PAT sí dispara el workflow, así que cada
+ejecución escribía un PDF nuevo, lo empujaba y arrancaba la siguiente.
+
+> ⚠️ **EL BUCLE ES REAL Y ESTÁ EN EL HISTORIAL.** El PR #4 tiene **siete**
+> commits del bot seguidos, uno cada ~85 s, y los seis últimos cambian solo el
+> PDF: mismo tamaño, 8 bytes distintos, todos dentro de esas dos fechas. **Lo
+> cortó el merge, 14 segundos después del último commit**, no el generador.
+>
+> GitHub no aplicó su protección anti-bucle porque **solo cubre los pushes con
+> `GITHUB_TOKEN`**, y este va con PAT. Eso es a propósito y está razonado en el
+> propio `contenido.yml`: con `GITHUB_TOKEN` el commit del bot se quedaría sin
+> ningún check y un check obligatorio que no se reporta bloquea el merge para
+> siempre. O sea que el PAT no se puede quitar para arreglar esto.
+
+**Lo resuelve `conFechasFijas()` en `scripts/pdf.mjs`**, que sustituye las dos
+fechas por una derivada del campo `fecha` del `articulo.json`:
+
+| | De dónde sale |
+|---|---|
+| Día | el campo `fecha` del JSON |
+| Hora | **09:00 +02:00**, la misma que `fechaISO()` |
+
+> **La hora no se inventa aquí, y conviene saberlo antes de «unificarla» con
+> otra.** `fechaISO()` ya fijaba las 09:00 +02:00 para `article:published_time`,
+> el `datePublished` del JSON-LD y los `<time>` de las tarjetas. El PDF usa esa
+> misma hora, así que **hay una sola hora de publicación en todo el proyecto** y
+> los metadatos del PDF coinciden con lo que declara el HTML.
+
+> ⚠️ **LA SUSTITUCIÓN TIENE QUE MEDIR LO MISMO EN BYTES, y si no, el PDF sale
+> corrupto.** La tabla `xref` del final de un PDF son **offsets absolutos en
+> bytes** desde el principio del archivo: alargar o acortar el `/Info` correría
+> todo lo que viene detrás y dejaría el `xref` apuntando a mitad de un objeto.
+> Algunos lectores lo abrirían igual y otros lo declararían roto, que es el peor
+> reparto posible.
+>
+> El formato de Chromium es `D:YYYYMMDDHHmmSS+00'00'` —**23 bytes**— y el
+> nuestro mide los mismos 23. Verificado. **Aun así se comprueba en caliente**:
+> si la longitud no cuadra, `conFechasFijas()` lanza en vez de escribir, y si no
+> encuentra las dos fechas, también. Lo que no puede pasar es que un cambio de
+> formato de Chromium se publique como un PDF roto.
+
+> **El PDF se escribe con `escribirSiCambia()`, igual que el HTML**, pero con
+> una versión binaria propia: la de `build.mjs` es `utf8` y sobre un PDF
+> devolvería basura. Y `p.pdf()` va **sin `path`**, devolviendo el buffer, para
+> que la versión con la hora del reloj no llegue a pasar por disco.
+
+> ⚠️ **QUÉ CUBRE EL GATE, exactamente.** Toma huellas `sha256` de todo lo que
+> hay bajo `articulos/` más `index.html`, `sitemap.xml` y `feed.xml`, ejecuta
+> `build` y `pdf` una segunda vez, y vuelve a tomarlas. Si alguna cambia, falla
+> y **dice qué archivo**.
+>
+> Ya no usa `git add -A` antes del diff. Funcionaba para lo que escribe `build`,
+> pero ataba la medición al estado del índice de git, que es un sitio raro donde
+> guardar una comprobación, y no decía cuál de los archivos se había movido.
+>
+> Son **dos pasadas en total, no tres**: la primera es la que publica y esta es
+> la segunda.
 
 Qué se imprime y qué no:
 

@@ -15,7 +15,7 @@
    segundo sitio donde vive el articulo y se desincronizaria en silencio.
    ========================================================================== */
 
-import { readdir, readFile, access, mkdir } from 'node:fs/promises';
+import { readdir, readFile, writeFile, access, mkdir } from 'node:fs/promises';
 import { join, dirname, resolve } from 'node:path';
 import { pathToFileURL, fileURLToPath } from 'node:url';
 
@@ -95,6 +95,95 @@ function pie(art) {
   <span>El Derecho Escrito &nbsp;·&nbsp; ${escapar(art.url.replace(/^https:\/\//, ''))}</span>
   <span><span class="pageNumber"></span> / <span class="totalPages"></span></span>
 </div>`;
+}
+
+/* --------------------------------------------------- fechas del PDF ----- */
+
+/* ⚠️ CHROMIUM ESTAMPA LA HORA DEL RELOJ DENTRO DEL PDF, Y ESO ROMPIA LA
+   IDEMPOTENCIA SIN QUE NADA AVISARA. Es el mismo fallo que ya evita el
+   headerTemplate vacio, pero un paso mas adentro: alli la fecha se IMPRIME y
+   se ve; aqui va en el diccionario /Info, que no se ve al abrir el documento.
+
+   El PDF salia con dos campos distintos en cada pasada:
+
+     /CreationDate (D:20260928181252+00'00')
+     /ModDate      (D:20260928181252+00'00')
+
+   Dos bytes de diferencia bastan para que git lo vea modificado. Y el efecto
+   no se quedaba en el repositorio: contenido.yml empuja lo generado al PR con
+   un PAT, y un push con PAT SI dispara el workflow, asi que cada ejecucion
+   generaba un PDF nuevo, lo empujaba y arrancaba la siguiente. El PR #4 tiene
+   siete commits del bot seguidos, uno cada ~85 s, y lo corto el merge, no el
+   generador.
+
+   El gate de idempotencia no podia verlo porque corria `build` dos veces, y
+   `build` no toca el PDF: lo escribe `pdf`. Ahora el gate encadena los dos.
+
+   La hora NO se inventa aqui: son las 09:00 +02:00 de fechaISO(), las mismas
+   que ya usan article:published_time, el datePublished del JSON-LD y los
+   <time> de las tarjetas. Una sola hora de publicacion en todo el proyecto. */
+
+const HORA_PDF = "090000+02'00'";
+
+/* ⚠️ LA SUSTITUCION TIENE QUE MEDIR LO MISMO EN BYTES, y no es un detalle de
+   estilo: la tabla xref del final del PDF son offsets absolutos en bytes desde
+   el principio del archivo. Alargar o acortar el diccionario /Info correria
+   todo lo que viene detras y dejaria el xref apuntando a mitad de un objeto:
+   un PDF que algunos lectores abren y otros declaran corrupto.
+
+   El formato de Chromium es `D:YYYYMMDDHHmmSS+00'00'`, 23 bytes, y el nuestro
+   `D:YYYYMMDD` + HORA_PDF mide los mismos 23. Aun asi se COMPRUEBA abajo en
+   vez de confiarlo: si Chromium cambia de formato, esto tiene que fallar y no
+   escribir un PDF roto. */
+
+const FECHAS = /\/(CreationDate|ModDate)\s*\(D:\d{14}(?:[+-]\d{2}'\d{2}'|Z)?\)/g;
+
+function conFechasFijas(pdf, art) {
+  const marca = `D:${art.fecha.replaceAll('-', '')}${HORA_PDF}`;
+  let halladas = 0;
+
+  /* latin1 y no utf8: el PDF es binario y latin1 es el unico round-trip
+     byte a byte —cada byte 0-255 es un punto de codigo 0-255—. Con utf8
+     cualquier byte alto se reescribiria como U+FFFD y corromperia el archivo. */
+
+  const salida = Buffer.from(
+    pdf.toString('latin1').replace(FECHAS, (_, campo) => {
+      halladas++;
+      return `/${campo} (${marca})`;
+    }),
+    'latin1',
+  );
+
+  if (halladas < 2) {
+    throw new Error(
+      `No se han encontrado /CreationDate y /ModDate en el PDF de ${art.slug} ` +
+      `(halladas: ${halladas}). Chromium ha cambiado como escribe el diccionario ` +
+      '/Info: hay que revisar la expresion FECHAS de scripts/pdf.mjs.',
+    );
+  }
+
+  if (salida.length !== pdf.length) {
+    throw new Error(
+      `La fecha normalizada de ${art.slug} no mide lo mismo que la de Chromium ` +
+      `(${pdf.length} → ${salida.length} bytes). Sustituirla correria los offsets ` +
+      'de la tabla xref y dejaria el PDF corrupto. Revisa HORA_PDF.',
+    );
+  }
+
+  return salida;
+}
+
+/* El equivalente binario de escribirSiCambia() de build.mjs, que es utf8 y
+   sobre un PDF devolveria basura. Mismo motivo que alli: una pasada sin
+   novedades no debe mover la marca de tiempo del archivo ni ensuciar el
+   `git status`. */
+
+async function escribirSiCambia(ruta, buf) {
+  if (await existe(ruta)) {
+    if ((await readFile(ruta)).equals(buf)) return false;
+  }
+  await writeFile(ruta, buf);
+  return true;
 }
 
 /* --------------------------------------------------------- main --------- */
@@ -201,8 +290,11 @@ async function main() {
     const destino = join(RAIZ, 'articulos', slug, `${slug}.pdf`);
     await mkdir(dirname(destino), { recursive: true });
 
-    await p.pdf({
-      path: destino,
+    /* Sin `path`: p.pdf() devuelve el buffer y se escribe mas abajo, ya con
+       las fechas fijadas. Escribiendolo aqui pasaria por disco una version
+       con la hora del reloj, que es justo lo que no debe existir. */
+
+    const bytes = await p.pdf({
       format: 'A4',
       margin: MARGENES,
       printBackground: true,
@@ -214,6 +306,8 @@ async function main() {
       footerTemplate: pie(art),
       preferCSSPageSize: false,
     });
+
+    await escribirSiCambia(destino, conFechasFijas(bytes, art));
 
     await p.close();
     hechos.push(slug);
