@@ -5733,17 +5733,78 @@ Se **esconde la cabecera** y se deja el mensaje, que es el que habla como una
 persona:
 
 ```css
-.comentarios .artalk > .atk-list:has(.atk-no-comment) > .atk-list-header { display: none }
+.comentarios .artalk > .atk-list:has(.atk-list-no-comment) > .atk-list-header { display: none }
 ```
 
 `:has()` es lo que permite distinguir el caso vacío **sin JavaScript**:
-`.atk-no-comment` solo existe cuando no hay comentarios. Es el mismo recurso que
-ya usan `body:has(.progreso)` y la ficha del artículo.
+`.atk-list-no-comment` solo existe cuando no hay comentarios. Es el mismo
+recurso que ya usan `body:has(.progreso)` y la ficha del artículo.
+
+**El árbol que pinta Artalk cuando la lista está vacía**, verificado en el
+navegador y no deducido del bundle:
+
+```
+.atk-list
+  .atk-list-header            ← el recuento «0 comentarios», lo que se esconde
+    .atk-comment-count > .atk-text > span.atk-comment-count-num
+    .atk-right-action
+  .atk-list-body
+    .atk-list-comments-wrap
+      .atk-list-no-comment    ← el mensaje
+    .atk-list-read-more       (display: none)
+  .atk-list-footer            (oculto: el «Powered by»)
+```
+
+> ⚠️ **ESTA SECCIÓN DECÍA `.atk-no-comment` Y ESA CLASE NO EXISTE**, así que la
+> regla no casaba con nada y el recuento «0 comentarios» seguía saliendo.
+>
+> El nombre salió de leer un `grep` **recortado** del bundle: la captura
+> empezaba a mitad de palabra —`t-no-comment"></div>`— y se leyó como el nombre
+> entero cuando era la cola de `atk-lis|t-no-comment`.
+>
+> ⚠️ **Y LA COMPROBACIÓN DE ENTONCES NO LO CAZÓ PORQUE ERA CIRCULAR:** se
+> «verificó» inyectando un elemento **con ese mismo nombre inventado**, así que
+> la prueba confirmaba la suposición en vez de contrastarla. La cabecera pasaba
+> de `flex` a `none`, sí, pero solo ante un elemento que Artalk nunca crea.
+>
+> **La lección, que vale para cualquier integración de terceros:** el árbol se
+> mira en el navegador con el widget montado, no se deduce del código fuente ni
+> de una captura de `grep`. Y si hay que inyectar algo para probar, se copia del
+> DOM real.
 
 Con comentarios, el recuento se queda y se alinea con el resto: Artalk le mete
 17 px de relleno lateral que lo descuadraban respecto al título y al formulario.
-**Verificado inyectando un `.atk-no-comment`**: la cabecera pasa de `flex` a
-`none` y el mensaje queda en x=144, el mismo que el `<h2>` de la sección.
+
+#### El mensaje de lista vacía se centra por DOS mecanismos
+
+```css
+.atk-list-no-comment { text-align: center; justify-content: center; display: flex; height: 150px; font-size: 19px }
+```
+
+> ⚠️ **NO BASTA CON `text-align: left`.** Artalk lo centra con `text-align` **y**
+> con `justify-content` sobre un flex, y el segundo manda sobre el primero:
+> cambiando solo el `text-align` el texto seguiría en el centro.
+>
+> Se resuelve pasando a **`display: block`**, que deja el `justify-content` sin
+> efecto en vez de tener que contrarrestarlo —es una línea de texto, no una fila
+> que colocar— y con ello el `height: 150px` pasa a `auto`.
+
+Y el cuerpo de la lista trae `min-height: 150px`, que reservaba sitio mientras
+carga y con el mensaje ya en una línea dejaba un hueco debajo. Se suelta a 0:
+quien reserva sitio es `.comentarios__caja`, con sus 220 px.
+
+**Verificado inyectando el árbol real** —`.atk-list-no-comment` dentro de
+`.atk-list-body > .atk-list-comments-wrap`, sobre el Artalk ya montado— a 1440,
+768 y 375:
+
+| | |
+|---|---|
+| Cabecera | `flex` → **`none`** |
+| `display` del mensaje | `flex` → **`block`** |
+| Alto | 150 px → **43** |
+| Cuerpo | 19 px → **16**, Source Serif |
+| Color | **`#66615b`** = `--tinta-suave` |
+| x del mensaje / del `<h2>` | **144 / 144** a 1440, **24 / 24** a 768 y 375 |
 
 ### «Powered by Artalk»: se quita con CSS porque no hay opción
 
