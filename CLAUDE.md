@@ -5622,47 +5622,70 @@ Solo los artículos lo llevan; ni la portada, ni el listado, ni `sobre/` ni
 HTML publicado es una `<section>` con su `<h2>`, un `<div>` vacío y dos
 párrafos: **todo lo demás lo monta Artalk en el navegador**.
 
-### Dónde va: justo debajo del artículo
+### Dónde va: detrás de «Compartir», delante del aviso legal
 
 ```
-cuerpo → referencias → COMENTARIOS → Volver → Descargar PDF
-→ Compartir → aviso legal → Leer anterior/siguiente → Continúa leyendo
+cuerpo → referencias → Volver → Descargar PDF → Compartir
+→ COMENTARIOS → aviso legal → Leer anterior/siguiente → Continúa leyendo
 ```
 
-Todo lo que hay entre «Volver» y el aviso son **acciones sobre el artículo**
-—llevárselo en PDF, compartirlo— y el aviso es una nota al pie. Un comentario
-no es ninguna de las dos cosas: es la **continuación de la lectura**, así que va
-pegado a lo que se acaba de leer.
+La lectura del bloque entero es: primero el artículo, después lo que puedes
+**hacer** con él —volver, llevártelo, compartirlo—, después lo que puedes
+**decir** sobre él, y al final la letra pequeña y las salidas a otros artículos.
 
-> ⚠️ **ESTUVO DETRÁS DEL AVISO LEGAL Y SE MOVIÓ POR ENCARGO.** Lo que esta
-> sección razonaba entonces, y que ya **no** describe dónde está:
+> ⚠️ **ES LA TERCERA POSICIÓN, Y LAS DOS ANTERIORES TENÍAN SU PROPIO ARGUMENTO
+> ESCRITO AQUÍ.** Conviene saberlo antes de volver a moverla:
 >
-> > «La frontera no es nueva: este archivo ya documenta que «Leer anterior /
-> > siguiente» va donde la página pasa de «este artículo» a «otros artículos».
-> > Un comentario sigue siendo sobre este, así que cae del lado de acá. Y detrás
-> > del aviso legal porque el aviso es lo que **cierra** el texto: primero se
-> > acaba de leer, después se responde.»
+> | | Dónde | Lo que se razonaba |
+> |---|---|---|
+> | 1ª | detrás del aviso legal | «el aviso **cierra** el texto: primero se acaba de leer, después se responde» |
+> | 2ª | detrás de las referencias, delante de «Volver» | «un comentario es la **continuación de la lectura**, así que va pegado a lo que se acaba de leer» |
+> | **3ª** | **detrás de «Compartir»** | la de ahora |
 >
-> **La primera mitad sigue valiendo** —los comentarios siguen delante de
-> `.paso`, solo que mucho más arriba—. La que decae es la segunda: hoy van
-> **antes** del aviso legal, no después.
+> Las tres son defendibles y las tres se pidieron. Lo que **no** hay que hacer
+> es moverla «porque el comentario de arriba dice otra cosa»: el comentario se
+> actualiza con el encargo, no al revés.
 
-> ⚠️ **EL TRASLADO SE LLEVÓ POR DELANTE UN HUECO, Y NO DABA NINGÚN ERROR.**
-> «Volver a los artículos» **no tiene margen propio**: los 40 px que lo
-> separaban de lo de arriba los ponía el `margin-bottom` de `.referencias`. Al
-> meter los comentarios en medio, ese margen pasa a separar referencias de
-> comentarios y **«Volver» se quedaba pegado a la sección: medido, 0 px**.
+> ⚠️ **LO QUE SÍ ES ESTRUCTURAL, Y NO UNA PREFERENCIA:** va **delante de `.paso`
+> y de `.continua`**. Esos dos son las salidas hacia **otros** artículos, y
+> pedir un comentario después de haber ofrecido la puerta llega tarde.
 >
-> Lo repone un `margin-bottom: 40px` en `.comentarios`, que son los mismos 40
-> de antes, así que el ritmo de esa zona —40 / 40 / 28— se mantiene exacto.
-> Arriba son 56 porque el margen de `.referencias` y el de `.comentarios`
-> **colapsan** y manda el mayor; es el mismo 56 con el que abre `.continua`.
+> Hoy no se ven —con un solo artículo publicado `.paso` no emite ni un byte y
+> `.continua` sale con `hidden`— pero **aparecen solos con el segundo**.
+> Verificado creando un artículo de prueba en local: con los ocho bloques
+> presentes el orden y los huecos salen como aquí se describen. El artículo de
+> prueba se borró de `contenido/` **y** de `articulos/`, que el build no borra.
 
-> **El coste de la posición nueva, que conviene saber:** la salida «Volver a los
-> artículos» queda ahora **después** de una sección que puede ser larga. Se
-> acepta porque esa salida está duplicada —hay otra idéntica al principio del
-> artículo— y porque el cierre real de la página son `.paso` y `.continua`, que
-> siguen abajo.
+#### Los márgenes de la zona, medidos con todo presente
+
+| Hueco | px |
+|---|---|
+| referencias → «Volver» | 40 |
+| «Volver» → botón PDF | 40 |
+| botón PDF → filete de «Compartir» | **28** — el par apretado, deliberado |
+| «Compartir» → filete de COMENTARIOS | **40** |
+| COMENTARIOS → aviso legal | **40** |
+| aviso → `.paso` | 48 |
+| `.paso` → `.continua` | 56 |
+
+Idéntico a 1440, 768 y 375. La zona se lee a un solo ritmo de 40, con el 28 como
+única excepción, y a partir del aviso el aire crece conforme se aleja del texto.
+
+> ⚠️ **ARRIBA ESTUVO EN 56 Y DESENTONABA.** Era el valor de `.continua`, que
+> cierra la página; aquí caía justo **después** del hueco más apretado de la
+> zona —los 28— y hacía el salto más grande de toda la columna. Con 40, el
+> `margin-bottom: 32` de `.compartir` colapsa con él y manda el mayor.
+
+> ⚠️ **EL `margin-bottom` NO SE PUEDE SOLTAR A 0, y el motivo cambió con la
+> posición.** En la 2ª posición existía para que «Volver» no quedara pegado
+> —ese enlace no tiene margen propio y los 40 se los daba `.referencias`—.
+> Hoy ese problema no existe: «Volver» ha vuelto a su sitio y recupera sus 40
+> automáticamente.
+>
+> Pero el margen sigue haciendo falta **por otra razón**: el aviso legal es un
+> `<p>` y le cae `.articulo p`, que trae `margin-top: 0`. Sin estos 40, el aviso
+> quedaría pegado al final de los comentarios. Antes del traslado esa separación
+> la ponía el `margin-bottom: 32` de `.compartir`, que ya no es su vecino.
 
 ### Los campos: el borde pasa del recuadro a cada campo
 

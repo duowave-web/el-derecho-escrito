@@ -483,33 +483,41 @@ function jsonLd(art) {
 
 /* ------------------------------------------------------ comentarios ----- */
 
-/* ⚠️ VA JUSTO DEBAJO DEL ARTÍCULO: detrás de las referencias y DELANTE de
-   «Volver a los artículos». El orden del final queda así:
+/* ⚠️ VA DETRÁS DE «Compartir» Y DELANTE DEL AVISO LEGAL. El orden del final del
+   artículo queda así:
 
-     cuerpo → referencias → COMENTARIOS → Volver → Descargar PDF
-     → Compartir → aviso legal → Leer anterior/siguiente → Continúa leyendo
+     cuerpo → referencias → Volver → Descargar PDF → Compartir
+     → COMENTARIOS → aviso legal → Leer anterior/siguiente → Continúa leyendo
 
-   ⚠️ ESTUVO DETRÁS DEL AVISO LEGAL Y SE MOVIÓ POR ENCARGO. Lo que se razonaba
-   entonces, y que ya NO describe dónde está:
+   La lectura del bloque entero es: primero el artículo, después lo que puedes
+   HACER con él —volver, llevártelo, compartirlo—, después lo que puedes DECIR
+   sobre él, y al final la letra pequeña y las salidas a otros artículos.
 
-     «El comentario de bloquePaso() dice que esa navegación va donde la página
-      pasa de ESTE artículo a OTROS artículos, así que un comentario cae del
-      lado de acá. Y detrás del aviso legal porque el aviso CIERRA el texto:
-      primero se acaba de leer, después se responde.»
+   ⚠️ ESTA ES LA TERCERA POSICIÓN Y LAS DOS ANTERIORES TENÍAN SU PROPIO
+   ARGUMENTO ESCRITO AQUÍ. Conviene saberlo antes de volver a moverla:
 
-   La primera mitad sigue valiendo —los comentarios siguen delante de `.paso`,
-   solo que mucho más arriba—. La que decae es la segunda: hoy los comentarios
-   van ANTES del aviso legal, no después.
+     1ª  detrás del aviso legal, delante de `.paso`
+         «el aviso CIERRA el texto: primero se acaba de leer, después se
+          responde»
+     2ª  justo detrás de las referencias, delante de «Volver»
+         «un comentario es la continuación de la lectura, así que va pegado a
+          lo que se acaba de leer»
+     3ª  **la de ahora**, detrás de «Compartir»
 
-   El criterio nuevo es que todo lo que hay entre «Volver» y el aviso son
-   ACCIONES SOBRE EL ARTÍCULO —llevárselo en PDF, compartirlo— y el aviso es
-   una nota al pie. Un comentario no es ninguna de las dos cosas: es la
-   continuación de la lectura, así que va pegado a lo que se acaba de leer.
+   Las tres son defendibles y las tres se pidieron. Lo que NO hay que hacer es
+   moverla «porque el comentario de arriba dice otra cosa»: el comentario se
+   actualiza con el encargo, no al revés.
 
-   El coste, que conviene saber: la salida «Volver a los artículos» queda ahora
-   DESPUÉS de una sección que puede ser larga. Se acepta porque esa salida está
-   duplicada —hay otra idéntica al principio del artículo— y porque el cierre
-   real de la página son `.paso` y `.continua`, que siguen abajo.
+   ⚠️ LO QUE SÍ ES ESTRUCTURAL, Y NO UNA PREFERENCIA: va delante de `.paso` y de
+   `.continua`. Esos dos son las salidas hacia OTROS artículos, y pedir un
+   comentario después de haber ofrecido la puerta llega tarde. Hoy no se ven
+   —con un solo artículo publicado `.paso` no emite ni un byte y `.continua`
+   sale con `hidden`— pero aparecen solos con el segundo.
+
+   ⚠️ Y HAY UN MARGEN QUE DEPENDE DE ESTA POSICIÓN. El aviso legal es un <p> y
+   le cae `.articulo p`, con `margin-top: 0`: la separación la tiene que poner
+   el `margin-bottom` de `.comentarios`. Está razonado sobre esa regla, en
+   styles.css.
 
    ⚠️ LA CAJA SE QUEDA VACÍA EN EL HTML, Y ESO ES LO QUE LA HACE SEGURA. Aquí no
    se escribe ni un campo: lo monta Artalk en el navegador cuando el lector se
@@ -734,7 +742,7 @@ ${pintarIndice(art.secciones, conNumero)}
 ${art.secciones.map((s) => pintarSeccion(s, conNumero)).join('\n\n')}
 
           </div>
-${pintarReferencias(art)}${bloqueComentarios(art)}
+${pintarReferencias(art)}
           <a class="volver volver--cierre" href="../../articulos/">
             <span class="volver__flecha" aria-hidden="true">&larr;</span>Volver a los artículos
           </a>
@@ -801,7 +809,7 @@ ${pintarReferencias(art)}${bloqueComentarios(art)}
                 </a>
               </li>
             </ul>
-          </aside>
+          </aside>${bloqueComentarios(art)}
 
           <p class="aviso"><em>Este artículo tiene carácter informativo y divulgativo y no constituye asesoramiento jurídico. La valoración de un asunto concreto requiere analizar sus circunstancias particulares. Si deseas plantear una consulta relacionada con su contenido o con las materias que aborda, puedes hacerlo a través de la <a href="../../contacto/">página de contacto</a>.</em></p>${bloquePaso(vecinos)}
 
