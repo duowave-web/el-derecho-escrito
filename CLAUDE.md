@@ -3925,6 +3925,12 @@ Un solo archivo por artículo, en `contenido/articulos/<slug>/`, junto a su
 `portada.jpg`. **El nombre de la carpeta y el campo `slug` tienen que
 coincidir**, y el build falla si no —es lo único que ata la URL al contenido.
 
+> ⚠️ **EL EJEMPLO DE ABAJO NO ES EL ARTÍCULO REAL, aunque lleve su slug.** Está
+> recortado y trae dos campos que el de MASC no tiene —`actualizado` y
+> `destacado`—, puestos para enseñarlos. Van marcados en el propio bloque.
+> **No se copia de aquí para comprobar qué hay publicado**: para eso está el
+> JSON, y la tabla de «El estado de hoy» dice cómo leerlo.
+
 ```jsonc
 {
   "slug": "masc-requisito-procedibilidad",
@@ -3935,9 +3941,9 @@ coincidir**, y el build falla si no —es lo único que ata la URL al contenido.
   "categoria": "jurisprudencia",
   "etiquetas": ["MASC", "LO 1/2025", "Procedibilidad"],
   "keywords": ["requisito de procedibilidad MASC", "LO 1/2025 negociación previa"],
-  "fecha": "2026-09-20",
-  "actualizado": "2026-10-15",
-  "destacado": true,
+  "fecha": "2026-09-28",
+  "actualizado": "2026-10-15",   // ← INVENTADO: el artículo real no lo lleva
+  "destacado": true,             // ← INVENTADO: el artículo real no lo lleva
 
   "secciones": [
     {
@@ -4833,9 +4839,41 @@ Dos, y hacen cosas distintas.
 
 ### `contenido.yml` — el PR de n8n
 
-Se dispara con `pull_request` cuando el PR toca `contenido/**`, `scripts/**` o
-`css/**`. Instala, genera, **empuja lo generado al mismo PR**, adjunta el PDF y
-las capturas como artefacto y comenta los avisos.
+Se dispara con `pull_request` **en todos los PR, sin filtro de rutas**. Instala,
+genera, **empuja lo generado al mismo PR**, adjunta el PDF y las capturas como
+artefacto y comenta los avisos.
+
+#### Corre en TODOS los PR, y el filtro `paths` se quitó a propósito
+
+> ⚠️ **ESTUVO FILTRADO A `contenido/**`, `scripts/**` Y `css/**`, y esta sección
+> lo decía.** Son las rutas que de verdad cambian lo generado, así que el filtro
+> parecía gratis. **No lo es, en cuanto `generar` sea un check obligatorio.**
+>
+> El problema no es lo que el filtro deja pasar: es lo que **no dispara**. En un
+> PR que no toca ninguna de las tres —solo HTML, solo `CLAUDE.md`, solo el propio
+> workflow— el job no corre y el check **no se reporta nunca**. Y un check
+> obligatorio que no se reporta no cuenta como ausente:
+>
+> | | Qué ve GitHub | Qué pasa |
+> |---|---|---|
+> | check en rojo | `failure` | el merge se bloquea **y se explica** |
+> | check sin reportar | `pending` para siempre | el merge se bloquea **y no hay nada que mirar** |
+>
+> Es el mismo modo de fallo que ya razona el bloque del PAT —un check obligatorio
+> que no llega a la cabeza del PR— entrando por la otra puerta: allí era el
+> commit del bot el que se quedaba sin check, y aquí el PR entero.
+>
+> **El precio es correr el job en PR que no cambian el sitio**, y se acepta: es
+> tiempo de runner y nada más. El generador es idempotente, así que ahí no
+> encuentra nada que empujar y termina en verde sin tocar el repositorio.
+>
+> ⚠️ **Y no se salta ningún paso en esos PR, tampoco el `build` ni la vista
+> previa.** La tentación es condicionarlos a «¿ha cambiado algo que importe?»,
+> y esa pregunta es justo la que ya salió mal una vez: el comentario del bot la
+> respondía por su cuenta y por eso anunciaba fallos que no existían. Un PR de
+> CSS o de HTML **necesita** la vista previa, que es lo único que enseña si algo
+> se ha descolocado. Si algún día sobra, que se salte con un `if:` en el paso y
+> nunca saltando el job, o volvemos a tener un check que no se reporta.
 
 > ⚠️ **ASUME QUE EL PR SE ABRE EN ESTE MISMO REPOSITORIO, NO DESDE UN FORK.** Es
 > lo que permite usar `pull_request` a secas: en un PR desde un fork el
@@ -4844,12 +4882,124 @@ las capturas como artefacto y comenta los avisos.
 > implicaciones de seguridad**, porque ese evento ejecuta el workflow de la rama
 > base con permisos de escritura sobre código que viene de fuera.
 
-Permisos: `contents: write` y `pull-requests: write`. Nada más.
+Permisos: `contents: write`, `pull-requests: write` y `deployments: write`.
+Nada más.
+
+#### Un PR de artículo produce DOS ejecuciones, y cada una hace la mitad
+
+Es la pieza que más cuesta creerse, y de no entenderla salió una X roja que
+parecía un error y no lo era.
+
+El checkout usa un **PAT**, no el `GITHUB_TOKEN`, justamente para que el push del
+bot dispare una segunda ejecución —si no, el commit del bot se quedaría sin
+ningún check y un check obligatorio que no llega a la cabeza bloquea el merge
+para siempre—. Está razonado sobre el propio `token:`.
+
+Así que el reparto es:
+
+| | Ejecución A (commit del autor) | Ejecución B (commit del bot) |
+|---|---|---|
+| Genera HTML, PDF, sitemap, feed | sí | sí |
+| Comprueba idempotencia | sí | sí |
+| ¿Encuentra algo que empujar? | **sí → empuja** | no |
+| Deployment, vista previa, capturas, comentario | **no, se corta** | **sí** |
+| Cómo termina | **verde** | verde |
+
+La bisagra es el output **`cambios`** del paso «Añadir lo generado al PR»: si ha
+empujado vale `si`, y todos los pasos de después llevan
+`if: steps.publicar.outputs.cambios != 'si'`.
+
+> ⚠️ **ESTO ESTUVO RESUELTO CON `cancel-in-progress: true`, Y ERA UNA
+> AUTOCANCELACIÓN.** El workflow empuja a la misma rama que lo dispara, así que
+> su propio push metía una ejecución nueva en el mismo grupo de concurrencia y
+> **mataba a la que estaba empujando**:
+>
+> ```
+> A empuja ──> evento `synchronize` ──> B entra en el grupo ──> B cancela a A
+> ```
+>
+> A moría con seis pasos por delante. El PR #6 lo enseña: X roja sobre el commit
+> del autor, check verde sobre el del bot, 23 minutos entre los dos.
+>
+> **No bloqueaba el merge** —la cabeza es el commit del bot y ahí el check está
+> en verde— pero el cliente veía una X roja, y `PARA-EL-CLIENTE.md` le enseña que
+> los colores significan algo.
+>
+> Hoy `cancel-in-progress: false`. Y **no se arregla quitando el PAT**: eran dos
+> cosas incompatibles —empujar con PAT o cancelar en curso— y la que se conserva
+> es el PAT.
+
+> ⚠️ **NINGÚN DEPLOYMENT PUEDE QUEDARSE COLGADO EN `in_progress`, y es por cómo
+> encadenan los dos `if`.** «Abrir el deployment» también se salta cuando se ha
+> empujado, así que `steps.deploy.outputs.id` queda vacío; y «Cerrar el
+> deployment» lleva `always() && steps.deploy.outputs.id`, que con el id vacío no
+> se ejecuta. O se abren y cierran los dos, o no se abre ninguno.
+>
+> Con la cancelación sí podía pasar: A abría el deployment y moría antes de
+> cerrarlo.
 
 > **El comentario se reutiliza en vez de apilarse.** Un PR con tres correcciones
 > acabaría con tres listas de avisos y habría que mirar la fecha para saber cuál
 > vale. Se busca un comentario con la marca `<!-- avisos-del-build -->` y se
 > edita.
+
+#### El comentario del bot tiene TRES estados, no dos
+
+| Estado | Cuándo | Qué dice |
+|---|---|---|
+| **Con artículo** | el job va bien y el PR trae `contenido/articulos/<slug>/` | vista previa, PDF, qué mirar y cómo publicar |
+| **Sin artículos** | el job va bien y el PR no trae ninguno | que no hay texto nuevo, que las páginas se han regenerado y que el sitio entero está en «View deployment». **Sin alarma** |
+| **Fallo** | `job.status !== 'success'` | que no se ha podido generar y que el motivo está en «Checks» |
+
+> ⚠️ **ERAN DOS ESTADOS Y EL SEGUNDO MENTÍA.** La condición era
+> `sha && slugs.length`, así que **cualquier PR sin artículo** —de diseño, de
+> código, de documentación— caía en la rama del error y anunciaba «El artículo no
+> se ha podido generar» con el check en verde y la vista previa desplegada. Pasó
+> en el PR #6.
+>
+> Y el daño de fondo no era el susto: **el mensaje de error estaba ocupado por un
+> caso que no es un error**, así que el día que un PR del cliente fallara de
+> verdad habría salido el mismo texto y no habría forma de distinguirlos.
+>
+> El fallo se detecta ahora por **`job.status`**, que es el estado real, no por
+> una lista de slugs que no dice nada del éxito del build.
+
+> ⚠️ **LOS SLUGS SALEN DEL PASO `art`, Y ANTES SE CALCULABAN DOS VECES.** El
+> comentario hacía su propio `pulls.listFiles` y trataba el caso vacío **al
+> revés** que el resto del job: `art` lo tolera y cae a la raíz del sitio —por eso
+> la vista previa se desplegaba y el check salía verde—, mientras que el
+> comentario lo daba por fallo de generación. Dos respuestas opuestas a la misma
+> pregunta, en el mismo job.
+>
+> De paso se va el `per_page: 100` de `listFiles`, que en un PR grande podía
+> dejar el artículo fuera de la lista y disparar el mismo falso aviso.
+
+#### Los avisos se reparten: los del PR arriba, los ajenos en un desplegable
+
+`.avisos.json` lo escribe el build recorriendo **todos** los artículos del sitio,
+no los del PR. Así que en un PR de un artículo se colaban en la misma lista los
+avisos de los demás, presentados como si fueran del texto que el cliente está
+revisando.
+
+El reparto usa el prefijo `<slug>: ` que el build pone delante de muchos avisos:
+
+| Aviso | Dónde va |
+|---|---|
+| prefijo de un artículo **que este PR no toca** | desplegable «no son de este PR» |
+| prefijo del artículo del PR | lista principal |
+| **sin prefijo** | lista principal |
+
+> ⚠️ **QUE LOS AVISOS SIN PREFIJO SE QUEDEN ARRIBA ES DELIBERADO, Y ES EL PUNTO
+> DELICADO.** Hoy `build.mjs` **no prefija todos**: varios se escriben como «La
+> imagen de portada de **este** artículo no la has aportado tú…», sin decir de
+> cuál. Y ese es justamente el aviso que el cliente tiene que leer.
+>
+> Repartir «lo que no sé de quién es» al desplegable escondería lo importante, y
+> el desplegable existe para quitar ruido, no para enterrar avisos.
+>
+> **La solución completa es que `build.mjs` prefije SIEMPRE con el slug**, y
+> entonces el reparto sería exacto. Mientras no lo haga, esto es lo que se puede
+> hacer sin mentir. Es una deuda anotada, no un olvido.
 
 > **Por qué se empuja al PR y no se publica directamente.** Lo generado es
 > revisable: un titular mal cortado o una imagen que recorta donde no debe se
@@ -4949,7 +5099,19 @@ Para que nadie lo busque:
 
 | Slug | Categoría | Fecha | Min | Palabras | Qué es |
 |---|---|---|---|---|---|
-| `masc-requisito-procedibilidad` | Comentario | 2026-09-20 | 15 | 2 853 | el artículo real, texto del cliente |
+| `masc-requisito-procedibilidad` | **Jurisprudencia** | **2026-09-28** | 15 | 2 853 | el artículo real, texto del cliente |
+
+> ⚠️ **ESTA FILA DECÍA «Comentario» Y «2026-09-20», Y LAS DOS ERAN FALSAS.** La
+> categoría «Comentario» **se eliminó del sitio** —está razonado arriba, en «La
+> categoría se escribe UNA vez»— y este artículo pasó a `jurisprudencia`; la
+> fecha del `articulo.json` es el 28, no el 20.
+>
+> Ninguna de las dos daba error, porque **esta tabla es prosa**: nada la compara
+> con el JSON. Se verifican así:
+>
+> ```sh
+> python3 -c "import json;d=json.load(open('contenido/articulos/masc-requisito-procedibilidad/articulo.json'));print(d['fecha'],d['categoria'])"
+> ```
 
 Sigue siendo el que prueba el formato entero: cinco apartados numerados I–V, una
 cita con fuente, una lista con ordinales, once referencias en tres grupos y
