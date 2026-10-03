@@ -5622,21 +5622,406 @@ Solo los artículos lo llevan; ni la portada, ni el listado, ni `sobre/` ni
 HTML publicado es una `<section>` con su `<h2>`, un `<div>` vacío y dos
 párrafos: **todo lo demás lo monta Artalk en el navegador**.
 
-### Dónde va, y por qué ahí
+### Dónde va: detrás de «Compartir», delante del aviso legal
 
 ```
-referencias → volver → Descargar PDF → Compartir → aviso legal
-→ COMENTARIOS → Leer anterior/siguiente → Continúa leyendo
+cuerpo → referencias → Volver → Descargar PDF → Compartir
+→ COMENTARIOS → aviso legal → Leer anterior/siguiente → Continúa leyendo
 ```
 
-La frontera no es nueva: este archivo ya documenta que «Leer anterior /
-siguiente» va **donde la página pasa de «este artículo» a «otros artículos»**.
-Un comentario sigue siendo sobre este, así que cae del lado de acá. Y detrás
-del aviso legal porque el aviso es lo que **cierra** el texto: primero se acaba
-de leer, después se responde.
+La lectura del bloque entero es: primero el artículo, después lo que puedes
+**hacer** con él —volver, llevártelo, compartirlo—, después lo que puedes
+**decir** sobre él, y al final la letra pequeña y las salidas a otros artículos.
 
-Ponerlo detrás de `.paso` habría obligado a pasar por «vete a leer otra cosa»
-antes de poder comentar.
+> ⚠️ **ES LA TERCERA POSICIÓN, Y LAS DOS ANTERIORES TENÍAN SU PROPIO ARGUMENTO
+> ESCRITO AQUÍ.** Conviene saberlo antes de volver a moverla:
+>
+> | | Dónde | Lo que se razonaba |
+> |---|---|---|
+> | 1ª | detrás del aviso legal | «el aviso **cierra** el texto: primero se acaba de leer, después se responde» |
+> | 2ª | detrás de las referencias, delante de «Volver» | «un comentario es la **continuación de la lectura**, así que va pegado a lo que se acaba de leer» |
+> | **3ª** | **detrás de «Compartir»** | la de ahora |
+>
+> Las tres son defendibles y las tres se pidieron. Lo que **no** hay que hacer
+> es moverla «porque el comentario de arriba dice otra cosa»: el comentario se
+> actualiza con el encargo, no al revés.
+
+> ⚠️ **LO QUE SÍ ES ESTRUCTURAL, Y NO UNA PREFERENCIA:** va **delante de `.paso`
+> y de `.continua`**. Esos dos son las salidas hacia **otros** artículos, y
+> pedir un comentario después de haber ofrecido la puerta llega tarde.
+>
+> Hoy no se ven —con un solo artículo publicado `.paso` no emite ni un byte y
+> `.continua` sale con `hidden`— pero **aparecen solos con el segundo**.
+> Verificado creando un artículo de prueba en local: con los ocho bloques
+> presentes el orden y los huecos salen como aquí se describen. El artículo de
+> prueba se borró de `contenido/` **y** de `articulos/`, que el build no borra.
+
+#### Los márgenes de la zona, medidos con todo presente
+
+| Hueco | px |
+|---|---|
+| referencias → «Volver» | 40 |
+| «Volver» → botón PDF | 40 |
+| botón PDF → filete de «Compartir» | **28** — el par apretado, deliberado |
+| «Compartir» → filete de COMENTARIOS | **40** |
+| COMENTARIOS → aviso legal | **40** |
+| aviso → `.paso` | 48 |
+| `.paso` → `.continua` | 56 |
+
+Idéntico a 1440, 768 y 375. La zona se lee a un solo ritmo de 40, con el 28 como
+única excepción, y a partir del aviso el aire crece conforme se aleja del texto.
+
+> ⚠️ **ARRIBA ESTUVO EN 56 Y DESENTONABA.** Era el valor de `.continua`, que
+> cierra la página; aquí caía justo **después** del hueco más apretado de la
+> zona —los 28— y hacía el salto más grande de toda la columna. Con 40, el
+> `margin-bottom: 32` de `.compartir` colapsa con él y manda el mayor.
+
+> ⚠️ **EL `margin-bottom` NO SE PUEDE SOLTAR A 0, y el motivo cambió con la
+> posición.** En la 2ª posición existía para que «Volver» no quedara pegado
+> —ese enlace no tiene margen propio y los 40 se los daba `.referencias`—.
+> Hoy ese problema no existe: «Volver» ha vuelto a su sitio y recupera sus 40
+> automáticamente.
+>
+> Pero el margen sigue haciendo falta **por otra razón**: el aviso legal es un
+> `<p>` y le cae `.articulo p`, que trae `margin-top: 0`. Sin estos 40, el aviso
+> quedaría pegado al final de los comentarios. Antes del traslado esa separación
+> la ponía el `margin-bottom: 32` de `.compartir`, que ya no es su vecino.
+
+### Los campos: el borde pasa del recuadro a cada campo
+
+Artalk envuelve el editor en un recuadro con filete y radio 6, y dentro pone los
+campos **sin borde** —`2px solid transparent`—, así que el nombre, el correo y
+el comentario se leían como texto suelto dentro de una caja.
+
+Se invierte: **el recuadro se va y el borde pasa a cada campo**, que es como
+funciona el formulario de `contacto/`. Los valores son los mismos, uno por uno:
+
+| | `.campo input` de contacto/ | comentarios |
+|---|---|---|
+| Relleno | 12px 14px | **igual** |
+| Familia y cuerpo | Inter 0,95rem | **igual** |
+| Filete | 1px `--borde` | **igual** |
+| Radio | **0** | **igual** |
+| Foco | 2px `--acento`, offset 1 | **igual** |
+
+Nombre y correo van en pareja con `repeat(auto-fit, minmax(220px, 1fr))`, el
+mismo recurso que `.campos-par`: hace el trabajo de una media query, así que no
+hay ningún número que mantener sincronizado con un corte. Medido:
+
+| | 1440 | 768 | 375 |
+|---|---|---|---|
+| Nombre + correo | 352 + 352 | 352 + 352 | **327, apilados** |
+| Comentario | 720 | 720 | 327 |
+| Botón a la derecha | ✓ | ✓ | ✓ |
+
+El botón toma el estilo de `.boton.boton--principal` —Inter 14/500, relleno
+13/26, radio 4, relleno de acento—. Hay que soltarle el `height: 30px` y el
+`min-width` de Artalk o el relleno no cabe.
+
+> **La caja exterior no hace falta**, y por eso se quita: con los tres campos ya
+> delimitados sería una caja dentro de otra, y el formulario de `contacto/`
+> tampoco la tiene. El `.atk-bottom` viene en `space-between`, así que con el
+> grupo de la izquierda vacío —sin emoticonos, vista previa ni subir imagen— el
+> botón queda a la derecha él solo, sin tocar la alineación.
+
+### La lista vacía decía dos veces lo mismo
+
+Salían a la vez «0 comentarios» en la cabecera, a la izquierda, y «Todavía no
+hay comentarios» debajo, centrado y con otra tipografía.
+
+Se **esconde la cabecera** y se deja el mensaje, que es el que habla como una
+persona:
+
+```css
+.comentarios .artalk > .atk-list:has(.atk-list-no-comment) > .atk-list-header { display: none }
+```
+
+`:has()` es lo que permite distinguir el caso vacío **sin JavaScript**:
+`.atk-list-no-comment` solo existe cuando no hay comentarios. Es el mismo
+recurso que ya usan `body:has(.progreso)` y la ficha del artículo.
+
+**El árbol que pinta Artalk cuando la lista está vacía**, verificado en el
+navegador y no deducido del bundle:
+
+```
+.atk-list
+  .atk-list-header            ← el recuento «0 comentarios», lo que se esconde
+    .atk-comment-count > .atk-text > span.atk-comment-count-num
+    .atk-right-action
+  .atk-list-body
+    .atk-list-comments-wrap
+      .atk-list-no-comment    ← el mensaje
+    .atk-list-read-more       (display: none)
+  .atk-list-footer            (oculto: el «Powered by»)
+```
+
+> ⚠️ **ESTA SECCIÓN DECÍA `.atk-no-comment` Y ESA CLASE NO EXISTE**, así que la
+> regla no casaba con nada y el recuento «0 comentarios» seguía saliendo.
+>
+> El nombre salió de leer un `grep` **recortado** del bundle: la captura
+> empezaba a mitad de palabra —`t-no-comment"></div>`— y se leyó como el nombre
+> entero cuando era la cola de `atk-lis|t-no-comment`.
+>
+> ⚠️ **Y LA COMPROBACIÓN DE ENTONCES NO LO CAZÓ PORQUE ERA CIRCULAR:** se
+> «verificó» inyectando un elemento **con ese mismo nombre inventado**, así que
+> la prueba confirmaba la suposición en vez de contrastarla. La cabecera pasaba
+> de `flex` a `none`, sí, pero solo ante un elemento que Artalk nunca crea.
+>
+> **La lección, que vale para cualquier integración de terceros:** el árbol se
+> mira en el navegador con el widget montado, no se deduce del código fuente ni
+> de una captura de `grep`. Y si hay que inyectar algo para probar, se copia del
+> DOM real.
+
+Con comentarios, el recuento se queda y se alinea con el resto: Artalk le mete
+17 px de relleno lateral que lo descuadraban respecto al título y al formulario.
+
+#### El mensaje de lista vacía se centra por DOS mecanismos
+
+```css
+.atk-list-no-comment { text-align: center; justify-content: center; display: flex; height: 150px; font-size: 19px }
+```
+
+> ⚠️ **NO BASTA CON `text-align: left`.** Artalk lo centra con `text-align` **y**
+> con `justify-content` sobre un flex, y el segundo manda sobre el primero:
+> cambiando solo el `text-align` el texto seguiría en el centro.
+>
+> Se resuelve pasando a **`display: block`**, que deja el `justify-content` sin
+> efecto en vez de tener que contrarrestarlo —es una línea de texto, no una fila
+> que colocar— y con ello el `height: 150px` pasa a `auto`.
+
+Y el cuerpo de la lista trae `min-height: 150px`, que reservaba sitio mientras
+carga y con el mensaje ya en una línea dejaba un hueco debajo. Se suelta a 0:
+quien reserva sitio es `.comentarios__caja`, con sus 220 px.
+
+**Verificado inyectando el árbol real** —`.atk-list-no-comment` dentro de
+`.atk-list-body > .atk-list-comments-wrap`, sobre el Artalk ya montado— a 1440,
+768 y 375:
+
+| | |
+|---|---|
+| Cabecera | `flex` → **`none`** |
+| `display` del mensaje | `flex` → **`block`** |
+| Alto | 150 px → **43** |
+| Cuerpo | 19 px → **16**, Source Serif |
+| Color | **`#66615b`** = `--tinta-suave` |
+| x del mensaje / del `<h2>` | **144 / 144** a 1440, **24 / 24** a 768 y 375 |
+
+### «1 COMENTARIOS»: Artalk no sabe de plurales
+
+Su traductor es un **reemplazo de marcadores y nada más** —`{count}` por el
+número, con una expresión regular— así que la cadena del recuento es la misma
+para 0, para 1 y para 20. No hay forma de arreglarlo desde el objeto de
+traducción.
+
+Lo corrige `recuentoEnPlural()` en `main.js`, que cambia la palabra a singular
+cuando el número es 1.
+
+> ⚠️ **VIGILA EL DOM Y NO ESCUCHA LOS EVENTOS DE ARTALK**, que también existen
+> —`list-loaded`, `comment-inserted`, `comment-deleted`…—. Con los eventos
+> habría que acertar con **todos** los que cambian el número **y** llegar
+> después de que Artalk haya repintado; perder esa carrera deja «1 comentarios»
+> otra vez, en silencio. Un observador se entera de cualquier repintado, venga
+> del evento que venga.
+
+> ⚠️ **Y NO SE CICLA, aunque el observador vigile justo lo que la función
+> escribe:** antes de tocar nada comprueba si la palabra ya es la correcta y se
+> va. La escritura es idempotente, así que la mutación que ella misma provoca no
+> produce una segunda escritura.
+>
+> **Una bandera no habría servido**: los callbacks del observador son
+> microtareas, así que ya estaría a `false` cuando llegasen.
+
+El plural es el valor por defecto en el objeto de traducción, así que si esto no
+llegara a ejecutarse el peor caso es el fallo de hoy, no uno nuevo. Verificado
+inyectando el marcado real del recuento: **0 → «0 comentarios», 1 → «1
+comentario», 2 → «2 comentarios», 21 → «21 comentarios»**, y estable al repetir.
+
+### «22 hace unos minutos»: la fecha relativa va por `dateFormatter`, no por el locale
+
+El número salía **delante** de la cadena traducida, que es donde el inglés pone
+«ago». Lo escribe así Artalk, con un literal de plantilla:
+
+```js
+`${minutos} ${t("minutes")}`        `${horas} ${t("hours")}`
+```
+
+⚠️ **NO SE PUEDE ARREGLAR DESDE EL OBJETO DE TRADUCCIÓN, y es lo primero que se
+intenta.** Las claves `seconds`, `minutes`, `hours` y `days` **no tienen ningún
+marcador de posición** —ni `{count}` ni equivalente—, así que no hay forma de
+decirle que el número va detrás. `now` sí se usa sola, sin número.
+
+⚠️ **Y TAMPOCO SE PARCHEA EL DOM, aunque el recuento de aquí al lado sí lo
+haga.** Aquí hay una opción de configuración, **`dateFormatter(fecha) => texto`**,
+y el observador sería peor: Artalk pinta la fecha en **dos** sitios y habría que
+cubrir los dos a mano. La opción los cubre sola porque la llaman los dos.
+
+La cadena completa, leída en el bundle **servido** —no en el repositorio de
+Artalk, que puede ir por otra versión—:
+
+| # | Dónde | Qué hace |
+|---|---|---|
+| 1 | la configuración | `dateFormatter: i.dateFormatter` — reenvía la opción a cada comentario |
+| 2 | al montar | `getDateFormatted()` → `this.opts.dateFormatter?.call(…) \|\| f(n, T)` |
+| 3 | cada 30 s | repasa `[data-atk-comment-date]` y reescribe el `innerText` |
+
+El punto 3 es el que mantiene las fechas al día sin recargar, y es justo el que
+un observador se habría dejado.
+
+> ⚠️ **NO TOCA NINGÚN ATRIBUTO, que era el riesgo.** La marca de tiempo exacta
+> vive en `data-atk-comment-date` y Artalk la escribe en una línea **aparte** de
+> la del texto, así que el formateador no la ve. Comprobado además que
+> `.atk-date` es un `<span>` **sin `title`**: hoy la fecha exacta no se enseña al
+> pasar el ratón, así que no había ningún tooltip que conservar. Si algún día se
+> quiere, es un `title` aparte y esto no estorba.
+
+Los tramos son **los mismos que los de Artalk**, a propósito: así el widget no
+cambia de comportamiento, solo de idioma.
+
+| Transcurrido | Artalk | Ahora |
+|---|---|---|
+| menos de 10 s | «just now» | **ahora mismo** |
+| 10–59 s | «N seconds ago» | hace N segundos |
+| 1–59 min | «N minutes ago» | hace N minutos |
+| 1–23 h | «N hours ago» | hace N horas |
+| 1–7 días | «N days ago» | hace N días |
+| 8 días o más | **`2026-10-03`** | **3 de octubre de 2026** |
+| en el futuro | «just now» | ahora mismo |
+
+El último tramo es el único donde se cambia la **forma** y no solo el idioma: la
+fecha larga es la grafía que ya usan la ficha del artículo y las tarjetas.
+
+> ⚠️ **NO HAY «AYER», y no es un olvido.** Artalk no lo distingue —un día dice
+> «1 days ago»— y añadirlo obliga a **mezclar dos aritméticas que no coinciden**:
+> «hace un día» se cuenta en tiempo transcurrido y «ayer» en días de calendario.
+> Alrededor de la medianoche discrepan —un comentario de las 23:00 leído a la
+> 01:00 tiene dos horas y es de ayer— y cualquiera de las dos salidas se lee mal
+> en algún caso. Es una decisión de diseño, no un detalle de implementación, así
+> que no se mete de tapadillo.
+
+> ⚠️ **LAS CUATRO CLAVES DEL LOCALE SIGUEN AHÍ Y YA NO DICEN «hace unos
+> minutos».** Son el **respaldo**: solo se ven si `dateFormatter` devolviera algo
+> vacío, porque Artalk hace `|| f(n, T)`. Con la redacción anterior ese respaldo
+> **reproducía el fallo exacto** —«22 hace unos minutos»—, así que se cambiaron a
+> `"minutos"`, `"horas"`, `"días"` y `"segundos"` a secas: no se pueden arreglar
+> ahí, pero sí se puede elegir una redacción que aguante **detrás de un número**.
+> Degrada a «22 minutos», que no miente. **`now` va sola y sigue siendo una frase
+> entera.**
+
+**Verificado** ejecutando en el navegador la función **tal como se publica**
+—extraída del archivo, no reescrita para la prueba— sobre los dieciocho casos de
+la matriz, con los cuatro saltos de singular y los dos extremos:
+
+| | |
+|---|---|
+| 9 s / 10 s | ahora mismo · **hace 10 segundos** |
+| 59 s / 60 s | hace 59 segundos · **hace 1 minuto** |
+| 22 min | **hace 22 minutos** — el caso del fallo |
+| 59 min / 1 h | hace 59 minutos · **hace 1 hora** |
+| 23 h / 24 h | hace 23 horas · **hace 1 día** |
+| 7 días / 8 días | hace 7 días · **26 de septiembre de 2026** |
+| en el futuro | ahora mismo |
+
+> ⚠️ **LO QUE NO SE HA PODIDO PROBAR ES EL CAMINO ENTERO, y conviene saberlo.**
+> Con el servidor rechazando `localhost` por CORS, `/api/v2/conf` falla y Artalk
+> **no llega a pintar ni un comentario**, así que no hay ningún `.atk-date` real
+> que leer. Lo verificado es la función y, por lectura del bundle servido, los
+> tres puntos de la cadena. **La comprobación que falta es abrir la preview con
+> el origen permitido y mirar una fecha de verdad.**
+
+### Fuera el enlace «Mensajes», que abre el panel lateral
+
+Aparece a la derecha del recuento en cuanto el lector se identifica —basta con
+haber comentado una vez— y abre una capa con «Messages», «Mentions», «Mine» y
+«Pending» **en inglés**: esas cadenas no están en el objeto de traducción de la
+interfaz, viven en el panel, que es otra aplicación.
+
+> ⚠️ **NO HAY OPCIÓN DE CONFIGURACIÓN**, comprobado en el bundle: el enlace no
+> depende de ninguna opción sino de si hay usuario identificado —
+> `Text = t.is_admin ? T("ctrlCenter") : T("msgCenter")` … `else
+> n.classList.add("atk-hide")`— y `showSidebar()` se invoca **desde un solo
+> sitio**, el `onclick` de ese elemento. Al ocultarlo no queda ningún otro
+> acceso.
+
+> ⚠️ **ESTO NO LE QUITA NADA AL AUTOR.** Responder con la etiqueta «Autor» es
+> cosa del **editor** —escribe su nombre y su correo, Artalk le pide la
+> contraseña— y no pasa por el panel. Y moderar lo hace en
+> `comentarios.elderechoescrito.es/admin`, que es una URL aparte y la que ya
+> documenta `PARA-EL-CLIENTE.md`. Lo único que pierde es un atajo que además
+> estaba en inglés.
+
+Se oculta **solo ese `<span>`** y no todo `.atk-right-action`: ahí dentro vive
+también `admin-close-comment` —cerrar los comentarios de la página—, que es una
+acción de moderación legítima, está traducida y no abre ningún panel.
+
+### «Responder @Nombre» salía cortado
+
+Lo cortaba un `max-width: 8em` de Artalk, que a 14 px son 112: cualquier nombre
+de más de ocho caracteres perdía el final.
+
+> ⚠️ **NO BASTA CON SOLTAR EL TOPE.** Con solo quitarlo, un nombre muy largo no
+> se recorta: **desborda la fila**. Un item de flex no baja de su tamaño de
+> contenido salvo que se le diga, y aquí hay **tres anidados**
+> —`.atk-bottom-left`, `.atk-state-wrap`, `.atk-state-btn`— que hay que dejar
+> encoger antes de que el recorte pueda actuar.
+>
+> Medido a 1440 con un nombre de 925 px: sin la cadena desbordaba; con ella se
+> recorta a 671 y el aspa sigue en su sitio. Un nombre normal —«Arnau Montero
+> Miranda», 258 px— no se recorta nada.
+
+> ⚠️ **POR DEBAJO DE 768 px ESA ETIQUETA NO EXISTE:** Artalk la oculta entera en
+> una media query propia y deja solo el aspa. No es cosa de estas reglas y no se
+> repone: en una columna de 327 px el nombre no cabría de todas formas.
+
+### Los dos nombres de una respuesta salían de tamaños distintos
+
+«Arnau ▸ Juan Contera» con el segundo más grande. La causa era que **mi propia
+regla estaba medio muerta**:
+
+| Elemento | Qué es | Artalk le pone |
+|---|---|---|
+| `.atk-item.atk-nick` | el autor del comentario | **`font-size: 14px`** |
+| `.atk-reply-at > .atk-nick` | a quién responde | *nada de tamaño* |
+
+Y su selector del primero —`.atk-comment > .atk-main > .atk-header
+.atk-item.atk-nick`— pesa **(0,4,0)**, más que los (0,3,0) de
+`.comentarios .artalk .atk-nick`. Así que de los dos nombres, el mío ganaba
+**solo en el segundo**: 14 px contra 16,8 en la misma línea, sin que nada
+avisara.
+
+Se sube a **(0,6,0)** nombrando los dos casos a la vez. Verificado: los dos en
+Cormorant Garamond 16,8 px, peso 600, y la fecha intacta en Inter 12 px
+`--tinta-suave`.
+
+### «Powered by Artalk»: se quita con CSS porque no hay opción
+
+> ⚠️ **SE COMPROBÓ ANTES DE RECURRIR AL CSS.** En el bundle de la v2.10.0 las
+> únicas apariciones de «copyright» son **el nombre de la clase y la plantilla
+> del DOM**: no existe ninguna opción de configuración que lo gobierne. El texto
+> lo escribe el propio Artalk al emitir su evento `mounted`:
+>
+> ```js
+> e.on("mounted", () => { …querySelector(".atk-copyright").innerHTML = "Powered By …" })
+> ```
+>
+> Quitarlo desde JS sería una **carrera** contra ese manejador —si el nuestro
+> corre antes, Artalk lo vuelve a escribir—, así que el CSS es además la vía
+> **fiable**, no solo la única.
+>
+> Se oculta el **pie entero** y no solo `.atk-copyright`: el pie trae su propio
+> relleno y dejaría un hueco al final de la lista.
+>
+> La licencia **MIT** de Artalk permite quitar la atribución de la interfaz. El
+> aviso de copyright del código sigue intacto en los archivos que sirve el
+> servidor de comentarios.
+
+### ⚠️ Estos estilos ganan por especificidad, no por orden
+
+**La hoja de Artalk la inyecta `main.js` en el `<head>` en tiempo de ejecución**,
+o sea **después** de `styles.css`: en un empate gana siempre ella.
+
+Sus selectores son del tipo `.artalk > .atk-list > .atk-list-header`, (0,3,0).
+El prefijo `.comentarios` añade una clase y deja los de aquí en (0,4,0). **Quien
+quite ese prefijo para «simplificar» desactiva la regla** sin que nada avise.
 
 ### El `pageKey` lo escribe el build, y es lo que sobrevive a la mudanza
 
@@ -5781,6 +6166,114 @@ lo único que saldría es un título sobre un hueco.
 
 **Verificado**: el PDF sigue en 13 páginas y 543 730 bytes, los mismos que
 antes de esto, y la palabra «Comentarios» no aparece en su texto.
+
+### La plantilla de correo: `servidor/artalk/correo.html`
+
+Artalk manda dos avisos —uno al autor por cada comentario nuevo y otro a un
+lector cuando le responden— y por defecto usa una plantilla **en chino**, con un
+botón «回复» y «Powered By Artalk Go» al pie.
+
+La propia está en **`servidor/artalk/correo.html`**.
+
+> ⚠️ **ESE ARCHIVO NO LO SIRVE LA WEB NI LO LEE NINGÚN NAVEGADOR.** Vive en el
+> repositorio solo para tenerlo versionado; quien lo usa es el servidor de
+> comentarios, que lo lee de su carpeta de datos. **Copiarlo al repositorio no
+> lo instala**: hay que subirlo al servidor, y los pasos están abajo.
+>
+> ⚠️ **Y NO PUEDE LLEVAR NI UN SECRETO.** El repositorio es público y GitHub
+> Pages sirve la raíz, así que es descargable en
+> `/servidor/artalk/correo.html`. Hoy son textos y colores; quien lo edite que
+> no meta claves ni direcciones privadas.
+
+#### Las variables, verificadas y con su fuente
+
+De la documentación oficial de Artalk, [Email
+Notifications](https://artalk.js.org/en/guide/backend/email):
+
+| Variable | Qué es |
+|---|---|
+| `{{nick}}` | apodo de quien comenta |
+| `{{content}}` | contenido del comentario |
+| `{{reply_nick}}` | apodo del destino de la respuesta |
+| `{{reply_content}}` | contenido de la respuesta |
+| `{{page_title}}` | título de la página |
+| `{{page_url}}` | URL de la página |
+| `{{link_to_reply}}` | enlace al comentario |
+| `{{site_name}}` | nombre del sitio |
+| `{{site_url}}` | URL del sitio |
+
+Y dos espacios de nombres completos, `{{comment.*}}` —el comentario que dispara
+el aviso— y `{{parent_comment.*}}` —al que responde—, con estos campos:
+`badge_color`, `badge_name`, `content`, `content_raw`, `date`, `datetime`,
+`email`, `email_encrypted`, `id`, `is_allow_reply`, `is_collapsed`,
+`is_pending`, `link`, `nick`, `page_key`, `page_title`, `rid`, `site_name`,
+`time`, `ua`, `visible`, `vote_down`, `vote_up`, más `page.*` y `site.*`.
+
+> ⚠️ **LA PLANTILLA USA `{{comment.*}}` Y NO LAS SUELTAS, A PROPÓSITO.** Cuál es
+> cuál en el par `{{nick}}` / `{{reply_nick}}` depende de si el correo avisa de
+> una respuesta o de un comentario nuevo, y la documentación no lo deja cerrado:
+> lo único que lo desambigua es el asunto por defecto —«You have received a
+> reply from @{{reply_nick}}»—, de donde se deduce que `reply_nick` es **quien
+> responde** y `nick` **quien recibe**.
+>
+> `{{comment.nick}}` y `{{comment.content}}` son siempre el comentario que ha
+> disparado el aviso, valga para el caso que valga. Es menos que fiarse de una
+> deducción.
+
+> ⚠️ **NO SE MUESTRA EL COMENTARIO AL QUE SE RESPONDE, y es una limitación
+> conocida, no un olvido.** Haría falta un condicional —algo como
+> `{{#parent_comment}}…{{/parent_comment}}`— para no pintar un bloque vacío en
+> los avisos de comentario nuevo, que no tienen padre.
+>
+> **No he podido verificar que el motor admita condicionales.** La documentación
+> dice «sintaxis Mustache» pero lista las variables anidadas con **punto**
+> —`{{comment.page.admin_only}}`—, que es lo que hace un mapa aplanado con
+> reemplazo simple, no un Mustache de verdad. Y un Mustache de verdad anidaría
+> objetos.
+>
+> La plantilla de hoy **es correcta en los dos casos** sin condicionales. Si
+> alguien confirma que las secciones funcionan, el bloque del comentario
+> original se añade con `{{parent_comment.nick}}` y `{{parent_comment.content}}`.
+> **Hasta entonces no se añaden**: un `{{#…}}` que no se interprete sale impreso
+> en el correo.
+
+#### Cómo se instala en el servidor
+
+```sh
+# 1. Subir el archivo desde el Mac
+scp servidor/artalk/correo.html \
+    TU_USUARIO@comentarios.elderechoescrito.es:/opt/comentarios/elderechoescrito/data/
+
+# 2. En el docker-compose.yml de Artalk, dentro de `environment:`
+#    La ruta es la de DENTRO del contenedor, no la del host.
+      - ATK_EMAIL_MAIL_TPL=/data/correo.html
+
+# 3. Recargar
+docker compose up -d
+```
+
+> ⚠️ **LA RUTA DE LA VARIABLE ES LA DE DENTRO DEL CONTENEDOR.** `scp` deja el
+> archivo en el host, en `/opt/comentarios/elderechoescrito/data/`; lo que ve
+> Artalk es el punto de montaje. Con el montaje habitual
+> —`/opt/comentarios/elderechoescrito/data:/data`— eso es `/data/correo.html`.
+> **Hay que comprobar el `volumes:` del compose antes de dar el valor por
+> bueno**: si el montaje fuera otro, la variable apunta a un archivo que no
+> existe y Artalk cae a su plantilla en chino **sin dar ningún error**.
+
+El nombre de la variable sale de la convención documentada —[Environment
+Variables](https://artalk.js.org/en/guide/env): «*Environment variable names
+start with `ATK_`, in all uppercase, corresponding to each node in the
+configuration file*»— aplicada a la clave `email.mail_tpl`.
+
+> **Pendiente, y es otra tarea:** los ASUNTOS siguen en chino. Son dos claves
+> aparte, `email.mail_subject` —aviso al lector— y `admin_notify.mail_subject`
+> —aviso al autor—, y son las que hacen que un comentario nuevo se anuncie como
+> «has recibido una respuesta». La plantilla no las toca.
+>
+> ⚠️ **Sus nombres como variable de entorno NO están verificados.** La
+> convención daría `ATK_EMAIL_MAIL_SUBJECT`, pero la de `admin_notify` no se ha
+> podido confirmar. Conviene ponerlas en el archivo de configuración, donde las
+> claves sí están documentadas, en vez de adivinar el nombre de la variable.
 
 ### Cómo se modera
 

@@ -193,6 +193,19 @@ distinga de la de cualquier otra persona.
 > La contraseña te la pide solo la primera vez en cada navegador. Si la has
 > olvidado, dímelo y la cambio.
 
+> **Ya no sale el enlace «Mensajes» junto al recuento de comentarios**, el que
+> abría un panel lateral en inglés. Se quitó porque estaba sin traducir y no
+> hacía falta: para responder tienes el formulario de la propia página, y para
+> moderar, el panel de administración de abajo. No has perdido ninguna función.
+
+> **La antigüedad de cada comentario ya se lee bien.** Ponía «22 hace unos
+> minutos», con el número delante y la frase detrás, porque el sistema venía
+> pensado en inglés. Ahora dice **«hace 22 minutos»**, y también «hace 1 minuto»,
+> «hace 3 horas» o «hace 2 días» según toque.
+>
+> A partir de la semana y pico deja de contar hacia atrás y pone la fecha
+> entera —«3 de octubre de 2026»—, que a esas alturas dice más que «hace 9 días».
+
 ## Borrar un comentario
 
 Si estás identificado como autor, cada comentario te muestra un enlace
@@ -220,3 +233,20 @@ haya que ajustar el filtro.
 > **Un comentario pendiente no se pierde solo.** Se queda ahí hasta que alguien
 > lo apruebe o lo borre, así que conviene mirar el panel de vez en cuando —no a
 > diario, pero sí si has publicado algo que esté teniendo movimiento.
+
+## Los correos de aviso
+
+Recibes un correo cada vez que alguien comenta, y quien comenta recibe otro si
+le responden.
+
+Esos correos **estaban en chino**: era la plantilla que trae el sistema de
+fábrica. Ahora llevan una propia, en español y con los colores de la web: dicen
+quién ha comentado y en qué artículo, muestran el comentario y traen un botón
+**«Ver el comentario»**.
+
+> **Lo que todavía está en chino es el ASUNTO del correo** —la línea que se ve
+> en la bandeja de entrada—, que se configura aparte. Está anotado y lo cambio
+> en cuanto toque el servidor.
+>
+> Por eso ahora mismo puede que el asunto diga «has recibido una respuesta»
+> aunque sea un comentario nuevo. El contenido del correo sí es correcto.

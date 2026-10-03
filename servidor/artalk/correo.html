@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--
+  Plantilla de correo de Artalk para El Derecho Escrito.
+  Razonada entera en CLAUDE.md, en «La plantilla de correo»: por que estas
+  variables y no las sueltas, por que tablas y estilos en linea, y como se
+  instala en el servidor.
+
+  OJO AL EDITAR: este comentario viaja dentro de cada correo que se envia, asi
+  que va corto y SIN marcadores de variable. Artalk sustituye cualquier marcador
+  que encuentre, tambien los que esten dentro de un comentario, de modo que
+  nombrar aqui una variable meteria los datos del comentarista en todos los
+  mensajes para nada.
+-->
+<meta name="color-scheme" content="light">
+<meta name="supported-color-schemes" content="light">
+<title>{{site_name}}</title>
+</head>
+
+<body style="margin:0; padding:0; width:100%; background-color:#f6f5f7;">
+
+<!-- Preencabezado: lo que el gestor de correo enseña como resumen junto al
+     asunto. Oculto en el cuerpo del mensaje. -->
+<div style="display:none; font-size:1px; color:#f6f5f7; line-height:1px; max-height:0; max-width:0; opacity:0; overflow:hidden;">
+  {{comment.nick}} ha comentado en {{comment.page_title}}
+</div>
+
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+       style="background-color:#f6f5f7; margin:0; padding:0;">
+  <tr>
+    <td align="center" style="padding:24px 12px;">
+
+      <!-- 600 px es el ancho que entra sin barra lateral en Outlook y sin
+           reescalado en un móvil. Por encima, Outlook corta. -->
+      <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0"
+             style="width:100%; max-width:600px; background-color:#ffffff; border:1px solid #e5e1da;">
+
+        <!-- Mancheta -->
+        <tr>
+          <td style="padding:28px 30px 0 30px;">
+            <p style="margin:0; font-family:Georgia,'Times New Roman',serif; font-size:17px; font-weight:bold; letter-spacing:0.08em; text-transform:uppercase; color:#1e1e1e;">
+              {{site_name}}
+            </p>
+          </td>
+        </tr>
+
+        <!-- Qué ha pasado -->
+        <tr>
+          <td style="padding:22px 30px 0 30px;">
+            <p style="margin:0; font-family:Georgia,'Times New Roman',serif; font-size:21px; line-height:1.35; color:#1e1e1e;">
+              <strong style="font-weight:bold;">{{comment.nick}}</strong> ha comentado en
+              &laquo;{{comment.page_title}}&raquo;
+            </p>
+          </td>
+        </tr>
+
+        <!-- El comentario, citado. El filete lateral es el mismo recurso que usa
+             la web para los extractos citados. -->
+        <tr>
+          <td style="padding:20px 30px 0 30px;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+              <tr>
+                <td style="border-left:3px solid #2f6e68; padding:2px 0 2px 16px;
+                           font-family:Georgia,'Times New Roman',serif; font-size:16px;
+                           line-height:1.65; color:#66615b;">
+                  {{comment.content}}
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- Botón. Va como tabla con fondo y no como <a> con padding porque
+             Outlook ignora el padding de un enlace y el botón se queda en una
+             línea de texto suelta. -->
+        <tr>
+          <td style="padding:26px 30px 0 30px;">
+            <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+              <tr>
+                <td align="center" style="background-color:#2f6e68;">
+                  <a href="{{link_to_reply}}"
+                     style="display:inline-block; padding:13px 26px;
+                            font-family:Helvetica,Arial,sans-serif; font-size:14px;
+                            font-weight:bold; letter-spacing:0.01em;
+                            color:#ffffff; text-decoration:none;">
+                    Ver el comentario
+                  </a>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- Enlace en texto, por si el botón no se pinta o el cliente bloquea
+             los estilos. Sin esto, un correo sin CSS se queda sin salida. -->
+        <tr>
+          <td style="padding:16px 30px 28px 30px;">
+            <p style="margin:0; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:1.6; color:#66615b;">
+              Si el botón no funciona, copia esta dirección en tu navegador:<br>
+              <a href="{{link_to_reply}}" style="color:#2f6e68; text-decoration:underline; word-break:break-all;">{{link_to_reply}}</a>
+            </p>
+          </td>
+        </tr>
+
+        <!-- Pie -->
+        <tr>
+          <td style="padding:18px 30px 24px 30px; border-top:1px solid #e5e1da;">
+            <p style="margin:0; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:1.6; color:#66615b;">
+              Recibes este aviso porque dejaste tu correo al comentar en
+              <a href="{{site_url}}" style="color:#2f6e68; text-decoration:none;">{{site_name}}</a>.
+              Tu dirección no se publica en ningún momento.
+            </p>
+          </td>
+        </tr>
+
+      </table>
+    </td>
+  </tr>
+</table>
+
+</body>
+</html>

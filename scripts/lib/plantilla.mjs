@@ -483,22 +483,41 @@ function jsonLd(art) {
 
 /* ------------------------------------------------------ comentarios ----- */
 
-/* ⚠️ VA DESPUÉS DEL AVISO LEGAL Y ANTES DE «Leer anterior / siguiente», y la
-   frontera no es arbitraria: es la que este archivo ya usa.
+/* ⚠️ VA DETRÁS DE «Compartir» Y DELANTE DEL AVISO LEGAL. El orden del final del
+   artículo queda así:
 
-   El comentario de `bloquePaso()` dice que esa navegación va «donde la página
-   pasa de ESTE artículo a OTROS artículos». Un comentario sigue siendo sobre
-   este, así que cae del lado de acá de esa frontera. Y va detrás del aviso
-   legal porque el aviso es lo que CIERRA el texto: primero se acaba de leer,
-   después se responde.
+     cuerpo → referencias → Volver → Descargar PDF → Compartir
+     → COMENTARIOS → aviso legal → Leer anterior/siguiente → Continúa leyendo
 
-   El orden del final del artículo queda:
+   La lectura del bloque entero es: primero el artículo, después lo que puedes
+   HACER con él —volver, llevártelo, compartirlo—, después lo que puedes DECIR
+   sobre él, y al final la letra pequeña y las salidas a otros artículos.
 
-     referencias → volver → Descargar PDF → Compartir → aviso legal
-     → COMENTARIOS → Leer anterior/siguiente → Continúa leyendo
+   ⚠️ ESTA ES LA TERCERA POSICIÓN Y LAS DOS ANTERIORES TENÍAN SU PROPIO
+   ARGUMENTO ESCRITO AQUÍ. Conviene saberlo antes de volver a moverla:
 
-   Ponerlo detrás de `.paso` habría obligado a pasar por «vete a leer otra cosa»
-   antes de poder comentar.
+     1ª  detrás del aviso legal, delante de `.paso`
+         «el aviso CIERRA el texto: primero se acaba de leer, después se
+          responde»
+     2ª  justo detrás de las referencias, delante de «Volver»
+         «un comentario es la continuación de la lectura, así que va pegado a
+          lo que se acaba de leer»
+     3ª  **la de ahora**, detrás de «Compartir»
+
+   Las tres son defendibles y las tres se pidieron. Lo que NO hay que hacer es
+   moverla «porque el comentario de arriba dice otra cosa»: el comentario se
+   actualiza con el encargo, no al revés.
+
+   ⚠️ LO QUE SÍ ES ESTRUCTURAL, Y NO UNA PREFERENCIA: va delante de `.paso` y de
+   `.continua`. Esos dos son las salidas hacia OTROS artículos, y pedir un
+   comentario después de haber ofrecido la puerta llega tarde. Hoy no se ven
+   —con un solo artículo publicado `.paso` no emite ni un byte y `.continua`
+   sale con `hidden`— pero aparecen solos con el segundo.
+
+   ⚠️ Y HAY UN MARGEN QUE DEPENDE DE ESTA POSICIÓN. El aviso legal es un <p> y
+   le cae `.articulo p`, con `margin-top: 0`: la separación la tiene que poner
+   el `margin-bottom` de `.comentarios`. Está razonado sobre esa regla, en
+   styles.css.
 
    ⚠️ LA CAJA SE QUEDA VACÍA EN EL HTML, Y ESO ES LO QUE LA HACE SEGURA. Aquí no
    se escribe ni un campo: lo monta Artalk en el navegador cuando el lector se
@@ -790,9 +809,9 @@ ${pintarReferencias(art)}
                 </a>
               </li>
             </ul>
-          </aside>
+          </aside>${bloqueComentarios(art)}
 
-          <p class="aviso"><em>Este artículo tiene carácter informativo y divulgativo y no constituye asesoramiento jurídico. La valoración de un asunto concreto requiere analizar sus circunstancias particulares. Si deseas plantear una consulta relacionada con su contenido o con las materias que aborda, puedes hacerlo a través de la <a href="../../contacto/">página de contacto</a>.</em></p>${bloqueComentarios(art)}${bloquePaso(vecinos)}
+          <p class="aviso"><em>Este artículo tiene carácter informativo y divulgativo y no constituye asesoramiento jurídico. La valoración de un asunto concreto requiere analizar sus circunstancias particulares. Si deseas plantear una consulta relacionada con su contenido o con las materias que aborda, puedes hacerlo a través de la <a href="../../contacto/">página de contacto</a>.</em></p>${bloquePaso(vecinos)}
 
           <section class="continua" id="continua" aria-labelledby="continua-titulo" hidden>
             <h2 id="continua-titulo" class="lista__titulo lista__titulo--destacado">Continúa leyendo</h2>

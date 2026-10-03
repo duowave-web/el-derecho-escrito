@@ -5167,8 +5167,35 @@ body:has(.progreso) .cabecera {
    articulo y tienen que leerse como piezas hermanas, no como una pieza del
    sitio y un widget pegado. */
 
+/* ⚠️ 40 ARRIBA Y 40 ABAJO, Y LOS DOS ESTAN MEDIDOS CONTRA EL RITMO DE LA ZONA.
+
+   La seccion vive entre «Compartir» y el aviso legal, en una zona cuyos huecos
+   son 40 / 40 / 28:
+
+     referencias → «Volver»             40
+     «Volver» → boton PDF               40
+     boton PDF → filete de «Compartir»  28   <- el par apretado, deliberado
+     «Compartir» → filete de aqui       40
+     aqui → aviso legal                 40
+
+   ⚠️ ARRIBA ESTUVO EN 56 Y DESENTONABA. Era el valor de `.continua`, que cierra
+   la pagina; aqui caia justo despues del hueco mas apretado de la zona —los
+   28— y hacia el salto mas grande de toda la columna. Con 40 la zona entera se
+   lee a un solo ritmo, con el 28 como unica excepcion a proposito.
+
+   El `margin-bottom` de `.compartir` son 32 y COLAPSA con este: manda el mayor,
+   asi que los 40 salen de aqui.
+
+   ⚠️ Y EL `margin-bottom` NO SE PUEDE SOLTAR A 0. El aviso legal es un <p> y le
+   cae `.articulo p`, que trae `margin-top: 0`: sin estos 40, el aviso quedaria
+   PEGADO al final de los comentarios. Antes del traslado esa separacion la
+   ponia el `margin-bottom: 32` de `.compartir`, que ahora ya no es su vecino.
+
+   Hacia abajo sigue habiendo progresion: 48 del aviso a `.paso` y 56 de `.paso`
+   a `.continua`, o sea que cuanto mas lejos del texto, mas aire. */
+
 .comentarios {
-  margin-top: 56px;
+  margin: 40px 0;
   padding-top: 40px;
   border-top: 1px solid var(--borde);
 }
@@ -5226,13 +5253,34 @@ body:has(.progreso) .cabecera {
 
 /* Los nombres de quien comenta van en la familia de titulares, como los
    titulares de tarjeta, y la fecha en la de interfaz con el cuerpo y el
-   tracking de los metadatos del sitio. Son las dos unicas reglas que tocan
-   clases de Artalk: el resto lo hacen las variables. */
+   tracking de los metadatos del sitio.
 
-.comentarios .artalk .atk-nick {
+   ⚠️ ESTA REGLA ESTABA MEDIO MUERTA Y POR ESO LOS DOS NOMBRES DE UNA RESPUESTA
+   SALIAN DE TAMAÑOS DISTINTOS —«Arnau ▸ Arnau» con el segundo mas grande—.
+
+   Artalk tiene DOS elementos de nombre en la cabecera de un comentario, y los
+   viste de forma desigual:
+
+     .atk-item.atk-nick          el autor del comentario   -> le pone 14px
+     .atk-reply-at > .atk-nick   a quien responde          -> NO le pone tamaño
+
+   Y su selector del primero, `.atk-comment > .atk-main > .atk-header
+   .atk-item.atk-nick`, pesa (0,4,0): mas que los (0,3,0) de
+   `.comentarios .artalk .atk-nick`. Asi que de los dos nombres, el mio ganaba
+   SOLO en el segundo. El resultado era 14px contra 16,8px en la misma linea,
+   sin que nada avisara.
+
+   Se sube a (0,6,0) nombrando los dos casos a la vez. El `a` del final hace
+   falta porque cuando el comentarista dejo web, el nombre va dentro de un
+   enlace que Artalk viste por separado. */
+
+.comentarios .artalk .atk-comment .atk-header .atk-item.atk-nick,
+.comentarios .artalk .atk-comment .atk-header .atk-item.atk-nick a,
+.comentarios .artalk .atk-comment .atk-header .atk-reply-at .atk-nick {
   font-family: var(--display);
   font-size: 1.05rem;
   font-weight: 600;
+  line-height: 1.3;
 }
 
 .comentarios .artalk .atk-date {
@@ -5260,14 +5308,311 @@ body:has(.progreso) .cabecera {
   display: none;
 }
 
-/* El anillo de foco de los campos. Artalk trae el suyo, pero en su azul; este
-   es el mismo que usan los campos del formulario de contacto. */
+/* ⚠️ TODO LO QUE SIGUE GANA POR ESPECIFICIDAD, NO POR ORDEN, Y ES OBLIGATORIO
+   QUE SEA ASI. La hoja de Artalk la inyecta main.js en el <head> EN TIEMPO DE
+   EJECUCION, o sea DESPUES de esta: en un empate gana siempre ella.
 
+   Sus selectores son del tipo `.artalk > .atk-list > .atk-list-header`, o sea
+   (0,3,0). El prefijo `.comentarios` añade una clase y deja los de aqui en
+   (0,4,0). Quien quite ese prefijo para «simplificar» desactiva la regla sin
+   que nada avise. */
+
+/* ⚠️ FUERA LA CAJA DEL EDITOR. Artalk envuelve los campos en un recuadro con
+   filete y radio 6, y dentro los campos van SIN borde —`2px solid transparent`—
+   asi que el nombre, el correo y el comentario se leian como texto suelto
+   dentro de una caja.
+
+   Se invierte: el recuadro se va y el borde pasa a cada campo, que es como
+   funciona el formulario de contacto. No hay caja dentro de caja y los tres
+   campos se distinguen solos. */
+
+.comentarios .artalk .atk-main-editor {
+  margin-bottom: 0;
+  border: none;
+  border-radius: 0;
+  background: none;
+  overflow: visible;
+}
+
+/* Nombre y correo en pareja, apilados cuando no caben. Es el mismo
+   `auto-fit` + `minmax(220px, 1fr)` que usa `.campos-par` en contacto/: hace el
+   trabajo de una media query, asi que no hay un numero que mantener
+   sincronizado con ningun corte.
+
+   El campo de web esta en `display: none` mas arriba, asi que no cuenta como
+   celda y la fila queda en dos. */
+
+.comentarios .artalk .atk-main-editor > .atk-header {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  padding: 0;
+  margin-bottom: 16px;
+}
+
+/* Los mismos valores que `.campo input` de contacto/, uno por uno: relleno
+   12/14, Inter a 0,95rem, filete de 1px en --borde y RADIO 0 —que es la
+   decision documentada para los controles de formulario del sitio, aunque los
+   botones si lleven 4—. */
+
+.comentarios .artalk .atk-main-editor > .atk-header input,
+.comentarios .artalk .atk-main-editor > .atk-textarea-wrap > .atk-textarea {
+  width: 100%;
+  padding: 12px 14px;
+  font-family: var(--ui);
+  font-size: 0.95rem;
+  border: 1px solid var(--borde);
+  border-radius: 0;
+  background: var(--papel);
+  color: var(--tinta);
+  transition: border-color 160ms ease;
+}
+
+/* Artalk separa los campos con `margin-right: 2px` entre hermanos. Con la
+   rejilla el hueco lo pone el `gap`, y ese margen descuadraba la segunda
+   columna. */
+
+.comentarios .artalk .atk-main-editor > .atk-header input:not(:last-child) {
+  margin-right: 0;
+}
+
+.comentarios .artalk .atk-main-editor > .atk-textarea-wrap > .atk-textarea {
+  min-height: 140px;
+  resize: vertical;
+}
+
+/* El anillo de foco, igual que en contacto/: 2px de acento con 1 de separacion.
+   Artalk trae el suyo en azul. */
+
+.comentarios .artalk input:focus,
+.comentarios .artalk textarea:focus,
 .comentarios .artalk input:focus-visible,
 .comentarios .artalk textarea:focus-visible,
 .comentarios .artalk button:focus-visible {
   outline: 2px solid var(--acento);
-  outline-offset: 2px;
+  outline-offset: 1px;
+}
+
+/* La fila del boton. Artalk la trae en `space-between`, asi que con el grupo de
+   la izquierda vacio —no hay emoticonos, ni vista previa, ni subir imagen— el
+   boton ya queda a la derecha solo. Aqui solo se le da aire por arriba. */
+
+.comentarios .artalk .atk-main-editor > .atk-bottom {
+  padding: 16px 0 0;
+}
+
+/* El boton con el estilo de `.boton.boton--principal`: Inter 14/500, relleno
+   13/26, radio 4 y relleno de acento. Hay que soltar el `height: 30px` y el
+   `min-width` de Artalk o el relleno no cabe. */
+
+.comentarios .artalk .atk-main-editor > .atk-bottom .atk-send-btn {
+  height: auto;
+  min-width: 0;
+  padding: 13px 26px;
+  font-family: var(--ui);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  border: 1px solid var(--acento);
+  border-radius: 4px;
+  background: var(--acento);
+  color: #fff;
+  transition: all 0.15s ease;
+}
+
+.comentarios .artalk .atk-main-editor > .atk-bottom .atk-send-btn:hover {
+  background: var(--acento-oscuro);
+  border-color: var(--acento-oscuro);
+}
+
+/* ------------------------------------------------- la lista ------------ */
+
+/* ⚠️ SIN COMENTARIOS SE DECIAN DOS VECES LAS MISMAS: la cabecera ponia «0
+   comentarios» a la izquierda y debajo salia «Todavia no hay comentarios»
+   centrado y con otra tipografia.
+
+   Se esconde la CABECERA y se deja el mensaje, que es el que habla como una
+   persona. `:has()` es lo que permite distinguir el caso vacio sin JavaScript:
+   `.atk-list-no-comment` solo existe cuando la lista esta vacia.
+
+   Es el mismo recurso que ya usan `body:has(.progreso)` y la ficha del
+   articulo, asi que no se estrena nada.
+
+   ⚠️ LA CLASE ES `.atk-list-no-comment` Y AQUI DECIA `.atk-no-comment`, ASI QUE
+   LA REGLA NO CASABA CON NADA Y EL RECUENTO «0 comentarios» SEGUIA SALIENDO.
+
+   El nombre equivocado salio de leer un `grep` RECORTADO del bundle: la captura
+   empezaba a mitad de palabra —«t-no-comment"></div>»— y se leyo como el nombre
+   entero cuando en realidad era la cola de «atk-lis|t-no-comment».
+
+   Y la comprobacion de entonces no lo cazo porque se hizo inyectando un
+   elemento con ESE MISMO nombre inventado: la prueba confirmaba la suposicion
+   en vez de contrastarla. El arbol real hay que mirarlo en el navegador, que es
+   de donde sale este:
+
+     .atk-list
+       .atk-list-header          <- el recuento, lo que se esconde
+       .atk-list-body
+         .atk-list-comments-wrap
+           .atk-list-no-comment  <- el mensaje
+       .atk-list-footer
+
+   ⚠️ DENTRO DE `:has()` VA UN DESCENDIENTE Y NO UN HIJO DIRECTO: el mensaje
+   cuelga de `.atk-list-body > .atk-list-comments-wrap`, dos niveles por debajo
+   de `.atk-list`. */
+
+.comentarios .artalk > .atk-list:has(.atk-list-no-comment) > .atk-list-header {
+  display: none;
+}
+
+/* El mensaje de lista vacia. Artalk lo trae como una caja flex de 150px de
+   alto, centrada en los dos ejes y a 19px; aqui va alineado a la izquierda con
+   el titulo de la seccion y con la tipografia del cuerpo.
+
+   ⚠️ NO BASTA CON `text-align: left`. Artalk lo centra con DOS mecanismos a la
+   vez —`text-align: center` y `justify-content: center` sobre un flex— y el
+   segundo manda sobre el primero: cambiando solo el `text-align`, el texto
+   seguiria en el centro.
+
+   Se resuelve pasando a `display: block`, que deja el `justify-content` sin
+   efecto en vez de tener que contrarrestarlo: es una linea de texto, no una
+   fila que colocar. Y con ello el `height: 150px` pasa a `auto`. */
+
+.comentarios .artalk .atk-list-no-comment {
+  display: block;
+  height: auto;
+  padding: 8px 0;
+  text-align: left;
+  font-family: var(--texto);
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--tinta-suave);
+}
+
+/* ⚠️ Y EL CUERPO DE LA LISTA RESERVA 150px QUE YA NO HACEN FALTA. Artalk le pone
+   `min-height: 150px` para que la caja no se encoja mientras carga; con el
+   mensaje ya en una linea, eso dejaba un hueco vacio debajo de el.
+
+   Quien ya reserva sitio es `.comentarios__caja`, con sus 220px, asi que este
+   es redundante. */
+
+.comentarios .artalk > .atk-list > .atk-list-body {
+  min-height: 0;
+}
+
+/* Con comentarios, el recuento alinea con el resto de la seccion: Artalk le
+   mete 17px de relleno lateral que lo descuadraban respecto al titulo y al
+   formulario. */
+
+.comentarios .artalk > .atk-list > .atk-list-header {
+  padding: 0;
+  margin-bottom: 8px;
+}
+
+.comentarios .artalk > .atk-list > .atk-list-header .atk-comment-count {
+  font-family: var(--ui);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--tinta-suave);
+}
+
+/* Los comentarios tampoco llevan el relleno lateral de Artalk, por lo mismo. */
+
+.comentarios .artalk .atk-comment {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+/* ⚠️ FUERA EL ENLACE «MENSAJES», QUE ABRE EL PANEL LATERAL DE ARTALK.
+
+   Aparece a la derecha del recuento en cuanto el lector se identifica —basta
+   con haber comentado una vez— y abre una capa con «Messages», «Mentions»,
+   «Mine» y «Pending» EN INGLES: esas cadenas no estan en el objeto de
+   traduccion de la interfaz, viven en el panel, que es otra aplicacion.
+
+   NO HAY OPCION DE CONFIGURACION. Se comprobo en el bundle: el enlace no
+   depende de ninguna opcion, sino de si hay usuario identificado —
+
+     Text = t.is_admin ? T("ctrlCenter") : T("msgCenter")
+     … else n.classList.add("atk-hide")
+
+   — y `showSidebar()` se invoca desde UN solo sitio, el `onclick` de este
+   elemento. Verificado con un grep: al ocultarlo no queda ningun otro acceso.
+
+   ⚠️ ESTO NO LE QUITA NADA AL AUTOR. Responder con la etiqueta «Autor» es cosa
+   del EDITOR —escribe su nombre y su correo, Artalk le pide la contraseña— y no
+   pasa por el panel. Y moderar lo hace en comentarios.elderechoescrito.es/admin,
+   que es una URL aparte y la que ya documenta PARA-EL-CLIENTE.md. Lo unico que
+   pierde es un atajo que ademas estaba en ingles.
+
+   Se oculta SOLO este <span> y no todo `.atk-right-action`, que es su padre:
+   ahi dentro vive tambien `admin-close-comment` —cerrar los comentarios de la
+   pagina—, que es una accion de moderacion legitima, esta traducida y no abre
+   ningun panel. */
+
+.comentarios .artalk .atk-list-header [data-action="open-sidebar"] {
+  display: none;
+}
+
+/* ⚠️ «Responder @Nombre» SALIA CORTADO POR UN `max-width: 8em`, que a 14px son
+   112px: cualquier nombre de mas de ocho caracteres perdia el final.
+
+   Se suelta el tope y se deja que lo limite el sitio que haya. El recorte con
+   puntos suspensivos se CONSERVA —`text-overflow`, `overflow` y `white-space`
+   siguen siendo de Artalk— pero pasa a actuar solo cuando de verdad no cabe,
+   que es lo que se pedia.
+
+   ⚠️ NO BASTA CON SOLTAR EL `max-width`, Y HAY QUE TOCAR LA CADENA ENTERA. Con
+   solo quitar el tope, un nombre muy largo no se recorta: DESBORDA LA FILA. Un
+   item de flex no baja de su tamaño de contenido salvo que se le diga, y aqui
+   hay tres anidados —`.atk-bottom-left`, `.atk-state-wrap`, `.atk-state-btn`—
+   que hay que dejar encoger antes de que el recorte pueda actuar.
+
+   Medido con un nombre de 925px a 1440: sin la cadena desbordaba la fila; con
+   ella se recorta a 671 y el aspa sigue en su sitio. Un nombre normal —«Arnau
+   Montero Miranda», 258px— no se recorta nada.
+
+   ⚠️ POR DEBAJO DE 768 px ESTA ETIQUETA NO EXISTE: Artalk la oculta entera en
+   una media query propia y deja solo el aspa. No es cosa de estas reglas, y no
+   se repone: en una columna de 327px el nombre no cabria de todas formas. */
+
+.comentarios .artalk .atk-main-editor > .atk-bottom > .atk-bottom-left {
+  min-width: 0;
+}
+
+.comentarios .artalk .atk-main-editor .atk-state-wrap,
+.comentarios .artalk .atk-main-editor .atk-state-btn {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.comentarios .artalk .atk-main-editor > .atk-bottom .atk-state-btn .atk-text-wrap {
+  max-width: 100%;
+}
+
+/* ⚠️ «POWERED BY ARTALK»: SE QUITA CON CSS PORQUE NO HAY OPCION PARA ELLO, y se
+   comprobo antes de recurrir a esto. En el bundle de la v2.10.0 las unicas
+   apariciones de «copyright» son el nombre de la clase y la plantilla del DOM;
+   no hay ninguna opcion de configuracion que lo gobierne. El texto lo escribe
+   el propio Artalk al emitir su evento `mounted`:
+
+     e.on("mounted", () => { …querySelector(".atk-copyright").innerHTML = … })
+
+   Quitarlo desde JS seria una carrera contra ese manejador —si el nuestro corre
+   antes, Artalk lo vuelve a escribir—, asi que el CSS es ademas la via FIABLE,
+   no solo la unica.
+
+   Se oculta el PIE ENTERO y no solo `.atk-copyright`: el pie trae su propio
+   relleno y dejaria un hueco al final de la lista.
+
+   La licencia MIT de Artalk permite quitar la atribucion de la interfaz. El
+   aviso de copyright del codigo sigue intacto en los archivos que se sirven
+   desde el servidor de comentarios. */
+
+.comentarios .artalk > .atk-list > .atk-list-footer {
+  display: none;
 }
 
 /* La nota de privacidad. Nace detras de la caja —para que se vea sin
