@@ -186,28 +186,39 @@ export function contarPalabras(art) {
 
 /* --------------------------------------------------------- derivados ---- */
 
-/* ⚠️ UNA ACTUALIZACIÓN IGUAL A LA FECHA DE PUBLICACIÓN SE TRATA COMO SI NO
-   EXISTIERA, y es deliberado. En la ficha se leería «28 DE SEPTIEMBRE DE 2026 ·
-   ÚLTIMA ACTUALIZACIÓN: 28 DE SEPTIEMBRE DE 2026»: un dato que ocupa sitio y no
-   dice nada, y que además parece un fallo del generador más que una decisión
-   del autor.
+/* ⚠️ `actualizado` SIEMPRE TIENE VALOR AQUÍ, Y ANTES PODÍA SER `null`. Si el
+   JSON no trae el campo, vale la fecha de publicación. Es un encargo del
+   cliente: quiere ver la línea «Última actualización» en todos los artículos,
+   y echaba en falta que el de MASC no la enseñara.
 
-   Aguas abajo tampoco cambia nada: `dateModified` ya vale `datePublished`
-   cuando no hay actualización, que es exactamente lo que daría el campo. Así
-   que descartarlo no pierde información, solo quita ruido.
+   ⚠️ ESTO REVIERTE UNA DECISIÓN QUE ESTABA RAZONADA AQUÍ MISMO, y conviene
+   saberlo antes de «arreglarlo» de vuelta. El comentario anterior decía que una
+   actualización igual a la publicación se descartaba porque la ficha leería
 
-   Es el caso que va a llegar solo: quien rellene el campo «por completarlo»
-   —o un automatismo que copie `fecha`— produce justo esto. Por eso se descarta
-   aquí, una vez, en vez de comprobarlo en los cuatro sitios que lo consumen.
+       28 DE SEPTIEMBRE DE 2026 · ÚLTIMA ACTUALIZACIÓN: 28 DE SEPTIEMBRE DE 2026
 
-   No se descarta en SILENCIO: `validar()` saca un aviso diciendo que no se va
-   a ver. */
+   o sea «un dato que ocupa sitio y no dice nada, y que además parece un fallo
+   del generador más que una decisión del autor».
+
+   **Ese efecto es real y es exactamente lo que se ve hoy en el artículo de
+   MASC**, que no trae el campo. No es un descuido: es lo pedido. Quien lo vea y
+   piense que el generador está repitiendo la fecha por error, que lea esto
+   antes de tocar nada.
+
+   Lo que el cambio NO toca: el `<pubDate>` del feed, que sigue saliendo de
+   `fecha`. En RSS 2.0 `pubDate` es la fecha de publicación y no hay campo de
+   modificación por `<item>`; meter ahí la revisión reanunciaría el artículo
+   como nuevo en todos los lectores.
+
+   Con esto desaparece el caso «el campo existe pero no se ve», así que
+   `validar()` ya no tiene nada que avisar cuando `actualizado === fecha`:
+   escribirlo da el mismo resultado que omitirlo. Lo que SÍ sigue siendo error
+   es que sea ANTERIOR a `fecha`, que es un problema de sentido y no de
+   presentación. */
 
 export function derivar(art) {
   const palabras = contarPalabras(art);
-  const actualizado = art.actualizado && art.actualizado !== art.fecha
-    ? art.actualizado
-    : null;
+  const actualizado = art.actualizado || art.fecha;
 
   return {
     ...art,
@@ -219,16 +230,17 @@ export function derivar(art) {
     fechaCorta: fechaCorta(art.fecha),
     fechaISO: fechaISO(art.fecha),
 
-    /* `actualizado` sustituye a lo que venga en el JSON: si era igual a `fecha`
-       el spread de arriba lo habría dejado puesto. */
+    /* Sustituye a lo que venga en el JSON: el spread de arriba habría dejado
+       `undefined` en los artículos que no traen el campo. */
     actualizado,
-    actualizadoLarga: actualizado ? fechaLarga(actualizado) : null,
-    actualizadoISO: actualizado ? fechaISO(actualizado) : null,
+    actualizadoLarga: fechaLarga(actualizado),
+    actualizadoISO: fechaISO(actualizado),
 
-    /* Lo que leen los buscadores. Sin actualización, la fecha de modificación
-       ES la de publicación: es lo que ya hacía el sitio y no cambia. */
-    modificadoISO: fechaISO(actualizado || art.fecha),
-    modificadoFecha: actualizado || art.fecha,
+    /* Lo que leen los buscadores. Son los mismos valores que `actualizado`
+       desde que este no puede ser nulo; se conservan con nombre propio porque
+       es el vocabulario del JSON-LD y del sitemap, no el de la ficha. */
+    modificadoISO: fechaISO(actualizado),
+    modificadoFecha: actualizado,
   };
 }
 
@@ -566,8 +578,8 @@ ${jsonLd(art)}
           <div class="entrada__meta articulo__ficha">
             <span class="firma">Por <a href="../../sobre/">${escapar(AUTOR.nombre)}</a></span>
             <time datetime="${art.fechaISO}">${art.fechaLarga}</time>
-            <span class="lectura">${art.minutos} min de lectura</span>${art.actualizado ? `
-            <time class="actualizado" datetime="${art.actualizadoISO}">Última actualización: ${art.actualizadoLarga}</time>` : ''}
+            <span class="lectura">${art.minutos} min de lectura</span>
+            <time class="actualizado" datetime="${art.actualizadoISO}">Última actualización: ${art.actualizadoLarga}</time>
           </div>
 
           <p class="entradilla">${resolverLlamadas(art.entradilla)}</p>

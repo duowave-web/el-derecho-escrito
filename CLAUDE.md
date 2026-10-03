@@ -3993,31 +3993,54 @@ coincidir**, y el build falla si no —es lo único que ata la URL al contenido.
 | `etiquetas` | no | texto visible. De aquí salen las píldoras, `data-etiquetas` y el desplegable |
 | `keywords` | no | frases de cola para `article:tag` y el JSON-LD. **No son las etiquetas** |
 | `fecha` | **sí** | `YYYY-MM-DD`. Ordena el listado y fija la hora de publicación a las 09:00 +02:00 |
-| `actualizado` | no | `YYYY-MM-DD`. La revisión posterior. Sin él, nada cambia respecto a hoy |
+| `actualizado` | no | `YYYY-MM-DD`. La revisión posterior. **Sin él se usa `fecha`**: la línea «Última actualización» se ve siempre |
 | `destacado` | no | `true` fuerza la lectura recomendada. Sin ninguno, manda el más reciente |
 | `secciones` | **sí** | los `<h2>` y su contenido |
 | `referencias` | no | agrupadas o sueltas |
 | `imagen` | **sí** | `archivo`, `alt` |
 | `avisos` | no | notas para quien revise el PR. Se imprimen y se comentan; no salen en la web |
 
-#### `actualizado`: la fecha de revisión, y es opcional de verdad
+#### «Última actualización» SE VE SIEMPRE, y el campo `actualizado` solo cambia qué fecha pone
 
-Se añade cuando un artículo ya publicado se revisa. **Sin el campo, la página
-sale exactamente como salía**: verificado regenerando el artículo de MASC con
-el código nuevo y comprobando que el diff de todo lo generado es cero.
+> ⚠️ **ESTA SECCIÓN SE TITULABA «es opcional de verdad» Y DECÍA QUE SIN EL CAMPO
+> LA PÁGINA SALÍA EXACTAMENTE IGUAL. Ya no.** Hoy la línea se enseña en **todos**
+> los artículos. Si el JSON no trae `actualizado`, se usa la fecha de
+> publicación.
+>
+> **Es un encargo del cliente**, que echaba en falta la línea en el artículo de
+> MASC —el único publicado, y no trae el campo—.
 
-Con el campo, alimenta **cuatro** sitios:
+El campo sigue siendo **opcional en el JSON**; lo que ha dejado de ser opcional
+es la línea en la página. `derivar()` resuelve el valor una vez:
+
+```js
+const actualizado = art.actualizado || art.fecha;
+```
+
+y de ahí salen **cinco** sitios:
 
 | Dónde | Qué pone |
 |---|---|
 | la ficha del artículo | un `<time class="actualizado">` con «Última actualización: …» |
+| **la primera página del PDF** | la misma línea, en la ficha del bloque de título |
+| **`/ModDate` del PDF** | la marca `D:AAAAMMDD…` del diccionario `/Info` |
 | JSON-LD | `dateModified` |
 | Open Graph | `<meta property="article:modified_time">` |
 | `sitemap.xml` | `<lastmod>` |
 
-Sin el campo esos tres últimos valen lo mismo que la fecha de publicación, que
-es **lo que el sitio ha declarado siempre**. O sea que el campo no estrena
-comportamiento: rellena uno que ya existía con un valor mejor.
+> **De los seis, cuatro no cambian de valor al hacer esto.** `dateModified`,
+> `article:modified_time`, `<lastmod>` y `/ModDate` **ya caían a la fecha de
+> publicación** cuando no había campo: era `actualizado || art.fecha` escrito en
+> cada consumidor. Lo único que estrena valor es lo que se ve —la ficha del
+> artículo y la línea del PDF—, que antes no se pintaban.
+>
+> Por eso el diff del HTML de MASC es **una sola línea añadida**, y el del
+> sitemap, el feed y el JSON-LD es **cero**.
+
+> ⚠️ **Y `art.actualizado` YA NO PUEDE SER NULO**, lo que deja sin sentido los
+> `|| art.fecha` que había aguas abajo. Se retiró el de `conFechasFijas()` en
+> `pdf.mjs`; si aparece otro, es código muerto que sugiere un caso que ya no
+> existe.
 
 > ⚠️ **EL `<pubDate>` DEL FEED NO SE TOCA, Y NO ES UN OLVIDO.** En RSS 2.0
 > `pubDate` es **la fecha de publicación** y no hay ningún campo de modificación
@@ -4029,14 +4052,31 @@ comportamiento: rellena uno que ya existía con un valor mejor.
 > **`<atom:updated>`** —el espacio de nombres `xmlns:atom` **ya está declarado**
 > en `feed.xml`— y es una decisión aparte, no parte de este campo.
 
-> ⚠️ **Una `actualizado` IGUAL a `fecha` se trata como si no existiera.** En la
-> ficha se leería «28 DE SEPTIEMBRE DE 2026 · ÚLTIMA ACTUALIZACIÓN: 28 DE
-> SEPTIEMBRE DE 2026», que ocupa sitio y no dice nada, y parece un fallo del
-> generador más que una decisión del autor. Aguas abajo tampoco se pierde nada:
-> `dateModified` ya valía `datePublished`.
+> ⚠️ **AQUÍ SE DESCARTABA UNA `actualizado` IGUAL A `fecha`, Y ESA DECISIÓN
+> DECAE ENTERA. HAY QUE LEER ESTO ANTES DE «ARREGLAR» LO QUE SE VE HOY.**
 >
-> Se descarta **una vez**, en `derivar()`, y no en los cuatro consumidores. Y
-> **no en silencio**: `validar()` saca un aviso que sale en el comentario del PR.
+> Decía que una actualización igual a la publicación se trataba como si no
+> existiera, porque la ficha leería
+>
+> > 28 DE SEPTIEMBRE DE 2026 · ÚLTIMA ACTUALIZACIÓN: 28 DE SEPTIEMBRE DE 2026
+>
+> o sea «un dato que ocupa sitio y no dice nada, y que además **parece un fallo
+> del generador** más que una decisión del autor».
+>
+> **Ese efecto es exactamente lo que se ve hoy en el artículo de MASC**, que no
+> trae el campo y por tanto repite su fecha de publicación. El razonamiento
+> seguía siendo correcto; lo que pasa es que el cliente prefiere ver la línea
+> siempre, y es su decisión. **No es un descuido y no hay que revertirlo.**
+>
+> ✅ **Con ello se retiró también el aviso de `validar()`**, que decía que esa
+> fecha «NO se va a mostrar». Había dejado de ser verdad. Hoy escribir
+> `actualizado` igual a `fecha` da el mismo resultado que no escribirlo, así que
+> no hay nada de lo que avisar.
+>
+> **Si algún día se quiere volver a distinguir los dos casos**, la vía NO es
+> reponer el descarte en `derivar()` —eso devuelve el artículo de MASC a no
+> enseñar nada—, sino cambiar el TEXTO cuando las dos fechas coinciden. Pero eso
+> es otro encargo.
 
 > ⚠️ **Y una `actualizado` ANTERIOR a `fecha` es un ERROR que para el build.**
 > No es un problema de formato sino de sentido —un artículo no se actualiza
@@ -4125,21 +4165,31 @@ agrupada con ella. Pero el artículo tiene dos cortes propios, los dos medidos.
 > prudente que atar el corte al largo de la fecha y del nombre del mes.
 > Perderse una barra decorativa no se nota; una barra colgada sí.
 
-Barrido de verificación, con el campo y sin él:
+> ⚠️ **ESTE BARRIDO TENÍA DOS COLUMNAS —«sin `actualizado`» y «con»— Y YA SOLO
+> HAY UN CASO**, desde que la fila se enseña siempre. La columna de «sin» no
+> describe ningún artículo posible.
 
-| Ancho | Sin `actualizado` | Con `actualizado` |
-|---|---|---|
-| 1440 / 1280 | `fecha \| minutos` | `fecha \| minutos` + fila propia |
-| 901 | `fecha \| minutos` | `fecha \| minutos` + fila propia |
-| 900 | `firma \| fecha \| minutos` | `firma \| fecha \| minutos` + fila propia |
-| 749 | `firma \| fecha \| minutos` | `firma \| fecha \| minutos` + fila propia |
-| **748** | sin barras, una fila | sin barras + fila propia |
-| 375 | sin barras, tres filas | sin barras, cuatro filas |
+Barrido de verificación, remedido con la fila ya permanente:
 
-**Cero separadores colgando en los doce casos.** Se comprueba mirando si el
+| Ancho | Qué se ve |
+|---|---|
+| 1440 / 1280 | `fecha \| minutos` + fila propia |
+| 901 | `fecha \| minutos` + fila propia |
+| 900 | `firma \| fecha \| minutos` + fila propia |
+| **749** | `firma \| fecha \| minutos` + fila propia |
+| **748** | sin barras, una fila + fila propia |
+| 375 | sin barras, **cuatro** filas |
+
+**Cero separadores colgando en los seis casos.** Se comprueba mirando si el
 *último elemento de cada fila renderizada* tiene `::after`, que es lo único que
 distingue una barra correcta de una colgada; contar hijos no sirve, porque el
 envoltorio no cambia el DOM.
+
+> **Lo que el cambio NO movió:** el corte de 748 sigue cayendo donde caía
+> —verificado a 749 con barras y a 748 sin ellas—, y a 375 la línea sigue
+> midiendo **327 px exactos**, el ancho de la columna, partida en dos líneas sin
+> desbordar ni provocar scroll horizontal. La ficha pasa de 3 filas a 4, y de
+> 50,4 px de alto a 132.
 
 > ⚠️ **`descripcion` y `entradilla` NO son el mismo texto, y confundirlas no da
 > ningún error.** La `descripcion` es el resumen de 140–160 caracteres que ven
@@ -4437,14 +4487,16 @@ fechas por una derivada del campo `fecha` del `articulo.json`:
 > | | De dónde sale |
 > |---|---|
 > | `/CreationDate` | **siempre** de `fecha` |
-> | `/ModDate` | de `actualizado`, y de `fecha` si no lo hay |
+> | `/ModDate` | de `art.actualizado`, que `derivar()` deja **siempre con valor** — la revisión si la hay, y si no la publicación |
 >
 > **No rompe el determinismo**, que es lo único intocable aquí: la fecha nueva
-> sale del JSON igual que la vieja, nunca del reloj. Y un artículo **sin**
-> `actualizado` da exactamente el mismo PDF que antes —verificado byte a byte en
-> el mismo entorno local—, porque `art.actualizado` llega ya normalizado desde
-> `derivar()`, que lo deja en `null` cuando falta y también cuando es igual a
-> `fecha`.
+> sale del JSON igual que la vieja, nunca del reloj.
+>
+> ✅ **Y un artículo sin `actualizado` sigue dando `/ModDate` == `/CreationDate`**,
+> igual que siempre. Lo que ha cambiado es por qué: antes `derivar()` dejaba el
+> campo en `null` y aquí se escribía `art.actualizado || art.fecha`; ahora
+> `derivar()` ya le pone la fecha de publicación, así que ese `||` se retiró por
+> código muerto.
 >
 > Las dos marcas miden los mismos 23 bytes —solo cambian los dígitos del día—,
 > así que la guarda de longitud sigue cubriendo las dos.
@@ -4579,16 +4631,36 @@ pie                    El Derecho Escrito · url · · · n / total
 #### La ficha de la portada lleva «Última actualización» EN LA MISMA LÍNEA
 
 Y en la web va en su propia fila. **Parece una incoherencia y no lo es: aquí
-cabe y allí no.** Medido con el mes más largo y el día de dos dígitos, que es el
-peor caso:
+cabe y allí no.**
+
+> ⚠️ **ESTA MEDIDA ESTABA MAL Y SE HA REHECHO SOBRE EL RENDERIZADO, NO SUMANDO.**
+> Decía «≈ 160 mm» y por tanto 10,1 mm de holgura. Sumaba los anchos de los tres
+> datos y se dejaba fuera el `gap` del flex, así que el número salía corto.
+>
+> Medido en Chromium con el medio `print` y el viewport a los 170,1 mm útiles,
+> con el mes más largo y el día de dos dígitos —que es el peor caso y es
+> exactamente el del artículo de MASC—:
 
 | | |
 |---|---|
-| fecha | 42,8 mm |
-| minutos | 27,6 mm |
-| «Última actualización: 30 de septiembre de 2026» | 77,6 mm |
-| con los dos separadores | **≈ 160 mm** |
-| **ancho útil del A4 con estos márgenes** | **170,1 mm** |
+| fecha | 161,8 px |
+| minutos | 104,2 px |
+| «Última actualización: 28 de septiembre de 2026» | 293,2 px |
+| los dos `·` y los huecos del flex | el resto |
+| **la línea entera, de borde a borde** | **619,8 px = 164,0 mm** |
+| **ancho útil del A4 con estos márgenes** | **643 px = 170,1 mm** |
+| **holgura** | **6,1 mm** |
+
+> ⚠️ **Y DESDE QUE LA LÍNEA SE ENSEÑA SIEMPRE, ESA HOLGURA ES EL ESTADO
+> PERMANENTE Y NO EL PEOR CASO OCASIONAL.** Antes solo se pagaba en los
+> artículos que traían el campo; hoy la pagan todos.
+>
+> Sigue cabiendo con margen suficiente: el dato que más puede crecer son los
+> minutos, y pasar de «15» a «120» añade ~8 px sobre los 23 que sobran.
+>
+> **El nombre del autor NO entra en esa cuenta**: va en su propia línea, porque
+> `.pdf-portada__ficha` le da ancho completo. La ficha del PDF son dos líneas,
+> no una.
 
 La misma fila en la web pide 734,6 px sobre una columna de 720. **La diferencia
 no es el ancho** —la columna web son 190 mm, *más* que estos 170— **sino el
@@ -4597,7 +4669,7 @@ icono por dato; la de aquí va en caja baja, sin iconos y con 0,04em. Las
 versales y los iconos son lo que la desbordan allí.
 
 > ⚠️ **Si algún día se le ponen versales o iconos a esta ficha, hay que volver a
-> medir**: se come la holgura de golpe.
+> medir**: con 6,1 mm de holgura se la comen de golpe.
 
 > ⚠️ **Y SI LA LÍNEA ENVOLVIERA, HOY NO PASA NADA.** Aquí se explicaba que
 > `.pdf-portada__texto` llevaba `margin-top: auto` y que el bloque crecía hacia

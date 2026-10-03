@@ -123,9 +123,9 @@ function bloqueTitulo(art, logoDataUri) {
       <strong>${escapar(AUTOR.nombre)}</strong>
       <time datetime="${art.fecha}">${art.fechaLarga}</time>
       <span class="pdf-portada__sep" aria-hidden="true">·</span>
-      <span>${art.minutos} min de lectura</span>${art.actualizado ? `
+      <span>${art.minutos} min de lectura</span>
       <span class="pdf-portada__sep" aria-hidden="true">·</span>
-      <time datetime="${art.actualizado}">Última actualización: ${art.actualizadoLarga}</time>` : ''}
+      <time datetime="${art.actualizado}">Última actualización: ${art.actualizadoLarga}</time>
     </div>
   </div>
 </div>`;
@@ -232,10 +232,14 @@ const FECHAS = /\/(CreationDate|ModDate)\s*\(D:\d{14}(?:[+-]\d{2}'\d{2}'|Z)?\)/g
    el campo, /ModDate pasa a decir la verdad.
 
    ⚠️ NO ROMPE EL DETERMINISMO, que es lo unico intocable aqui: la fecha nueva
-   sale del JSON igual que la vieja, nunca del reloj. Y un articulo SIN
-   `actualizado` da exactamente el mismo PDF que antes —verificado byte a
-   byte—, porque `art.actualizado` llega ya normalizado desde derivar(), que lo
-   deja en null cuando falta y tambien cuando es igual a `fecha`.
+   sale del JSON igual que la vieja, nunca del reloj.
+
+   ⚠️ Y `art.actualizado` YA NO PUEDE SER NULO. Lo normaliza derivar(), que
+   desde el encargo de enseñar siempre la linea le pone la fecha de publicacion
+   cuando el JSON no trae el campo. Por eso aqui ya no hace falta el
+   `|| art.fecha` que habia: seria codigo muerto que sugiere un caso que no
+   existe. Un articulo sin `actualizado` sigue dando /ModDate == /CreationDate,
+   igual que antes.
 
    Las dos marcas miden los mismos 23 bytes: solo cambian los digitos del dia.
    La guarda de longitud de abajo sigue cubriendo las dos. */
@@ -244,7 +248,7 @@ function conFechasFijas(pdf, art) {
   const marca = (iso) => `D:${iso.replaceAll('-', '')}${HORA_PDF}`;
   const fechas = {
     CreationDate: marca(art.fecha),
-    ModDate: marca(art.actualizado || art.fecha),
+    ModDate: marca(art.actualizado),
   };
   let halladas = 0;
 

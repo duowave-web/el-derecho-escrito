@@ -110,6 +110,14 @@ se mira: es justamente para lo que está.
 **¿Tengo que publicar el mismo día?**
 No. La propuesta se queda ahí hasta que la revises. Nada se publica solo.
 
+**En «Última actualización» pone la misma fecha que en la de publicación. ¿Está mal?**
+No. Esa línea sale en **todos** los artículos, y mientras uno no se haya
+revisado lo honrado es que diga su fecha de publicación: el texto que se está
+leyendo es, efectivamente, el del día que se publicó.
+
+La fecha cambia el día que el artículo se revise de verdad. Hasta entonces las
+dos coinciden, y eso no es un fallo del sistema.
+
 **¿Puedo cambiar algo después de publicar?**
 Sí, pero **no vuelvas a subirlo a Drive: pásamelo a mí.**
 
@@ -121,8 +129,8 @@ buen arreglo una vez hecho.
 
 Para corregir o actualizar uno ya publicado, mándame el texto —por correo o como
 prefieras— y lo cambio yo conservando su fecha. Si es una revisión de fondo,
-además le pongo un «Última actualización» con la fecha de hoy, que es la forma
-honrada de decir que el artículo se ha revisado sin fingir que es nuevo.
+además **adelanto la fecha de «Última actualización»** a la de hoy, que es la
+forma honrada de decir que el artículo se ha revisado sin fingir que es nuevo.
 
 Y una cosa que **no** tiene arreglo en ningún caso: la dirección del artículo
 (su enlace) sale del titular y ya no se puede cambiar sin romper los enlaces que
