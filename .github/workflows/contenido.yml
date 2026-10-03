@@ -14,12 +14,27 @@
 
 name: Contenido
 
+# ⚠️ SIN `paths:`, Y ES DELIBERADO AUNQUE PAREZCA UN DESPERDICIO DE RUNNER.
+#
+# Estuvo filtrado a `contenido/**`, `scripts/**` y `css/**`, que son las rutas
+# que de verdad cambian lo generado. El problema no es lo que el filtro deja
+# pasar: es lo que NO dispara. En un PR que no toca ninguna de las tres, este
+# workflow no corre y el check `generar` **no se reporta nunca**.
+#
+# Sin ruleset eso solo es ruido. Con `generar` puesto como check OBLIGATORIO, un
+# check que no se reporta no cuenta como ausente: cuenta como PENDIENTE PARA
+# SIEMPRE, y **bloquea el merge sin que nada explique por qué**. Un PR que solo
+# toque HTML, CLAUDE.md o este mismo archivo se quedaría muerto en el agua.
+#
+# Es el mismo modo de fallo que razona el bloque del PAT de más abajo —un check
+# obligatorio que no llega a la cabeza del PR— pero entrando por la otra puerta:
+# allí era el commit del bot el que se quedaba sin check, y aquí el PR entero.
+#
+# El precio es correr el job en PR que no cambian el sitio. Es tiempo de runner
+# y nada más: el generador es idempotente, así que ahí no encuentra nada que
+# empujar y termina en verde sin tocar el repositorio.
 on:
   pull_request:
-    paths:
-      - 'contenido/**'
-      - 'scripts/**'
-      - 'css/**'
 
 # Lo mínimo para hacer el trabajo: escribir en la rama del PR, comentar y
 # registrar el Deployment que pinta el botón «View deployment».
@@ -28,11 +43,36 @@ permissions:
   pull-requests: write
   deployments: write
 
-# Si n8n empuja dos veces seguidas al mismo PR, la primera ejecución se cancela
-# en vez de competir por el push.
+# ⚠️ `cancel-in-progress: false`, Y ESTUVO EN `true` HACIENDO QUE EL WORKFLOW SE
+# MATARA A SÍ MISMO. El comentario que había aquí decía «si n8n empuja dos veces
+# seguidas al mismo PR, la primera ejecución se cancela en vez de competir por el
+# push». Previó que empujara n8n. No previó que **empuja este mismo workflow**.
+#
+# Lo que pasaba, y se ve entero en el PR #6:
+#
+#   Ejecución A, sobre el commit del autor
+#     … genera, encuentra cambios, hace commit y PUSH a la rama del PR
+#                                                     │
+#          ese push es un evento `synchronize` ───────┘
+#                                                     ↓
+#     Ejecución B entra en el mismo grupo  →  cancel-in-progress  →  MATA a A
+#
+# A moría con seis pasos por delante y el PR se quedaba con una X roja sobre el
+# commit del autor y un check verde sobre el del bot. No era un error: era la
+# configuración funcionando como estaba escrita.
+#
+# Y no se arregla quitando el PAT, porque el PAT es justo lo que hace que el
+# commit del bot reciba un check —está razonado abajo, en el checkout—. O sea
+# que las dos opciones eran empujar con PAT o cancelar en curso, pero no las dos
+# a la vez. Se conserva el PAT.
+#
+# ⚠️ CON `false` LAS EJECUCIONES SE ENCOLAN EN VEZ DE CANCELARSE, que es lo que
+# el valor anterior quería evitar. Lo compensa el corte temprano de abajo: en
+# cuanto A empuja, se salta todo lo que B va a rehacer igualmente, así que A
+# dura lo que dura generar y la cola se vacía sola.
 concurrency:
   group: contenido-${{ github.event.pull_request.number }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   generar:
@@ -177,6 +217,21 @@ jobs:
           fi
           echo 'Idempotente: build y pdf dan el mismo resultado byte a byte.'
 
+      # ⚠️ ESTE PASO PARTE LA EJECUCION EN DOS MITADES, y el output `cambios` es
+      # la bisagra. Si aqui se empuja, la cabeza del PR pasa a ser el commit del
+      # bot y ESE push dispara una segunda ejecucion que va a rehacer el
+      # deployment, la vista previa, las capturas y el comentario sobre el
+      # commit bueno. Todo lo que hiciera esta a partir de aqui lo pisaria la
+      # otra: la vista previa apuntaria a un commit que ya no es la cabeza y el
+      # comentario se reescribiria con el mismo texto dos minutos despues.
+      #
+      # Asi que cuando `cambios=si` la ejecucion se corta aqui y termina EN
+      # VERDE. No es un apaño para que no se vea la X: es que su trabajo esta
+      # hecho —generar y empujar— y el resto le toca a la que ella misma acaba
+      # de disparar.
+      #
+      # Antes esto lo «resolvia» cancel-in-progress matando la ejecucion, que
+      # llegaba al mismo sitio dejando una X roja y un deployment a medias.
       - name: Añadir lo generado al PR
         id: publicar
         run: |
@@ -184,10 +239,13 @@ jobs:
           git config user.email 'github-actions[bot]@users.noreply.github.com'
           git add articulos index.html sitemap.xml feed.xml
           if git diff --cached --quiet; then
+            echo 'cambios=no' >> "$GITHUB_OUTPUT"
             echo 'Nada que añadir: lo generado ya estaba al día.'
           else
             git commit -m 'Generar artículos, listados y PDF'
             git push origin HEAD:${{ github.head_ref }}
+            echo 'cambios=si' >> "$GITHUB_OUTPUT"
+            echo '::notice title=Generado y empujado::Lo generado se ha añadido al PR. Esta ejecución termina aquí; la vista previa y el comentario los hace la ejecución que dispara ese push, ya sobre el commit del bot.'
           fi
           # El SHA va al comentario para construir el enlace del PDF. Se lee
           # DESPUES del commit: si se leyera antes, apuntaria a la version sin
@@ -212,17 +270,40 @@ jobs:
       # que `rawcdn.githack.com` tampoco la evita. El PDF sí pasa limpio, por
       # eso ese enlace se queda donde estaba.
 
+      # ⚠️ ESTE PASO ES LA UNICA FUENTE DE «que articulo trae el PR», y antes
+      # habia dos. El comentario de abajo lo recalculaba por su cuenta con
+      # `pulls.listFiles`, y las dos implementaciones trataban el caso vacio al
+      # reves: esta lo tolera —cae a la raiz del sitio— y aquella lo daba por
+      # fallo de generacion. De ahi salia el «Vista previa no disponible» en un
+      # PR verde con la preview desplegada. Hoy el comentario lee estos outputs.
+      #
+      # De paso se va el tope de `per_page: 100` de listFiles, que en un PR
+      # grande podia dejar el articulo fuera de la lista y disparar el mismo
+      # falso aviso.
+      #
+      # `todos` son TODOS los articulos del sitio, no los del PR. Hace falta
+      # para repartir los avisos del build: los que llevan por delante el slug
+      # de un articulo que este PR no toca no son de este PR.
       - name: Averiguar qué artículo trae el PR
         id: art
+        if: steps.publicar.outputs.cambios != 'si'
         run: |
           SLUGS=$(git diff --name-only "origin/${{ github.base_ref }}...HEAD" -- contenido/articulos/ \
                   | cut -d/ -f3 | sort -u | tr '\n' ' ')
           echo "slugs=$SLUGS" >> "$GITHUB_OUTPUT"
           echo "primero=$(echo $SLUGS | awk '{print $1}')" >> "$GITHUB_OUTPUT"
+          TODOS=$({ [ -d contenido/articulos ] && ls -1 contenido/articulos; } | sort -u | tr '\n' ' ')
+          echo "todos=$TODOS" >> "$GITHUB_OUTPUT"
           echo "Artículos del PR: ${SLUGS:-ninguno}"
+          echo "Artículos del sitio: ${TODOS:-ninguno}"
 
+      # ⚠️ EL `if` DE ESTE PASO ES LO QUE IMPIDE UN DEPLOYMENT COLGADO. Si se ha
+      # empujado, aqui no se abre ninguno, asi que `steps.deploy.outputs.id`
+      # queda vacio y «Cerrar el deployment» —que exige ese id— se salta solo.
+      # No puede quedar un `in_progress` sin su estado final.
       - name: Abrir el deployment
         id: deploy
+        if: steps.publicar.outputs.cambios != 'si'
         uses: actions/github-script@v7
         with:
           script: |
@@ -244,6 +325,7 @@ jobs:
             });
 
       - name: Copiar la vista previa al repositorio de previews
+        if: steps.publicar.outputs.cambios != 'si'
         env:
           PAT: ${{ secrets.PAT_PUBLICAR }}
           PR: ${{ github.event.pull_request.number }}
@@ -310,6 +392,7 @@ jobs:
       # Sondeando hasta el 200, el botón solo aparece cuando la página existe.
       - name: Esperar a que Pages sirva la vista previa
         id: esperar
+        if: steps.publicar.outputs.cambios != 'si'
         env:
           PR: ${{ github.event.pull_request.number }}
           SLUG: ${{ steps.art.outputs.primero }}
@@ -353,10 +436,12 @@ jobs:
       # revisable por quien no tiene el proyecto montado.
 
       - name: Capturas a 1440 y 375
+        if: steps.publicar.outputs.cambios != 'si'
         working-directory: scripts
         run: node capturas.mjs
 
       - name: Adjuntar PDF y capturas
+        if: steps.publicar.outputs.cambios != 'si'
         uses: actions/upload-artifact@v4
         with:
           name: revision
@@ -375,11 +460,20 @@ jobs:
       # repositorio con su content-type real: el HTML se renderiza y el PDF se
       # abre en el navegador. No hay nada que desplegar ni que limpiar.
 
+      # ⚠️ EL `if` LLEVA ADEMAS EL CORTE: si esta ejecucion ha empujado, el
+      # comentario lo escribe la siguiente, ya sobre el commit del bot. Comentar
+      # aqui solo serviria para que dos minutos despues lo reescribieran igual.
+      #
+      # `always()` se queda porque el caso que mas importa comentar es el que
+      # FALLA, y ahi los pasos anteriores no han llegado a correr.
       - name: Comentar la vista previa y los avisos
-        if: always()
+        if: always() && steps.publicar.outputs.cambios != 'si'
         uses: actions/github-script@v7
         env:
           SHA_GENERADO: ${{ steps.publicar.outputs.sha }}
+          SLUGS_PR: ${{ steps.art.outputs.slugs }}
+          SLUGS_TODOS: ${{ steps.art.outputs.todos }}
+          ESTADO_JOB: ${{ job.status }}
         with:
           script: |
             const fs = require('fs');
@@ -397,17 +491,22 @@ jobs:
                revisando, no a «lo último que haya en la rama». */
             const sha = process.env.SHA_GENERADO;
 
-            /* Los slugs salen de los archivos que toca el PR, no de listar
-               contenido/: así se enlaza SOLO el artículo que trae este PR y no
-               todos los del sitio. */
-            const { data: archivos } = await github.rest.pulls.listFiles({
-              ...context.repo, pull_number: context.payload.pull_request.number, per_page: 100,
-            });
-            const slugs = [...new Set(
-              archivos
-                .map(f => (f.filename.match(/^contenido\/articulos\/([^/]+)\//) || [])[1])
-                .filter(Boolean)
-            )];
+            /* ⚠️ LOS SLUGS LLEGAN DEL PASO `art`, NO SE RECALCULAN AQUI. Este
+               bloque hacia su propio `pulls.listFiles` y la lista salia a veces
+               distinta de la que usaba el resto del job; esta contado entero
+               sobre aquel paso. Una sola fuente. */
+            const lista = (s) => (s || '').trim().split(/\s+/).filter(Boolean);
+            const slugs = lista(process.env.SLUGS_PR);
+            const todos = lista(process.env.SLUGS_TODOS);
+
+            /* ⚠️ TRES ESTADOS, NO DOS, Y EL DEL ERROR SE DETECTA POR EL ESTADO
+               REAL DEL JOB. La condicion era `sha && slugs.length`, asi que un
+               PR que no trae ningun articulo —uno de diseño, de codigo o de
+               documentacion— caia en la rama del error y anunciaba «El articulo
+               no se ha podido generar» con el check en verde y la vista previa
+               desplegada. Decia algo falso y ademas dejaba el mensaje de error
+               de verdad sin poder distinguirse. */
+            const fallo = process.env.ESTADO_JOB !== 'success';
 
             const base = `https://raw.githack.com/${context.repo.owner}/${context.repo.repo}/${sha}`;
 
@@ -418,8 +517,7 @@ jobs:
                comprobar que Pages responde—.
                El del PDF sí se queda: lo sirve githack, que para PDF funciona
                limpio, y así hay algo que mirar aunque Pages tarde. */
-            const previa = (sha && slugs.length)
-              ? ['## Vista previa del artículo', '',
+            const conArticulo = ['## Vista previa del artículo', '',
                  'El artículo se abre con el botón **«View deployment»** del recuadro',
                  'de arriba. Aparece en cuanto la vista previa está lista.',
                  '',
@@ -440,23 +538,89 @@ jobs:
                  'corrige antes de publicar.',
                  '',
                  '---', '',
-                ].join('\n')
-              : ['## Vista previa no disponible', '',
-                 'El artículo no se ha podido generar, así que todavía no hay nada que ver.',
-                 'Revisa más abajo qué ha fallado antes de mergear.',
-                 '', '---', '',
                 ].join('\n');
 
-            const cola = avisos.length
-              ? ['### Avisos del build', '', ...avisos.map(a => `- ${a}`), '',
-                 'Ninguno impide publicar: si hubiera un error, el job habría fallado.',
-                 '', 'El PDF y las capturas a 1440 y 375 van también en el artefacto **revision**.'
-                ].join('\n')
-              : ['### Build sin avisos', '',
-                 'El PDF y las capturas a 1440 y 375 van también en el artefacto **revision**.'
+            /* Sin alarma a proposito: no pasa nada malo, simplemente este PR no
+               trae texto nuevo. Se enseña el sitio entero porque es lo que un
+               cambio de diseño o de plantilla necesita revisar. */
+            const sinArticulo = ['## Este PR no trae ningún artículo', '',
+                 'No hay texto nuevo que revisar: son cambios de diseño, de código o de',
+                 'documentación.',
+                 '',
+                 'Las páginas del sitio **se han regenerado** con esos cambios, así que lo',
+                 'que hay que mirar es que nada se haya descolocado. El sitio completo se',
+                 'abre con el botón **«View deployment»** del recuadro de arriba: la',
+                 'portada, el listado y los artículos que ya estaban publicados.',
+                 '',
+                 '---', '',
                 ].join('\n');
 
-            const cuerpo = previa + cola;
+            const conFallo = ['## No se ha podido generar', '',
+                 'El build ha fallado, así que no hay vista previa y **no se puede mergear**',
+                 'todavía. En la pestaña **«Checks»**, arriba, está el paso que ha fallado y',
+                 'el motivo.',
+                 '',
+                 '---', '',
+                ].join('\n');
+
+            const previa = fallo ? conFallo : (slugs.length ? conArticulo : sinArticulo);
+
+            /* ⚠️ LOS AVISOS SE REPARTEN, PORQUE `.avisos.json` ES DE TODO EL
+               SITIO Y NO DE ESTE PR. El build recorre todos los articulos, asi
+               que en un PR de un articulo se colaban en la misma lista los
+               avisos de los demas, presentados como si fueran del texto que el
+               cliente esta revisando.
+
+               El reparto es por el prefijo «<slug>: » que el build pone delante
+               de muchos avisos:
+
+                 prefijo de un articulo QUE ESTE PR NO TOCA  -> apartado aparte
+                 todo lo demas                               -> lista principal
+
+               ⚠️ «todo lo demas» incluye A PROPOSITO los avisos SIN prefijo, y
+               no es pereza: hoy varios se escriben como «La imagen de portada de
+               ESTE articulo no la has aportado tu…», sin decir de cual. Ese es
+               justo el aviso que el cliente tiene que leer, asi que ante la duda
+               se queda arriba. Degradarlo a un desplegable por no saber de quien
+               es seria esconder lo importante.
+
+               La solucion completa es que `build.mjs` prefije SIEMPRE con el
+               slug; mientras no lo haga, este reparto es lo que se puede hacer
+               sin mentir. */
+            const ajeno = (a) => {
+              const m = a.match(/^([^:\s]+):\s/);
+              return !!(m && todos.includes(m[1]) && !slugs.includes(m[1]));
+            };
+            const mios  = avisos.filter(a => !ajeno(a));
+            const otros = avisos.filter(ajeno);
+
+            /* ⚠️ LAS DOS FRASES TRANQUILIZADORAS VAN CONDICIONADAS A QUE EL JOB
+               HAYA IDO BIEN, y sin eso se contradicen solas. Un build que falla
+               DESPUES de escribir `.avisos.json` —por ejemplo en el paso de
+               idempotencia— llegaba aqui con avisos y con el job en rojo, y
+               remataba la lista con «si hubiera un error, el job habria
+               fallado». Y sin avisos decia «Build sin avisos», que se lee como
+               que todo fue limpio justo cuando no termino. */
+            const rotulo = slugs.length ? 'Avisos del build' : 'Avisos del build (de todo el sitio)';
+            const cola = [];
+            if (mios.length) {
+              cola.push('### ' + rotulo, '', ...mios.map(a => `- ${a}`));
+              if (!fallo) {
+                cola.push('', 'Ninguno impide publicar: si hubiera un error, el job habría fallado.');
+              }
+            } else if (!fallo) {
+              cola.push('### Build sin avisos', '');
+            }
+            if (otros.length) {
+              cola.push('', '<details><summary>Avisos de otros artículos del sitio (' +
+                        otros.length + ') — no son de este PR</summary>', '',
+                        ...otros.map(a => `- ${a}`), '', '</details>');
+            }
+            if (!fallo && slugs.length) {
+              cola.push('', 'El PDF y las capturas a 1440 y 375 van también en el artefacto **revision**.');
+            }
+
+            const cuerpo = previa + cola.join('\n');
 
             // Se reutiliza el comentario anterior en vez de apilar uno por
             // push: si no, un PR con tres correcciones acaba con tres listas de
