@@ -157,8 +157,7 @@ el botón verde.
 **He actualizado mi CV. ¿Lo subo yo a algún sitio?**
 No: **pásamelo a mí** y lo sustituyo.
 
-El CV se descarga desde dos sitios de la web —tu página «Acerca de» y el lateral
-de cada artículo— y los dos apuntan al mismo archivo. Hay que reemplazarlo
+El CV se descarga desde tu página «Acerca de». Hay que reemplazarlo
 **conservando el mismo nombre**, porque si se sube con otro nombre deja de
 funcionar cualquier enlace al CV que hayas mandado por correo o puesto en una
 firma. Es un cambio de un minuto, pero conviene hacerlo bien.
@@ -166,3 +165,58 @@ firma. Es un cambio de un minuto, pero conviene hacerlo bien.
 **¿Dónde se ve la web publicada?**
 En [duowave-web.github.io/el-derecho-escrito](https://duowave-web.github.io/el-derecho-escrito/)
 mientras estamos en pruebas.
+
+---
+
+# Los comentarios
+
+Al final de cada artículo hay una caja donde cualquiera puede comentar
+escribiendo **su nombre, su correo y el comentario**. El correo **no se publica
+nunca**: solo sirve para avisar de las respuestas.
+
+Los comentarios **se publican al momento**, sin que tengas que aprobarlos. El
+sistema filtra palabras malsonantes y pide un captcha, así que el spam más
+burdo no llega.
+
+## Responder como autor, desde la propia web
+
+No hace falta entrar en ningún panel. Debajo del artículo:
+
+1. Pulsa **Responder** en el comentario.
+2. Escribe **tu nombre y tu correo**, los mismos de siempre.
+3. El sistema detectará que eres tú y te pedirá **tu contraseña**.
+4. Escribe la respuesta y pulsa **Publicar**.
+
+Tu respuesta sale con la etiqueta **«Autor»** al lado de tu nombre, para que se
+distinga de la de cualquier otra persona.
+
+> La contraseña te la pide solo la primera vez en cada navegador. Si la has
+> olvidado, dímelo y la cambio.
+
+## Borrar un comentario
+
+Si estás identificado como autor, cada comentario te muestra un enlace
+**«Borrar»** debajo. Lo pulsas, confirmas y desaparece.
+
+También puedes entrar al panel, en
+**comentarios.elderechoescrito.es/admin**, donde los ves todos juntos. Es más
+cómodo si tienes que borrar varios de golpe.
+
+## ¿Y los que quedan pendientes?
+
+Normalmente **no hay ninguno**: los comentarios salen publicados directamente.
+
+Lo único que queda retenido es lo que caiga en el filtro de palabras. Esos
+aparecen marcados como **«Pendiente»** y solo los ve quien los escribió; para el
+resto de visitantes es como si no existieran. Para decidir:
+
+- Entra en el panel, en **comentarios.elderechoescrito.es/admin**.
+- En la lista verás los pendientes marcados.
+- **Aprobar** lo publica; **Borrar** lo elimina.
+
+Si un comentario legítimo se queda retenido por error, avísame: probablemente
+haya que ajustar el filtro.
+
+> **Un comentario pendiente no se pierde solo.** Se queda ahí hasta que alguien
+> lo apruebe o lo borre, así que conviene mirar el panel de vez en cuando —no a
+> diario, pero sí si has publicado algo que esté teniendo movimiento.
