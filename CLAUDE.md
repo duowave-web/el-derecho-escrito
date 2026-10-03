@@ -5806,6 +5806,100 @@ quien reserva sitio es `.comentarios__caja`, con sus 220 px.
 | Color | **`#66615b`** = `--tinta-suave` |
 | x del mensaje / del `<h2>` | **144 / 144** a 1440, **24 / 24** a 768 y 375 |
 
+### «1 COMENTARIOS»: Artalk no sabe de plurales
+
+Su traductor es un **reemplazo de marcadores y nada más** —`{count}` por el
+número, con una expresión regular— así que la cadena del recuento es la misma
+para 0, para 1 y para 20. No hay forma de arreglarlo desde el objeto de
+traducción.
+
+Lo corrige `recuentoEnPlural()` en `main.js`, que cambia la palabra a singular
+cuando el número es 1.
+
+> ⚠️ **VIGILA EL DOM Y NO ESCUCHA LOS EVENTOS DE ARTALK**, que también existen
+> —`list-loaded`, `comment-inserted`, `comment-deleted`…—. Con los eventos
+> habría que acertar con **todos** los que cambian el número **y** llegar
+> después de que Artalk haya repintado; perder esa carrera deja «1 comentarios»
+> otra vez, en silencio. Un observador se entera de cualquier repintado, venga
+> del evento que venga.
+
+> ⚠️ **Y NO SE CICLA, aunque el observador vigile justo lo que la función
+> escribe:** antes de tocar nada comprueba si la palabra ya es la correcta y se
+> va. La escritura es idempotente, así que la mutación que ella misma provoca no
+> produce una segunda escritura.
+>
+> **Una bandera no habría servido**: los callbacks del observador son
+> microtareas, así que ya estaría a `false` cuando llegasen.
+
+El plural es el valor por defecto en el objeto de traducción, así que si esto no
+llegara a ejecutarse el peor caso es el fallo de hoy, no uno nuevo. Verificado
+inyectando el marcado real del recuento: **0 → «0 comentarios», 1 → «1
+comentario», 2 → «2 comentarios», 21 → «21 comentarios»**, y estable al repetir.
+
+### Fuera el enlace «Mensajes», que abre el panel lateral
+
+Aparece a la derecha del recuento en cuanto el lector se identifica —basta con
+haber comentado una vez— y abre una capa con «Messages», «Mentions», «Mine» y
+«Pending» **en inglés**: esas cadenas no están en el objeto de traducción de la
+interfaz, viven en el panel, que es otra aplicación.
+
+> ⚠️ **NO HAY OPCIÓN DE CONFIGURACIÓN**, comprobado en el bundle: el enlace no
+> depende de ninguna opción sino de si hay usuario identificado —
+> `Text = t.is_admin ? T("ctrlCenter") : T("msgCenter")` … `else
+> n.classList.add("atk-hide")`— y `showSidebar()` se invoca **desde un solo
+> sitio**, el `onclick` de ese elemento. Al ocultarlo no queda ningún otro
+> acceso.
+
+> ⚠️ **ESTO NO LE QUITA NADA AL AUTOR.** Responder con la etiqueta «Autor» es
+> cosa del **editor** —escribe su nombre y su correo, Artalk le pide la
+> contraseña— y no pasa por el panel. Y moderar lo hace en
+> `comentarios.elderechoescrito.es/admin`, que es una URL aparte y la que ya
+> documenta `PARA-EL-CLIENTE.md`. Lo único que pierde es un atajo que además
+> estaba en inglés.
+
+Se oculta **solo ese `<span>`** y no todo `.atk-right-action`: ahí dentro vive
+también `admin-close-comment` —cerrar los comentarios de la página—, que es una
+acción de moderación legítima, está traducida y no abre ningún panel.
+
+### «Responder @Nombre» salía cortado
+
+Lo cortaba un `max-width: 8em` de Artalk, que a 14 px son 112: cualquier nombre
+de más de ocho caracteres perdía el final.
+
+> ⚠️ **NO BASTA CON SOLTAR EL TOPE.** Con solo quitarlo, un nombre muy largo no
+> se recorta: **desborda la fila**. Un item de flex no baja de su tamaño de
+> contenido salvo que se le diga, y aquí hay **tres anidados**
+> —`.atk-bottom-left`, `.atk-state-wrap`, `.atk-state-btn`— que hay que dejar
+> encoger antes de que el recorte pueda actuar.
+>
+> Medido a 1440 con un nombre de 925 px: sin la cadena desbordaba; con ella se
+> recorta a 671 y el aspa sigue en su sitio. Un nombre normal —«Arnau Montero
+> Miranda», 258 px— no se recorta nada.
+
+> ⚠️ **POR DEBAJO DE 768 px ESA ETIQUETA NO EXISTE:** Artalk la oculta entera en
+> una media query propia y deja solo el aspa. No es cosa de estas reglas y no se
+> repone: en una columna de 327 px el nombre no cabría de todas formas.
+
+### Los dos nombres de una respuesta salían de tamaños distintos
+
+«Arnau ▸ Juan Contera» con el segundo más grande. La causa era que **mi propia
+regla estaba medio muerta**:
+
+| Elemento | Qué es | Artalk le pone |
+|---|---|---|
+| `.atk-item.atk-nick` | el autor del comentario | **`font-size: 14px`** |
+| `.atk-reply-at > .atk-nick` | a quién responde | *nada de tamaño* |
+
+Y su selector del primero —`.atk-comment > .atk-main > .atk-header
+.atk-item.atk-nick`— pesa **(0,4,0)**, más que los (0,3,0) de
+`.comentarios .artalk .atk-nick`. Así que de los dos nombres, el mío ganaba
+**solo en el segundo**: 14 px contra 16,8 en la misma línea, sin que nada
+avisara.
+
+Se sube a **(0,6,0)** nombrando los dos casos a la vez. Verificado: los dos en
+Cormorant Garamond 16,8 px, peso 600, y la fecha intacta en Inter 12 px
+`--tinta-suave`.
+
 ### «Powered by Artalk»: se quita con CSS porque no hay opción
 
 > ⚠️ **SE COMPROBÓ ANTES DE RECURRIR AL CSS.** En el bundle de la v2.10.0 las
@@ -5980,6 +6074,114 @@ lo único que saldría es un título sobre un hueco.
 
 **Verificado**: el PDF sigue en 13 páginas y 543 730 bytes, los mismos que
 antes de esto, y la palabra «Comentarios» no aparece en su texto.
+
+### La plantilla de correo: `servidor/artalk/correo.html`
+
+Artalk manda dos avisos —uno al autor por cada comentario nuevo y otro a un
+lector cuando le responden— y por defecto usa una plantilla **en chino**, con un
+botón «回复» y «Powered By Artalk Go» al pie.
+
+La propia está en **`servidor/artalk/correo.html`**.
+
+> ⚠️ **ESE ARCHIVO NO LO SIRVE LA WEB NI LO LEE NINGÚN NAVEGADOR.** Vive en el
+> repositorio solo para tenerlo versionado; quien lo usa es el servidor de
+> comentarios, que lo lee de su carpeta de datos. **Copiarlo al repositorio no
+> lo instala**: hay que subirlo al servidor, y los pasos están abajo.
+>
+> ⚠️ **Y NO PUEDE LLEVAR NI UN SECRETO.** El repositorio es público y GitHub
+> Pages sirve la raíz, así que es descargable en
+> `/servidor/artalk/correo.html`. Hoy son textos y colores; quien lo edite que
+> no meta claves ni direcciones privadas.
+
+#### Las variables, verificadas y con su fuente
+
+De la documentación oficial de Artalk, [Email
+Notifications](https://artalk.js.org/en/guide/backend/email):
+
+| Variable | Qué es |
+|---|---|
+| `{{nick}}` | apodo de quien comenta |
+| `{{content}}` | contenido del comentario |
+| `{{reply_nick}}` | apodo del destino de la respuesta |
+| `{{reply_content}}` | contenido de la respuesta |
+| `{{page_title}}` | título de la página |
+| `{{page_url}}` | URL de la página |
+| `{{link_to_reply}}` | enlace al comentario |
+| `{{site_name}}` | nombre del sitio |
+| `{{site_url}}` | URL del sitio |
+
+Y dos espacios de nombres completos, `{{comment.*}}` —el comentario que dispara
+el aviso— y `{{parent_comment.*}}` —al que responde—, con estos campos:
+`badge_color`, `badge_name`, `content`, `content_raw`, `date`, `datetime`,
+`email`, `email_encrypted`, `id`, `is_allow_reply`, `is_collapsed`,
+`is_pending`, `link`, `nick`, `page_key`, `page_title`, `rid`, `site_name`,
+`time`, `ua`, `visible`, `vote_down`, `vote_up`, más `page.*` y `site.*`.
+
+> ⚠️ **LA PLANTILLA USA `{{comment.*}}` Y NO LAS SUELTAS, A PROPÓSITO.** Cuál es
+> cuál en el par `{{nick}}` / `{{reply_nick}}` depende de si el correo avisa de
+> una respuesta o de un comentario nuevo, y la documentación no lo deja cerrado:
+> lo único que lo desambigua es el asunto por defecto —«You have received a
+> reply from @{{reply_nick}}»—, de donde se deduce que `reply_nick` es **quien
+> responde** y `nick` **quien recibe**.
+>
+> `{{comment.nick}}` y `{{comment.content}}` son siempre el comentario que ha
+> disparado el aviso, valga para el caso que valga. Es menos que fiarse de una
+> deducción.
+
+> ⚠️ **NO SE MUESTRA EL COMENTARIO AL QUE SE RESPONDE, y es una limitación
+> conocida, no un olvido.** Haría falta un condicional —algo como
+> `{{#parent_comment}}…{{/parent_comment}}`— para no pintar un bloque vacío en
+> los avisos de comentario nuevo, que no tienen padre.
+>
+> **No he podido verificar que el motor admita condicionales.** La documentación
+> dice «sintaxis Mustache» pero lista las variables anidadas con **punto**
+> —`{{comment.page.admin_only}}`—, que es lo que hace un mapa aplanado con
+> reemplazo simple, no un Mustache de verdad. Y un Mustache de verdad anidaría
+> objetos.
+>
+> La plantilla de hoy **es correcta en los dos casos** sin condicionales. Si
+> alguien confirma que las secciones funcionan, el bloque del comentario
+> original se añade con `{{parent_comment.nick}}` y `{{parent_comment.content}}`.
+> **Hasta entonces no se añaden**: un `{{#…}}` que no se interprete sale impreso
+> en el correo.
+
+#### Cómo se instala en el servidor
+
+```sh
+# 1. Subir el archivo desde el Mac
+scp servidor/artalk/correo.html \
+    TU_USUARIO@comentarios.elderechoescrito.es:/opt/comentarios/elderechoescrito/data/
+
+# 2. En el docker-compose.yml de Artalk, dentro de `environment:`
+#    La ruta es la de DENTRO del contenedor, no la del host.
+      - ATK_EMAIL_MAIL_TPL=/data/correo.html
+
+# 3. Recargar
+docker compose up -d
+```
+
+> ⚠️ **LA RUTA DE LA VARIABLE ES LA DE DENTRO DEL CONTENEDOR.** `scp` deja el
+> archivo en el host, en `/opt/comentarios/elderechoescrito/data/`; lo que ve
+> Artalk es el punto de montaje. Con el montaje habitual
+> —`/opt/comentarios/elderechoescrito/data:/data`— eso es `/data/correo.html`.
+> **Hay que comprobar el `volumes:` del compose antes de dar el valor por
+> bueno**: si el montaje fuera otro, la variable apunta a un archivo que no
+> existe y Artalk cae a su plantilla en chino **sin dar ningún error**.
+
+El nombre de la variable sale de la convención documentada —[Environment
+Variables](https://artalk.js.org/en/guide/env): «*Environment variable names
+start with `ATK_`, in all uppercase, corresponding to each node in the
+configuration file*»— aplicada a la clave `email.mail_tpl`.
+
+> **Pendiente, y es otra tarea:** los ASUNTOS siguen en chino. Son dos claves
+> aparte, `email.mail_subject` —aviso al lector— y `admin_notify.mail_subject`
+> —aviso al autor—, y son las que hacen que un comentario nuevo se anuncie como
+> «has recibido una respuesta». La plantilla no las toca.
+>
+> ⚠️ **Sus nombres como variable de entorno NO están verificados.** La
+> convención daría `ATK_EMAIL_MAIL_SUBJECT`, pero la de `admin_notify` no se ha
+> podido confirmar. Conviene ponerlas en el archivo de configuración, donde las
+> claves sí están documentadas, en vez de adivinar el nombre de la variable.
 
 ### Cómo se modera
 

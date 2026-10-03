@@ -193,6 +193,11 @@ distinga de la de cualquier otra persona.
 > La contraseña te la pide solo la primera vez en cada navegador. Si la has
 > olvidado, dímelo y la cambio.
 
+> **Ya no sale el enlace «Mensajes» junto al recuento de comentarios**, el que
+> abría un panel lateral en inglés. Se quitó porque estaba sin traducir y no
+> hacía falta: para responder tienes el formulario de la propia página, y para
+> moderar, el panel de administración de abajo. No has perdido ninguna función.
+
 ## Borrar un comentario
 
 Si estás identificado como autor, cada comentario te muestra un enlace
@@ -220,3 +225,20 @@ haya que ajustar el filtro.
 > **Un comentario pendiente no se pierde solo.** Se queda ahí hasta que alguien
 > lo apruebe o lo borre, así que conviene mirar el panel de vez en cuando —no a
 > diario, pero sí si has publicado algo que esté teniendo movimiento.
+
+## Los correos de aviso
+
+Recibes un correo cada vez que alguien comenta, y quien comenta recibe otro si
+le responden.
+
+Esos correos **estaban en chino**: era la plantilla que trae el sistema de
+fábrica. Ahora llevan una propia, en español y con los colores de la web: dicen
+quién ha comentado y en qué artículo, muestran el comentario y traen un botón
+**«Ver el comentario»**.
+
+> **Lo que todavía está en chino es el ASUNTO del correo** —la línea que se ve
+> en la bandeja de entrada—, que se configura aparte. Está anotado y lo cambio
+> en cuanto toque el servidor.
+>
+> Por eso ahora mismo puede que el asunto diga «has recibido una respuesta»
+> aunque sea un comentario nuevo. El contenido del correo sí es correcto.
