@@ -5622,21 +5622,136 @@ Solo los artículos lo llevan; ni la portada, ni el listado, ni `sobre/` ni
 HTML publicado es una `<section>` con su `<h2>`, un `<div>` vacío y dos
 párrafos: **todo lo demás lo monta Artalk en el navegador**.
 
-### Dónde va, y por qué ahí
+### Dónde va: justo debajo del artículo
 
 ```
-referencias → volver → Descargar PDF → Compartir → aviso legal
-→ COMENTARIOS → Leer anterior/siguiente → Continúa leyendo
+cuerpo → referencias → COMENTARIOS → Volver → Descargar PDF
+→ Compartir → aviso legal → Leer anterior/siguiente → Continúa leyendo
 ```
 
-La frontera no es nueva: este archivo ya documenta que «Leer anterior /
-siguiente» va **donde la página pasa de «este artículo» a «otros artículos»**.
-Un comentario sigue siendo sobre este, así que cae del lado de acá. Y detrás
-del aviso legal porque el aviso es lo que **cierra** el texto: primero se acaba
-de leer, después se responde.
+Todo lo que hay entre «Volver» y el aviso son **acciones sobre el artículo**
+—llevárselo en PDF, compartirlo— y el aviso es una nota al pie. Un comentario
+no es ninguna de las dos cosas: es la **continuación de la lectura**, así que va
+pegado a lo que se acaba de leer.
 
-Ponerlo detrás de `.paso` habría obligado a pasar por «vete a leer otra cosa»
-antes de poder comentar.
+> ⚠️ **ESTUVO DETRÁS DEL AVISO LEGAL Y SE MOVIÓ POR ENCARGO.** Lo que esta
+> sección razonaba entonces, y que ya **no** describe dónde está:
+>
+> > «La frontera no es nueva: este archivo ya documenta que «Leer anterior /
+> > siguiente» va donde la página pasa de «este artículo» a «otros artículos».
+> > Un comentario sigue siendo sobre este, así que cae del lado de acá. Y detrás
+> > del aviso legal porque el aviso es lo que **cierra** el texto: primero se
+> > acaba de leer, después se responde.»
+>
+> **La primera mitad sigue valiendo** —los comentarios siguen delante de
+> `.paso`, solo que mucho más arriba—. La que decae es la segunda: hoy van
+> **antes** del aviso legal, no después.
+
+> ⚠️ **EL TRASLADO SE LLEVÓ POR DELANTE UN HUECO, Y NO DABA NINGÚN ERROR.**
+> «Volver a los artículos» **no tiene margen propio**: los 40 px que lo
+> separaban de lo de arriba los ponía el `margin-bottom` de `.referencias`. Al
+> meter los comentarios en medio, ese margen pasa a separar referencias de
+> comentarios y **«Volver» se quedaba pegado a la sección: medido, 0 px**.
+>
+> Lo repone un `margin-bottom: 40px` en `.comentarios`, que son los mismos 40
+> de antes, así que el ritmo de esa zona —40 / 40 / 28— se mantiene exacto.
+> Arriba son 56 porque el margen de `.referencias` y el de `.comentarios`
+> **colapsan** y manda el mayor; es el mismo 56 con el que abre `.continua`.
+
+> **El coste de la posición nueva, que conviene saber:** la salida «Volver a los
+> artículos» queda ahora **después** de una sección que puede ser larga. Se
+> acepta porque esa salida está duplicada —hay otra idéntica al principio del
+> artículo— y porque el cierre real de la página son `.paso` y `.continua`, que
+> siguen abajo.
+
+### Los campos: el borde pasa del recuadro a cada campo
+
+Artalk envuelve el editor en un recuadro con filete y radio 6, y dentro pone los
+campos **sin borde** —`2px solid transparent`—, así que el nombre, el correo y
+el comentario se leían como texto suelto dentro de una caja.
+
+Se invierte: **el recuadro se va y el borde pasa a cada campo**, que es como
+funciona el formulario de `contacto/`. Los valores son los mismos, uno por uno:
+
+| | `.campo input` de contacto/ | comentarios |
+|---|---|---|
+| Relleno | 12px 14px | **igual** |
+| Familia y cuerpo | Inter 0,95rem | **igual** |
+| Filete | 1px `--borde` | **igual** |
+| Radio | **0** | **igual** |
+| Foco | 2px `--acento`, offset 1 | **igual** |
+
+Nombre y correo van en pareja con `repeat(auto-fit, minmax(220px, 1fr))`, el
+mismo recurso que `.campos-par`: hace el trabajo de una media query, así que no
+hay ningún número que mantener sincronizado con un corte. Medido:
+
+| | 1440 | 768 | 375 |
+|---|---|---|---|
+| Nombre + correo | 352 + 352 | 352 + 352 | **327, apilados** |
+| Comentario | 720 | 720 | 327 |
+| Botón a la derecha | ✓ | ✓ | ✓ |
+
+El botón toma el estilo de `.boton.boton--principal` —Inter 14/500, relleno
+13/26, radio 4, relleno de acento—. Hay que soltarle el `height: 30px` y el
+`min-width` de Artalk o el relleno no cabe.
+
+> **La caja exterior no hace falta**, y por eso se quita: con los tres campos ya
+> delimitados sería una caja dentro de otra, y el formulario de `contacto/`
+> tampoco la tiene. El `.atk-bottom` viene en `space-between`, así que con el
+> grupo de la izquierda vacío —sin emoticonos, vista previa ni subir imagen— el
+> botón queda a la derecha él solo, sin tocar la alineación.
+
+### La lista vacía decía dos veces lo mismo
+
+Salían a la vez «0 comentarios» en la cabecera, a la izquierda, y «Todavía no
+hay comentarios» debajo, centrado y con otra tipografía.
+
+Se **esconde la cabecera** y se deja el mensaje, que es el que habla como una
+persona:
+
+```css
+.comentarios .artalk > .atk-list:has(.atk-no-comment) > .atk-list-header { display: none }
+```
+
+`:has()` es lo que permite distinguir el caso vacío **sin JavaScript**:
+`.atk-no-comment` solo existe cuando no hay comentarios. Es el mismo recurso que
+ya usan `body:has(.progreso)` y la ficha del artículo.
+
+Con comentarios, el recuento se queda y se alinea con el resto: Artalk le mete
+17 px de relleno lateral que lo descuadraban respecto al título y al formulario.
+**Verificado inyectando un `.atk-no-comment`**: la cabecera pasa de `flex` a
+`none` y el mensaje queda en x=144, el mismo que el `<h2>` de la sección.
+
+### «Powered by Artalk»: se quita con CSS porque no hay opción
+
+> ⚠️ **SE COMPROBÓ ANTES DE RECURRIR AL CSS.** En el bundle de la v2.10.0 las
+> únicas apariciones de «copyright» son **el nombre de la clase y la plantilla
+> del DOM**: no existe ninguna opción de configuración que lo gobierne. El texto
+> lo escribe el propio Artalk al emitir su evento `mounted`:
+>
+> ```js
+> e.on("mounted", () => { …querySelector(".atk-copyright").innerHTML = "Powered By …" })
+> ```
+>
+> Quitarlo desde JS sería una **carrera** contra ese manejador —si el nuestro
+> corre antes, Artalk lo vuelve a escribir—, así que el CSS es además la vía
+> **fiable**, no solo la única.
+>
+> Se oculta el **pie entero** y no solo `.atk-copyright`: el pie trae su propio
+> relleno y dejaría un hueco al final de la lista.
+>
+> La licencia **MIT** de Artalk permite quitar la atribución de la interfaz. El
+> aviso de copyright del código sigue intacto en los archivos que sirve el
+> servidor de comentarios.
+
+### ⚠️ Estos estilos ganan por especificidad, no por orden
+
+**La hoja de Artalk la inyecta `main.js` en el `<head>` en tiempo de ejecución**,
+o sea **después** de `styles.css`: en un empate gana siempre ella.
+
+Sus selectores son del tipo `.artalk > .atk-list > .atk-list-header`, (0,3,0).
+El prefijo `.comentarios` añade una clase y deja los de aquí en (0,4,0). **Quien
+quite ese prefijo para «simplificar» desactiva la regla** sin que nada avise.
 
 ### El `pageKey` lo escribe el build, y es lo que sobrevive a la mudanza
 

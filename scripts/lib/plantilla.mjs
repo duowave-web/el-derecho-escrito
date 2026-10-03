@@ -483,22 +483,33 @@ function jsonLd(art) {
 
 /* ------------------------------------------------------ comentarios ----- */
 
-/* ⚠️ VA DESPUÉS DEL AVISO LEGAL Y ANTES DE «Leer anterior / siguiente», y la
-   frontera no es arbitraria: es la que este archivo ya usa.
+/* ⚠️ VA JUSTO DEBAJO DEL ARTÍCULO: detrás de las referencias y DELANTE de
+   «Volver a los artículos». El orden del final queda así:
 
-   El comentario de `bloquePaso()` dice que esa navegación va «donde la página
-   pasa de ESTE artículo a OTROS artículos». Un comentario sigue siendo sobre
-   este, así que cae del lado de acá de esa frontera. Y va detrás del aviso
-   legal porque el aviso es lo que CIERRA el texto: primero se acaba de leer,
-   después se responde.
+     cuerpo → referencias → COMENTARIOS → Volver → Descargar PDF
+     → Compartir → aviso legal → Leer anterior/siguiente → Continúa leyendo
 
-   El orden del final del artículo queda:
+   ⚠️ ESTUVO DETRÁS DEL AVISO LEGAL Y SE MOVIÓ POR ENCARGO. Lo que se razonaba
+   entonces, y que ya NO describe dónde está:
 
-     referencias → volver → Descargar PDF → Compartir → aviso legal
-     → COMENTARIOS → Leer anterior/siguiente → Continúa leyendo
+     «El comentario de bloquePaso() dice que esa navegación va donde la página
+      pasa de ESTE artículo a OTROS artículos, así que un comentario cae del
+      lado de acá. Y detrás del aviso legal porque el aviso CIERRA el texto:
+      primero se acaba de leer, después se responde.»
 
-   Ponerlo detrás de `.paso` habría obligado a pasar por «vete a leer otra cosa»
-   antes de poder comentar.
+   La primera mitad sigue valiendo —los comentarios siguen delante de `.paso`,
+   solo que mucho más arriba—. La que decae es la segunda: hoy los comentarios
+   van ANTES del aviso legal, no después.
+
+   El criterio nuevo es que todo lo que hay entre «Volver» y el aviso son
+   ACCIONES SOBRE EL ARTÍCULO —llevárselo en PDF, compartirlo— y el aviso es
+   una nota al pie. Un comentario no es ninguna de las dos cosas: es la
+   continuación de la lectura, así que va pegado a lo que se acaba de leer.
+
+   El coste, que conviene saber: la salida «Volver a los artículos» queda ahora
+   DESPUÉS de una sección que puede ser larga. Se acepta porque esa salida está
+   duplicada —hay otra idéntica al principio del artículo— y porque el cierre
+   real de la página son `.paso` y `.continua`, que siguen abajo.
 
    ⚠️ LA CAJA SE QUEDA VACÍA EN EL HTML, Y ESO ES LO QUE LA HACE SEGURA. Aquí no
    se escribe ni un campo: lo monta Artalk en el navegador cuando el lector se
@@ -723,7 +734,7 @@ ${pintarIndice(art.secciones, conNumero)}
 ${art.secciones.map((s) => pintarSeccion(s, conNumero)).join('\n\n')}
 
           </div>
-${pintarReferencias(art)}
+${pintarReferencias(art)}${bloqueComentarios(art)}
           <a class="volver volver--cierre" href="../../articulos/">
             <span class="volver__flecha" aria-hidden="true">&larr;</span>Volver a los artículos
           </a>
@@ -792,7 +803,7 @@ ${pintarReferencias(art)}
             </ul>
           </aside>
 
-          <p class="aviso"><em>Este artículo tiene carácter informativo y divulgativo y no constituye asesoramiento jurídico. La valoración de un asunto concreto requiere analizar sus circunstancias particulares. Si deseas plantear una consulta relacionada con su contenido o con las materias que aborda, puedes hacerlo a través de la <a href="../../contacto/">página de contacto</a>.</em></p>${bloqueComentarios(art)}${bloquePaso(vecinos)}
+          <p class="aviso"><em>Este artículo tiene carácter informativo y divulgativo y no constituye asesoramiento jurídico. La valoración de un asunto concreto requiere analizar sus circunstancias particulares. Si deseas plantear una consulta relacionada con su contenido o con las materias que aborda, puedes hacerlo a través de la <a href="../../contacto/">página de contacto</a>.</em></p>${bloquePaso(vecinos)}
 
           <section class="continua" id="continua" aria-labelledby="continua-titulo" hidden>
             <h2 id="continua-titulo" class="lista__titulo lista__titulo--destacado">Continúa leyendo</h2>
