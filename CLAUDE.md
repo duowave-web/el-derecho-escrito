@@ -4510,8 +4510,100 @@ del tipo si le llega uno que no conoce.
 |---|---|---|
 | `parrafo` | `html` | `<p>` |
 | `subtitulo` | `texto` | `<h3>`. **Texto plano, no HTML** |
-| `cita` | `html`, `fuente_html` | `<blockquote class="cita--destacada">` y su `.cita__fuente` |
+| `cita` | `html`, `fuente_html` | `<blockquote>` y su `.cita__fuente`. **La clase la elige el generador** — ver abajo |
 | `lista` | `ordenada`, `items[{marcador, html}]` | `<ul>`/`<ol>`, o `.lista--marcada` si hay marcadores |
+
+#### Las citas tienen DOS estilos y los elige el generador
+
+**El cliente no marca nada en el Word.** Lo decide `claseDeCita()` en
+`plantilla.mjs`, a partir del propio texto:
+
+| Clase | Qué es | Aspecto |
+|---|---|---|
+| `.cita--destacada` | una frase que se **mira** | Cormorant 25,6 px, comilla de apertura en acento, `--tinta` |
+| `.cita--extracto` | un pasaje que se **lee** | Source Serif 16 px, filete lateral en acento, `--tinta-suave`, sin comilla |
+
+**El criterio: más de 40 palabras, o cualquier salto de línea.**
+
+> ⚠️ **LAS DOS MITADES HACEN FALTA Y NINGUNA SOBRA.** Por largo, porque una cita
+> de 113 palabras no es un reclamo aunque vaya en un solo párrafo —son 28 líneas
+> en un móvil—. Por **salto de línea**, porque una cita de dos puntos separados
+> por `<br>` es un documento **por estructura**, no por tamaño: es el caso de la
+> cita 2 de MASC, que con 37 palabras se escaparía del umbral.
+
+> ⚠️ **EL 40 NO ES UN NÚMERO FRÁGIL, y conviene saberlo antes de afinarlo.** Las
+> citas reales de MASC se reparten en **37 (con `<br>`), 113, 115, 174 y 579**:
+> no hay ninguna entre 40 y 112. **Cualquier umbral entre 38 y 112 clasifica el
+> artículo exactamente igual**, así que el resultado no depende de haber
+> acertado el número.
+>
+> Lo que lo fija en 40 es el otro extremo: es lo que ocupa una frase larga de una
+> sola oración, que es lo que un reclamo puede llegar a ser.
+>
+> Se cuenta en **palabras** y no en caracteres porque es la unidad que el build
+> ya usa para los minutos de lectura. Con caracteres —246, 669, 727, 1049,
+> 3686— el reparto sale idéntico.
+
+**Qué lo motivó, medido a 375 px antes del cambio:**
+
+| Cita | Palabras | Alto | Líneas | % del documento |
+|---|---|---|---|---|
+| 1 | 113 | 968 px | 28 | 2,6 % |
+| 2 | 37 | 415 px | 12 | 1,1 % |
+| 3 | 174 | 1 590 px | 46 | 4,2 % |
+| **4** | **579** | **5 529 px** | **160** | **14,7 %** |
+| 5 | 115 | 1 071 px | 31 | 2,8 % |
+| | | **9 572 px** | | **25,5 %** |
+
+Una cuarta parte del artículo eran citas en cuerpo de titular, y la cuarta sola
+medía **6,8 pantallas de móvil**. Después:
+
+| | Antes | Después |
+|---|---|---|
+| Altura de las citas a 375 | 9 572 px | **5 133 px** (−46 %) |
+| Peso en el documento | 25,5 % | **15,5 %** |
+| Altura del artículo a 375 | 37 607 px | **33 024 px** (−12,2 %) |
+| Páginas del PDF | 14 | **13** |
+
+> **El extracto no estrena casi nada**: es el `blockquote` base que `styles.css`
+> ya tenía —filete de 2 px en acento, sangría, `--tinta-suave`— con tres
+> cambios. **Redonda** en vez de cursiva, porque un pasaje de 579 palabras en
+> cursiva se lee peor y en papel todavía peor, y la convención académica para
+> una cita en bloque larga es redonda. **Cuerpo 1rem (16 px)**, que es «algo
+> menor» que los 18 del cuerpo sin estrenar un escalón: es el tamaño raíz del
+> documento. E **interlineado 1,7**, el mismo del cuerpo, porque es texto para
+> leer seguido.
+>
+> **Sin comilla de apertura**, y es deliberado: el filete ya dice que es una
+> cita, y una comilla de 3,6rem sobre un pasaje de varias líneas compite con el
+> texto en vez de introducirlo. La comilla es un recurso de reclamo.
+>
+> **La negrita del original se respeta sola**: no se toca `font-weight`, así que
+> los `<strong>` del texto del cliente salen como vienen.
+
+> ⚠️ **LA DESTACADA TAMBIÉN BAJA EN MÓVIL, de 25,6 a 22,4 px.** A 375 la columna
+> son 327 px, y a 1,6rem una frase de reclamo cae en ~3 palabras por línea: deja
+> de leerse como una frase y pasa a leerse como una lista vertical. El corte es
+> el **600** que ya usa el cuerpo del artículo, no uno nuevo.
+
+> ⚠️ **EN EL PDF EL EXTRACTO SÍ SE PUEDE PARTIR, al revés que la destacada.** El
+> `break-inside: avoid` de la destacada tiene sentido —son dos o tres líneas y
+> partirla le quita la comilla, que es lo único que la identifica—. Un extracto
+> de 579 palabras ocupa varias páginas, así que prohibirle el salto lo empujaría
+> entero a la siguiente y dejaría media página en blanco antes: el mismo fallo
+> que ya razona la caja de referencias. Lo que sí se protege es cada línea, con
+> `orphans`/`widows` a 2.
+
+> ⚠️ **LA FUENTE DE LA CITA SE ALINEA CON LA SUYA, Y SON DOS SANGRÍAS DISTINTAS.**
+> Los 54 px de `.cita__fuente` son los que deja la comilla de apertura, y un
+> extracto no la tiene. Sin corregirlo, la fuente quedaba **32 px más adentro**
+> que la cita que atribuye.
+>
+> Se engancha con `.articulo .cita--extracto + .cita__fuente` —hermano
+> adyacente— y no con una clase propia, porque la fuente siempre va pegada a su
+> cita: así no hay dos sitios que mantener sincronizados ni una clase que se
+> pueda olvidar al escribir el JSON. **Con el prefijo `.articulo`**, que lo deja
+> en (0,3,0) y le hace ganar por especificidad y no por orden.
 
 El `html` de los bloques **es HTML de verdad y no se escapa**: ahí van los
 `<strong>`, `<em>` y `<a>` del texto. Lo que sí se escapa es todo lo demás

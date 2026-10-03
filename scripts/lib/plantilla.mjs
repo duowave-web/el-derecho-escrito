@@ -246,6 +246,65 @@ export function derivar(art) {
 
 /* --------------------------------------------------------- bloques ------ */
 
+/* ------------------------------------------------- citas: dos estilos --- */
+
+/* ⚠️ EL ESTILO DE UNA CITA LO ELIGE EL GENERADOR, NO EL CLIENTE. No hay nada que
+   marcar en el Word: se decide aquí, una vez, a partir del propio texto.
+
+   Son dos cosas distintas que compartían estilo:
+
+     cita--destacada   una frase que se MIRA. Tipografía de display, grande,
+                       con su comilla de apertura. Es un reclamo.
+     cita--extracto    un pasaje que se LEE. Sentencias y acuerdos citados
+                       literalmente, a veces de varios párrafos.
+
+   Con el estilo de display, los extractos reales de MASC se convertían en un
+   muro. Medido a 375 px antes de este cambio:
+
+     cita   palabras   alto     lineas   % del documento
+       1        113     968 px     28         2,6 %
+       2         37     415 px     12         1,1 %
+       3        174    1590 px     46         4,2 %
+       4        579    5529 px    160        14,7 %   <- 6,8 pantallas
+       5        115    1071 px     31         2,8 %
+                      ------------------------------
+                       9572 px               25,5 %
+
+   O sea que una cuarta parte del artículo eran citas en cuerpo de titular.
+
+   ⚠️ EL CRITERIO ES «MÁS DE 40 PALABRAS O CUALQUIER SALTO DE LÍNEA», y las dos
+   mitades hacen falta:
+
+     · Por LARGO, porque una cita de 113 palabras no es un reclamo aunque vaya
+       en un solo párrafo —son 28 líneas en un móvil—.
+     · Por SALTO DE LÍNEA, porque una cita de dos puntos separados por <br> es
+       un documento por estructura, no por tamaño. Es el caso de la cita 2, que
+       con 37 palabras se escaparía del umbral y no es un reclamo.
+
+   ⚠️ EL 40 NO ES UN NÚMERO FRÁGIL, Y CONVIENE SABERLO ANTES DE AFINARLO. Las
+   citas reales se reparten en 37 (con <br>), 113, 115, 174 y 579: no hay
+   ninguna entre 40 y 112. Cualquier umbral entre 38 y 112 clasifica el artículo
+   EXACTAMENTE IGUAL, así que el resultado no depende de haber acertado el
+   número. Lo que lo fija en 40 es el otro extremo: es lo que ocupa una frase
+   larga de una sola oración, que es lo que un reclamo puede llegar a ser.
+
+   Se cuenta en PALABRAS y no en caracteres porque es la unidad que el build ya
+   usa para los minutos de lectura. Con caracteres —246, 669, 727, 1049, 3686—
+   el reparto sale idéntico.
+
+   Determinista y sin reloj: depende solo del texto del JSON. */
+
+const PALABRAS_EXTRACTO = 40;
+
+export function claseDeCita(html) {
+  const salto = /<br\b|<\/p>/i.test(html);
+  const texto = html
+    .replace(/\{\{ref:[^}]*\}\}/g, ' ')
+    .replace(/<[^>]+>/g, ' ');
+  const palabras = texto.split(/\s+/).filter(Boolean).length;
+  return salto || palabras > PALABRAS_EXTRACTO ? 'cita--extracto' : 'cita--destacada';
+}
+
 function pintarBloque(b) {
   if (b.tipo === 'parrafo') {
     return `            <p>${resolverLlamadas(b.html)}</p>`;
@@ -254,7 +313,7 @@ function pintarBloque(b) {
     return `            <h3>${escapar(b.texto)}</h3>`;
   }
   if (b.tipo === 'cita') {
-    const cita = `            <blockquote class="cita--destacada">${resolverLlamadas(b.html)}</blockquote>`;
+    const cita = `            <blockquote class="${claseDeCita(b.html)}">${resolverLlamadas(b.html)}</blockquote>`;
     if (!b.fuente_html) return cita;
     return `${cita}\n            <p class="cita__fuente">${resolverLlamadas(b.fuente_html)}</p>`;
   }

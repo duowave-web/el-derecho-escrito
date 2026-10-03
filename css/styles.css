@@ -4030,6 +4030,17 @@ body:has(.progreso) .cabecera {
   margin-right: 14px;
 }
 
+/* ⚠️ HAY DOS ESTILOS DE CITA Y LOS ELIGE EL GENERADOR, no el cliente. El
+   criterio —mas de 40 palabras o cualquier salto de linea— esta razonado entero
+   en `claseDeCita()`, en plantilla.mjs, con las medidas que lo motivaron.
+
+     .cita--destacada   una frase que se MIRA: display grande, con comilla.
+     .cita--extracto    un pasaje que se LEE: sentencias y acuerdos citados.
+
+   Lo que sigue son los dos. NO se toca uno sin mirar el otro: se distinguen a
+   proposito por tipografia, tamano, color y senal de apertura a la vez, porque
+   conviven en el mismo articulo y tienen que leerse como cosas distintas. */
+
 /* Cita destacada: sin filete lateral, con la comilla como elemento grafico. */
 
 .articulo .cita--destacada {
@@ -4053,6 +4064,59 @@ body:has(.progreso) .cabecera {
   font-size: 3.6rem;
   line-height: 1;
   color: var(--acento);
+}
+
+/* ⚠️ EN MOVIL LA DESTACADA BAJA DE 25,6 A 22,4 px Y LA COMILLA CON ELLA. A 375
+   la columna son 327 px, y a 1,6rem una frase de reclamo cae en ~3 palabras por
+   linea: deja de leerse como una frase y pasa a leerse como una lista vertical.
+   1,4rem da ~4 y recupera el ritmo.
+
+   El corte es el 600 que ya usa el cuerpo del articulo, no uno nuevo. */
+
+@media (max-width: 600px) {
+  .articulo .cita--destacada {
+    padding-left: 44px;
+    font-size: 1.4rem;
+  }
+
+  .articulo .cita--destacada::before {
+    font-size: 3rem;
+  }
+}
+
+/* ⚠️ EL EXTRACTO NO ESTRENA CASI NADA: es el `blockquote` base que esta hoja ya
+   tenia —filete de 2px en acento, sangria, `--tinta-suave`— con tres cambios, y
+   los tres estan medidos contra el problema que resuelve.
+
+   1. REDONDA Y NO CURSIVA. El base viene en `italic`, que es la convencion para
+      una cita CORTA. En un pasaje de 579 palabras la cursiva es un lastre: se
+      lee peor y en papel peor todavia. La convencion academica para una cita en
+      bloque larga es redonda, sangrada y a cuerpo igual o menor.
+
+   2. CUERPO 1rem —16 px— contra los 18 del cuerpo del articulo. Es «algo menor»
+      sin estrenar un escalon nuevo: 1rem es el tamano raiz del documento, del
+      que ya cuelgan todos los demas valores en rem de este archivo.
+
+   3. INTERLINEADO 1,7, el mismo del cuerpo. Es un texto para leer seguido, asi
+      que necesita el mismo ritmo de lectura que un parrafo, no el 1,35 apretado
+      de un reclamo.
+
+   SIN COMILLA DE APERTURA, y es deliberado: el filete lateral ya dice que es
+   una cita, y una comilla de 3,6rem sobre un pasaje de varias lineas compite
+   con el texto en vez de introducirlo. La comilla es un recurso de reclamo.
+
+   La NEGRITA del original se respeta sola: no se toca `font-weight`, asi que
+   los <strong> del texto del cliente salen como vienen. */
+
+.articulo .cita--extracto {
+  margin: 28px 0;
+  padding: 2px 0 2px 22px;
+  border-left: 2px solid var(--acento);
+  font-family: var(--texto);
+  font-size: 1rem;
+  font-style: normal;
+  line-height: 1.7;
+  color: var(--tinta-suave);
 }
 
 /* Caja de citas y referencias: mismo tratamiento de panel que .indice, y
@@ -4210,6 +4274,29 @@ body:has(.progreso) .cabecera {
   font-size: 13px;
   letter-spacing: 0.02em;
   color: var(--tinta-suave);
+}
+
+/* ⚠️ LA FUENTE DE UN EXTRACTO SE ALINEA CON EL EXTRACTO, NO CON LA DESTACADA.
+   Los 54px de arriba son los que deja la comilla de apertura, y un extracto no
+   la tiene: su texto arranca a 22 + 2 del filete. Sin esto la fuente quedaba
+   32px mas adentro que la cita que atribuye, que es el tipo de desajuste que se
+   lee como un fallo sin que nadie sepa senalar cual.
+
+   ⚠️ VA CON `.articulo` DELANTE, Y HACE FALTA. Sin el prefijo seria (0,2,0),
+   empatado con `.articulo .cita__fuente`, y decidiria el orden del archivo. Con
+   el son (0,3,0) y gana por especificidad. Es la trampa de siempre en este
+   proyecto.
+
+   Se engancha con el hermano adyacente y no con una clase propia porque la
+   fuente SIEMPRE va pegada a su cita: asi no hay dos sitios que mantener
+   sincronizados ni una clase que se pueda olvidar al escribir el JSON.
+
+   El margen negativo baja de -24 a -20 porque el extracto cierra con 28 de
+   margen y no con 36. */
+
+.articulo .cita--extracto + .cita__fuente {
+  margin: -20px 0 28px;
+  padding-left: 24px;
 }
 
 /* Lista con marcadores escritos —«1.º», «2.º»—. Un <ol> nativo no sabe poner

@@ -379,6 +379,32 @@ body {
   font-size: 30pt;
 }
 
+/* ⚠️ EL EXTRACTO SI SE PUEDE PARTIR, Y ES LO CONTRARIO QUE LA DESTACADA.
+
+   Arriba el `break-inside: avoid` tiene sentido: una destacada son dos o tres
+   lineas y partirla le quita la comilla, que es lo unico que la identifica. Un
+   extracto de 579 palabras ocupa VARIAS PAGINAS, asi que prohibirle el salto lo
+   empujaria entero a la siguiente y dejaria media pagina en blanco antes —el
+   mismo fallo que ya razona la caja de referencias unas lineas mas abajo—.
+
+   Lo que si se protege es cada linea: `orphans`/`widows` a 2, como los parrafos
+   del cuerpo, para que un salto no deje una linea colgando.
+
+   El cuerpo del articulo en papel es 11pt y el extracto va a 10pt: «algo menor»,
+   igual que en pantalla. El filete lateral y el color se heredan de styles.css.
+
+   Se queda SIN justificar a proposito, al reves que los parrafos del cuerpo:
+   justificar una columna ya estrechada por la sangria abre calles. */
+
+.articulo .cita--extracto {
+  margin: 12pt 0;
+  padding-left: 14pt;
+  font-size: 10pt;
+  line-height: 1.5;
+  orphans: 2;
+  widows: 2;
+}
+
 /* La fuente no se separa de su cita: `break-before: avoid` la mantiene pegada
    aunque la cita acabe justo al final de la pagina. */
 
@@ -387,6 +413,16 @@ body {
   margin: -10pt 0 18pt;
   padding-left: 26pt;
   font-size: 9pt;
+}
+
+/* Alineada con su extracto, igual que en pantalla: los 26pt de arriba son los
+   que deja la comilla, y un extracto no la tiene. Mismo prefijo `.articulo` por
+   el mismo motivo: sin el empataria con la regla de arriba y decidiria el orden
+   del archivo. */
+
+.articulo .cita--extracto + .cita__fuente {
+  margin: -6pt 0 12pt;
+  padding-left: 14pt;
 }
 
 /* ------------------------------------------------- llamadas ------------- */
