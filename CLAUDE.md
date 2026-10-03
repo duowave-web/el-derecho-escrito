@@ -3184,14 +3184,141 @@ La página pasó de una columna de lectura a esto:
 
 ```
 mancheta            h1 «Acerca de», a sangre
+                    48 px  ← el mismo arranque que articulos/ y contacto/
 ┌──────────────┬──────────────┐
 │ h2 Enfoque   │ h2 Contenido │   .sobre__columnas, 548 px cada una a 1200
 │ 3 párrafos   │ 1 párrafo    │
 │              │ + 3 líneas ❖ │
 └──────────────┴──────────────┘
-h2 Sobre el autor
-texto (720) + botón CV · retrato 300×400      .sobre__autor
+                    48 px
+╔═══════════════════════════════╗  .sobre__bloque-autor — caja --papel-alt
+║ h2 Sobre el autor             ║  filete 1px --borde, radio 4, relleno 26/30
+║ texto (720) + CV · foto 300×400║
+╚═══════════════════════════════╝
 ```
+
+#### El wrapper lleva DOS clases y las dos hacen falta
+
+`<div class="articulo sobre">`. `articulo` da la tipografía del cuerpo, que esta
+página comparte con las de artículo. `sobre` es el gancho para lo que aquí es
+distinto.
+
+> ⚠️ **LAS REGLAS VAN COMO `.articulo.sobre`, NO COMO `.sobre` A SECAS.** Las dos
+> clases están en el **mismo elemento**, así que `.sobre h2` pesa (0,1,1) igual
+> que `.articulo h2` y el empate lo rompería el orden del archivo. Con las dos
+> juntas son (0,2,1) y ganan por especificidad.
+>
+> Es **la cuarta vez** que este patrón aparece en el proyecto —antes fueron
+> `.entrada__titulo`, `.autor__cv` y `.compartir__lista`— y las tres anteriores
+> acabaron en reglas muertas que no daban ningún error.
+
+#### El arranque bajó de 104 a 48 px
+
+Era **el doble que el resto del sitio**, y sumaba dos cosas que no se ven juntas
+al leer el CSS:
+
+| Página | Qué pone el hueco | px |
+|---|---|---|
+| `articulos/` | `.lista` → `padding-top` | **48** |
+| `contacto/` | `.contacto .contenedor` → `padding-top` | **48** |
+| `sobre/` antes | `.articulo` 56 **+** `margin-top` del primer `h2` 48 | **104** |
+| `sobre/` hoy | `.articulo.sobre` 48, con el margen del `h2` a cero | **48** |
+
+> ⚠️ **`.articulo` NO SE PUEDE TOCAR PARA ARREGLAR ESTO**, y es la razón de que
+> exista el gancho `.sobre`: ese `padding: 56px 0 80px` lo llevan también
+> **todas las páginas de artículo**.
+
+> **Los dos `h2` de las columnas siguen alineados entre sí.** Antes lo estaban
+> porque los dos conservaban el mismo margen; ahora, porque ninguno lo tiene.
+
+#### Los epígrafes bajaron de 32 a 24 px, y la escala NO era propia
+
+Lo primero que se comprobó es si `sobre/` usaba una escala mayor que el resto.
+**No la usaba**: era exactamente la del artículo.
+
+| | `sobre/` antes | artículo |
+|---|---|---|
+| `h2` | 32 / 38,4 / 600 | **32 / 38,4 / 600** |
+| párrafo | 18 / 30,6 | **18 / 30,6** |
+
+Lo que cambia no es el cuerpo de la letra sino **la columna sobre la que se
+apoya**, y un epígrafe se percibe en relación con su columna:
+
+| | Cuerpo ÷ columna |
+|---|---|
+| artículo | 32 ÷ 720 = **0,044** |
+| `sobre/`, columnas | 32 ÷ 548 = **0,058** — un 33 % más |
+
+Escalar el epígrafe a su columna da 32 × 548/720 = 24,4, y **24 px ya es un
+escalón de la escala del sitio**: es el cuerpo del `h3` del artículo. No se
+estrena ningún tamaño. Los márgenes acompañan en la misma proporción: 48 → 36 y
+14 → 12.
+
+> ⚠️ **EL CUERPO SE QUEDA EN 18 px, Y ES DELIBERADO AUNQUE EL ENCARGO HABLARA DE
+> «el texto en general».** Es el único valor que tiene que ser idéntico en todo
+> el sitio, y bajarlo aquí haría de `sobre/` la única página con otro cuerpo de
+> texto — un defecto peor que el que resuelve.
+>
+> A 548 px y 18 px salen unos **61 caracteres por línea**, que está en el rango
+> cómodo. Si aun así se quisiera más pequeño, es una decisión de **todo el
+> sitio** y se toma en la escala tipográfica, no en esta página.
+
+#### «Sobre el autor» va en caja, y no estrena ni un valor
+
+| Caja | Fondo | Filete | Radio | Relleno |
+|---|---|---|---|---|
+| `.indice`, `.referencias` | `--papel-alt` | 1 px `--borde` | 4 | 26/30 |
+| `.articulo__lateral` | `--papel-alt` | 1 px `--borde` | 4 | 28/24 |
+| **`.sobre__bloque-autor`** | **`--papel-alt`** | **1 px `--borde`** | **4** | **26/30** |
+
+Se copia el relleno de `.indice` y `.referencias` y no el del lateral porque esas
+dos son las cajas que viven **en la columna de contenido**, que es lo que esto
+es; el lateral es una barra estrecha y por eso aprieta más los lados.
+
+> ⚠️ **El `h2` pierde su margen de arriba dentro de la caja.** Con relleno los
+> márgenes **no colapsan**, así que los 36 px se sumarían a los 26 del padding y
+> dejarían el título flotando a 62 del canto.
+
+> ⚠️ **LA CAJA DESTAPÓ UN DESBORDAMIENTO QUE LLEVABA MESES AHÍ.**
+> `.sobre__autor` era `minmax(0, 720px) minmax(0, 1fr)`: la segunda columna se
+> queda con lo que **sobra**, y la primera, al poder crecer hasta 720, no dejaba
+> sobrar nada. Medido a 768 px, las columnas calculadas eran **`664px 0px`** —el
+> retrato en una columna de cero— y como `.sobre__retrato` tiene 300 px fijos, se
+> salía 300 px y arrastraba **scroll horizontal a toda la página**: 1044 px de
+> documento en una ventana de 768.
+>
+> Pasaba entre el corte de apilado y los ~1124 px que hacen falta para que quepan
+> 720 + 56 + 300. **Casi todas las tablets.**
+>
+> **No se veía**, y por eso duró: el retrato se salía sobre el blanco de la
+> página, donde un desbordamiento no deja rastro. En cuanto el bloque es una caja
+> con fondo, el mismo fallo se ve a la primera.
+>
+> Lo arregla `minmax(0, 720px) auto`: la segunda columna se dimensiona a su
+> contenido y la primera se queda con el resto hasta su tope.
+
+> ⚠️ **Y EL CORTE DE APILADO SUBE DE 600 A 900**, esta vez sí por consecuencia de
+> la caja. Con el retrato fijo en 300 y el hueco de 56, al texto le queda lo que
+> sobre del **interior** de la caja:
+>
+> | Ventana | Columna de texto | Caracteres por línea |
+> |---|---|---|
+> | 768 | 302 px | **35** — ilegible |
+> | 900 | 434 px | 50 — aceptable |
+> | 1440 | 720 px | ~82 |
+>
+> 900 no es un número nuevo: es donde el artículo baja su lateral.
+
+> ⚠️ **Y EL RETRATO TIENE QUE PODER ENCOGER.** Sus 300 px cabían mientras el
+> bloque no tenía relleno: a 375 el contenedor son 327 y la foto 300, con 27 de
+> sobra. Con los 30 px de relleno por lado el interior baja a **265** y la foto
+> **se salía de la caja**.
+>
+> Se resuelve con `min(300px, 100%)` **y `aspect-ratio: 3/4`**, no con
+> `max-width` a secas: con la altura fija en 400 la caja pasaría a 265 × 400
+> —proporción 0,66— y empezaría a recortar por los lados, perdiendo el «recorte
+> 0» que está documentado más abajo. Verificado: a 375 la foto mide 265 × 353 y
+> el recorte sigue siendo **0 × 0**.
 
 ⚠️ **ESTA PÁGINA REPRODUCE EL PDF DEL CLIENTE TAL CUAL, en contenido Y en
 composición.** Hubo una pasada intermedia que lo trataba como referencia de
@@ -3301,8 +3428,17 @@ el ancho de lectura —820— dos columnas quedarían a 380 y el texto se parte 
 > **Los dos cortes de esta página no coinciden, y es a propósito.** Las columnas
 > apilan en **748** —el de las tarjetas— porque a 600 bajarían a 248 y
 > «contencioso-administrativa» no cabe; el retrato se despega del texto en
-> **600**. Uno parte una retícula de texto y el otro despega una foto: no hay
+> **900**. Uno parte una retícula de texto y el otro despega una foto: no hay
 > motivo para que cedan a la vez.
+>
+> ⚠️ **EL SEGUNDO ERA 600 Y SUBIÓ A 900** al meter «Sobre el autor» en caja: el
+> relleno de 30 px por lado estrecha la columna de texto y a 768 se quedaba en
+> 35 caracteres por línea. Está medido unas líneas más arriba.
+>
+> **Consecuencia curiosa:** entre 749 y 900 la página queda con las columnas de
+> arriba **en dos** y el bloque del autor **apilado**. No es una incoherencia —
+> arriba hay dos columnas de texto, que aguantan; abajo hay una foto de ancho
+> fijo, que no— pero sorprende al redimensionar.
 
 ### El CV vive en `documentos/` y se descarga desde DOS sitios
 

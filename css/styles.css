@@ -4321,6 +4321,74 @@ body:has(.progreso) .cabecera {
    sitio sea uno, no dos que se parecen: si cambia el recorte o el filete, se
    cambia en .autor__retrato y los dos siguen iguales. */
 
+/* ------------------------------------------------- sobre/: la pagina ---- */
+
+/* ⚠️ TODO LO DE ESTE BLOQUE VA PREFIJADO `.articulo.sobre` Y NO `.sobre`, Y NO
+   ES POR GUSTO. Las dos clases viven en el MISMO elemento, asi que `.sobre h2`
+   pesa (0,1,1) igual que `.articulo h2` y el empate lo rompe el orden del
+   archivo. Con `.articulo.sobre h2` son (0,2,1) y gana por especificidad, que
+   es lo unico que aguanta si alguien reordena el CSS.
+
+   Es la cuarta vez que este patron muerde en el proyecto —antes fueron
+   `.entrada__titulo`, `.autor__cv` y `.compartir__lista`—, y las tres anteriores
+   fueron reglas MUERTAS que no daban ningun error: solo se veian mirando el
+   estilo computado. */
+
+/* ⚠️ EL ARRANQUE BAJA DE 104 A 48 px, QUE ES EL ESTANDAR DEL SITIO.
+
+   Sumaban dos cosas que no se ven juntas al leer el CSS: el `padding-top: 56px`
+   de `.articulo` y el `margin-top: 48px` que `.articulo h2` le da al PRIMER
+   epigrafe de cada columna. Las otras dos paginas de seccion abren con 48:
+
+     articulos/   `.lista`                      padding-top: 48
+     contacto/    `.contacto .contenedor`       padding-top: 48
+     sobre/       56 + 48                       = 104   <- el doble
+
+   ⚠️ `.articulo` NO SE PUEDE TOCAR para arreglarlo: ese padding lo llevan
+   tambien TODAS las paginas de articulo. De ahi el gancho `.sobre`.
+
+   El margen del h2 se suelta en las dos columnas a la vez. Siguen alineadas
+   entre si —antes lo estaban por conservar los dos el mismo margen, y ahora por
+   no tener ninguno—, que era lo que pedia el comentario de `.sobre__columnas`. */
+
+.articulo.sobre {
+  padding-top: 48px;
+}
+
+.articulo.sobre .sobre__columnas h2 {
+  margin-top: 0;
+}
+
+/* ⚠️ LOS EPIGRAFES BAJAN DE 32 A 24 px, Y LA ESCALA NO ERA PROPIA DE ESTA
+   PAGINA: era exactamente la del articulo —Source Serif 32/38,4/600—. Lo que
+   cambia es la COLUMNA sobre la que se apoyan.
+
+   Un epigrafe se percibe en relacion con el ancho de su columna, no en
+   absoluto:
+
+     articulo          32 px sobre 720 px de columna   = 0,044
+     sobre/, columnas  32 px sobre 548 px              = 0,058   <- un 33% mas
+
+   Escalar el epigrafe a su columna da 32 x 548/720 = 24,4, y 24 px YA ES un
+   escalon de la escala del sitio: es el cuerpo del `h3` del articulo. Asi que
+   no se estrena ningun tamano, se usa el que ya habia un paso mas abajo.
+
+   ⚠️ EL CUERPO SE QUEDA EN 18 px A PROPOSITO. Es el unico valor que tiene que
+   ser identico en todo el sitio, y bajarlo aqui haria de `sobre/` la unica
+   pagina con otro cuerpo de texto —que es peor que el problema que resuelve—.
+   A 548 px y 18 px salen unos 61 caracteres por linea, que esta en el rango
+   comodo. Si aun asi se quisiera mas pequeno, es una decision de TODO el sitio
+   y se toma en la escala tipografica, no aqui.
+
+   Los margenes acompanan al cuerpo nuevo: 48 -> 36 y 14 -> 12, que es la misma
+   proporcion (x 24/32) redondeada a la retícula de 4. */
+
+.articulo.sobre h2 {
+  font-size: 1.5rem;
+  line-height: 1.25;
+  margin: 36px 0 12px;
+}
+
 /* ⚠️ ERA UN FLEX Y AHORA ES UNA REJILLA, por una medida: con flex el texto se
    quedaba con todo lo que sobraba —992 px medidos en el contenedor de 1200— y
    ahi la linea es incomoda de leer. La primera columna se topa en los 720 del
@@ -4328,11 +4396,66 @@ body:has(.progreso) .cabecera {
    que queda.
 
    `align-items: start` para que el retrato no se estire a la altura de los tres
-   parrafos. */
+   parrafos.
+
+   ⚠️ LA SEGUNDA COLUMNA ES `auto` Y NO `minmax(0, 1fr)`, Y ESO ARREGLA UN
+   DESBORDAMIENTO QUE LLEVABA AHI DESDE QUE ESTO ES UNA REJILLA.
+
+   Con `1fr` la segunda columna se queda con lo que SOBRA, y la primera, al
+   poder crecer hasta 720, no dejaba sobrar nada. Medido a 768: las columnas
+   calculadas eran `664px 0px`, o sea el retrato en una columna de CERO. Y
+   `.sobre__retrato` tiene `width: 300px` fijo, asi que se salia 300 px por la
+   derecha y arrastraba scroll horizontal a toda la pagina —1044 px de documento
+   en una ventana de 768—.
+
+   Pasaba entre el corte de apilado (600) y los ~1124 px que hacen falta para
+   que quepan 720 + 56 + 300. Casi todas las tablets, por tanto.
+
+   ⚠️ NO SE VEIA, y por eso duro tanto: el retrato se salia sobre el blanco de
+   la pagina, donde un desbordamiento no deja ningun rastro visual. En cuanto
+   «Sobre el autor» pasa a ser una caja con fondo, el mismo fallo se ve a la
+   primera porque la foto escapa de un rectangulo tintado.
+
+   Con `auto` la columna se dimensiona a su contenido —los 300 px del retrato— y
+   la primera se queda con el resto hasta su tope de 720. A 768 salen 302 + 300
+   y cabe; a 1440, 720 + 300 con 14 px de aire sobrante, que es exactamente lo
+   que ya se veia antes en escritorio. */
+
+/* ⚠️ «SOBRE EL AUTOR» VA EN CAJA, Y NO ESTRENA NI UN VALOR. Estaba suelto sobre
+   el blanco y se leia descolgado del resto. Los valores son LOS MISMOS que las
+   otras cajas del sitio, para que se lea como una mas y no como una variante:
+
+     .indice, .referencias     --papel-alt + 1px --borde + radio 4 + 26/30
+     .articulo__lateral        --papel-alt + 1px --borde + radio 4 + 28/24
+     .sobre__bloque-autor      --papel-alt + 1px --borde + radio 4 + 26/30
+
+   Se copia el relleno de `.indice` y `.referencias` y no el del lateral porque
+   esas dos son las cajas que viven EN LA COLUMNA DE CONTENIDO, que es lo que
+   esto es; el lateral es una barra estrecha y por eso aprieta mas los lados.
+
+   ⚠️ Con el fondo, el h2 pierde su margen de arriba: dentro de una caja con
+   relleno los margenes NO colapsan, asi que los 36 px se sumarian a los 26 del
+   padding y dejarian el titulo flotando a 62 del canto. El aire de arriba lo
+   pone ya el relleno.
+
+   Y el hueco contra las columnas de arriba, que antes ponia ese mismo margen
+   del h2, pasa a la propia caja. */
+
+.sobre__bloque-autor {
+  margin-top: 48px;
+  padding: 26px 30px;
+  background: var(--papel-alt);
+  border: 1px solid var(--borde);
+  border-radius: 4px;
+}
+
+.articulo.sobre .sobre__bloque-autor h2 {
+  margin-top: 0;
+}
 
 .sobre__autor {
   display: grid;
-  grid-template-columns: minmax(0, 720px) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 720px) auto;
   align-items: start;
   gap: 56px;
   margin: 0 0 8px;
@@ -4388,7 +4511,45 @@ body:has(.progreso) .cabecera {
    asi que el retrato seguia al lado del texto en una columna de 327. No daba
    ningun error; solo se veia apretado. */
 
-@media (max-width: 600px) {
+/* ⚠️ EL CORTE SUBE DE 600 A 900, Y ES CONSECUENCIA DE METER EL BLOQUE EN CAJA.
+
+   Con los 300 px del retrato fijos y el hueco de 56, al texto le queda lo que
+   sobre del interior de la caja. Medido:
+
+     ventana   columna de texto   caracteres por linea
+       768          302 px               35          <- ilegible
+       900          434 px               50          <- aceptable
+      1440          720 px               ~80
+
+   Treinta y cinco caracteres por linea es menos de lo que pide cualquier
+   recomendacion tipografica, y es exactamente el defecto que este mismo bloque
+   ya razonaba para el corte anterior —«parte las palabras largas en cada
+   linea»—, solo que a otra escala. El argumento no cambia, cambia el numero.
+
+   Antes no se notaba porque el texto se repartia el ancho entero del
+   contenedor: no habia caja que lo limitara. Al entrar el relleno de 30 px por
+   lado, la columna se estrecha y el problema aflora.
+
+   900 no es un numero nuevo: es donde el articulo baja su lateral. */
+
+/* ⚠️ Y EL RETRATO TIENE QUE PODER ENCOGER, QUE ANTES NO HACIA FALTA. Sus 300 px
+   de ancho son fijos, y eso cabia mientras el bloque no tenia relleno: a 375 el
+   contenedor son 327 y la foto 300, con 27 de sobra. Con los 30 px de relleno
+   por lado el interior baja a 265 y la foto SE SALIA DE LA CAJA por la derecha
+   —medido: 35 px fuera del area util, 4 por fuera del canto tintado—.
+
+   No daba scroll horizontal, asi que no se habria detectado probando el ancho
+   del documento: solo se ve mirando la caja.
+
+   `min(300px, 100%)` con `aspect-ratio` en vez de `max-width` a secas, para no
+   perder la propiedad que esta documentada arriba: la caja y el archivo son los
+   dos 3:4, asi que `cover` NO RECORTA NADA. Con `max-width` y la altura fija en
+   400 la caja pasaria a 265x400 —proporcion 0,66— y empezaria a recortar por
+   los lados sin que nada avisara.
+
+   A 768 no cambia nada: min(300, 658) sigue siendo 300. */
+
+@media (max-width: 900px) {
   .sobre__autor {
     grid-template-columns: minmax(0, 1fr);
     gap: 18px;
@@ -4396,6 +4557,9 @@ body:has(.progreso) .cabecera {
 
   .sobre__retrato {
     margin: 0;
+    width: min(300px, 100%);
+    height: auto;
+    aspect-ratio: 3 / 4;
   }
 }
 
