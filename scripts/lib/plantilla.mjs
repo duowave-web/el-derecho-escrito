@@ -186,28 +186,39 @@ export function contarPalabras(art) {
 
 /* --------------------------------------------------------- derivados ---- */
 
-/* ⚠️ UNA ACTUALIZACIÓN IGUAL A LA FECHA DE PUBLICACIÓN SE TRATA COMO SI NO
-   EXISTIERA, y es deliberado. En la ficha se leería «28 DE SEPTIEMBRE DE 2026 ·
-   ÚLTIMA ACTUALIZACIÓN: 28 DE SEPTIEMBRE DE 2026»: un dato que ocupa sitio y no
-   dice nada, y que además parece un fallo del generador más que una decisión
-   del autor.
+/* ⚠️ `actualizado` SIEMPRE TIENE VALOR AQUÍ, Y ANTES PODÍA SER `null`. Si el
+   JSON no trae el campo, vale la fecha de publicación. Es un encargo del
+   cliente: quiere ver la línea «Última actualización» en todos los artículos,
+   y echaba en falta que el de MASC no la enseñara.
 
-   Aguas abajo tampoco cambia nada: `dateModified` ya vale `datePublished`
-   cuando no hay actualización, que es exactamente lo que daría el campo. Así
-   que descartarlo no pierde información, solo quita ruido.
+   ⚠️ ESTO REVIERTE UNA DECISIÓN QUE ESTABA RAZONADA AQUÍ MISMO, y conviene
+   saberlo antes de «arreglarlo» de vuelta. El comentario anterior decía que una
+   actualización igual a la publicación se descartaba porque la ficha leería
 
-   Es el caso que va a llegar solo: quien rellene el campo «por completarlo»
-   —o un automatismo que copie `fecha`— produce justo esto. Por eso se descarta
-   aquí, una vez, en vez de comprobarlo en los cuatro sitios que lo consumen.
+       28 DE SEPTIEMBRE DE 2026 · ÚLTIMA ACTUALIZACIÓN: 28 DE SEPTIEMBRE DE 2026
 
-   No se descarta en SILENCIO: `validar()` saca un aviso diciendo que no se va
-   a ver. */
+   o sea «un dato que ocupa sitio y no dice nada, y que además parece un fallo
+   del generador más que una decisión del autor».
+
+   **Ese efecto es real y es exactamente lo que se ve hoy en el artículo de
+   MASC**, que no trae el campo. No es un descuido: es lo pedido. Quien lo vea y
+   piense que el generador está repitiendo la fecha por error, que lea esto
+   antes de tocar nada.
+
+   Lo que el cambio NO toca: el `<pubDate>` del feed, que sigue saliendo de
+   `fecha`. En RSS 2.0 `pubDate` es la fecha de publicación y no hay campo de
+   modificación por `<item>`; meter ahí la revisión reanunciaría el artículo
+   como nuevo en todos los lectores.
+
+   Con esto desaparece el caso «el campo existe pero no se ve», así que
+   `validar()` ya no tiene nada que avisar cuando `actualizado === fecha`:
+   escribirlo da el mismo resultado que omitirlo. Lo que SÍ sigue siendo error
+   es que sea ANTERIOR a `fecha`, que es un problema de sentido y no de
+   presentación. */
 
 export function derivar(art) {
   const palabras = contarPalabras(art);
-  const actualizado = art.actualizado && art.actualizado !== art.fecha
-    ? art.actualizado
-    : null;
+  const actualizado = art.actualizado || art.fecha;
 
   return {
     ...art,
@@ -219,20 +230,80 @@ export function derivar(art) {
     fechaCorta: fechaCorta(art.fecha),
     fechaISO: fechaISO(art.fecha),
 
-    /* `actualizado` sustituye a lo que venga en el JSON: si era igual a `fecha`
-       el spread de arriba lo habría dejado puesto. */
+    /* Sustituye a lo que venga en el JSON: el spread de arriba habría dejado
+       `undefined` en los artículos que no traen el campo. */
     actualizado,
-    actualizadoLarga: actualizado ? fechaLarga(actualizado) : null,
-    actualizadoISO: actualizado ? fechaISO(actualizado) : null,
+    actualizadoLarga: fechaLarga(actualizado),
+    actualizadoISO: fechaISO(actualizado),
 
-    /* Lo que leen los buscadores. Sin actualización, la fecha de modificación
-       ES la de publicación: es lo que ya hacía el sitio y no cambia. */
-    modificadoISO: fechaISO(actualizado || art.fecha),
-    modificadoFecha: actualizado || art.fecha,
+    /* Lo que leen los buscadores. Son los mismos valores que `actualizado`
+       desde que este no puede ser nulo; se conservan con nombre propio porque
+       es el vocabulario del JSON-LD y del sitemap, no el de la ficha. */
+    modificadoISO: fechaISO(actualizado),
+    modificadoFecha: actualizado,
   };
 }
 
 /* --------------------------------------------------------- bloques ------ */
+
+/* ------------------------------------------------- citas: dos estilos --- */
+
+/* ⚠️ EL ESTILO DE UNA CITA LO ELIGE EL GENERADOR, NO EL CLIENTE. No hay nada que
+   marcar en el Word: se decide aquí, una vez, a partir del propio texto.
+
+   Son dos cosas distintas que compartían estilo:
+
+     cita--destacada   una frase que se MIRA. Tipografía de display, grande,
+                       con su comilla de apertura. Es un reclamo.
+     cita--extracto    un pasaje que se LEE. Sentencias y acuerdos citados
+                       literalmente, a veces de varios párrafos.
+
+   Con el estilo de display, los extractos reales de MASC se convertían en un
+   muro. Medido a 375 px antes de este cambio:
+
+     cita   palabras   alto     lineas   % del documento
+       1        113     968 px     28         2,6 %
+       2         37     415 px     12         1,1 %
+       3        174    1590 px     46         4,2 %
+       4        579    5529 px    160        14,7 %   <- 6,8 pantallas
+       5        115    1071 px     31         2,8 %
+                      ------------------------------
+                       9572 px               25,5 %
+
+   O sea que una cuarta parte del artículo eran citas en cuerpo de titular.
+
+   ⚠️ EL CRITERIO ES «MÁS DE 40 PALABRAS O CUALQUIER SALTO DE LÍNEA», y las dos
+   mitades hacen falta:
+
+     · Por LARGO, porque una cita de 113 palabras no es un reclamo aunque vaya
+       en un solo párrafo —son 28 líneas en un móvil—.
+     · Por SALTO DE LÍNEA, porque una cita de dos puntos separados por <br> es
+       un documento por estructura, no por tamaño. Es el caso de la cita 2, que
+       con 37 palabras se escaparía del umbral y no es un reclamo.
+
+   ⚠️ EL 40 NO ES UN NÚMERO FRÁGIL, Y CONVIENE SABERLO ANTES DE AFINARLO. Las
+   citas reales se reparten en 37 (con <br>), 113, 115, 174 y 579: no hay
+   ninguna entre 40 y 112. Cualquier umbral entre 38 y 112 clasifica el artículo
+   EXACTAMENTE IGUAL, así que el resultado no depende de haber acertado el
+   número. Lo que lo fija en 40 es el otro extremo: es lo que ocupa una frase
+   larga de una sola oración, que es lo que un reclamo puede llegar a ser.
+
+   Se cuenta en PALABRAS y no en caracteres porque es la unidad que el build ya
+   usa para los minutos de lectura. Con caracteres —246, 669, 727, 1049, 3686—
+   el reparto sale idéntico.
+
+   Determinista y sin reloj: depende solo del texto del JSON. */
+
+const PALABRAS_EXTRACTO = 40;
+
+export function claseDeCita(html) {
+  const salto = /<br\b|<\/p>/i.test(html);
+  const texto = html
+    .replace(/\{\{ref:[^}]*\}\}/g, ' ')
+    .replace(/<[^>]+>/g, ' ');
+  const palabras = texto.split(/\s+/).filter(Boolean).length;
+  return salto || palabras > PALABRAS_EXTRACTO ? 'cita--extracto' : 'cita--destacada';
+}
 
 function pintarBloque(b) {
   if (b.tipo === 'parrafo') {
@@ -242,7 +313,7 @@ function pintarBloque(b) {
     return `            <h3>${escapar(b.texto)}</h3>`;
   }
   if (b.tipo === 'cita') {
-    const cita = `            <blockquote class="cita--destacada">${resolverLlamadas(b.html)}</blockquote>`;
+    const cita = `            <blockquote class="${claseDeCita(b.html)}">${resolverLlamadas(b.html)}</blockquote>`;
     if (!b.fuente_html) return cita;
     return `${cita}\n            <p class="cita__fuente">${resolverLlamadas(b.fuente_html)}</p>`;
   }
@@ -566,8 +637,8 @@ ${jsonLd(art)}
           <div class="entrada__meta articulo__ficha">
             <span class="firma">Por <a href="../../sobre/">${escapar(AUTOR.nombre)}</a></span>
             <time datetime="${art.fechaISO}">${art.fechaLarga}</time>
-            <span class="lectura">${art.minutos} min de lectura</span>${art.actualizado ? `
-            <time class="actualizado" datetime="${art.actualizadoISO}">Última actualización: ${art.actualizadoLarga}</time>` : ''}
+            <span class="lectura">${art.minutos} min de lectura</span>
+            <time class="actualizado" datetime="${art.actualizadoISO}">Última actualización: ${art.actualizadoLarga}</time>
           </div>
 
           <p class="entradilla">${resolverLlamadas(art.entradilla)}</p>
@@ -597,8 +668,12 @@ ${pintarReferencias(art)}
                distinguen.
 
                Pasa a .boton--contorno, el mismo tratamiento que «Descargar CV»
-               en sobre/ y en el lateral: las dos descargas del sitio se ven
-               igual.
+               de sobre/: las dos descargas del sitio se ven igual.
+
+               ⚠️ Decia «en sobre/ y en el lateral», y el del lateral YA NO
+               EXISTE: se retiro por encargo y el CV solo se descarga desde
+               sobre/. Siguen siendo las dos unicas descargas del sitio, pero ya
+               no comparten pagina.
 
                ⚠️ VA ANTES DE «COMPARTIR», no despues, y es deliberado: llevarse
                el articulo es para uno mismo y compartirlo es para terceros. El
@@ -659,7 +734,21 @@ ${pintarReferencias(art)}
         </div>
 
         <aside class="articulo__lateral">
+${/* ⚠️ DEBAJO DE «Ver perfil →» IBA UN BOTÓN «Descargar CV» Y SE RETIRÓ POR
+      ENCARGO: el cliente lo quiere SOLO en sobre/.
 
+      Con él se fue `.autor__cv` de styles.css, que era su única portadora, y el
+      CV pasa de dos puntos de descarga a uno. La salida de este bloque vuelve a
+      ser «Ver perfil →», que lleva justo a la página donde sigue el botón.
+
+      NO se toca el de `sobre/`: vive en un <p> sin clase y nunca dependió de
+      aquella regla. Y el peso en bytes, que estaba escrito a mano en los dos
+      sitios, ahora solo está ahí — una copia menos que mantener.
+
+      ⚠️ ESTE COMENTARIO VA EN JS Y NO EN HTML A PROPÓSITO. Un `<!-- -->` dentro
+      de la plantilla VIAJA AL HTML PUBLICADO de todos los artículos, y explicar
+      una retirada le sirve a quien edita este archivo, no a quien lee la página.
+      Los `<!-- -->` que sí quedan describen lo que hay, no lo que hubo. */ ''}
           <div class="lateral__bloque autor">
             <h2 class="lista__titulo">Autor</h2>
 
@@ -671,23 +760,6 @@ ${pintarReferencias(art)}
             <p class="autor__nombre">${escapar(AUTOR.nombre)}</p>
             <p class="autor__bio">${escapar(AUTOR.bio)}</p>
             <a class="autor__enlace" href="../../sobre/">Ver perfil &rarr;</a>
-
-            <!-- ⚠️ EL SEGUNDO PUNTO DE DESCARGA DEL CV, y el otro está en
-                 sobre/. Los dos apuntan al MISMO archivo, así que sustituirlo
-                 es sustituir uno solo; lo que sí está escrito dos veces es el
-                 PESO, que va a mano en los dos sitios. Está anotado en
-                 CLAUDE.md.
-
-                 Dos niveles de ruta, no uno: el artículo vive en
-                 articulos/<slug>/ y sobre/ cuelga de la raíz.
-
-                 El formato y el peso van en .oculto, como en sobre/: el nombre
-                 accesible queda «Descargar CV (PDF, 63 KB)». -->
-            <p class="autor__cv">
-              <a class="boton boton--contorno" href="../../documentos/CV-Juan-Contera-Miranda.pdf" download>
-                Descargar CV<span class="oculto"> (PDF, 63 KB)</span>
-              </a>
-            </p>
           </div>
 ${pintarEtiquetas(art)}
           <div class="lateral__bloque suscripcion">

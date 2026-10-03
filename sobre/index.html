@@ -107,7 +107,21 @@
     </div>
   </div>
 
-  <div class="articulo">
+  <!-- ⚠️ LLEVA `articulo` Y `sobre`, Y LAS DOS HACEN FALTA.
+
+       `articulo` es lo que da la tipografía del cuerpo —`.articulo p`,
+       `.articulo h2`, `.articulo ul`—, que esta página comparte con las de
+       artículo y no debe duplicar.
+
+       `sobre` es el gancho para lo que aquí SÍ es distinto: el relleno de
+       arranque y el cuerpo de los epígrafes. Sin él habría que tocar
+       `.articulo`, que visten también todos los artículos del sitio.
+
+       ⚠️ Las reglas que lo usan van como `.articulo.sobre`, no `.sobre` a
+       secas: las dos clases están en ESTE MISMO elemento, así que `.sobre h2`
+       y `.articulo h2` pesan igual y decidiría el orden del archivo. Está
+       razonado sobre las propias reglas. -->
+  <div class="articulo sobre">
   <div class="contenedor contenedor--amplio">
 
     <!-- ⚠️ ESTA PÁGINA ERA UNA COLUMNA DE LECTURA Y AHORA SON DOS FILAS.

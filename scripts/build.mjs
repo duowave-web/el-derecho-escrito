@@ -107,8 +107,9 @@ function validar(art, ruta) {
     errores.push(`${ruta}: la fecha debe ser YYYY-MM-DD y existir en el calendario, y es «${art.fecha}»`);
   }
 
-  /* `actualizado` es OPCIONAL: sin él la página sale exactamente como siempre.
-     Pero si viene, tiene que ser usable, y aquí sí se para el build.
+  /* `actualizado` sigue siendo OPCIONAL EN EL JSON, pero ya no es opcional en
+     la página: sin él se enseña la fecha de publicación. Lo que se valida aquí
+     es solo lo que el cliente escribe, y si viene tiene que ser usable.
 
      ⚠️ ES ERROR Y NO AVISO, al revés que el slug largo o los `id` derivados.
      La diferencia es la de siempre en este archivo: aquellos publican bien y
@@ -137,14 +138,22 @@ function validar(art, ruta) {
           `${ruta}: «actualizado» (${art.actualizado}) es anterior a «fecha» ` +
           `(${art.fecha}). Un artículo no puede actualizarse antes de publicarse.`
         );
-      } else if (art.actualizado === art.fecha) {
-        avisos.push(
-          `La fecha de actualización de este artículo es la misma que la de ` +
-          `publicación (${art.fecha}), así que NO se va a mostrar: diría dos ` +
-          `veces lo mismo. Si el artículo se ha revisado de verdad, pon la ` +
-          `fecha de la revisión; si no, quita el campo.`
-        );
       }
+
+      /* ⚠️ AQUÍ HABÍA UN AVISO PARA `actualizado === fecha` Y SE HA RETIRADO,
+         porque lo que decía ha dejado de ser verdad. Decía que esa fecha «NO se
+         va a mostrar: diría dos veces lo mismo», y era cierto mientras
+         derivar() la descartaba.
+
+         Desde que la línea se enseña SIEMPRE —encargo del cliente, razonado en
+         derivar()— escribir `actualizado` igual a `fecha` da exactamente el
+         mismo resultado que no escribirlo. Ya no hay nada de lo que avisar: no
+         se pierde un dato ni se esconde nada.
+
+         Lo que NO decae es el error de arriba. Que sea ANTERIOR a la
+         publicación sigue siendo un problema de sentido —un artículo no se
+         actualiza antes de existir— y publicaría un `dateModified` previo al
+         `datePublished`. */
     }
   }
 

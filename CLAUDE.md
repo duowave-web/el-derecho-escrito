@@ -1555,6 +1555,44 @@ solo artículo publicado el único candidato es él mismo. El bloque ya está en
 HTML pero sale con `hidden`, así que **no se ve nada hasta que exista el segundo
 artículo, y entonces aparece solo.**
 
+> ⚠️ **ESTO ES LO QUE EL CLIENTE ECHÓ EN FALTA, Y CONVIENE TENERLO DATADO PARA NO
+> VOLVER A INVESTIGARLO.** Dijo que «ha desaparecido lo de Seguir leyendo de las
+> entradas de blog». No se borró nada: **se quedó sin candidatos**.
+>
+> Pasó en **`aae4a57`, el 28 de septiembre de 2026** («Publica el artículo de
+> MASC y retira el artículo de ejemplo»). Hasta ese día el listado tenía tres
+> entradas de ejemplo **con enlace en el titular** —`ejemplo-cuatro-exigencias/`
+> y compañía— y el bloque se llenaba con ellas. Ese commit les quitó el `<a>`,
+> porque apuntaban a rutas inventadas que daban 404.
+>
+> Y `articulosRelacionados()` descarta toda tarjeta sin enlace:
+>
+> ```js
+> const a = art.querySelector(".entrada__titulo a");
+> if (!a) return false;
+> ```
+>
+> Con un único artículo real —que nunca se recomienda a sí mismo— quedan cero
+> candidatos y la sección se oculta. **Es el comportamiento querido**, está
+> razonado en «El atrezo», y **se arregla solo al publicar el segundo artículo**.
+>
+> ⚠️ **El mismo día desapareció una segunda cosa, y es fácil confundirlas**:
+> «Leer anterior / Leer siguiente». Con un solo artículo `bloquePaso()` no emite
+> **ni un byte** —ni el `<nav>`—, así que ahí no hay nada que inspeccionar.
+>
+> **Dos candidatos que hay que descartar**, porque aparecen al buscar en el
+> historial y despistan:
+>
+> | Qué | Dónde está | Por qué NO es |
+> |---|---|---|
+> | `aria-label="Seguir leyendo"` | `a61d99a` → `8ac24f5`, 20–26 ago 2026 | era la **etiqueta accesible** de un `<nav>` que solo contenía «Volver a todos los artículos». **Nunca fue texto visible** |
+> | enlace «Leer más» por tarjeta | solo en la prosa de este archivo, `6ee5ab8` | describe **la web de referencia del cliente**, no esta. Aquí el enlace es el titular y nunca hubo un «Leer más» |
+>
+> El segundo es el que más puede confundir, porque explicaría «de las entradas de
+> blog»: su web antigua **sí** llevaba un «Leer más» bajo el extracto de cada
+> tarjeta. Esta no lo reproduce, y es una decisión de diseño documentada —está
+> en «Qué enseña cada tarjeta»—, no una pérdida.
+
 No se le puso la tarjeta de «Próximamente» de la portada, y la diferencia
 importa: en la portada la sección es **un inventario** y la tarjeta añade una
 promesa, mientras que aquí es **navegación** y una promesa no es un destino. El
@@ -3133,12 +3171,12 @@ natural, biblioteca o despacho, como una entrevista en *Monocle*.
 >      --include='*.css' --include='*.xml' .
 > ```
 
-### La entradilla de `contacto/` se topa en el ancho del formulario
+### La entradilla de `contacto/` va al ancho de la página
 
 ```
 mancheta          h1 «Contacto», a sangre
-entradilla        600 px — el mismo canto derecho que el formulario
-──────────────    <hr> a lo ancho de la fila (1152)
+entradilla        1152 — el ancho entero de la fila
+──────────────    <hr>, mismo canto que la entradilla
 formulario 600  │  caja de apoyo 487
 ```
 
@@ -3146,19 +3184,49 @@ La rejilla es `1.25fr minmax(0, 1fr)` con `gap: 56px`. Sobre los 1152 de
 interior eso da **609 y 487**, y el formulario se topa en **600** dentro de su
 columna.
 
-> ⚠️ **EL TOPE DE LA ENTRADILLA ERA `34em` —653 px— Y PASA A 600.** El problema
-> no era la medida: a 653 son ~60 caracteres por línea, dentro del rango
-> cómodo. Era que **653 no coincidía con ningún otro canto de la página**. El
-> formulario mide 600 y su columna 609, así que el párrafo sobresalía **53 px**
-> por la derecha: lo justo para leerse como un desajuste y no como una decisión.
+> ⚠️ **LA ENTRADILLA NO LLEVA TOPE, POR ENCARGO DEL CLIENTE, Y ESTA SECCIÓN
+> DECÍA LO CONTRARIO EN DOS SITIOS.** Se titulaba «se topa en el ancho del
+> formulario» y había un aviso entero —**«NO SE PONE AL ANCHO DEL CONTENEDOR,
+> aunque sea lo que pide el ojo»**— que es justo lo que se ha hecho.
 >
-> **Casi alinear es peor que no alinear.** Con 600 comparten canto derecho y
-> bajan a ~55 caracteres por línea.
+> El tope fue primero `34em` (653 px) y después los 600 del formulario. **La
+> medición que lo sostenía sigue siendo correcta**, y por eso se conserva: a
+> 1152 son ~125 caracteres por línea, muy por encima del rango cómodo.
+>
+> Medido antes y después:
+>
+> | Ventana | Antes | Después |
+> |---|---|---|
+> | 1440 | 600 px · **64 cpl** · 4 líneas | 1152 px · **123 cpl** · 2 líneas |
+> | 768 | 600 px · 64 cpl | 720 px · **77 cpl** |
+> | 375 | 327 px · 35 cpl | 327 px · 35 cpl — *igual* |
+>
+> **Lo paga solo el escritorio ancho**: por debajo de 1248 el contenedor ya no
+> llega a 1152, y a 375 no cambia nada porque el tope nunca llegaba a actuar.
+>
+> ⚠️ **NO SE COMPENSA CON UN `max-width` DISIMULADO** ni se vuelve a 600 «porque
+> se lee mejor»: eso es deshacer el encargo. Si algún día molesta, la palanca
+> honesta es **acortar el texto**, no reponer el tope.
+>
+> ✅ **Lo que sí decae es el argumento del canto.** Decía que con 653 el párrafo
+> sobresalía 53 px respecto al formulario y se leía como un desajuste —«casi
+> alinear es peor que no alinear»—. A ancho completo no hay casi-alineación: el
+> párrafo cierra exactamente con el `<hr>` y con el borde del aparte, que son
+> los elementos que cruzan la fila entera.
 
-> ⚠️ **NO SE PONE AL ANCHO DEL CONTENEDOR, aunque sea lo que pide el ojo.** Los
-> 1152 dan **125 caracteres por línea**, muy por encima de lo que se lee cómodo.
-> Lo que hace de «ancho de página» es **el filete**, que sí cruza la fila
-> entera; el párrafo no tiene por qué.
+> ⚠️ **EL `<hr>` SE QUEDA, PERO YA NO POR LO QUE DECÍA AQUÍ.** Se justificaba
+> como «lo que hace de ancho de página», porque cruzaba 1152 por debajo de un
+> párrafo de 600. Con los dos al mismo ancho esa función desaparece.
+>
+> Le queda la que de verdad importa: **separar la banda de entrada de la fila de
+> formulario + aparte**. Y gana algo, porque antes era una línea más ancha que
+> el párrafo que cerraba y ahora comparte canto exacto con él — verificado a
+> 1440, 768 y 375.
+>
+> Si alguna vez se quita, lo que hay que mirar **no es el ancho sino el hueco**:
+> sin él, la entradilla y el formulario quedarían separados solo por los 56 del
+> `gap`, que es el mismo aire que hay **entre** las dos columnas. Dejarían de
+> leerse como dos zonas.
 
 > **El `<hr>` es el mismo que cierra `sobre/`**, y las declaraciones viven
 > agrupadas —`.articulo hr, .contacto hr`— para que el grosor y el color no
@@ -3184,14 +3252,141 @@ La página pasó de una columna de lectura a esto:
 
 ```
 mancheta            h1 «Acerca de», a sangre
+                    48 px  ← el mismo arranque que articulos/ y contacto/
 ┌──────────────┬──────────────┐
 │ h2 Enfoque   │ h2 Contenido │   .sobre__columnas, 548 px cada una a 1200
 │ 3 párrafos   │ 1 párrafo    │
 │              │ + 3 líneas ❖ │
 └──────────────┴──────────────┘
-h2 Sobre el autor
-texto (720) + botón CV · retrato 300×400      .sobre__autor
+                    48 px
+╔═══════════════════════════════╗  .sobre__bloque-autor — caja --papel-alt
+║ h2 Sobre el autor             ║  filete 1px --borde, radio 4, relleno 26/30
+║ texto (720) + CV · foto 300×400║
+╚═══════════════════════════════╝
 ```
+
+#### El wrapper lleva DOS clases y las dos hacen falta
+
+`<div class="articulo sobre">`. `articulo` da la tipografía del cuerpo, que esta
+página comparte con las de artículo. `sobre` es el gancho para lo que aquí es
+distinto.
+
+> ⚠️ **LAS REGLAS VAN COMO `.articulo.sobre`, NO COMO `.sobre` A SECAS.** Las dos
+> clases están en el **mismo elemento**, así que `.sobre h2` pesa (0,1,1) igual
+> que `.articulo h2` y el empate lo rompería el orden del archivo. Con las dos
+> juntas son (0,2,1) y ganan por especificidad.
+>
+> Es **la cuarta vez** que este patrón aparece en el proyecto —antes fueron
+> `.entrada__titulo`, `.autor__cv` y `.compartir__lista`— y las tres anteriores
+> acabaron en reglas muertas que no daban ningún error.
+
+#### El arranque bajó de 104 a 48 px
+
+Era **el doble que el resto del sitio**, y sumaba dos cosas que no se ven juntas
+al leer el CSS:
+
+| Página | Qué pone el hueco | px |
+|---|---|---|
+| `articulos/` | `.lista` → `padding-top` | **48** |
+| `contacto/` | `.contacto .contenedor` → `padding-top` | **48** |
+| `sobre/` antes | `.articulo` 56 **+** `margin-top` del primer `h2` 48 | **104** |
+| `sobre/` hoy | `.articulo.sobre` 48, con el margen del `h2` a cero | **48** |
+
+> ⚠️ **`.articulo` NO SE PUEDE TOCAR PARA ARREGLAR ESTO**, y es la razón de que
+> exista el gancho `.sobre`: ese `padding: 56px 0 80px` lo llevan también
+> **todas las páginas de artículo**.
+
+> **Los dos `h2` de las columnas siguen alineados entre sí.** Antes lo estaban
+> porque los dos conservaban el mismo margen; ahora, porque ninguno lo tiene.
+
+#### Los epígrafes bajaron de 32 a 24 px, y la escala NO era propia
+
+Lo primero que se comprobó es si `sobre/` usaba una escala mayor que el resto.
+**No la usaba**: era exactamente la del artículo.
+
+| | `sobre/` antes | artículo |
+|---|---|---|
+| `h2` | 32 / 38,4 / 600 | **32 / 38,4 / 600** |
+| párrafo | 18 / 30,6 | **18 / 30,6** |
+
+Lo que cambia no es el cuerpo de la letra sino **la columna sobre la que se
+apoya**, y un epígrafe se percibe en relación con su columna:
+
+| | Cuerpo ÷ columna |
+|---|---|
+| artículo | 32 ÷ 720 = **0,044** |
+| `sobre/`, columnas | 32 ÷ 548 = **0,058** — un 33 % más |
+
+Escalar el epígrafe a su columna da 32 × 548/720 = 24,4, y **24 px ya es un
+escalón de la escala del sitio**: es el cuerpo del `h3` del artículo. No se
+estrena ningún tamaño. Los márgenes acompañan en la misma proporción: 48 → 36 y
+14 → 12.
+
+> ⚠️ **EL CUERPO SE QUEDA EN 18 px, Y ES DELIBERADO AUNQUE EL ENCARGO HABLARA DE
+> «el texto en general».** Es el único valor que tiene que ser idéntico en todo
+> el sitio, y bajarlo aquí haría de `sobre/` la única página con otro cuerpo de
+> texto — un defecto peor que el que resuelve.
+>
+> A 548 px y 18 px salen unos **61 caracteres por línea**, que está en el rango
+> cómodo. Si aun así se quisiera más pequeño, es una decisión de **todo el
+> sitio** y se toma en la escala tipográfica, no en esta página.
+
+#### «Sobre el autor» va en caja, y no estrena ni un valor
+
+| Caja | Fondo | Filete | Radio | Relleno |
+|---|---|---|---|---|
+| `.indice`, `.referencias` | `--papel-alt` | 1 px `--borde` | 4 | 26/30 |
+| `.articulo__lateral` | `--papel-alt` | 1 px `--borde` | 4 | 28/24 |
+| **`.sobre__bloque-autor`** | **`--papel-alt`** | **1 px `--borde`** | **4** | **26/30** |
+
+Se copia el relleno de `.indice` y `.referencias` y no el del lateral porque esas
+dos son las cajas que viven **en la columna de contenido**, que es lo que esto
+es; el lateral es una barra estrecha y por eso aprieta más los lados.
+
+> ⚠️ **El `h2` pierde su margen de arriba dentro de la caja.** Con relleno los
+> márgenes **no colapsan**, así que los 36 px se sumarían a los 26 del padding y
+> dejarían el título flotando a 62 del canto.
+
+> ⚠️ **LA CAJA DESTAPÓ UN DESBORDAMIENTO QUE LLEVABA MESES AHÍ.**
+> `.sobre__autor` era `minmax(0, 720px) minmax(0, 1fr)`: la segunda columna se
+> queda con lo que **sobra**, y la primera, al poder crecer hasta 720, no dejaba
+> sobrar nada. Medido a 768 px, las columnas calculadas eran **`664px 0px`** —el
+> retrato en una columna de cero— y como `.sobre__retrato` tiene 300 px fijos, se
+> salía 300 px y arrastraba **scroll horizontal a toda la página**: 1044 px de
+> documento en una ventana de 768.
+>
+> Pasaba entre el corte de apilado y los ~1124 px que hacen falta para que quepan
+> 720 + 56 + 300. **Casi todas las tablets.**
+>
+> **No se veía**, y por eso duró: el retrato se salía sobre el blanco de la
+> página, donde un desbordamiento no deja rastro. En cuanto el bloque es una caja
+> con fondo, el mismo fallo se ve a la primera.
+>
+> Lo arregla `minmax(0, 720px) auto`: la segunda columna se dimensiona a su
+> contenido y la primera se queda con el resto hasta su tope.
+
+> ⚠️ **Y EL CORTE DE APILADO SUBE DE 600 A 900**, esta vez sí por consecuencia de
+> la caja. Con el retrato fijo en 300 y el hueco de 56, al texto le queda lo que
+> sobre del **interior** de la caja:
+>
+> | Ventana | Columna de texto | Caracteres por línea |
+> |---|---|---|
+> | 768 | 302 px | **35** — ilegible |
+> | 900 | 434 px | 50 — aceptable |
+> | 1440 | 720 px | ~82 |
+>
+> 900 no es un número nuevo: es donde el artículo baja su lateral.
+
+> ⚠️ **Y EL RETRATO TIENE QUE PODER ENCOGER.** Sus 300 px cabían mientras el
+> bloque no tenía relleno: a 375 el contenedor son 327 y la foto 300, con 27 de
+> sobra. Con los 30 px de relleno por lado el interior baja a **265** y la foto
+> **se salía de la caja**.
+>
+> Se resuelve con `min(300px, 100%)` **y `aspect-ratio: 3/4`**, no con
+> `max-width` a secas: con la altura fija en 400 la caja pasaría a 265 × 400
+> —proporción 0,66— y empezaría a recortar por los lados, perdiendo el «recorte
+> 0» que está documentado más abajo. Verificado: a 375 la foto mide 265 × 353 y
+> el recorte sigue siendo **0 × 0**.
 
 ⚠️ **ESTA PÁGINA REPRODUCE EL PDF DEL CLIENTE TAL CUAL, en contenido Y en
 composición.** Hubo una pasada intermedia que lo trataba como referencia de
@@ -3301,10 +3496,19 @@ el ancho de lectura —820— dos columnas quedarían a 380 y el texto se parte 
 > **Los dos cortes de esta página no coinciden, y es a propósito.** Las columnas
 > apilan en **748** —el de las tarjetas— porque a 600 bajarían a 248 y
 > «contencioso-administrativa» no cabe; el retrato se despega del texto en
-> **600**. Uno parte una retícula de texto y el otro despega una foto: no hay
+> **900**. Uno parte una retícula de texto y el otro despega una foto: no hay
 > motivo para que cedan a la vez.
+>
+> ⚠️ **EL SEGUNDO ERA 600 Y SUBIÓ A 900** al meter «Sobre el autor» en caja: el
+> relleno de 30 px por lado estrecha la columna de texto y a 768 se quedaba en
+> 35 caracteres por línea. Está medido unas líneas más arriba.
+>
+> **Consecuencia curiosa:** entre 749 y 900 la página queda con las columnas de
+> arriba **en dos** y el bloque del autor **apilado**. No es una incoherencia —
+> arriba hay dos columnas de texto, que aguantan; abajo hay una foto de ancho
+> fijo, que no— pero sorprende al redimensionar.
 
-### El CV vive en `documentos/` y se descarga desde DOS sitios
+### El CV vive en `documentos/` y se descarga desde UN sitio
 
 ```
 documentos/CV-Juan-Contera-Miranda.pdf      1 página · 63 KB
@@ -3318,63 +3522,58 @@ sube uno con otro nombre.
 | Dónde | Ruta | Qué lo pinta |
 |---|---|---|
 | `sobre/`, bajo la biografía | `../documentos/…` | a mano, en `sobre/index.html` |
-| Lateral de cada artículo, bajo «Ver perfil →» | `../../documentos/…` | `plantilla.mjs`, bloque `.lateral__bloque.autor` |
 
-Los dos son el mismo `.boton--contorno` con `download`, sin una sola
-declaración de color propia. El segundo lo escribe el generador, así que **al
-tocarlo hay que regenerar**.
+Es un `.boton--contorno` con `download`, sin una sola declaración de color
+propia.
 
-> ⚠️ **`.autor__cv` VA PREFIJADO CON `.articulo`, Y SIN ESO EL MARGEN NO SE
-> APLICA.** El botón del lateral es un `<p>` dentro de
-> `<article class="articulo">`, así que le cae **`.articulo p`**, que pesa
-> (0,1,1) frente a los (0,1,0) de la clase sola: **gana por especificidad, no
-> por orden**, y declararlo después no sirve de nada.
+> ⚠️ **ESTA SECCIÓN SE TITULABA «desde DOS sitios» Y HABÍA UN SEGUNDO BOTÓN EN
+> EL LATERAL DE CADA ARTÍCULO. Se retiró por encargo:** el cliente lo quiere
+> solo en `sobre/`.
 >
-> **Estuvo escrito como `.autor__cv { margin: 18px 0 0 }` y era una regla
-> muerta**: el margen computado seguía siendo el `0 0 22px` de `.articulo p`.
-> No daba ningún error —el botón se veía, solo que pegado a «Ver perfil →»— y
-> **solo se ve mirando el estilo computado, no el archivo**. Es la misma trampa
-> que `.articulo h3` contra `.entrada__titulo` en «Continúa leyendo».
+> Lo pintaba `plantilla.mjs` en `.lateral__bloque.autor`, justo bajo «Ver
+> perfil →», así que la retirada **pasa por regenerar**. La salida de ese bloque
+> vuelve a ser «Ver perfil →» a secas, que lleva precisamente a la página donde
+> sigue estando el botón.
 >
-> Hoy es `.articulo .autor__cv`, con los dos huecos medidos en el bloque de
-> 250 px:
+> **Con él se fue `.articulo .autor__cv`**, su única portadora. Lo que aquella
+> regla dejaba escrito y conviene no perder, porque describe una trampa del
+> proyecto y no solo ese botón: iba prefijada con `.articulo` porque es un `<p>`
+> dentro de `<article class="articulo">`, y `.articulo p` pesa (0,1,1) frente a
+> los (0,1,0) de una clase sola. **Estuvo escrita sin el prefijo y era una regla
+> muerta**; no daba ningún error. Sigue vigente para cualquier clase nueva sobre
+> un `<p>`, `<ul>` o `<h3>` del artículo.
 >
-> | | px |
-> |---|---|
-> | «Ver perfil →» → botón | 28 de margen + 5 de interlineado = **33** |
-> | botón → filete de «Etiquetas» | 22 de margen + 10 del bloque = **32** |
+> ✅ **Y con él se va una de las dos copias del peso en bytes.** Esta sección
+> avisaba de que estaba «escrito a mano en los dos sitios y nada lo comprueba».
+> Ahora hay una sola, en `sobre/index.html`. Una incoherencia menos posible.
 >
-> El botón queda con el mismo aire arriba y abajo. ⚠️ **El margen de abajo no se
-> puede soltar a 0**: esos 22 los traía `.articulo p` y son la mitad del hueco
-> inferior.
+> **El lateral queda bien compuesto sin él**, medido a 1440: el bloque del autor
+> baja de **441 a 369 px** —los 44 del botón más sus 28 de margen— y el hueco
+> contra el filete de «Etiquetas» se mantiene en los ~32 px que separan todos
+> los bloques del lateral. No hay que reponer ningún margen.
 >
-> Y va **centrado** con `text-align: center` —el botón es `inline-flex`—, igual
-> que el retrato se centra con `margin: 0 auto`. Medido: 44 px a cada lado.
+> **El PDF no se entera**: `imprimir.css` oculta `.articulo__lateral` entero, así
+> que el documento sale **byte a byte idéntico**. Verificado.
 
-> **El de `sobre/` NO se entera**, y por eso el cambio queda acotado: allí el
-> botón vive en un `<p>` **sin clase** dentro de `.sobre__autor-texto`, así que
-> `.autor__cv` no lo alcanza. Verificado.
+> **El de `sobre/` NO se vio afectado**, y por eso la retirada queda acotada:
+> allí el botón vive en un `<p>` **sin clase** dentro de `.sobre__autor-texto`,
+> así que nunca dependió de `.autor__cv`. Verificado.
 
-> **En móvil el botón sigue ahí, centrado igual.** El lateral **no se oculta**
-> por debajo de 900: baja debajo del artículo, y el bloque pasa de 250 a 277 px
-> de ancho. Medido a 375: 57 px a cada lado del botón.
-
-> ⚠️ **EL PESO ESTÁ ESCRITO A MANO EN LOS DOS SITIOS, y nada lo comprueba.** Va
-> en un `<span class="oculto"> (PDF, 63 KB)</span>`, de modo que el nombre
-> accesible del enlace es «Descargar CV (PDF, 63 KB)» y lo que se ve es
-> «Descargar CV» a secas, como en el PDF del cliente.
+> ⚠️ **EL PESO SIGUE ESCRITO A MANO y nada lo comprueba.** Va en un
+> `<span class="oculto"> (PDF, 63 KB)</span>`, de modo que el nombre accesible
+> del enlace es «Descargar CV (PDF, 63 KB)» y lo que se ve es «Descargar CV» a
+> secas, como en el PDF del cliente.
 >
-> **Al sustituir el archivo hay que volver a mirar el número en los dos.** Un
-> peso desfasado no da ningún error y no se ve en pantalla:
+> **Al sustituir el archivo hay que volver a mirar el número.** Un peso
+> desfasado no da ningún error y no se ve en pantalla:
 >
 > ```sh
-> grep -rn 'PDF, .. KB' sobre/index.html scripts/lib/plantilla.mjs
+> grep -rn 'PDF, .. KB' sobre/index.html
 > ```
 
-> **Las rutas son relativas, como todo el sitio.** Verificado que ninguna de las
-> dos empieza por `/` y que las dos resuelven a `/documentos/…`: así funcionan
-> igual en el subdirectorio de GitHub Pages y en `elderechoescrito.es`. No hay
-> `<base>` en ninguna página.
+> **La ruta es relativa, como todo el sitio.** Verificado que no empieza por `/`
+> y que resuelve a `/documentos/…`: así funciona igual en el subdirectorio de
+> GitHub Pages y en `elderechoescrito.es`. No hay `<base>` en ninguna página.
 
 > **El texto visible no lleva el formato**, y es deliberado: el PDF del cliente
 > pone «Descargar CV» y nada más. El formato y el peso van donde el sitio ya
@@ -3400,18 +3599,95 @@ fondo y **sin velo**. Abre las tres páginas de sección —`articulos/`, `sobre
 el título se queda en la rejilla de 1200 gracias al `.contenedor` que lleva
 dentro.
 
-> ⚠️ **LA IMAGEN CAMBIÓ: ERA `img/fondo-cabecera.jpg`.** La nueva está recortada
-> a **4:1 exacto (2560 × 640)** para esta banda, frente al 4,03 de la anterior,
-> y es el mismo veteado de la portada **sin libro ni balanza**.
+> ⚠️ **EL ARCHIVO SE LLAMA IGUAL PERO LA FOTO ES OTRA, Y ESA ES LA TRAMPA DE
+> ESTE CAMBIO.** `img/fondo-paginas.jpg` se **sobrescribió** con una imagen nueva
+> generada con IA: un gris verdoso pálido con franjas diagonales de luz
+> desenfocadas, mucho más simple que el veteado anterior.
 >
-> ✅ **`fondo-cabecera.jpg` se quedó sin uso y YA SE HA BORRADO** en la limpieza
-> del lote. Aquí decía «NO se ha borrado». Esta banda era su único portador, y
-> hoy el nombre solo aparece en prosa: en el comentario de `styles.css` que
-> explica el cambio y en la tabla de contraste de más abajo.
+> **Se sobrescribe en vez de añadir un nombre nuevo, y es deliberado:**
+>
+> | | Sobrescribir | Nombre nuevo |
+> |---|---|---|
+> | CSS | no se toca | hay que editarlo |
+> | Archivos huérfanos | **ninguno** | uno más |
+> | Qué enseña el diff | que la imagen cambió | que hay dos imágenes |
+>
+> El nombre describe **el papel** —«el fondo de las páginas»— y no el dibujo, así
+> que sigue siendo exacto. Y el repositorio ya ha pagado dos veces el precio de
+> acumular imágenes sin uso: `fondo-cabecera.jpg` y `juanconteramiranda.jpeg`
+> necesitaron una limpieza dedicada. Añadir una tercera por no sobrescribir
+> repite justo el error que esa limpieza arregló.
+>
+> **Consecuencia que hay que tener presente:** un `grep` del nombre no dice qué
+> imagen hay. Para saberlo hay que mirar el archivo o esta sección.
+>
+> **Antes de esta, el archivo contuvo el recorte del veteado de la portada**, y
+> antes de eso la banda usaba `img/fondo-cabecera.jpg`, que se borró al quedarse
+> sin uso.
+
+> **Cómo se preparó, y el orden importa.** El original es
+> `Gemini_Generated_Image_vvrrjvvrrjvvrrjv.jpeg`, **3168 × 1344** y 1,6 MB. Para
+> 4:1 usando el ancho entero hace falta una franja de 792 px de alto, y **cuál**
+> de las muchas posibles se elige es la única decisión de diseño que hay aquí:
 >
 > ```sh
-> grep -rn 'fondo-cabecera' --include='*.css' --include='*.html' .
+> # recorte ANTES de reducir, con desplazamiento: la franja y=240..1032
+> sips -c 792 3168 --cropOffset 240 0 original.jpeg --out base.jpg
+> sips -Z 2560 -s format jpeg -s formatOptions 65 base.jpg --out img/fondo-paginas.jpg
 > ```
+>
+> ⚠️ **`--cropOffset` no es opcional.** `sips -c` recorta **centrado**, y el
+> recorte centrado (y=276) no es el que se quiere. Hace falta elegir la Y.
+>
+> **El 240 está medido, no elegido a ojo.** El original tiene una sombra fuerte
+> arriba a la izquierda y una banda oscura en el borde derecho; entre medias hay
+> una meseta clara. Barriendo los desplazamientos posibles y midiendo la
+> luminancia del **tercio central**, que es donde cae el título:
+>
+> | Desplazamiento | Tercio izquierdo | **Tercio central** | Tercio derecho |
+> |---|---|---|---|
+> | **240** | 0,488 | **0,712** | 0,427 |
+> | 384 | 0,541 | 0,621 | 0,427 |
+> | 480 | 0,615 | 0,612 | 0,426 |
+> | 528 | 0,614 | 0,607 | 0,426 |
+>
+> El 240 deja el centro **mucho más claro** que cualquier otro —0,712 contra
+> 0,61— al precio de un tercio izquierdo algo más oscuro, que es donde no hay
+> texto. Los demás se parecen entre sí porque a partir de 384 la meseta ya ha
+> quedado arriba del recorte.
+
+> **La calidad 65 también está medida, y la métrica obvia engaña.** En una imagen
+> tan lisa el riesgo no es perder detalle sino el **bloqueo 8 × 8** del JPEG, que
+> en una superficie plana se ve como bandas. Contar «saltos bruscos» da el
+> resultado al revés —sube con la calidad, porque conserva el grano del
+> original—; lo que sirve es comparar el salto en los bordes de bloque contra el
+> de dentro:
+>
+> | Calidad | Peso | Bloqueo a 2560 (nativo) | Salto absoluto | Ya escalada a 1440 |
+> |---|---|---|---|---|
+> | 55 | 35,6 KB | 7,08× | 0,38/255 | 0,15/255 |
+> | 60 | 36,0 KB | 6,46× | 0,39/255 | 0,16/255 |
+> | **65** | **45,9 KB** | **3,93×** | **0,48/255** | **0,24/255** |
+> | 70 | 64,8 KB | 2,89× | 0,54/255 | 0,32/255 |
+> | 75 | 74,0 KB | 2,23× | 0,62/255 | 0,39/255 |
+>
+> ⚠️ **El ratio de bloqueo asusta más de lo que debe**: el salto absoluto es de
+> medio nivel sobre 255 en todos los casos, o sea invisible. Lo que lo infla es
+> que el gradiente *dentro* del bloque es casi cero, no que el borde se vea.
+>
+> Y **al escalar se suaviza**: a 1440 la imagen se dibuja al 0,5625 y promedia
+> los bloques. Medida la diferencia entre q55 y q75 ya escaladas: **máximo 5/255**,
+> media 0,39/255. O sea que cualquiera valdría; 65 se elige porque es el codo de
+> la curva y porque **en pantalla densa no hay reducción que suavice** —ahí los
+> 2560 px se dibujan casi 1:1—.
+>
+> **Pesa 45,9 KB frente a los 130,7 de la imagen anterior**, un 65 % menos.
+
+> ⚠️ **EL ORIGINAL NO ESTÁ EN EL REPOSITORIO, y sin él no se puede rehacer el
+> recorte.** Es el único insumo del sitio del que no se guarda la fuente —el logo
+> sí la tiene, en `img/logo_elderechoescrito.jpeg`—. Mientras no se guarde, lo
+> único que permite reproducir esta imagen es el comando de arriba **más el
+> archivo original**, que vive fuera del proyecto.
 
 > ⚠️ **SE DESCARTÓ USAR EL FONDO DE LA PORTADA TAL CUAL, y conviene saber por
 > qué antes de volver a intentarlo.** El de la portada no es una imagen de CSS:
@@ -3434,17 +3710,30 @@ falta un velo blanco al 45 % para salvarlo, y aun así lavaba la imagen.
 Con el título **centrado**, cae sobre la franja clara del medio y no hace falta
 velo ninguno. El velo se retiró: protegía a un texto que ya no está ahí.
 
-Medido sobre la imagen de hoy, el píxel más oscuro bajo la caja del `h1`:
+Medido sobre la imagen de hoy, el píxel más oscuro bajo la caja del `h1`,
+muestreando el recorte **ya pintado** —se replica `cover` en un `<canvas>` con la
+geometría real del elemento y se leen los píxeles de la caja del título—:
 
-| Ancho de ventana | 1280 | 1440 |
-|---|---|---|
-| Peor contraste | **11,84:1** | **11,93:1** |
+| Ancho de ventana | 375 | 768 | **901** | **1440** | 1920 |
+|---|---|---|---|---|---|
+| ¿Hay imagen? | **no** | **no** | sí | sí | sí |
+| Peor contraste | 16,67:1 | 16,67:1 | **12,69:1** | **12,69:1** | 12,69:1 |
 
-> **`background-position` sigue en `center`, y no por inercia.** Se midieron
-> cinco posiciones verticales —0, 25, 50, 75 y 100 %— y las cinco dan entre
-> **11,6 y 12,4:1**, porque el título cae sobre el centro claro pase lo que
-> pase. Mover la Y no mejora nada, así que el cambio se queda en el nombre del
-> archivo.
+> ⚠️ **A 768 Y 375 NO HAY IMAGEN, Y ESO SORPRENDE AL MEDIR.** El fondo se declara
+> dentro de `@media (min-width: 901px)` —está razonado en `styles.css`: por
+> debajo no se pide el archivo y además `cover` recortaría una tira inútil—, así
+> que ahí el `h1` cae sobre el blanco de la página y da **16,67:1**. Quien mida
+> el contraste en móvil no está midiendo esta imagen.
+>
+> **Por encima de 901 el número no se mueve**, y tiene explicación: `cover`
+> escala por el ancho en toda esa franja, así que el título siempre cae sobre el
+> mismo punto del archivo. Lo que cambia con la ventana es cuánta imagen se ve a
+> los lados, no lo que hay detrás del texto.
+
+> **`background-position` sigue en `center`.** Con la imagen anterior se midieron
+> cinco posiciones verticales y las cinco daban entre 11,6 y 12,4:1; con esta, el
+> recorte ya se eligió para que el centro fuera la zona más limpia, así que mover
+> la Y solo puede empeorarlo.
 
 Una media de luminancia habría dicho las dos veces que no hacía falta velo,
 porque la imagen es clara *de media*. **Lo que sirve es muestrear el recorte
@@ -3456,20 +3745,26 @@ con la proporción de la caja.
 > 600 y 2,86 a 800, que ya no cumplía**. Y se avisaba de que `sobre/` estuvo a
 > 32 px del límite cuando se titulaba «Sobre El Derecho Escrito» (417,8 px).
 >
-> Medido a 1440 forzando títulos cada vez más anchos:
+> Medido forzando títulos cada vez más anchos. La columna de la derecha es la
+> **imagen de hoy**, remedida; las otras dos se conservan para ver la deriva:
 >
-> | Ancho del título | `fondo-cabecera` | **`fondo-paginas`** |
-> |---|---|---|
-> | 160 px | 14,64 | **11,81** |
-> | 450 px | 12,88 | **10,79** |
-> | 600 px | 12,88 | **8,15** |
-> | 800 px | 12,00 | **8,15** |
-> | 1000 px | 5,56 | **6,61** |
-> | 1200 px | **2,45** ✗ | **6,61** |
+> | Ancho del título | `fondo-cabecera` | veteado anterior | **la de hoy** |
+> |---|---|---|---|
+> | 160 px (el real) | 14,64 | 11,81 | **12,69** |
+> | 450 px | 12,88 | 10,79 | **12,57** |
+> | 600 px | 12,88 | 8,15 | **12,34** |
+> | 800 px | 12,00 | 8,15 | **11,42** |
+> | 1000 px | 5,56 | 6,61 | **10,64** |
+> | 1200 px | **2,45** ✗ | 6,61 | **10,64** |
 >
-> La nueva **no baja de 6,61 ni con un título de 1200 px**, más ancho que
-> cualquier rótulo imaginable. Así que el corte de 450 decae y `sobre/` ya no
-> está al borde de nada.
+> **La de hoy no baja de 10,64 ni con un título de 1200 px**, más ancho que
+> cualquier rótulo imaginable, y es la más plana de las tres: pierde 2 puntos de
+> extremo a extremo donde la anterior perdía 5 y la primera 12. Es lo que se
+> esperaba de una imagen sin motivo, y de haber elegido el recorte por la
+> limpieza del centro.
+>
+> Así que el corte de 450 px sigue sin aplicar y `sobre/` no está al borde de
+> nada aunque recupere un título largo.
 >
 > **Lo que no decae es el método**: si algún día se cambia la imagen, hay que
 > volver a medir esta tabla. El número sale de muestrear, no de mirar.
@@ -3993,31 +4288,54 @@ coincidir**, y el build falla si no —es lo único que ata la URL al contenido.
 | `etiquetas` | no | texto visible. De aquí salen las píldoras, `data-etiquetas` y el desplegable |
 | `keywords` | no | frases de cola para `article:tag` y el JSON-LD. **No son las etiquetas** |
 | `fecha` | **sí** | `YYYY-MM-DD`. Ordena el listado y fija la hora de publicación a las 09:00 +02:00 |
-| `actualizado` | no | `YYYY-MM-DD`. La revisión posterior. Sin él, nada cambia respecto a hoy |
+| `actualizado` | no | `YYYY-MM-DD`. La revisión posterior. **Sin él se usa `fecha`**: la línea «Última actualización» se ve siempre |
 | `destacado` | no | `true` fuerza la lectura recomendada. Sin ninguno, manda el más reciente |
 | `secciones` | **sí** | los `<h2>` y su contenido |
 | `referencias` | no | agrupadas o sueltas |
 | `imagen` | **sí** | `archivo`, `alt` |
 | `avisos` | no | notas para quien revise el PR. Se imprimen y se comentan; no salen en la web |
 
-#### `actualizado`: la fecha de revisión, y es opcional de verdad
+#### «Última actualización» SE VE SIEMPRE, y el campo `actualizado` solo cambia qué fecha pone
 
-Se añade cuando un artículo ya publicado se revisa. **Sin el campo, la página
-sale exactamente como salía**: verificado regenerando el artículo de MASC con
-el código nuevo y comprobando que el diff de todo lo generado es cero.
+> ⚠️ **ESTA SECCIÓN SE TITULABA «es opcional de verdad» Y DECÍA QUE SIN EL CAMPO
+> LA PÁGINA SALÍA EXACTAMENTE IGUAL. Ya no.** Hoy la línea se enseña en **todos**
+> los artículos. Si el JSON no trae `actualizado`, se usa la fecha de
+> publicación.
+>
+> **Es un encargo del cliente**, que echaba en falta la línea en el artículo de
+> MASC —el único publicado, y no trae el campo—.
 
-Con el campo, alimenta **cuatro** sitios:
+El campo sigue siendo **opcional en el JSON**; lo que ha dejado de ser opcional
+es la línea en la página. `derivar()` resuelve el valor una vez:
+
+```js
+const actualizado = art.actualizado || art.fecha;
+```
+
+y de ahí salen **cinco** sitios:
 
 | Dónde | Qué pone |
 |---|---|
 | la ficha del artículo | un `<time class="actualizado">` con «Última actualización: …» |
+| **la primera página del PDF** | la misma línea, en la ficha del bloque de título |
+| **`/ModDate` del PDF** | la marca `D:AAAAMMDD…` del diccionario `/Info` |
 | JSON-LD | `dateModified` |
 | Open Graph | `<meta property="article:modified_time">` |
 | `sitemap.xml` | `<lastmod>` |
 
-Sin el campo esos tres últimos valen lo mismo que la fecha de publicación, que
-es **lo que el sitio ha declarado siempre**. O sea que el campo no estrena
-comportamiento: rellena uno que ya existía con un valor mejor.
+> **De los seis, cuatro no cambian de valor al hacer esto.** `dateModified`,
+> `article:modified_time`, `<lastmod>` y `/ModDate` **ya caían a la fecha de
+> publicación** cuando no había campo: era `actualizado || art.fecha` escrito en
+> cada consumidor. Lo único que estrena valor es lo que se ve —la ficha del
+> artículo y la línea del PDF—, que antes no se pintaban.
+>
+> Por eso el diff del HTML de MASC es **una sola línea añadida**, y el del
+> sitemap, el feed y el JSON-LD es **cero**.
+
+> ⚠️ **Y `art.actualizado` YA NO PUEDE SER NULO**, lo que deja sin sentido los
+> `|| art.fecha` que había aguas abajo. Se retiró el de `conFechasFijas()` en
+> `pdf.mjs`; si aparece otro, es código muerto que sugiere un caso que ya no
+> existe.
 
 > ⚠️ **EL `<pubDate>` DEL FEED NO SE TOCA, Y NO ES UN OLVIDO.** En RSS 2.0
 > `pubDate` es **la fecha de publicación** y no hay ningún campo de modificación
@@ -4029,14 +4347,31 @@ comportamiento: rellena uno que ya existía con un valor mejor.
 > **`<atom:updated>`** —el espacio de nombres `xmlns:atom` **ya está declarado**
 > en `feed.xml`— y es una decisión aparte, no parte de este campo.
 
-> ⚠️ **Una `actualizado` IGUAL a `fecha` se trata como si no existiera.** En la
-> ficha se leería «28 DE SEPTIEMBRE DE 2026 · ÚLTIMA ACTUALIZACIÓN: 28 DE
-> SEPTIEMBRE DE 2026», que ocupa sitio y no dice nada, y parece un fallo del
-> generador más que una decisión del autor. Aguas abajo tampoco se pierde nada:
-> `dateModified` ya valía `datePublished`.
+> ⚠️ **AQUÍ SE DESCARTABA UNA `actualizado` IGUAL A `fecha`, Y ESA DECISIÓN
+> DECAE ENTERA. HAY QUE LEER ESTO ANTES DE «ARREGLAR» LO QUE SE VE HOY.**
 >
-> Se descarta **una vez**, en `derivar()`, y no en los cuatro consumidores. Y
-> **no en silencio**: `validar()` saca un aviso que sale en el comentario del PR.
+> Decía que una actualización igual a la publicación se trataba como si no
+> existiera, porque la ficha leería
+>
+> > 28 DE SEPTIEMBRE DE 2026 · ÚLTIMA ACTUALIZACIÓN: 28 DE SEPTIEMBRE DE 2026
+>
+> o sea «un dato que ocupa sitio y no dice nada, y que además **parece un fallo
+> del generador** más que una decisión del autor».
+>
+> **Ese efecto es exactamente lo que se ve hoy en el artículo de MASC**, que no
+> trae el campo y por tanto repite su fecha de publicación. El razonamiento
+> seguía siendo correcto; lo que pasa es que el cliente prefiere ver la línea
+> siempre, y es su decisión. **No es un descuido y no hay que revertirlo.**
+>
+> ✅ **Con ello se retiró también el aviso de `validar()`**, que decía que esa
+> fecha «NO se va a mostrar». Había dejado de ser verdad. Hoy escribir
+> `actualizado` igual a `fecha` da el mismo resultado que no escribirlo, así que
+> no hay nada de lo que avisar.
+>
+> **Si algún día se quiere volver a distinguir los dos casos**, la vía NO es
+> reponer el descarte en `derivar()` —eso devuelve el artículo de MASC a no
+> enseñar nada—, sino cambiar el TEXTO cuando las dos fechas coinciden. Pero eso
+> es otro encargo.
 
 > ⚠️ **Y una `actualizado` ANTERIOR a `fecha` es un ERROR que para el build.**
 > No es un problema de formato sino de sentido —un artículo no se actualiza
@@ -4125,21 +4460,31 @@ agrupada con ella. Pero el artículo tiene dos cortes propios, los dos medidos.
 > prudente que atar el corte al largo de la fecha y del nombre del mes.
 > Perderse una barra decorativa no se nota; una barra colgada sí.
 
-Barrido de verificación, con el campo y sin él:
+> ⚠️ **ESTE BARRIDO TENÍA DOS COLUMNAS —«sin `actualizado`» y «con»— Y YA SOLO
+> HAY UN CASO**, desde que la fila se enseña siempre. La columna de «sin» no
+> describe ningún artículo posible.
 
-| Ancho | Sin `actualizado` | Con `actualizado` |
-|---|---|---|
-| 1440 / 1280 | `fecha \| minutos` | `fecha \| minutos` + fila propia |
-| 901 | `fecha \| minutos` | `fecha \| minutos` + fila propia |
-| 900 | `firma \| fecha \| minutos` | `firma \| fecha \| minutos` + fila propia |
-| 749 | `firma \| fecha \| minutos` | `firma \| fecha \| minutos` + fila propia |
-| **748** | sin barras, una fila | sin barras + fila propia |
-| 375 | sin barras, tres filas | sin barras, cuatro filas |
+Barrido de verificación, remedido con la fila ya permanente:
 
-**Cero separadores colgando en los doce casos.** Se comprueba mirando si el
+| Ancho | Qué se ve |
+|---|---|
+| 1440 / 1280 | `fecha \| minutos` + fila propia |
+| 901 | `fecha \| minutos` + fila propia |
+| 900 | `firma \| fecha \| minutos` + fila propia |
+| **749** | `firma \| fecha \| minutos` + fila propia |
+| **748** | sin barras, una fila + fila propia |
+| 375 | sin barras, **cuatro** filas |
+
+**Cero separadores colgando en los seis casos.** Se comprueba mirando si el
 *último elemento de cada fila renderizada* tiene `::after`, que es lo único que
 distingue una barra correcta de una colgada; contar hijos no sirve, porque el
 envoltorio no cambia el DOM.
+
+> **Lo que el cambio NO movió:** el corte de 748 sigue cayendo donde caía
+> —verificado a 749 con barras y a 748 sin ellas—, y a 375 la línea sigue
+> midiendo **327 px exactos**, el ancho de la columna, partida en dos líneas sin
+> desbordar ni provocar scroll horizontal. La ficha pasa de 3 filas a 4, y de
+> 50,4 px de alto a 132.
 
 > ⚠️ **`descripcion` y `entradilla` NO son el mismo texto, y confundirlas no da
 > ningún error.** La `descripcion` es el resumen de 140–160 caracteres que ven
@@ -4165,8 +4510,100 @@ del tipo si le llega uno que no conoce.
 |---|---|---|
 | `parrafo` | `html` | `<p>` |
 | `subtitulo` | `texto` | `<h3>`. **Texto plano, no HTML** |
-| `cita` | `html`, `fuente_html` | `<blockquote class="cita--destacada">` y su `.cita__fuente` |
+| `cita` | `html`, `fuente_html` | `<blockquote>` y su `.cita__fuente`. **La clase la elige el generador** — ver abajo |
 | `lista` | `ordenada`, `items[{marcador, html}]` | `<ul>`/`<ol>`, o `.lista--marcada` si hay marcadores |
+
+#### Las citas tienen DOS estilos y los elige el generador
+
+**El cliente no marca nada en el Word.** Lo decide `claseDeCita()` en
+`plantilla.mjs`, a partir del propio texto:
+
+| Clase | Qué es | Aspecto |
+|---|---|---|
+| `.cita--destacada` | una frase que se **mira** | Cormorant 25,6 px, comilla de apertura en acento, `--tinta` |
+| `.cita--extracto` | un pasaje que se **lee** | Source Serif 16 px, filete lateral en acento, `--tinta-suave`, sin comilla |
+
+**El criterio: más de 40 palabras, o cualquier salto de línea.**
+
+> ⚠️ **LAS DOS MITADES HACEN FALTA Y NINGUNA SOBRA.** Por largo, porque una cita
+> de 113 palabras no es un reclamo aunque vaya en un solo párrafo —son 28 líneas
+> en un móvil—. Por **salto de línea**, porque una cita de dos puntos separados
+> por `<br>` es un documento **por estructura**, no por tamaño: es el caso de la
+> cita 2 de MASC, que con 37 palabras se escaparía del umbral.
+
+> ⚠️ **EL 40 NO ES UN NÚMERO FRÁGIL, y conviene saberlo antes de afinarlo.** Las
+> citas reales de MASC se reparten en **37 (con `<br>`), 113, 115, 174 y 579**:
+> no hay ninguna entre 40 y 112. **Cualquier umbral entre 38 y 112 clasifica el
+> artículo exactamente igual**, así que el resultado no depende de haber
+> acertado el número.
+>
+> Lo que lo fija en 40 es el otro extremo: es lo que ocupa una frase larga de una
+> sola oración, que es lo que un reclamo puede llegar a ser.
+>
+> Se cuenta en **palabras** y no en caracteres porque es la unidad que el build
+> ya usa para los minutos de lectura. Con caracteres —246, 669, 727, 1049,
+> 3686— el reparto sale idéntico.
+
+**Qué lo motivó, medido a 375 px antes del cambio:**
+
+| Cita | Palabras | Alto | Líneas | % del documento |
+|---|---|---|---|---|
+| 1 | 113 | 968 px | 28 | 2,6 % |
+| 2 | 37 | 415 px | 12 | 1,1 % |
+| 3 | 174 | 1 590 px | 46 | 4,2 % |
+| **4** | **579** | **5 529 px** | **160** | **14,7 %** |
+| 5 | 115 | 1 071 px | 31 | 2,8 % |
+| | | **9 572 px** | | **25,5 %** |
+
+Una cuarta parte del artículo eran citas en cuerpo de titular, y la cuarta sola
+medía **6,8 pantallas de móvil**. Después:
+
+| | Antes | Después |
+|---|---|---|
+| Altura de las citas a 375 | 9 572 px | **5 133 px** (−46 %) |
+| Peso en el documento | 25,5 % | **15,5 %** |
+| Altura del artículo a 375 | 37 607 px | **33 024 px** (−12,2 %) |
+| Páginas del PDF | 14 | **13** |
+
+> **El extracto no estrena casi nada**: es el `blockquote` base que `styles.css`
+> ya tenía —filete de 2 px en acento, sangría, `--tinta-suave`— con tres
+> cambios. **Redonda** en vez de cursiva, porque un pasaje de 579 palabras en
+> cursiva se lee peor y en papel todavía peor, y la convención académica para
+> una cita en bloque larga es redonda. **Cuerpo 1rem (16 px)**, que es «algo
+> menor» que los 18 del cuerpo sin estrenar un escalón: es el tamaño raíz del
+> documento. E **interlineado 1,7**, el mismo del cuerpo, porque es texto para
+> leer seguido.
+>
+> **Sin comilla de apertura**, y es deliberado: el filete ya dice que es una
+> cita, y una comilla de 3,6rem sobre un pasaje de varias líneas compite con el
+> texto en vez de introducirlo. La comilla es un recurso de reclamo.
+>
+> **La negrita del original se respeta sola**: no se toca `font-weight`, así que
+> los `<strong>` del texto del cliente salen como vienen.
+
+> ⚠️ **LA DESTACADA TAMBIÉN BAJA EN MÓVIL, de 25,6 a 22,4 px.** A 375 la columna
+> son 327 px, y a 1,6rem una frase de reclamo cae en ~3 palabras por línea: deja
+> de leerse como una frase y pasa a leerse como una lista vertical. El corte es
+> el **600** que ya usa el cuerpo del artículo, no uno nuevo.
+
+> ⚠️ **EN EL PDF EL EXTRACTO SÍ SE PUEDE PARTIR, al revés que la destacada.** El
+> `break-inside: avoid` de la destacada tiene sentido —son dos o tres líneas y
+> partirla le quita la comilla, que es lo único que la identifica—. Un extracto
+> de 579 palabras ocupa varias páginas, así que prohibirle el salto lo empujaría
+> entero a la siguiente y dejaría media página en blanco antes: el mismo fallo
+> que ya razona la caja de referencias. Lo que sí se protege es cada línea, con
+> `orphans`/`widows` a 2.
+
+> ⚠️ **LA FUENTE DE LA CITA SE ALINEA CON LA SUYA, Y SON DOS SANGRÍAS DISTINTAS.**
+> Los 54 px de `.cita__fuente` son los que deja la comilla de apertura, y un
+> extracto no la tiene. Sin corregirlo, la fuente quedaba **32 px más adentro**
+> que la cita que atribuye.
+>
+> Se engancha con `.articulo .cita--extracto + .cita__fuente` —hermano
+> adyacente— y no con una clase propia, porque la fuente siempre va pegada a su
+> cita: así no hay dos sitios que mantener sincronizados ni una clase que se
+> pueda olvidar al escribir el JSON. **Con el prefijo `.articulo`**, que lo deja
+> en (0,3,0) y le hace ganar por especificidad y no por orden.
 
 El `html` de los bloques **es HTML de verdad y no se escapa**: ahí van los
 `<strong>`, `<em>` y `<a>` del texto. Lo que sí se escapa es todo lo demás
@@ -4437,14 +4874,16 @@ fechas por una derivada del campo `fecha` del `articulo.json`:
 > | | De dónde sale |
 > |---|---|
 > | `/CreationDate` | **siempre** de `fecha` |
-> | `/ModDate` | de `actualizado`, y de `fecha` si no lo hay |
+> | `/ModDate` | de `art.actualizado`, que `derivar()` deja **siempre con valor** — la revisión si la hay, y si no la publicación |
 >
 > **No rompe el determinismo**, que es lo único intocable aquí: la fecha nueva
-> sale del JSON igual que la vieja, nunca del reloj. Y un artículo **sin**
-> `actualizado` da exactamente el mismo PDF que antes —verificado byte a byte en
-> el mismo entorno local—, porque `art.actualizado` llega ya normalizado desde
-> `derivar()`, que lo deja en `null` cuando falta y también cuando es igual a
-> `fecha`.
+> sale del JSON igual que la vieja, nunca del reloj.
+>
+> ✅ **Y un artículo sin `actualizado` sigue dando `/ModDate` == `/CreationDate`**,
+> igual que siempre. Lo que ha cambiado es por qué: antes `derivar()` dejaba el
+> campo en `null` y aquí se escribía `art.actualizado || art.fecha`; ahora
+> `derivar()` ya le pone la fecha de publicación, así que ese `||` se retiró por
+> código muerto.
 >
 > Las dos marcas miden los mismos 23 bytes —solo cambian los dígitos del día—,
 > así que la guarda de longitud sigue cubriendo las dos.
@@ -4579,16 +5018,36 @@ pie                    El Derecho Escrito · url · · · n / total
 #### La ficha de la portada lleva «Última actualización» EN LA MISMA LÍNEA
 
 Y en la web va en su propia fila. **Parece una incoherencia y no lo es: aquí
-cabe y allí no.** Medido con el mes más largo y el día de dos dígitos, que es el
-peor caso:
+cabe y allí no.**
+
+> ⚠️ **ESTA MEDIDA ESTABA MAL Y SE HA REHECHO SOBRE EL RENDERIZADO, NO SUMANDO.**
+> Decía «≈ 160 mm» y por tanto 10,1 mm de holgura. Sumaba los anchos de los tres
+> datos y se dejaba fuera el `gap` del flex, así que el número salía corto.
+>
+> Medido en Chromium con el medio `print` y el viewport a los 170,1 mm útiles,
+> con el mes más largo y el día de dos dígitos —que es el peor caso y es
+> exactamente el del artículo de MASC—:
 
 | | |
 |---|---|
-| fecha | 42,8 mm |
-| minutos | 27,6 mm |
-| «Última actualización: 30 de septiembre de 2026» | 77,6 mm |
-| con los dos separadores | **≈ 160 mm** |
-| **ancho útil del A4 con estos márgenes** | **170,1 mm** |
+| fecha | 161,8 px |
+| minutos | 104,2 px |
+| «Última actualización: 28 de septiembre de 2026» | 293,2 px |
+| los dos `·` y los huecos del flex | el resto |
+| **la línea entera, de borde a borde** | **619,8 px = 164,0 mm** |
+| **ancho útil del A4 con estos márgenes** | **643 px = 170,1 mm** |
+| **holgura** | **6,1 mm** |
+
+> ⚠️ **Y DESDE QUE LA LÍNEA SE ENSEÑA SIEMPRE, ESA HOLGURA ES EL ESTADO
+> PERMANENTE Y NO EL PEOR CASO OCASIONAL.** Antes solo se pagaba en los
+> artículos que traían el campo; hoy la pagan todos.
+>
+> Sigue cabiendo con margen suficiente: el dato que más puede crecer son los
+> minutos, y pasar de «15» a «120» añade ~8 px sobre los 23 que sobran.
+>
+> **El nombre del autor NO entra en esa cuenta**: va en su propia línea, porque
+> `.pdf-portada__ficha` le da ancho completo. La ficha del PDF son dos líneas,
+> no una.
 
 La misma fila en la web pide 734,6 px sobre una columna de 720. **La diferencia
 no es el ancho** —la columna web son 190 mm, *más* que estos 170— **sino el
@@ -4597,7 +5056,7 @@ icono por dato; la de aquí va en caja baja, sin iconos y con 0,04em. Las
 versales y los iconos son lo que la desbordan allí.
 
 > ⚠️ **Si algún día se le ponen versales o iconos a esta ficha, hay que volver a
-> medir**: se come la holgura de golpe.
+> medir**: con 6,1 mm de holgura se la comen de golpe.
 
 > ⚠️ **Y SI LA LÍNEA ENVOLVIERA, HOY NO PASA NADA.** Aquí se explicaba que
 > `.pdf-portada__texto` llevaba `margin-top: auto` y que el bloque crecía hacia

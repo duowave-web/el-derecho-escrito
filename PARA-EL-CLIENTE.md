@@ -110,6 +110,31 @@ se mira: es justamente para lo que está.
 **¿Tengo que publicar el mismo día?**
 No. La propuesta se queda ahí hasta que la revises. Nada se publica solo.
 
+**Al final del artículo ya no sale «Continúa leyendo» con otros artículos. ¿Se ha roto?**
+No, y no hay nada que arreglar: **vuelve solo en cuanto publiques el segundo
+artículo**.
+
+Ese bloque recomienda **otros** artículos del blog, y ahora mismo solo hay uno
+publicado — el que se está leyendo. Como no tiene sentido recomendarte el
+artículo que ya estás leyendo, el bloque se esconde entero en vez de salir
+vacío.
+
+Lo mismo pasa con los enlaces **«Leer anterior»** y **«Leer siguiente»** del
+final: no hay ni anterior ni siguiente todavía.
+
+Si llegaste a verlo funcionando hace semanas, era de verdad: durante un tiempo
+hubo artículos de ejemplo, de relleno, para poder enseñarte cómo quedaría. Al
+publicar el primer artículo real se retiraron, y con ellos esas
+recomendaciones.
+
+**En «Última actualización» pone la misma fecha que en la de publicación. ¿Está mal?**
+No. Esa línea sale en **todos** los artículos, y mientras uno no se haya
+revisado lo honrado es que diga su fecha de publicación: el texto que se está
+leyendo es, efectivamente, el del día que se publicó.
+
+La fecha cambia el día que el artículo se revise de verdad. Hasta entonces las
+dos coinciden, y eso no es un fallo del sistema.
+
 **¿Puedo cambiar algo después de publicar?**
 Sí, pero **no vuelvas a subirlo a Drive: pásamelo a mí.**
 
@@ -121,8 +146,8 @@ buen arreglo una vez hecho.
 
 Para corregir o actualizar uno ya publicado, mándame el texto —por correo o como
 prefieras— y lo cambio yo conservando su fecha. Si es una revisión de fondo,
-además le pongo un «Última actualización» con la fecha de hoy, que es la forma
-honrada de decir que el artículo se ha revisado sin fingir que es nuevo.
+además **adelanto la fecha de «Última actualización»** a la de hoy, que es la
+forma honrada de decir que el artículo se ha revisado sin fingir que es nuevo.
 
 Y una cosa que **no** tiene arreglo en ningún caso: la dirección del artículo
 (su enlace) sale del titular y ya no se puede cambiar sin romper los enlaces que

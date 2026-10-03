@@ -1234,30 +1234,42 @@ body:has(.portada--video) .cabecera--con-linea {
    titular se quedaba en 1,68:1. Con el titulo centrado cae sobre la zona clara
    del centro y no hace falta velo ninguno.
 
-   ⚠️ LA IMAGEN CAMBIO: era `fondo-cabecera.jpg` y ahora es `fondo-paginas.jpg`,
-   recortada a 4:1 exacto (2560x640) para esta banda. Misma familia visual que
-   el veteado de la portada, pero sin libro ni balanza.
+   ⚠️ EL ARCHIVO SE LLAMA IGUAL DESDE HACE DOS IMAGENES, ASI QUE EL NOMBRE NO
+   DICE QUE HAY DENTRO. Hoy `fondo-paginas.jpg` es un gris verdoso palido con
+   franjas diagonales de luz desenfocadas, generado con IA; antes contenia el
+   recorte del veteado de la portada, y antes de eso la banda usaba otro archivo,
+   `fondo-cabecera.jpg`, que se borro al quedarse sin uso.
 
-   `center` NO SE TOCO, y no por inercia: se midieron cinco posiciones
-   verticales y las cinco dan entre 11,6 y 12,4:1, porque el titulo cae sobre el
-   centro claro pase lo que pase. Mover la Y no mejora nada.
+   Se sobrescribe en vez de estrenar nombre para no dejar huerfano el anterior
+   —este repositorio ya ha pagado dos limpiezas por eso— y porque el nombre
+   describe el PAPEL, no el dibujo. Esta razonado en CLAUDE.md, con el comando
+   de sips y el porque del desplazamiento del recorte.
 
-   Contraste del h1 (--tinta sobre el pixel mas oscuro bajo su caja):
+   `center` NO SE TOCO: el recorte ya se eligio para que la zona central fuera
+   la mas limpia, asi que mover la Y solo puede empeorarlo.
 
-     ancho de ventana   1280     1440
-     peor ratio        11,84    11,93
+   Contraste del h1 (--tinta sobre el pixel mas oscuro bajo su caja), medido
+   replicando `cover` en un canvas con la geometria real del elemento:
 
-   GUARDA, y con la imagen nueva es mucho mas holgada que antes. Medido a 1440
-   forzando titulos cada vez mas anchos:
+     ancho de ventana   375    768    901   1440   1920
+     peor ratio       16,67  16,67  12,69  12,69  12,69
+
+   ⚠️ A 375 Y 768 NO HAY IMAGEN —la media query de abajo empieza en 901— asi que
+   esos 16,67 son el h1 sobre el blanco de la pagina, no sobre la foto. Y de 901
+   para arriba el numero no se mueve porque `cover` escala por el ancho en toda
+   esa franja: lo que cambia es cuanta imagen se ve a los lados, no lo que queda
+   detras del texto.
+
+   GUARDA. Medido forzando titulos cada vez mas anchos:
 
      titulo    160    450    600    800   1000   1200 px
-     nuevo   11,81  10,79   8,15   8,15   6,61   6,61
-     viejo   14,64  12,88  12,88  12,00   5,56   2,45  <- incumplia a 1200
+     hoy     12,69  12,57  12,34  11,42  10,64  10,64
+     antes   11,81  10,79   8,15   8,15   6,61   6,61
 
-   O sea que el corte de 450 px que documentaba la imagen anterior ya no
-   aplica: esta no baja de 6,61 ni con un titulo de 1200 px, que es mas ancho
-   que cualquier rotulo imaginable. Aun asi, si algun dia se cambia la imagen
-   hay que volver a medir esta tabla. */
+   No baja de 10,64 ni con un titulo de 1200 px, mas ancho que cualquier rotulo
+   imaginable, y pierde solo 2 puntos de extremo a extremo donde la anterior
+   perdia 5. Aun asi, si algun dia se cambia la imagen hay que volver a medir
+   esta tabla: el numero sale de muestrear, no de mirar. */
 
 @media (min-width: 901px) {
   .mancheta {
@@ -3274,31 +3286,54 @@ em i {
    tercera fila. Verificado midiendo: entradilla en x=42 con 609 de ancho,
    formulario en x=707 y aside en y=798.
 
-   ⚠️ EL TOPE ERA `34em` —653px— Y PASA A LOS 600 DEL FORMULARIO, que es lo que
-   quita la sensacion de parrafo descolgado.
+   ⚠️ SIN TOPE DE ANCHO, POR ENCARGO DEL CLIENTE, Y ESTA SECCION DECIA LO
+   CONTRARIO. Hay que leerla entera antes de «arreglarlo».
 
-   El problema no era la medida: a 653 son ~60 caracteres por linea, dentro del
-   rango comodo. Era que 653 no coincide con NINGUN otro canto de la pagina. El
-   formulario de debajo mide 600 y la columna 609, asi que el parrafo sobresalia
-   53px por la derecha: lo justo para leerse como un desajuste y no como una
-   decision. Casi alinear es peor que no alinear.
+   El tope fue primero `34em` —653px— y despues los 600 del formulario. Lo que
+   decia aqui, y sigue siendo cierto como medicion:
 
-   Con 600 comparten canto derecho con el formulario y bajan a ~55 caracteres
-   por linea. Y NO se pone al ancho del contenedor: los 1152 dan 125 caracteres
-   por linea, muy por encima de lo que se lee comodo.
+     «NO se pone al ancho del contenedor: los 1152 dan 125 caracteres por
+      linea, muy por encima de lo que se lee comodo.»
 
-   Debajo va un <hr> que cruza la fila entera. La linea es la que hace de ancho
-   de pagina; el parrafo no tiene por que serlo. */
+   El cliente lo prefiere a ancho de pagina y es su decision. El coste esta
+   medido y es real: a 1440 la entradilla pasa de 64 a 123 caracteres por linea,
+   contra las 45-75 que recomienda cualquier guia tipografica. En una ventana
+   estrecha no se paga —a 768 son 76 y a 375, 35—, asi que lo sufre solo el
+   escritorio ancho.
+
+   ⚠️ NO SE COMPENSA CON UN `max-width` DISIMULADO ni volviendo a 600 «porque se
+   lee mejor»: eso es deshacer el encargo. Si algun dia molesta, la palanca
+   honesta es acortar el texto o pasarlo a dos columnas, no reponer el tope.
+
+   Lo que SI decae del razonamiento anterior es lo del canto: con 653 el parrafo
+   sobresalia 53px respecto al formulario y se leia como un desajuste —«casi
+   alinear es peor que no alinear»—. A ancho completo ya no hay casi-alineacion:
+   el parrafo cierra con el <hr> y con el aside, que son los dos elementos que
+   cruzan la fila entera. */
 
 .contacto .entradilla {
   grid-column: 1 / -1;
-  max-width: 600px;
   margin: 0;
 }
 
 /* El filete cierra la banda de entrada y cruza las dos columnas. Sin margen
    propio: los 56 del `gap` de la rejilla ya lo separan por arriba y por abajo,
-   y son el mismo hueco que separa las dos columnas entre si. */
+   y son el mismo hueco que separa las dos columnas entre si.
+
+   ⚠️ SIGUE HACIENDO FALTA, PERO POR OTRO MOTIVO QUE ANTES. Mientras la
+   entradilla se topaba en 600, el <hr> era «lo que hacia de ancho de pagina»
+   —cruzaba 1152 por debajo de un parrafo de 600—. Al soltar el tope, los dos
+   miden lo mismo y esa funcion decae.
+
+   Lo que le queda es la que de verdad importa: separar la banda de entrada de
+   la fila de formulario + aparte. Y gana algo, porque antes era una linea mas
+   ancha que el parrafo que cerraba y ahora comparte canto exacto con el:
+   verificado a 1440, 768 y 375.
+
+   Si alguna vez se quita, lo que hay que mirar no es el ancho sino el hueco: sin
+   el, la entradilla y el formulario quedarian separados solo por los 56 del gap,
+   que es el mismo aire que hay ENTRE las dos columnas. Dejarian de leerse como
+   dos zonas. */
 
 .contacto hr {
   grid-column: 1 / -1;
@@ -3995,6 +4030,17 @@ body:has(.progreso) .cabecera {
   margin-right: 14px;
 }
 
+/* ⚠️ HAY DOS ESTILOS DE CITA Y LOS ELIGE EL GENERADOR, no el cliente. El
+   criterio —mas de 40 palabras o cualquier salto de linea— esta razonado entero
+   en `claseDeCita()`, en plantilla.mjs, con las medidas que lo motivaron.
+
+     .cita--destacada   una frase que se MIRA: display grande, con comilla.
+     .cita--extracto    un pasaje que se LEE: sentencias y acuerdos citados.
+
+   Lo que sigue son los dos. NO se toca uno sin mirar el otro: se distinguen a
+   proposito por tipografia, tamano, color y senal de apertura a la vez, porque
+   conviven en el mismo articulo y tienen que leerse como cosas distintas. */
+
 /* Cita destacada: sin filete lateral, con la comilla como elemento grafico. */
 
 .articulo .cita--destacada {
@@ -4018,6 +4064,59 @@ body:has(.progreso) .cabecera {
   font-size: 3.6rem;
   line-height: 1;
   color: var(--acento);
+}
+
+/* ⚠️ EN MOVIL LA DESTACADA BAJA DE 25,6 A 22,4 px Y LA COMILLA CON ELLA. A 375
+   la columna son 327 px, y a 1,6rem una frase de reclamo cae en ~3 palabras por
+   linea: deja de leerse como una frase y pasa a leerse como una lista vertical.
+   1,4rem da ~4 y recupera el ritmo.
+
+   El corte es el 600 que ya usa el cuerpo del articulo, no uno nuevo. */
+
+@media (max-width: 600px) {
+  .articulo .cita--destacada {
+    padding-left: 44px;
+    font-size: 1.4rem;
+  }
+
+  .articulo .cita--destacada::before {
+    font-size: 3rem;
+  }
+}
+
+/* ⚠️ EL EXTRACTO NO ESTRENA CASI NADA: es el `blockquote` base que esta hoja ya
+   tenia —filete de 2px en acento, sangria, `--tinta-suave`— con tres cambios, y
+   los tres estan medidos contra el problema que resuelve.
+
+   1. REDONDA Y NO CURSIVA. El base viene en `italic`, que es la convencion para
+      una cita CORTA. En un pasaje de 579 palabras la cursiva es un lastre: se
+      lee peor y en papel peor todavia. La convencion academica para una cita en
+      bloque larga es redonda, sangrada y a cuerpo igual o menor.
+
+   2. CUERPO 1rem —16 px— contra los 18 del cuerpo del articulo. Es «algo menor»
+      sin estrenar un escalon nuevo: 1rem es el tamano raiz del documento, del
+      que ya cuelgan todos los demas valores en rem de este archivo.
+
+   3. INTERLINEADO 1,7, el mismo del cuerpo. Es un texto para leer seguido, asi
+      que necesita el mismo ritmo de lectura que un parrafo, no el 1,35 apretado
+      de un reclamo.
+
+   SIN COMILLA DE APERTURA, y es deliberado: el filete lateral ya dice que es
+   una cita, y una comilla de 3,6rem sobre un pasaje de varias lineas compite
+   con el texto en vez de introducirlo. La comilla es un recurso de reclamo.
+
+   La NEGRITA del original se respeta sola: no se toca `font-weight`, asi que
+   los <strong> del texto del cliente salen como vienen. */
+
+.articulo .cita--extracto {
+  margin: 28px 0;
+  padding: 2px 0 2px 22px;
+  border-left: 2px solid var(--acento);
+  font-family: var(--texto);
+  font-size: 1rem;
+  font-style: normal;
+  line-height: 1.7;
+  color: var(--tinta-suave);
 }
 
 /* Caja de citas y referencias: mismo tratamiento de panel que .indice, y
@@ -4177,6 +4276,29 @@ body:has(.progreso) .cabecera {
   color: var(--tinta-suave);
 }
 
+/* ⚠️ LA FUENTE DE UN EXTRACTO SE ALINEA CON EL EXTRACTO, NO CON LA DESTACADA.
+   Los 54px de arriba son los que deja la comilla de apertura, y un extracto no
+   la tiene: su texto arranca a 22 + 2 del filete. Sin esto la fuente quedaba
+   32px mas adentro que la cita que atribuye, que es el tipo de desajuste que se
+   lee como un fallo sin que nadie sepa senalar cual.
+
+   ⚠️ VA CON `.articulo` DELANTE, Y HACE FALTA. Sin el prefijo seria (0,2,0),
+   empatado con `.articulo .cita__fuente`, y decidiria el orden del archivo. Con
+   el son (0,3,0) y gana por especificidad. Es la trampa de siempre en este
+   proyecto.
+
+   Se engancha con el hermano adyacente y no con una clase propia porque la
+   fuente SIEMPRE va pegada a su cita: asi no hay dos sitios que mantener
+   sincronizados ni una clase que se pueda olvidar al escribir el JSON.
+
+   El margen negativo baja de -24 a -20 porque el extracto cierra con 28 de
+   margen y no con 36. */
+
+.articulo .cita--extracto + .cita__fuente {
+  margin: -20px 0 28px;
+  padding-left: 24px;
+}
+
 /* Lista con marcadores escritos —«1.º», «2.º»—. Un <ol> nativo no sabe poner
    la «º», asi que cuando el texto los trae se apaga la numeracion automatica y
    se escriben en un <span>.
@@ -4309,6 +4431,74 @@ body:has(.progreso) .cabecera {
    sitio sea uno, no dos que se parecen: si cambia el recorte o el filete, se
    cambia en .autor__retrato y los dos siguen iguales. */
 
+/* ------------------------------------------------- sobre/: la pagina ---- */
+
+/* ⚠️ TODO LO DE ESTE BLOQUE VA PREFIJADO `.articulo.sobre` Y NO `.sobre`, Y NO
+   ES POR GUSTO. Las dos clases viven en el MISMO elemento, asi que `.sobre h2`
+   pesa (0,1,1) igual que `.articulo h2` y el empate lo rompe el orden del
+   archivo. Con `.articulo.sobre h2` son (0,2,1) y gana por especificidad, que
+   es lo unico que aguanta si alguien reordena el CSS.
+
+   Es la cuarta vez que este patron muerde en el proyecto —antes fueron
+   `.entrada__titulo`, `.autor__cv` y `.compartir__lista`—, y las tres anteriores
+   fueron reglas MUERTAS que no daban ningun error: solo se veian mirando el
+   estilo computado. */
+
+/* ⚠️ EL ARRANQUE BAJA DE 104 A 48 px, QUE ES EL ESTANDAR DEL SITIO.
+
+   Sumaban dos cosas que no se ven juntas al leer el CSS: el `padding-top: 56px`
+   de `.articulo` y el `margin-top: 48px` que `.articulo h2` le da al PRIMER
+   epigrafe de cada columna. Las otras dos paginas de seccion abren con 48:
+
+     articulos/   `.lista`                      padding-top: 48
+     contacto/    `.contacto .contenedor`       padding-top: 48
+     sobre/       56 + 48                       = 104   <- el doble
+
+   ⚠️ `.articulo` NO SE PUEDE TOCAR para arreglarlo: ese padding lo llevan
+   tambien TODAS las paginas de articulo. De ahi el gancho `.sobre`.
+
+   El margen del h2 se suelta en las dos columnas a la vez. Siguen alineadas
+   entre si —antes lo estaban por conservar los dos el mismo margen, y ahora por
+   no tener ninguno—, que era lo que pedia el comentario de `.sobre__columnas`. */
+
+.articulo.sobre {
+  padding-top: 48px;
+}
+
+.articulo.sobre .sobre__columnas h2 {
+  margin-top: 0;
+}
+
+/* ⚠️ LOS EPIGRAFES BAJAN DE 32 A 24 px, Y LA ESCALA NO ERA PROPIA DE ESTA
+   PAGINA: era exactamente la del articulo —Source Serif 32/38,4/600—. Lo que
+   cambia es la COLUMNA sobre la que se apoyan.
+
+   Un epigrafe se percibe en relacion con el ancho de su columna, no en
+   absoluto:
+
+     articulo          32 px sobre 720 px de columna   = 0,044
+     sobre/, columnas  32 px sobre 548 px              = 0,058   <- un 33% mas
+
+   Escalar el epigrafe a su columna da 32 x 548/720 = 24,4, y 24 px YA ES un
+   escalon de la escala del sitio: es el cuerpo del `h3` del articulo. Asi que
+   no se estrena ningun tamano, se usa el que ya habia un paso mas abajo.
+
+   ⚠️ EL CUERPO SE QUEDA EN 18 px A PROPOSITO. Es el unico valor que tiene que
+   ser identico en todo el sitio, y bajarlo aqui haria de `sobre/` la unica
+   pagina con otro cuerpo de texto —que es peor que el problema que resuelve—.
+   A 548 px y 18 px salen unos 61 caracteres por linea, que esta en el rango
+   comodo. Si aun asi se quisiera mas pequeno, es una decision de TODO el sitio
+   y se toma en la escala tipografica, no aqui.
+
+   Los margenes acompanan al cuerpo nuevo: 48 -> 36 y 14 -> 12, que es la misma
+   proporcion (x 24/32) redondeada a la retícula de 4. */
+
+.articulo.sobre h2 {
+  font-size: 1.5rem;
+  line-height: 1.25;
+  margin: 36px 0 12px;
+}
+
 /* ⚠️ ERA UN FLEX Y AHORA ES UNA REJILLA, por una medida: con flex el texto se
    quedaba con todo lo que sobraba —992 px medidos en el contenedor de 1200— y
    ahi la linea es incomoda de leer. La primera columna se topa en los 720 del
@@ -4316,11 +4506,66 @@ body:has(.progreso) .cabecera {
    que queda.
 
    `align-items: start` para que el retrato no se estire a la altura de los tres
-   parrafos. */
+   parrafos.
+
+   ⚠️ LA SEGUNDA COLUMNA ES `auto` Y NO `minmax(0, 1fr)`, Y ESO ARREGLA UN
+   DESBORDAMIENTO QUE LLEVABA AHI DESDE QUE ESTO ES UNA REJILLA.
+
+   Con `1fr` la segunda columna se queda con lo que SOBRA, y la primera, al
+   poder crecer hasta 720, no dejaba sobrar nada. Medido a 768: las columnas
+   calculadas eran `664px 0px`, o sea el retrato en una columna de CERO. Y
+   `.sobre__retrato` tiene `width: 300px` fijo, asi que se salia 300 px por la
+   derecha y arrastraba scroll horizontal a toda la pagina —1044 px de documento
+   en una ventana de 768—.
+
+   Pasaba entre el corte de apilado (600) y los ~1124 px que hacen falta para
+   que quepan 720 + 56 + 300. Casi todas las tablets, por tanto.
+
+   ⚠️ NO SE VEIA, y por eso duro tanto: el retrato se salia sobre el blanco de
+   la pagina, donde un desbordamiento no deja ningun rastro visual. En cuanto
+   «Sobre el autor» pasa a ser una caja con fondo, el mismo fallo se ve a la
+   primera porque la foto escapa de un rectangulo tintado.
+
+   Con `auto` la columna se dimensiona a su contenido —los 300 px del retrato— y
+   la primera se queda con el resto hasta su tope de 720. A 768 salen 302 + 300
+   y cabe; a 1440, 720 + 300 con 14 px de aire sobrante, que es exactamente lo
+   que ya se veia antes en escritorio. */
+
+/* ⚠️ «SOBRE EL AUTOR» VA EN CAJA, Y NO ESTRENA NI UN VALOR. Estaba suelto sobre
+   el blanco y se leia descolgado del resto. Los valores son LOS MISMOS que las
+   otras cajas del sitio, para que se lea como una mas y no como una variante:
+
+     .indice, .referencias     --papel-alt + 1px --borde + radio 4 + 26/30
+     .articulo__lateral        --papel-alt + 1px --borde + radio 4 + 28/24
+     .sobre__bloque-autor      --papel-alt + 1px --borde + radio 4 + 26/30
+
+   Se copia el relleno de `.indice` y `.referencias` y no el del lateral porque
+   esas dos son las cajas que viven EN LA COLUMNA DE CONTENIDO, que es lo que
+   esto es; el lateral es una barra estrecha y por eso aprieta mas los lados.
+
+   ⚠️ Con el fondo, el h2 pierde su margen de arriba: dentro de una caja con
+   relleno los margenes NO colapsan, asi que los 36 px se sumarian a los 26 del
+   padding y dejarian el titulo flotando a 62 del canto. El aire de arriba lo
+   pone ya el relleno.
+
+   Y el hueco contra las columnas de arriba, que antes ponia ese mismo margen
+   del h2, pasa a la propia caja. */
+
+.sobre__bloque-autor {
+  margin-top: 48px;
+  padding: 26px 30px;
+  background: var(--papel-alt);
+  border: 1px solid var(--borde);
+  border-radius: 4px;
+}
+
+.articulo.sobre .sobre__bloque-autor h2 {
+  margin-top: 0;
+}
 
 .sobre__autor {
   display: grid;
-  grid-template-columns: minmax(0, 720px) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 720px) auto;
   align-items: start;
   gap: 56px;
   margin: 0 0 8px;
@@ -4376,7 +4621,45 @@ body:has(.progreso) .cabecera {
    asi que el retrato seguia al lado del texto en una columna de 327. No daba
    ningun error; solo se veia apretado. */
 
-@media (max-width: 600px) {
+/* ⚠️ EL CORTE SUBE DE 600 A 900, Y ES CONSECUENCIA DE METER EL BLOQUE EN CAJA.
+
+   Con los 300 px del retrato fijos y el hueco de 56, al texto le queda lo que
+   sobre del interior de la caja. Medido:
+
+     ventana   columna de texto   caracteres por linea
+       768          302 px               35          <- ilegible
+       900          434 px               50          <- aceptable
+      1440          720 px               ~80
+
+   Treinta y cinco caracteres por linea es menos de lo que pide cualquier
+   recomendacion tipografica, y es exactamente el defecto que este mismo bloque
+   ya razonaba para el corte anterior —«parte las palabras largas en cada
+   linea»—, solo que a otra escala. El argumento no cambia, cambia el numero.
+
+   Antes no se notaba porque el texto se repartia el ancho entero del
+   contenedor: no habia caja que lo limitara. Al entrar el relleno de 30 px por
+   lado, la columna se estrecha y el problema aflora.
+
+   900 no es un numero nuevo: es donde el articulo baja su lateral. */
+
+/* ⚠️ Y EL RETRATO TIENE QUE PODER ENCOGER, QUE ANTES NO HACIA FALTA. Sus 300 px
+   de ancho son fijos, y eso cabia mientras el bloque no tenia relleno: a 375 el
+   contenedor son 327 y la foto 300, con 27 de sobra. Con los 30 px de relleno
+   por lado el interior baja a 265 y la foto SE SALIA DE LA CAJA por la derecha
+   —medido: 35 px fuera del area util, 4 por fuera del canto tintado—.
+
+   No daba scroll horizontal, asi que no se habria detectado probando el ancho
+   del documento: solo se ve mirando la caja.
+
+   `min(300px, 100%)` con `aspect-ratio` en vez de `max-width` a secas, para no
+   perder la propiedad que esta documentada arriba: la caja y el archivo son los
+   dos 3:4, asi que `cover` NO RECORTA NADA. Con `max-width` y la altura fija en
+   400 la caja pasaria a 265x400 —proporcion 0,66— y empezaria a recortar por
+   los lados sin que nada avisara.
+
+   A 768 no cambia nada: min(300, 658) sigue siendo 300. */
+
+@media (max-width: 900px) {
   .sobre__autor {
     grid-template-columns: minmax(0, 1fr);
     gap: 18px;
@@ -4384,6 +4667,9 @@ body:has(.progreso) .cabecera {
 
   .sobre__retrato {
     margin: 0;
+    width: min(300px, 100%);
+    height: auto;
+    aspect-ratio: 3 / 4;
   }
 }
 
@@ -4495,43 +4781,24 @@ body:has(.progreso) .cabecera {
   text-transform: uppercase;
 }
 
-/* Descarga del CV en el lateral. Lo unico que declara es la COLOCACION: el
-   boton lo viste `.boton--contorno` entero y aqui no se le toca ni un color.
+/* ⚠️ AQUI VIVIA `.articulo .autor__cv`, LA COLOCACION DEL BOTON «Descargar CV»
+   DEL LATERAL, Y SE RETIRA CON SU UNICO PORTADOR. El cliente quiere el CV solo
+   en sobre/, asi que `plantilla.mjs` ya no pinta ese <p> y la regla se queda
+   sin nada a lo que aplicarse.
 
-   Hacen falta los dos margenes, medidos: sin el de arriba el boton quedaba a
-   5px de «Ver perfil →» y se leia pegado, y el de abajo que traia el <p> por
-   defecto —22px— sobraba, porque el bloque ya cierra con su propio relleno.
+   ⚠️ NO SE TOCA EL BOTON DE `sobre/`. Alli vive en un <p> SIN CLASE dentro de
+   `.sobre__autor-texto`, asi que nunca dependio de esta regla —esta comprobado
+   en su momento— y sigue exactamente igual.
 
-   18 es el mismo hueco que deja el retrato encima del nombre, asi que la
-   columna mantiene su ritmo. */
-
-/* ⚠️ VA PREFIJADO CON `.articulo` Y SIN ESO EL MARGEN NO SE APLICA. Es un <p>
-   dentro de <article class="articulo">, asi que le cae `.articulo p`, que pesa
-   (0,1,1) frente a los (0,1,0) de la clase sola: GANA POR ESPECIFICIDAD, no por
-   orden, asi que declararlo despues no servia de nada.
-
-   Estuvo escrito como `.autor__cv { margin: 18px 0 0 }` y era una regla MUERTA:
-   el margen computado seguia siendo el `0 0 22px` de `.articulo p`. No daba
-   ningun error —el boton se veia, solo que pegado al enlace— y solo se ve
-   mirando el estilo computado, no el archivo. Es la misma trampa que
-   `.articulo h3` contra `.entrada__titulo` en «Continua leyendo».
-
-   LOS DOS HUECOS, medidos en el bloque de 250px:
-
-     «Ver perfil» → boton     28 + 5 de interlineado  =  33
-     boton → filete Etiquetas 22 + 10 del bloque      =  32
-
-   O sea que el boton queda con el mismo aire arriba y abajo, que es lo que lo
-   separa del enlace sin dejarlo huerfano. El margen de abajo no se puede soltar
-   a 0: los 22 que traia `.articulo p` son la mitad de ese hueco inferior.
-
-   `text-align: center` centra el boton, que es inline-flex, como `margin: auto`
-   centra el retrato. */
-
-.articulo .autor__cv {
-  margin: 28px 0 22px;
-  text-align: center;
-}
+   Lo que esta regla dejaba escrito y conviene no perder, porque describe una
+   trampa del proyecto y no solo este boton: iba prefijada con `.articulo`
+   porque es un <p> dentro de <article class="articulo">, y `.articulo p` pesa
+   (0,1,1) frente a los (0,1,0) de una clase sola. Estuvo escrita como
+   `.autor__cv { ... }` a secas y era una REGLA MUERTA: el margen computado
+   seguia siendo el de `.articulo p`. No daba ningun error. Es el mismo patron
+   que `.articulo h3` contra `.entrada__titulo` y que `.articulo ul` contra
+   `.compartir__lista`, y sigue vigente para cualquier clase nueva sobre un <p>,
+   <ul> o <h3> del articulo. */
 
 /* Aqui vivia .indice--lateral, el indice de la columna de apoyo, con sus siete
    reglas. Se retira entero: el indice se ha mudado a la columna del articulo y
