@@ -50,10 +50,19 @@
 .descarga,
 .paso,
 .continua,
+.comentarios,
 .suscripcion,
 .busca {
   display: none !important;
 }
+
+/* ⚠️ `.comentarios` TAPA LA SECCION ENTERA, Y HAY QUE DEJARLO ASI. Un PDF con
+   los comentarios del dia que se descargo seria un documento que envejece solo,
+   y ademas Artalk no llega a montar en el PDF —pdf.mjs no espera a que cargue—
+   asi que lo unico que saldria es el titulo sobre un hueco vacio.
+
+   Ocultar la seccion y no solo `.comentarios__caja` es lo que se lleva tambien
+   el <h2>, la nota de privacidad y el <noscript>. */
 
 /* La foto del articulo NO se pierde: sube a la portada, que la pinta a sangre.
    Dejarla tambien aqui la repetiria en la pagina siguiente. */

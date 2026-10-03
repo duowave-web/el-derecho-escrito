@@ -5604,6 +5604,195 @@ cuatro cosas raras del formato se probaran a la vez.
 
 ---
 
+# Los comentarios de los artículos
+
+**Artalk 2.10.0 autoalojado**, en `https://comentarios.elderechoescrito.es`.
+Solo los artículos lo llevan; ni la portada, ni el listado, ni `sobre/` ni
+`contacto/`.
+
+| | |
+|---|---|
+| Servidor | `https://comentarios.elderechoescrito.es` |
+| Sitio, dentro de Artalk | **El Derecho Escrito** |
+| Assets | `/dist/Artalk.js` (194 KB) y `/dist/Artalk.css` (37 KB) |
+| Orígenes permitidos | `elderechoescrito.es`, `www.elderechoescrito.es`, `duowave-web.github.io` |
+| Moderación | publicación inmediata, con filtro de palabras y captcha en el servidor |
+
+**Lo escribe el generador**, en `bloqueComentarios()` de `plantilla.mjs`. El
+HTML publicado es una `<section>` con su `<h2>`, un `<div>` vacío y dos
+párrafos: **todo lo demás lo monta Artalk en el navegador**.
+
+### Dónde va, y por qué ahí
+
+```
+referencias → volver → Descargar PDF → Compartir → aviso legal
+→ COMENTARIOS → Leer anterior/siguiente → Continúa leyendo
+```
+
+La frontera no es nueva: este archivo ya documenta que «Leer anterior /
+siguiente» va **donde la página pasa de «este artículo» a «otros artículos»**.
+Un comentario sigue siendo sobre este, así que cae del lado de acá. Y detrás
+del aviso legal porque el aviso es lo que **cierra** el texto: primero se acaba
+de leer, después se responde.
+
+Ponerlo detrás de `.paso` habría obligado a pasar por «vete a leer otra cosa»
+antes de poder comentar.
+
+### El `pageKey` lo escribe el build, y es lo que sobrevive a la mudanza
+
+> ⚠️ **ES EL PUNTO QUE MÁS CARO SALE SI SE HACE MAL, Y NO DA NINGÚN ERROR.**
+> Artalk usa por defecto `location.pathname`, que **hoy** incluye el prefijo de
+> GitHub Pages:
+>
+> | | Ruta |
+> |---|---|
+> | hoy | `duowave-web.github.io/el-derecho-escrito/articulos/<slug>/` |
+> | mañana | `elderechoescrito.es/articulos/<slug>/` |
+> | **`pageKey`** | **`/articulos/<slug>/`** — igual en las dos |
+>
+> Con el valor por defecto, al conectar el dominio **todos los comentarios se
+> quedarían huérfanos**: no se borran, simplemente dejan de encontrarse, y lo
+> que se ve es una caja vacía. Nada avisa.
+>
+> Por eso lo escribe el generador en `data-pagekey`, y el JS lo lee de ahí en
+> vez de deducirlo. **No hay que cambiarlo nunca** en un artículo publicado: esa
+> clave es lo que ata cada comentario a su artículo.
+
+El `pageTitle` sale del titular del artículo y solo lo usa el panel y los
+avisos por correo.
+
+### Carga diferida
+
+231 KB entre JS y CSS, para una caja que está al final y que mucha gente no
+llega a ver. Se piden con un `IntersectionObserver` sobre la **sección**, con
+`rootMargin: 400px` para que lleguen antes de que entre en pantalla.
+
+> ⚠️ **SE OBSERVA LA SECCIÓN Y NO LA CAJA, y eso costó un fallo mudo.** La caja
+> nace vacía, así que mide 0 px de alto, y un observador sobre un elemento sin
+> área no dispara de forma fiable. La sección siempre tiene contenido —el `<h2>`
+> y la nota— así que siempre tiene área.
+>
+> La caja lleva además `min-height: 220px`, que reserva sitio y evita que la
+> página pegue un salto cuando Artalk monta.
+
+### Lo que se le impone al servidor desde el código
+
+> ⚠️ **LA CONFIGURACIÓN DEL SERVIDOR CONTRADICE LOS REQUISITOS, Y SE LE GANA
+> DESDE EL FRENTE.** Su `/api/v2/conf` trae hoy:
+>
+> | Opción del servidor | Qué implica | Qué se pone en el código |
+> |---|---|---|
+> | `gravatar.mirror: gravatar.com` | la IP y el hash del correo del lector van a un tercero | `avatarURLBuilder` → inicial en un SVG incrustado |
+> | `emoticons: …jsdelivr.net` | un segundo tercero, y emoticonos que no se quieren | `emoticons: false` |
+> | `imgUpload: true` | subida de imágenes | `imgUpload: false` |
+> | `vote: true` | votos | `vote: false`, `voteDown: false` |
+> | `darkMode: "inherit"` | widget oscuro sobre una web que **no** tiene modo oscuro | `darkMode: false` |
+> | `locale: "en"` | interfaz en inglés | objeto de traducción completo |
+>
+> La precedencia documentada de Artalk es **«código del front > variables de
+> entorno > panel»**, así que las opciones locales ganan.
+>
+> ⚠️ **NO SE ACTIVA `preferRemoteConf`**, que invierte esa precedencia. Si
+> alguien lo pusiera, volverían Gravatar y jsDelivr y los datos del lector
+> saldrían a dos terceros **sin que nada avisara**.
+
+**Comprobado con `performance.getEntriesByType('resource')`**: con los
+comentarios cargados, el bloque no genera ni una petición fuera de
+`comentarios.elderechoescrito.es`.
+
+> **Lo que sí sale fuera, y no es de los comentarios:** el sitio entero carga
+> las tipografías desde `fonts.googleapis.com` y `fonts.gstatic.com`. Es
+> anterior a esto y queda fuera del encargo, pero si la privacidad del lector
+> importa de verdad, ese es el tercero que queda.
+
+### El español lo ponemos nosotros
+
+> ⚠️ **ARTALK NO TRAE ESPAÑOL.** El objeto `ES` de `main.js` tiene las ~100
+> claves de su `en.ts` de la v2.10.0, **todas**, incluidas las que esta
+> instalación no llega a enseñar. Una clave que falte no da ningún error: cae al
+> inglés y aparece una palabra suelta en otro idioma en mitad de la interfaz.
+>
+> **Al actualizar Artalk hay que comparar la lista con su `en.ts`**: una clave
+> nueva no se traduce sola y tampoco avisa.
+
+### Los campos, y lo que Artalk no deja configurar
+
+Su editor pinta siempre tres:
+
+```html
+<input name="name"  class="atk-name"  required>
+<input name="email" class="atk-email" required>
+<input name="link"  class="atk-link">        <- este sobra
+```
+
+Los dos primeros **ya nacen obligatorios**, así que ese requisito no hay que
+forzarlo. El tercero no tiene opción para quitarlo y se oculta con
+`display: none` —no con `visibility`— para que tampoco reciba el foco.
+
+> ⚠️ **NINGÚN CAMPO DE ARTALK TIENE `<label>`: se apoyan solo en el
+> placeholder**, que desaparece al escribir y que varios lectores de pantalla no
+> anuncian. `etiquetarCampos()` les pone un `aria-label` al montarse.
+>
+> ⚠️ **Y ESO ESTUVO EN UN `setTimeout(…, 0)` QUE LLEGABA DEMASIADO PRONTO.**
+> `Artalk.init()` devuelve **antes** de pintar el editor, así que los campos no
+> existían todavía y no se etiquetaba ninguno. No daba error y no se ve
+> mirando: se descubrió leyendo el DOM. Hoy espera con un `MutationObserver`,
+> que no es una apuesta sobre cuánto tarda.
+
+### La nota de privacidad
+
+Nace **detrás** de la caja, para que se vea sin JavaScript, y el JS la recoloca
+bajo el editor si Artalk ha montado. Si Artalk cambiara el nombre de
+`.atk-main-editor`, la nota se queda donde estaba en vez de desaparecer.
+
+> ⚠️ **ENLAZA A `/privacidad/`, QUE TODAVÍA NO EXISTE.** Hoy ese enlace da 404.
+> Está puesto a propósito, para no tener que acordarse de añadirlo después,
+> pero **hay que crear la página antes de abrir los comentarios al público**.
+
+### El estilo: se remapean sus variables, no se pelea con sus selectores
+
+Artalk declara dieciocho `--at-color-*` sobre `.artalk` y todo su CSS las usa.
+Redefinirlas tiñe el widget entero con los tokens del sitio **sin tocar ni una
+de sus reglas**, así que una actualización suya no se lleva el tema por delante.
+Solo dos reglas tocan clases `.atk-*`: el nombre de quien comenta y la fecha.
+
+⚠️ **La clase `artalk` acaba EN LA PROPIA CAJA**, no en un hijo: el selector es
+`.comentarios .artalk` y `caja.classList.contains('artalk')`, no
+`caja.querySelector('.artalk')`.
+
+### Qué pasa si el servidor no responde
+
+| | |
+|---|---|
+| El `<script>` no carga | `script.onerror` escribe un párrafo en la caja. Sin esto se quedaría en blanco para siempre |
+| Carga pero la API falla | Artalk enseña su propio error dentro de la caja |
+| Sin JavaScript | se ve el `<noscript>`, con salida a `contacto/` |
+
+**En los tres casos el artículo se lee entero.** La sección no puede romperlo
+porque no contiene nada del artículo.
+
+### En el PDF no sale
+
+`.comentarios` está en la lista de `imprimir.css`. Se oculta la sección entera
+—no solo la caja— para que se vayan también el `<h2>`, la nota y el
+`<noscript>`. Un PDF con los comentarios del día que se descargó sería un
+documento que envejece solo, y además `pdf.mjs` no espera a que Artalk monte:
+lo único que saldría es un título sobre un hueco.
+
+**Verificado**: el PDF sigue en 13 páginas y 543 730 bytes, los mismos que
+antes de esto, y la palabra «Comentarios» no aparece en su texto.
+
+### Cómo se modera
+
+Está en `PARA-EL-CLIENTE.md` con sus pasos. En resumen: el panel vive en
+`https://comentarios.elderechoescrito.es/admin`, la publicación es inmediata
+—no hay cola de aprobación salvo que un comentario caiga en el filtro de
+palabras— y el autor responde desde la propia web escribiendo su nombre y su
+correo, momento en el que Artalk le pide la contraseña y le pone la etiqueta
+«Autor».
+
+---
+
 ## Convenciones
 
 - Todo el contenido y los comentarios, en español.

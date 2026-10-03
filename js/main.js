@@ -23,6 +23,7 @@
   fondoDePortada();
   copiarEnlace();
   articulosRelacionados();
+  comentarios();
 
   /* ---------------------------------------------------- Buscador ------- */
 
@@ -1301,5 +1302,387 @@
       .normalize("NFD")
       .replace(/[\u0300-\u036f]/g, ""); // ignora acentos
   }
+
+  /* ------------------------------------------------- Comentarios ------- */
+
+  /* Artalk 2.10.0, autoalojado en comentarios.elderechoescrito.es. Est\u00e1
+     documentado entero en CLAUDE.md; aqu\u00ed van solo las decisiones del c\u00f3digo.
+
+     \u26a0\ufe0f CARGA DIFERIDA, Y NO ES UN LUJO. El JS de Artalk pesa 194 KB y su CSS
+     37 KB: 231 KB para una caja que est\u00e1 al final del art\u00edculo y que mucha
+     gente no llega a ver. Pedirlos con la p\u00e1gina multiplicar\u00eda por varias veces
+     el peso de un art\u00edculo. Con el observador solo se piden cuando el lector se
+     acerca, y a partir de ah\u00ed da igual lo que tarden.
+
+     El margen de 400px es para que lleguen ANTES de que la caja entre en
+     pantalla: si se pidieran justo al aparecer, el lector ver\u00eda el hueco vac\u00edo
+     mientras descargan.
+
+     Sin IntersectionObserver \u2014navegador viejo\u2014 se cargan directamente: es
+     peor para el peso, pero la caja funciona, que importa m\u00e1s. */
+
+  const COMENTARIOS_SERVIDOR = "https://comentarios.elderechoescrito.es";
+
+  function comentarios() {
+    const caja = document.querySelector("[data-artalk]");
+    if (!caja) return;
+
+    let lanzado = false;
+    const lanzar = function () {
+      if (lanzado) return;
+      lanzado = true;
+      cargarArtalk(caja);
+    };
+
+    if (!("IntersectionObserver" in window)) {
+      lanzar();
+      return;
+    }
+
+    /* ⚠️ SE OBSERVA LA SECCION Y NO LA CAJA, Y ESO COSTO UN FALLO MUDO. La caja
+       nace VACIA —la llena Artalk— asi que mide 0 px de alto, y un observador
+       sobre un elemento sin area no dispara de forma fiable: el navegador no
+       llegaba a pedir nunca el script y la caja se quedaba en blanco sin un
+       solo error en consola.
+
+       La seccion siempre tiene contenido —el <h2> y la nota de privacidad— asi
+       que siempre tiene area. El `|| caja` es por si alguien le cambia la clase
+       a la seccion: entonces vuelve al comportamiento de antes, que es malo,
+       pero no deja de observar algo. */
+
+    const diana = caja.closest(".comentarios") || caja;
+
+    const obs = new IntersectionObserver(
+      function (entradas) {
+        if (entradas.some((e) => e.isIntersecting)) {
+          obs.disconnect();
+          lanzar();
+        }
+      },
+      { rootMargin: "400px 0px" }
+    );
+    obs.observe(diana);
+  }
+
+  /* Trae CSS y JS del propio servidor de comentarios. Nada de CDN: es el mismo
+     criterio de privacidad que el resto del bloque \u2014ning\u00fan tercero recibe la IP
+     del lector\u2014 y adem\u00e1s evita depender de un dominio que no controlamos. */
+
+  function cargarArtalk(caja) {
+    const hoja = document.createElement("link");
+    hoja.rel = "stylesheet";
+    hoja.href = COMENTARIOS_SERVIDOR + "/dist/Artalk.css";
+    document.head.appendChild(hoja);
+
+    const script = document.createElement("script");
+    script.src = COMENTARIOS_SERVIDOR + "/dist/Artalk.js";
+    script.defer = true;
+
+    /* \u26a0\ufe0f EL FALLO SE TRATA A MANO PORQUE ARTALK NO PUEDE TRATARLO. Si el
+       servidor no responde, el <script> no llega a ejecutarse: no hay ning\u00fan
+       Artalk que ense\u00f1e su propio \u00abError al cargar\u00bb. Sin esto, la caja se
+       quedar\u00eda en blanco para siempre y pareceria que el art\u00edculo est\u00e1 roto. */
+
+    script.onerror = function () {
+      avisoDeFallo(caja);
+    };
+
+    script.onload = function () {
+      if (!window.Artalk) {
+        avisoDeFallo(caja);
+        return;
+      }
+      try {
+        iniciarArtalk(caja);
+      } catch (e) {
+        avisoDeFallo(caja);
+      }
+    };
+
+    document.head.appendChild(script);
+  }
+
+  function avisoDeFallo(caja) {
+    const p = document.createElement("p");
+    p.className = "comentarios__nota";
+    p.textContent =
+      "Los comentarios no se han podido cargar ahora mismo. El art\u00edculo se lee " +
+      "entero igualmente; vuelve a intentarlo m\u00e1s tarde.";
+    caja.appendChild(p);
+  }
+
+  function iniciarArtalk(caja) {
+    const artalk = window.Artalk.init({
+      el: caja,
+      server: COMENTARIOS_SERVIDOR,
+      site: "El Derecho Escrito",
+
+      /* \u26a0\ufe0f LOS DOS SALEN DEL HTML, NO DE `location`. El generador los escribe
+         con la ruta limpia del art\u00edculo \u2014sin el prefijo de GitHub Pages\u2014 para
+         que los comentarios sobrevivan a la mudanza de dominio. Est\u00e1 razonado
+         en `bloqueComentarios()`, en plantilla.mjs. */
+      pageKey: caja.getAttribute("data-pagekey"),
+      pageTitle: caja.getAttribute("data-pagetitle"),
+
+      locale: ES,
+
+      /* \u26a0\ufe0f TODO LO QUE SIGUE CONTRADICE A PROP\u00d3SITO LA CONFIGURACI\u00d3N DEL
+         SERVIDOR, que trae Gravatar, emoticonos de jsDelivr, subida de
+         im\u00e1genes y votos activados. Las opciones locales ganan: la precedencia
+         documentada de Artalk es \u00abc\u00f3digo del front > variables de entorno >
+         panel\u00bb, y `preferRemoteConf` \u2014que la invierte\u2014 va por defecto a false.
+
+         \u26a0\ufe0f NO SE ACTIVA `preferRemoteConf`. Si alguien lo pusiera, el servidor
+         volver\u00eda a imponer Gravatar y los emoticonos de jsDelivr, y los datos
+         del lector saldr\u00edan a dos terceros sin que nada avisara. */
+
+      emoticons: false,
+      imgUpload: false,
+      vote: false,
+      voteDown: false,
+      uaBadge: false,
+      preview: false,
+      versionCheck: false,
+
+      /* \u26a0\ufe0f `false` Y NO \u00abauto\u00bb. El servidor manda `darkMode: "inherit"`, que
+         pinta el widget oscuro cuando el sistema del lector est\u00e1 en oscuro \u2014y
+         la web NO tiene modo oscuro\u2014. Quedar\u00eda una caja negra al final de una
+         p\u00e1gina blanca. Si alg\u00fan d\u00eda la web estrena modo oscuro, esto pasa a
+         'auto' y se mapean las variables de `.atk-dark-mode`. */
+      darkMode: false,
+
+      flatMode: false,
+      listSort: false,
+      pagination: { pageSize: 20, readMore: true, autoLoad: false },
+
+      /* \u26a0\ufe0f SIN GRAVATAR NI NING\u00daN TERCERO. Artalk pide por defecto el avatar a
+         gravatar.com, lo que le entrega al lector la IP y el hash de su correo.
+         Aqu\u00ed se dibuja una inicial en un SVG incrustado: no sale ni una
+         petici\u00f3n del navegador.
+
+         Recibe el comentario ya cifrado el correo \u2014`email_encrypted`\u2014 as\u00ed que
+         ni siquiera hay que tocar la direcci\u00f3n: basta el nombre visible. */
+      avatarURLBuilder: function (comentario) {
+        return avatarDeIniciales(comentario && comentario.nick);
+      },
+    });
+
+    /* \u26a0\ufe0f LOS CAMPOS DE ARTALK NO TIENEN <label>: su marcado es
+       `<input name="name" class="atk-name" required>` y se apoya solo en el
+       placeholder. Un placeholder NO es una etiqueta \u2014desaparece al escribir y
+       varios lectores de pantalla no lo anuncian\u2014, as\u00ed que se les pone un
+       `aria-label` en cuanto el editor existe. */
+
+    cuandoMonte(caja, function () {
+      etiquetarCampos(caja);
+      moverNota(caja);
+    });
+
+    return artalk;
+  }
+
+  /* \u26a0\ufe0f ESTO ESTUVO EN UN `setTimeout(\u2026, 0)` Y LLEGABA DEMASIADO PRONTO.
+     `Artalk.init()` devuelve antes de haber pintado el editor \u2014lo monta despu\u00e9s
+     de resolver su configuraci\u00f3n\u2014 as\u00ed que al volver de init el `.atk-main-editor`
+     todav\u00eda no est\u00e1 en el DOM y los `aria-label` no se pon\u00edan en ning\u00fan campo.
+
+     No daba ning\u00fan error y no se ve mirando: los campos salen igual, solo que
+     sin nombre accesible. Se descubri\u00f3 leyendo el DOM, no la pantalla.
+
+     Se espera con un MutationObserver y no con un temporizador m\u00e1s largo porque
+     un n\u00famero ah\u00ed ser\u00eda una apuesta: en una conexi\u00f3n lenta siempre se puede
+     quedar corto. Y la observaci\u00f3n se corta a los 15 s para no dejar un
+     observador vivo si Artalk no llega a montar nunca. */
+
+  function cuandoMonte(caja, fn) {
+    if (caja.querySelector(".atk-main-editor")) {
+      fn();
+      return;
+    }
+    if (!("MutationObserver" in window)) {
+      setTimeout(fn, 1500);
+      return;
+    }
+    const mo = new MutationObserver(function () {
+      if (caja.querySelector(".atk-main-editor")) {
+        mo.disconnect();
+        fn();
+      }
+    });
+    mo.observe(caja, { childList: true, subtree: true });
+    setTimeout(function () {
+      mo.disconnect();
+    }, 15000);
+  }
+
+  function etiquetarCampos(caja) {
+    const etiquetas = [
+      [".atk-name", "Nombre"],
+      [".atk-email", "Correo electr\u00f3nico"],
+      [".atk-textarea", "Tu comentario"],
+    ];
+    etiquetas.forEach(function (par) {
+      const campo = caja.querySelector(par[0]);
+      if (campo && !campo.getAttribute("aria-label")) {
+        campo.setAttribute("aria-label", par[1]);
+      }
+    });
+  }
+
+  /* \u26a0\ufe0f LA NOTA DE PRIVACIDAD SE MUEVE BAJO EL EDITOR, y por eso est\u00e1 en el HTML
+     y no se crea aqu\u00ed: sin JavaScript tiene que verse igual, as\u00ed que nace
+     detr\u00e1s de la caja y solo se recoloca si Artalk ha montado.
+
+     Si Artalk cambiara el nombre de `.atk-main-editor`, la nota se queda donde
+     estaba \u2014debajo de todo\u2014 en vez de desaparecer. Degrada, no rompe. */
+
+  function moverNota(caja) {
+    const nota = document.querySelector("[data-nota-comentarios]");
+    const editor = caja.querySelector(".atk-main-editor");
+    if (!nota || !editor || !editor.parentNode) return;
+    editor.parentNode.insertBefore(nota, editor.nextSibling);
+    nota.classList.add("comentarios__nota--bajo-editor");
+  }
+
+  /* Inicial sobre un c\u00edrculo del color de acento, en un SVG incrustado como
+     data URI. Sin petici\u00f3n de red y sin terceros. */
+
+  function avatarDeIniciales(nombre) {
+    const letra = (String(nombre || "?").trim()[0] || "?").toUpperCase();
+    const svg =
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">' +
+      '<rect width="64" height="64" fill="#2F6E68"/>' +
+      '<text x="32" y="33" fill="#ffffff" font-family="Georgia,serif" ' +
+      'font-size="30" text-anchor="middle" dominant-baseline="central">' +
+      letra.replace(/[<>&"]/g, "") +
+      "</text></svg>";
+    return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
+  }
+
+  /* \u26a0\ufe0f ARTALK NO TRAE ESPA\u00d1OL: sus idiomas son chino, ingl\u00e9s y poco m\u00e1s. Esto
+     es el objeto COMPLETO de traducci\u00f3n, con las mismas claves que su `en.ts`
+     de la v2.10.0.
+
+     Van TODAS, incluidas las que esta instalaci\u00f3n no llega a ense\u00f1ar \u2014el
+     bloque de cuentas de usuario, por ejemplo\u2014, porque una clave que falte no
+     da ning\u00fan error: Artalk cae al texto en ingl\u00e9s y aparece una palabra
+     suelta en otro idioma en mitad de la interfaz.
+
+     \u26a0\ufe0f Si se actualiza Artalk, hay que comparar esta lista con su `en.ts`: una
+     clave NUEVA no se traduce sola y tampoco avisa. */
+
+  const ES = {
+    /* Editor */
+    placeholder: "Escribe tu comentario",
+    noComment: "Todav\u00eda no hay comentarios",
+    send: "Publicar",
+    signIn: "Iniciar sesi\u00f3n",
+    signUp: "Crear cuenta",
+    save: "Guardar",
+    nick: "Nombre",
+    email: "Correo electr\u00f3nico",
+    link: "Web",
+    emoticon: "Emoticonos",
+    preview: "Vista previa",
+    uploadImage: "Subir imagen",
+    uploadFail: "No se ha podido subir",
+    commentFail: "No se ha podido publicar el comentario",
+    restoredMsg: "Se ha recuperado lo que estabas escribiendo",
+    onlyAdminCanReply: "Solo el autor puede responder",
+    uploadLoginMsg: "Escribe tu nombre y tu correo para poder subir archivos",
+
+    /* Lista */
+    counter: "{count} comentarios",
+    sortLatest: "M\u00e1s recientes",
+    sortOldest: "M\u00e1s antiguos",
+    sortBest: "Mejor valorados",
+    sortAuthor: "Del autor",
+    openComment: "Abrir los comentarios",
+    closeComment: "Cerrar los comentarios",
+    listLoadFailMsg: "No se han podido cargar los comentarios",
+    listRetry: "Reintentar",
+    loadMore: "Ver m\u00e1s comentarios",
+
+    /* Comentario */
+    admin: "Autor",
+    reply: "Responder",
+    voteUp: "A favor",
+    voteDown: "En contra",
+    voteFail: "No se ha podido votar",
+    readMore: "Leer m\u00e1s",
+    actionConfirm: "Confirmar",
+    collapse: "Plegar",
+    collapsed: "Plegado",
+    collapsedMsg: "Este comentario est\u00e1 plegado",
+    expand: "Desplegar",
+    approved: "Aprobado",
+    pending: "Pendiente",
+    pendingMsg: "Pendiente de revisi\u00f3n: solo lo ves t\u00fa.",
+    edit: "Editar",
+    editCancel: "Cancelar la edici\u00f3n",
+    delete: "Borrar",
+    deleteConfirm: "Confirmar",
+    pin: "Fijar arriba",
+    unpin: "Dejar de fijar",
+
+    /* Tiempo */
+    seconds: "hace unos segundos",
+    minutes: "hace unos minutos",
+    hours: "hace unas horas",
+    days: "hace unos d\u00edas",
+    now: "ahora mismo",
+
+    /* Comprobaciones */
+    adminCheck: "Escribe la contrase\u00f1a de administrador:",
+    captchaCheck: "Resuelve el captcha para continuar:",
+    confirm: "Confirmar",
+    cancel: "Cancelar",
+
+    /* Barra lateral */
+    msgCenter: "Mensajes",
+    ctrlCenter: "Panel de control",
+
+    /* Cuentas */
+    userProfile: "Perfil",
+    noAccountPrompt: "\u00bfTodav\u00eda no tienes cuenta?",
+    haveAccountPrompt: "\u00bfYa tienes cuenta?",
+    forgetPassword: "He olvidado la contrase\u00f1a",
+    resetPassword: "Restablecer la contrase\u00f1a",
+    changePassword: "Cambiar la contrase\u00f1a",
+    confirmPassword: "Repite la contrase\u00f1a",
+    passwordMismatch: "Las contrase\u00f1as no coinciden",
+    verificationCode: "C\u00f3digo de verificaci\u00f3n",
+    verifySend: "Enviar el c\u00f3digo",
+    verifyResend: "Volver a enviarlo",
+    waitSeconds: "Espera {seconds} s",
+    emailVerified: "Correo verificado",
+    password: "Contrase\u00f1a",
+    username: "Nombre de usuario",
+    nextStep: "Siguiente",
+    skipVerify: "Omitir la verificaci\u00f3n",
+    logoutConfirm: "\u00bfSeguro que quieres cerrar la sesi\u00f3n?",
+    accountMergeNotice: "Tu correo tiene varias cuentas con identificadores distintos.",
+    accountMergeSelectOne: "Elige en cu\u00e1l quieres fundir todos los datos.",
+    accountMergeConfirm: "Todos los datos se fundir\u00e1n en una sola cuenta, la {id}.",
+    dismiss: "Descartar",
+    merge: "Fundir",
+
+    /* General */
+    client: "Navegador",
+    server: "Servidor",
+    loading: "Cargando",
+    loadFail: "No se ha podido cargar",
+    editing: "Editando",
+    editFail: "No se ha podido editar",
+    deleting: "Borrando",
+    deleteFail: "No se ha podido borrar",
+    reqGot: "Respuesta recibida",
+    reqAborted: "La petici\u00f3n ha caducado o se ha interrumpido",
+    updateMsg: "Conviene actualizar Artalk {name} para que todo funcione bien.",
+    currentVersion: "Versi\u00f3n actual",
+    ignore: "Ignorar",
+    open: "Abrir",
+    openName: "Abrir {name}",
+  };
 
 })();

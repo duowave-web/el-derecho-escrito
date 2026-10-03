@@ -481,6 +481,74 @@ function jsonLd(art) {
    Sin vecinos devuelve cadena vacía, no un contenedor con nada dentro: con un
    solo artículo publicado no debe quedar ni el <nav>. */
 
+/* ------------------------------------------------------ comentarios ----- */
+
+/* ⚠️ VA DESPUÉS DEL AVISO LEGAL Y ANTES DE «Leer anterior / siguiente», y la
+   frontera no es arbitraria: es la que este archivo ya usa.
+
+   El comentario de `bloquePaso()` dice que esa navegación va «donde la página
+   pasa de ESTE artículo a OTROS artículos». Un comentario sigue siendo sobre
+   este, así que cae del lado de acá de esa frontera. Y va detrás del aviso
+   legal porque el aviso es lo que CIERRA el texto: primero se acaba de leer,
+   después se responde.
+
+   El orden del final del artículo queda:
+
+     referencias → volver → Descargar PDF → Compartir → aviso legal
+     → COMENTARIOS → Leer anterior/siguiente → Continúa leyendo
+
+   Ponerlo detrás de `.paso` habría obligado a pasar por «vete a leer otra cosa»
+   antes de poder comentar.
+
+   ⚠️ LA CAJA SE QUEDA VACÍA EN EL HTML, Y ESO ES LO QUE LA HACE SEGURA. Aquí no
+   se escribe ni un campo: lo monta Artalk en el navegador cuando el lector se
+   acerca. Si el servidor no responde, o si no hay JavaScript, lo único que hay
+   es un <section> con su título y un párrafo — el artículo no se rompe.
+
+   ⚠️ EL `pageKey` SE ESCRIBE AQUÍ Y NO SE DEDUCE EN EL NAVEGADOR. Es la ruta
+   limpia del artículo, SIN el prefijo de GitHub Pages:
+
+     hoy      duowave-web.github.io/el-derecho-escrito/articulos/<slug>/
+     mañana   elderechoescrito.es/articulos/<slug>/
+     pageKey  /articulos/<slug>/            <- igual en los dos
+
+   Artalk, por defecto, usa `location.pathname`, que HOY incluye
+   `/el-derecho-escrito/` y mañana no: los comentarios de cada artículo
+   quedarían huérfanos al mudar el dominio, sin dar ningún error —simplemente
+   aparecería una caja vacía—. Al escribirlo el generador, la clave es la misma
+   antes y después de la mudanza y no depende de dónde esté servida la página.
+
+   ⚠️ NO HAY QUE CAMBIARLO NUNCA para un artículo ya publicado: la clave es lo
+   que ata cada comentario a su artículo. Cambiarla los esconde todos. */
+
+export function bloqueComentarios(art) {
+  return `
+
+          <section class="comentarios" aria-labelledby="comentarios-titulo">
+            <h2 id="comentarios-titulo" class="lista__titulo">Comentarios</h2>
+
+            <div class="comentarios__caja"
+                 data-artalk
+                 data-pagekey="/articulos/${art.slug}/"
+                 data-pagetitle="${escapar(art.titulo)}"></div>
+
+            <p class="comentarios__nota" data-nota-comentarios>
+              Tu correo <strong>no se publica</strong>: solo sirve para avisarte si
+              alguien responde a tu comentario y para que el autor pueda
+              contestarte. Puedes consultar la
+              <a href="../../privacidad/">política de privacidad</a>.
+            </p>
+
+            <noscript>
+              <p class="comentarios__nota">
+                Los comentarios necesitan JavaScript para cargarse. El artículo se
+                lee entero sin ellos; si quieres comentar, actívalo o escribe a
+                través de la <a href="../../contacto/">página de contacto</a>.
+              </p>
+            </noscript>
+          </section>`;
+}
+
 export function bloquePaso({ anterior, siguiente } = {}) {
   if (!anterior && !siguiente) return '';
 
@@ -724,7 +792,7 @@ ${pintarReferencias(art)}
             </ul>
           </aside>
 
-          <p class="aviso"><em>Este artículo tiene carácter informativo y divulgativo y no constituye asesoramiento jurídico. La valoración de un asunto concreto requiere analizar sus circunstancias particulares. Si deseas plantear una consulta relacionada con su contenido o con las materias que aborda, puedes hacerlo a través de la <a href="../../contacto/">página de contacto</a>.</em></p>${bloquePaso(vecinos)}
+          <p class="aviso"><em>Este artículo tiene carácter informativo y divulgativo y no constituye asesoramiento jurídico. La valoración de un asunto concreto requiere analizar sus circunstancias particulares. Si deseas plantear una consulta relacionada con su contenido o con las materias que aborda, puedes hacerlo a través de la <a href="../../contacto/">página de contacto</a>.</em></p>${bloqueComentarios(art)}${bloquePaso(vecinos)}
 
           <section class="continua" id="continua" aria-labelledby="continua-titulo" hidden>
             <h2 id="continua-titulo" class="lista__titulo lista__titulo--destacado">Continúa leyendo</h2>

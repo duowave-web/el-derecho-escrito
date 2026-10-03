@@ -5160,6 +5160,135 @@ body:has(.progreso) .cabecera {
   }
 }
 
+/* ------------------------------------------------- comentarios --------- */
+
+/* Artalk 2.10.0, autoalojado. La seccion abre con el mismo filete y el mismo
+   aire que «Continua leyendo», que es su vecina de abajo: las dos cierran el
+   articulo y tienen que leerse como piezas hermanas, no como una pieza del
+   sitio y un widget pegado. */
+
+.comentarios {
+  margin-top: 56px;
+  padding-top: 40px;
+  border-top: 1px solid var(--borde);
+}
+
+.comentarios .lista__titulo {
+  margin-bottom: 20px;
+}
+
+/* ⚠️ LA CAJA RESERVA SITIO ANTES DE QUE ARTALK MONTE. Nace vacia, asi que sin
+   esto mide 0 y al llegar el widget la pagina pega un salto de ~300px justo
+   donde el lector esta leyendo. Los 220 son algo menos que el alto del editor,
+   que es lo primero que aparece: se reserva de menos a proposito, porque pasarse
+   deja un hueco visible mientras carga.
+
+   No es solo estetico: tambien es lo que le da AREA al elemento. El observador
+   de main.js no se cuelga de aqui —observa la seccion, que siempre tiene
+   contenido— pero una caja de alto cero es justo lo que hizo que no disparara
+   la primera vez. */
+
+.comentarios__caja {
+  min-height: 220px;
+}
+
+/* ⚠️ SE REMAPEAN LAS VARIABLES DE ARTALK, NO SE PELEA CON SUS SELECTORES. Su
+   hoja declara dieciocho `--at-color-*` sobre `.artalk` y luego TODO su CSS las
+   usa. Redefinirlas aqui tiñe el widget entero con los tokens del sitio sin
+   tocar ni una de sus reglas, asi que una actualizacion de Artalk no se lleva
+   por delante el tema.
+
+   Lo contrario —ir pisando `.atk-*` una por una— es lo que convierte esto en
+   una lista interminable que se rompe en cada version.
+
+   `--at-color-main` es el color de los botones y los enlaces: va al acento del
+   sitio y NO al azul de Artalk, que es lo que mas delataba el widget. */
+
+.comentarios .artalk {
+  --at-color-font: var(--tinta);
+  --at-color-deep: var(--tinta);
+  --at-color-sub: var(--tinta-suave);
+  --at-color-grey: var(--tinta-suave);
+  --at-color-meta: var(--tinta-suave);
+  --at-color-border: var(--borde);
+  --at-color-light: var(--acento);
+  --at-color-bg: var(--papel);
+  --at-color-bg-transl: rgba(255, 255, 255, 0.94);
+  --at-color-bg-grey: var(--papel-alt);
+  --at-color-bg-grey-transl: rgba(246, 245, 247, 0.9);
+  --at-color-bg-light: rgba(47, 110, 104, 0.08);
+  --at-color-main: var(--acento);
+  --at-color-gradient: linear-gradient(180deg, transparent, var(--papel));
+
+  font-family: var(--texto);
+  font-size: 1rem;
+}
+
+/* Los nombres de quien comenta van en la familia de titulares, como los
+   titulares de tarjeta, y la fecha en la de interfaz con el cuerpo y el
+   tracking de los metadatos del sitio. Son las dos unicas reglas que tocan
+   clases de Artalk: el resto lo hacen las variables. */
+
+.comentarios .artalk .atk-nick {
+  font-family: var(--display);
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.comentarios .artalk .atk-date {
+  font-family: var(--ui);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+}
+
+/* ⚠️ EL CAMPO DE WEB SE OCULTA DESDE AQUI PORQUE ARTALK NO TIENE OPCION PARA
+   QUITARLO. Su editor pinta siempre tres campos:
+
+     <input name="name"  required>
+     <input name="email" required>
+     <input name="link">          <- este
+
+   Los dos primeros ya nacen obligatorios, asi que el requisito de «nombre y
+   correo obligatorios» no hay que forzarlo. El tercero es opcional y no se
+   pide: una web personal no aporta nada a un comentario y es un dato mas que
+   guardar.
+
+   Se oculta con `display: none` y no con `visibility` ni moviendolo fuera de
+   pantalla: asi tampoco recibe el foco al tabular. */
+
+.comentarios .artalk .atk-header .atk-link {
+  display: none;
+}
+
+/* El anillo de foco de los campos. Artalk trae el suyo, pero en su azul; este
+   es el mismo que usan los campos del formulario de contacto. */
+
+.comentarios .artalk input:focus-visible,
+.comentarios .artalk textarea:focus-visible,
+.comentarios .artalk button:focus-visible {
+  outline: 2px solid var(--acento);
+  outline-offset: 2px;
+}
+
+/* La nota de privacidad. Nace detras de la caja —para que se vea sin
+   JavaScript— y el JS la recoloca bajo el editor si Artalk ha montado. Los dos
+   sitios necesitan su aire, de ahi las dos reglas. */
+
+.comentarios__nota {
+  margin: 18px 0 0;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: var(--tinta-suave);
+}
+
+.comentarios__nota--bajo-editor {
+  margin: 12px 0 28px;
+}
+
+.comentarios__nota a {
+  color: var(--acento);
+}
+
 .continua {
   margin-top: 56px;
   padding-top: 40px;
