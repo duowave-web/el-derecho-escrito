@@ -5836,6 +5836,98 @@ llegara a ejecutarse el peor caso es el fallo de hoy, no uno nuevo. Verificado
 inyectando el marcado real del recuento: **0 → «0 comentarios», 1 → «1
 comentario», 2 → «2 comentarios», 21 → «21 comentarios»**, y estable al repetir.
 
+### «22 hace unos minutos»: la fecha relativa va por `dateFormatter`, no por el locale
+
+El número salía **delante** de la cadena traducida, que es donde el inglés pone
+«ago». Lo escribe así Artalk, con un literal de plantilla:
+
+```js
+`${minutos} ${t("minutes")}`        `${horas} ${t("hours")}`
+```
+
+⚠️ **NO SE PUEDE ARREGLAR DESDE EL OBJETO DE TRADUCCIÓN, y es lo primero que se
+intenta.** Las claves `seconds`, `minutes`, `hours` y `days` **no tienen ningún
+marcador de posición** —ni `{count}` ni equivalente—, así que no hay forma de
+decirle que el número va detrás. `now` sí se usa sola, sin número.
+
+⚠️ **Y TAMPOCO SE PARCHEA EL DOM, aunque el recuento de aquí al lado sí lo
+haga.** Aquí hay una opción de configuración, **`dateFormatter(fecha) => texto`**,
+y el observador sería peor: Artalk pinta la fecha en **dos** sitios y habría que
+cubrir los dos a mano. La opción los cubre sola porque la llaman los dos.
+
+La cadena completa, leída en el bundle **servido** —no en el repositorio de
+Artalk, que puede ir por otra versión—:
+
+| # | Dónde | Qué hace |
+|---|---|---|
+| 1 | la configuración | `dateFormatter: i.dateFormatter` — reenvía la opción a cada comentario |
+| 2 | al montar | `getDateFormatted()` → `this.opts.dateFormatter?.call(…) \|\| f(n, T)` |
+| 3 | cada 30 s | repasa `[data-atk-comment-date]` y reescribe el `innerText` |
+
+El punto 3 es el que mantiene las fechas al día sin recargar, y es justo el que
+un observador se habría dejado.
+
+> ⚠️ **NO TOCA NINGÚN ATRIBUTO, que era el riesgo.** La marca de tiempo exacta
+> vive en `data-atk-comment-date` y Artalk la escribe en una línea **aparte** de
+> la del texto, así que el formateador no la ve. Comprobado además que
+> `.atk-date` es un `<span>` **sin `title`**: hoy la fecha exacta no se enseña al
+> pasar el ratón, así que no había ningún tooltip que conservar. Si algún día se
+> quiere, es un `title` aparte y esto no estorba.
+
+Los tramos son **los mismos que los de Artalk**, a propósito: así el widget no
+cambia de comportamiento, solo de idioma.
+
+| Transcurrido | Artalk | Ahora |
+|---|---|---|
+| menos de 10 s | «just now» | **ahora mismo** |
+| 10–59 s | «N seconds ago» | hace N segundos |
+| 1–59 min | «N minutes ago» | hace N minutos |
+| 1–23 h | «N hours ago» | hace N horas |
+| 1–7 días | «N days ago» | hace N días |
+| 8 días o más | **`2026-10-03`** | **3 de octubre de 2026** |
+| en el futuro | «just now» | ahora mismo |
+
+El último tramo es el único donde se cambia la **forma** y no solo el idioma: la
+fecha larga es la grafía que ya usan la ficha del artículo y las tarjetas.
+
+> ⚠️ **NO HAY «AYER», y no es un olvido.** Artalk no lo distingue —un día dice
+> «1 days ago»— y añadirlo obliga a **mezclar dos aritméticas que no coinciden**:
+> «hace un día» se cuenta en tiempo transcurrido y «ayer» en días de calendario.
+> Alrededor de la medianoche discrepan —un comentario de las 23:00 leído a la
+> 01:00 tiene dos horas y es de ayer— y cualquiera de las dos salidas se lee mal
+> en algún caso. Es una decisión de diseño, no un detalle de implementación, así
+> que no se mete de tapadillo.
+
+> ⚠️ **LAS CUATRO CLAVES DEL LOCALE SIGUEN AHÍ Y YA NO DICEN «hace unos
+> minutos».** Son el **respaldo**: solo se ven si `dateFormatter` devolviera algo
+> vacío, porque Artalk hace `|| f(n, T)`. Con la redacción anterior ese respaldo
+> **reproducía el fallo exacto** —«22 hace unos minutos»—, así que se cambiaron a
+> `"minutos"`, `"horas"`, `"días"` y `"segundos"` a secas: no se pueden arreglar
+> ahí, pero sí se puede elegir una redacción que aguante **detrás de un número**.
+> Degrada a «22 minutos», que no miente. **`now` va sola y sigue siendo una frase
+> entera.**
+
+**Verificado** ejecutando en el navegador la función **tal como se publica**
+—extraída del archivo, no reescrita para la prueba— sobre los dieciocho casos de
+la matriz, con los cuatro saltos de singular y los dos extremos:
+
+| | |
+|---|---|
+| 9 s / 10 s | ahora mismo · **hace 10 segundos** |
+| 59 s / 60 s | hace 59 segundos · **hace 1 minuto** |
+| 22 min | **hace 22 minutos** — el caso del fallo |
+| 59 min / 1 h | hace 59 minutos · **hace 1 hora** |
+| 23 h / 24 h | hace 23 horas · **hace 1 día** |
+| 7 días / 8 días | hace 7 días · **26 de septiembre de 2026** |
+| en el futuro | ahora mismo |
+
+> ⚠️ **LO QUE NO SE HA PODIDO PROBAR ES EL CAMINO ENTERO, y conviene saberlo.**
+> Con el servidor rechazando `localhost` por CORS, `/api/v2/conf` falla y Artalk
+> **no llega a pintar ni un comentario**, así que no hay ningún `.atk-date` real
+> que leer. Lo verificado es la función y, por lectura del bundle servido, los
+> tres puntos de la cadena. **La comprobación que falta es abrir la preview con
+> el origen permitido y mirar una fecha de verdad.**
+
 ### Fuera el enlace «Mensajes», que abre el panel lateral
 
 Aparece a la derecha del recuento en cuanto el lector se identifica —basta con

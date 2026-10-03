@@ -198,6 +198,14 @@ distinga de la de cualquier otra persona.
 > hacía falta: para responder tienes el formulario de la propia página, y para
 > moderar, el panel de administración de abajo. No has perdido ninguna función.
 
+> **La antigüedad de cada comentario ya se lee bien.** Ponía «22 hace unos
+> minutos», con el número delante y la frase detrás, porque el sistema venía
+> pensado en inglés. Ahora dice **«hace 22 minutos»**, y también «hace 1 minuto»,
+> «hace 3 horas» o «hace 2 días» según toque.
+>
+> A partir de la semana y pico deja de contar hacia atrás y pone la fecha
+> entera —«3 de octubre de 2026»—, que a esas alturas dice más que «hace 9 días».
+
 ## Borrar un comentario
 
 Si estás identificado como autor, cada comentario te muestra un enlace
