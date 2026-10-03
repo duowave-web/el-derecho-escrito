@@ -1555,6 +1555,44 @@ solo artículo publicado el único candidato es él mismo. El bloque ya está en
 HTML pero sale con `hidden`, así que **no se ve nada hasta que exista el segundo
 artículo, y entonces aparece solo.**
 
+> ⚠️ **ESTO ES LO QUE EL CLIENTE ECHÓ EN FALTA, Y CONVIENE TENERLO DATADO PARA NO
+> VOLVER A INVESTIGARLO.** Dijo que «ha desaparecido lo de Seguir leyendo de las
+> entradas de blog». No se borró nada: **se quedó sin candidatos**.
+>
+> Pasó en **`aae4a57`, el 28 de septiembre de 2026** («Publica el artículo de
+> MASC y retira el artículo de ejemplo»). Hasta ese día el listado tenía tres
+> entradas de ejemplo **con enlace en el titular** —`ejemplo-cuatro-exigencias/`
+> y compañía— y el bloque se llenaba con ellas. Ese commit les quitó el `<a>`,
+> porque apuntaban a rutas inventadas que daban 404.
+>
+> Y `articulosRelacionados()` descarta toda tarjeta sin enlace:
+>
+> ```js
+> const a = art.querySelector(".entrada__titulo a");
+> if (!a) return false;
+> ```
+>
+> Con un único artículo real —que nunca se recomienda a sí mismo— quedan cero
+> candidatos y la sección se oculta. **Es el comportamiento querido**, está
+> razonado en «El atrezo», y **se arregla solo al publicar el segundo artículo**.
+>
+> ⚠️ **El mismo día desapareció una segunda cosa, y es fácil confundirlas**:
+> «Leer anterior / Leer siguiente». Con un solo artículo `bloquePaso()` no emite
+> **ni un byte** —ni el `<nav>`—, así que ahí no hay nada que inspeccionar.
+>
+> **Dos candidatos que hay que descartar**, porque aparecen al buscar en el
+> historial y despistan:
+>
+> | Qué | Dónde está | Por qué NO es |
+> |---|---|---|
+> | `aria-label="Seguir leyendo"` | `a61d99a` → `8ac24f5`, 20–26 ago 2026 | era la **etiqueta accesible** de un `<nav>` que solo contenía «Volver a todos los artículos». **Nunca fue texto visible** |
+> | enlace «Leer más» por tarjeta | solo en la prosa de este archivo, `6ee5ab8` | describe **la web de referencia del cliente**, no esta. Aquí el enlace es el titular y nunca hubo un «Leer más» |
+>
+> El segundo es el que más puede confundir, porque explicaría «de las entradas de
+> blog»: su web antigua **sí** llevaba un «Leer más» bajo el extracto de cada
+> tarjeta. Esta no lo reproduce, y es una decisión de diseño documentada —está
+> en «Qué enseña cada tarjeta»—, no una pérdida.
+
 No se le puso la tarjeta de «Próximamente» de la portada, y la diferencia
 importa: en la portada la sección es **un inventario** y la tarjeta añade una
 promesa, mientras que aquí es **navegación** y una promesa no es un destino. El
@@ -3133,12 +3171,12 @@ natural, biblioteca o despacho, como una entrevista en *Monocle*.
 >      --include='*.css' --include='*.xml' .
 > ```
 
-### La entradilla de `contacto/` se topa en el ancho del formulario
+### La entradilla de `contacto/` va al ancho de la página
 
 ```
 mancheta          h1 «Contacto», a sangre
-entradilla        600 px — el mismo canto derecho que el formulario
-──────────────    <hr> a lo ancho de la fila (1152)
+entradilla        1152 — el ancho entero de la fila
+──────────────    <hr>, mismo canto que la entradilla
 formulario 600  │  caja de apoyo 487
 ```
 
@@ -3146,19 +3184,49 @@ La rejilla es `1.25fr minmax(0, 1fr)` con `gap: 56px`. Sobre los 1152 de
 interior eso da **609 y 487**, y el formulario se topa en **600** dentro de su
 columna.
 
-> ⚠️ **EL TOPE DE LA ENTRADILLA ERA `34em` —653 px— Y PASA A 600.** El problema
-> no era la medida: a 653 son ~60 caracteres por línea, dentro del rango
-> cómodo. Era que **653 no coincidía con ningún otro canto de la página**. El
-> formulario mide 600 y su columna 609, así que el párrafo sobresalía **53 px**
-> por la derecha: lo justo para leerse como un desajuste y no como una decisión.
+> ⚠️ **LA ENTRADILLA NO LLEVA TOPE, POR ENCARGO DEL CLIENTE, Y ESTA SECCIÓN
+> DECÍA LO CONTRARIO EN DOS SITIOS.** Se titulaba «se topa en el ancho del
+> formulario» y había un aviso entero —**«NO SE PONE AL ANCHO DEL CONTENEDOR,
+> aunque sea lo que pide el ojo»**— que es justo lo que se ha hecho.
 >
-> **Casi alinear es peor que no alinear.** Con 600 comparten canto derecho y
-> bajan a ~55 caracteres por línea.
+> El tope fue primero `34em` (653 px) y después los 600 del formulario. **La
+> medición que lo sostenía sigue siendo correcta**, y por eso se conserva: a
+> 1152 son ~125 caracteres por línea, muy por encima del rango cómodo.
+>
+> Medido antes y después:
+>
+> | Ventana | Antes | Después |
+> |---|---|---|
+> | 1440 | 600 px · **64 cpl** · 4 líneas | 1152 px · **123 cpl** · 2 líneas |
+> | 768 | 600 px · 64 cpl | 720 px · **77 cpl** |
+> | 375 | 327 px · 35 cpl | 327 px · 35 cpl — *igual* |
+>
+> **Lo paga solo el escritorio ancho**: por debajo de 1248 el contenedor ya no
+> llega a 1152, y a 375 no cambia nada porque el tope nunca llegaba a actuar.
+>
+> ⚠️ **NO SE COMPENSA CON UN `max-width` DISIMULADO** ni se vuelve a 600 «porque
+> se lee mejor»: eso es deshacer el encargo. Si algún día molesta, la palanca
+> honesta es **acortar el texto**, no reponer el tope.
+>
+> ✅ **Lo que sí decae es el argumento del canto.** Decía que con 653 el párrafo
+> sobresalía 53 px respecto al formulario y se leía como un desajuste —«casi
+> alinear es peor que no alinear»—. A ancho completo no hay casi-alineación: el
+> párrafo cierra exactamente con el `<hr>` y con el borde del aparte, que son
+> los elementos que cruzan la fila entera.
 
-> ⚠️ **NO SE PONE AL ANCHO DEL CONTENEDOR, aunque sea lo que pide el ojo.** Los
-> 1152 dan **125 caracteres por línea**, muy por encima de lo que se lee cómodo.
-> Lo que hace de «ancho de página» es **el filete**, que sí cruza la fila
-> entera; el párrafo no tiene por qué.
+> ⚠️ **EL `<hr>` SE QUEDA, PERO YA NO POR LO QUE DECÍA AQUÍ.** Se justificaba
+> como «lo que hace de ancho de página», porque cruzaba 1152 por debajo de un
+> párrafo de 600. Con los dos al mismo ancho esa función desaparece.
+>
+> Le queda la que de verdad importa: **separar la banda de entrada de la fila de
+> formulario + aparte**. Y gana algo, porque antes era una línea más ancha que
+> el párrafo que cerraba y ahora comparte canto exacto con él — verificado a
+> 1440, 768 y 375.
+>
+> Si alguna vez se quita, lo que hay que mirar **no es el ancho sino el hueco**:
+> sin él, la entradilla y el formulario quedarían separados solo por los 56 del
+> `gap`, que es el mismo aire que hay **entre** las dos columnas. Dejarían de
+> leerse como dos zonas.
 
 > **El `<hr>` es el mismo que cierra `sobre/`**, y las declaraciones viven
 > agrupadas —`.articulo hr, .contacto hr`— para que el grosor y el color no
@@ -3440,7 +3508,7 @@ el ancho de lectura —820— dos columnas quedarían a 380 y el texto se parte 
 > arriba hay dos columnas de texto, que aguantan; abajo hay una foto de ancho
 > fijo, que no— pero sorprende al redimensionar.
 
-### El CV vive en `documentos/` y se descarga desde DOS sitios
+### El CV vive en `documentos/` y se descarga desde UN sitio
 
 ```
 documentos/CV-Juan-Contera-Miranda.pdf      1 página · 63 KB
@@ -3454,63 +3522,58 @@ sube uno con otro nombre.
 | Dónde | Ruta | Qué lo pinta |
 |---|---|---|
 | `sobre/`, bajo la biografía | `../documentos/…` | a mano, en `sobre/index.html` |
-| Lateral de cada artículo, bajo «Ver perfil →» | `../../documentos/…` | `plantilla.mjs`, bloque `.lateral__bloque.autor` |
 
-Los dos son el mismo `.boton--contorno` con `download`, sin una sola
-declaración de color propia. El segundo lo escribe el generador, así que **al
-tocarlo hay que regenerar**.
+Es un `.boton--contorno` con `download`, sin una sola declaración de color
+propia.
 
-> ⚠️ **`.autor__cv` VA PREFIJADO CON `.articulo`, Y SIN ESO EL MARGEN NO SE
-> APLICA.** El botón del lateral es un `<p>` dentro de
-> `<article class="articulo">`, así que le cae **`.articulo p`**, que pesa
-> (0,1,1) frente a los (0,1,0) de la clase sola: **gana por especificidad, no
-> por orden**, y declararlo después no sirve de nada.
+> ⚠️ **ESTA SECCIÓN SE TITULABA «desde DOS sitios» Y HABÍA UN SEGUNDO BOTÓN EN
+> EL LATERAL DE CADA ARTÍCULO. Se retiró por encargo:** el cliente lo quiere
+> solo en `sobre/`.
 >
-> **Estuvo escrito como `.autor__cv { margin: 18px 0 0 }` y era una regla
-> muerta**: el margen computado seguía siendo el `0 0 22px` de `.articulo p`.
-> No daba ningún error —el botón se veía, solo que pegado a «Ver perfil →»— y
-> **solo se ve mirando el estilo computado, no el archivo**. Es la misma trampa
-> que `.articulo h3` contra `.entrada__titulo` en «Continúa leyendo».
+> Lo pintaba `plantilla.mjs` en `.lateral__bloque.autor`, justo bajo «Ver
+> perfil →», así que la retirada **pasa por regenerar**. La salida de ese bloque
+> vuelve a ser «Ver perfil →» a secas, que lleva precisamente a la página donde
+> sigue estando el botón.
 >
-> Hoy es `.articulo .autor__cv`, con los dos huecos medidos en el bloque de
-> 250 px:
+> **Con él se fue `.articulo .autor__cv`**, su única portadora. Lo que aquella
+> regla dejaba escrito y conviene no perder, porque describe una trampa del
+> proyecto y no solo ese botón: iba prefijada con `.articulo` porque es un `<p>`
+> dentro de `<article class="articulo">`, y `.articulo p` pesa (0,1,1) frente a
+> los (0,1,0) de una clase sola. **Estuvo escrita sin el prefijo y era una regla
+> muerta**; no daba ningún error. Sigue vigente para cualquier clase nueva sobre
+> un `<p>`, `<ul>` o `<h3>` del artículo.
 >
-> | | px |
-> |---|---|
-> | «Ver perfil →» → botón | 28 de margen + 5 de interlineado = **33** |
-> | botón → filete de «Etiquetas» | 22 de margen + 10 del bloque = **32** |
+> ✅ **Y con él se va una de las dos copias del peso en bytes.** Esta sección
+> avisaba de que estaba «escrito a mano en los dos sitios y nada lo comprueba».
+> Ahora hay una sola, en `sobre/index.html`. Una incoherencia menos posible.
 >
-> El botón queda con el mismo aire arriba y abajo. ⚠️ **El margen de abajo no se
-> puede soltar a 0**: esos 22 los traía `.articulo p` y son la mitad del hueco
-> inferior.
+> **El lateral queda bien compuesto sin él**, medido a 1440: el bloque del autor
+> baja de **441 a 369 px** —los 44 del botón más sus 28 de margen— y el hueco
+> contra el filete de «Etiquetas» se mantiene en los ~32 px que separan todos
+> los bloques del lateral. No hay que reponer ningún margen.
 >
-> Y va **centrado** con `text-align: center` —el botón es `inline-flex`—, igual
-> que el retrato se centra con `margin: 0 auto`. Medido: 44 px a cada lado.
+> **El PDF no se entera**: `imprimir.css` oculta `.articulo__lateral` entero, así
+> que el documento sale **byte a byte idéntico**. Verificado.
 
-> **El de `sobre/` NO se entera**, y por eso el cambio queda acotado: allí el
-> botón vive en un `<p>` **sin clase** dentro de `.sobre__autor-texto`, así que
-> `.autor__cv` no lo alcanza. Verificado.
+> **El de `sobre/` NO se vio afectado**, y por eso la retirada queda acotada:
+> allí el botón vive en un `<p>` **sin clase** dentro de `.sobre__autor-texto`,
+> así que nunca dependió de `.autor__cv`. Verificado.
 
-> **En móvil el botón sigue ahí, centrado igual.** El lateral **no se oculta**
-> por debajo de 900: baja debajo del artículo, y el bloque pasa de 250 a 277 px
-> de ancho. Medido a 375: 57 px a cada lado del botón.
-
-> ⚠️ **EL PESO ESTÁ ESCRITO A MANO EN LOS DOS SITIOS, y nada lo comprueba.** Va
-> en un `<span class="oculto"> (PDF, 63 KB)</span>`, de modo que el nombre
-> accesible del enlace es «Descargar CV (PDF, 63 KB)» y lo que se ve es
-> «Descargar CV» a secas, como en el PDF del cliente.
+> ⚠️ **EL PESO SIGUE ESCRITO A MANO y nada lo comprueba.** Va en un
+> `<span class="oculto"> (PDF, 63 KB)</span>`, de modo que el nombre accesible
+> del enlace es «Descargar CV (PDF, 63 KB)» y lo que se ve es «Descargar CV» a
+> secas, como en el PDF del cliente.
 >
-> **Al sustituir el archivo hay que volver a mirar el número en los dos.** Un
-> peso desfasado no da ningún error y no se ve en pantalla:
+> **Al sustituir el archivo hay que volver a mirar el número.** Un peso
+> desfasado no da ningún error y no se ve en pantalla:
 >
 > ```sh
-> grep -rn 'PDF, .. KB' sobre/index.html scripts/lib/plantilla.mjs
+> grep -rn 'PDF, .. KB' sobre/index.html
 > ```
 
-> **Las rutas son relativas, como todo el sitio.** Verificado que ninguna de las
-> dos empieza por `/` y que las dos resuelven a `/documentos/…`: así funcionan
-> igual en el subdirectorio de GitHub Pages y en `elderechoescrito.es`. No hay
-> `<base>` en ninguna página.
+> **La ruta es relativa, como todo el sitio.** Verificado que no empieza por `/`
+> y que resuelve a `/documentos/…`: así funciona igual en el subdirectorio de
+> GitHub Pages y en `elderechoescrito.es`. No hay `<base>` en ninguna página.
 
 > **El texto visible no lleva el formato**, y es deliberado: el PDF del cliente
 > pone «Descargar CV» y nada más. El formato y el peso van donde el sitio ya

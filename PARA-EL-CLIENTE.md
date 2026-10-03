@@ -110,6 +110,23 @@ se mira: es justamente para lo que está.
 **¿Tengo que publicar el mismo día?**
 No. La propuesta se queda ahí hasta que la revises. Nada se publica solo.
 
+**Al final del artículo ya no sale «Continúa leyendo» con otros artículos. ¿Se ha roto?**
+No, y no hay nada que arreglar: **vuelve solo en cuanto publiques el segundo
+artículo**.
+
+Ese bloque recomienda **otros** artículos del blog, y ahora mismo solo hay uno
+publicado — el que se está leyendo. Como no tiene sentido recomendarte el
+artículo que ya estás leyendo, el bloque se esconde entero en vez de salir
+vacío.
+
+Lo mismo pasa con los enlaces **«Leer anterior»** y **«Leer siguiente»** del
+final: no hay ni anterior ni siguiente todavía.
+
+Si llegaste a verlo funcionando hace semanas, era de verdad: durante un tiempo
+hubo artículos de ejemplo, de relleno, para poder enseñarte cómo quedaría. Al
+publicar el primer artículo real se retiraron, y con ellos esas
+recomendaciones.
+
 **En «Última actualización» pone la misma fecha que en la de publicación. ¿Está mal?**
 No. Esa línea sale en **todos** los artículos, y mientras uno no se haya
 revisado lo honrado es que diga su fecha de publicación: el texto que se está

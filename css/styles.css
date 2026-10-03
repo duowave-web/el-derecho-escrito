@@ -3286,31 +3286,54 @@ em i {
    tercera fila. Verificado midiendo: entradilla en x=42 con 609 de ancho,
    formulario en x=707 y aside en y=798.
 
-   ⚠️ EL TOPE ERA `34em` —653px— Y PASA A LOS 600 DEL FORMULARIO, que es lo que
-   quita la sensacion de parrafo descolgado.
+   ⚠️ SIN TOPE DE ANCHO, POR ENCARGO DEL CLIENTE, Y ESTA SECCION DECIA LO
+   CONTRARIO. Hay que leerla entera antes de «arreglarlo».
 
-   El problema no era la medida: a 653 son ~60 caracteres por linea, dentro del
-   rango comodo. Era que 653 no coincide con NINGUN otro canto de la pagina. El
-   formulario de debajo mide 600 y la columna 609, asi que el parrafo sobresalia
-   53px por la derecha: lo justo para leerse como un desajuste y no como una
-   decision. Casi alinear es peor que no alinear.
+   El tope fue primero `34em` —653px— y despues los 600 del formulario. Lo que
+   decia aqui, y sigue siendo cierto como medicion:
 
-   Con 600 comparten canto derecho con el formulario y bajan a ~55 caracteres
-   por linea. Y NO se pone al ancho del contenedor: los 1152 dan 125 caracteres
-   por linea, muy por encima de lo que se lee comodo.
+     «NO se pone al ancho del contenedor: los 1152 dan 125 caracteres por
+      linea, muy por encima de lo que se lee comodo.»
 
-   Debajo va un <hr> que cruza la fila entera. La linea es la que hace de ancho
-   de pagina; el parrafo no tiene por que serlo. */
+   El cliente lo prefiere a ancho de pagina y es su decision. El coste esta
+   medido y es real: a 1440 la entradilla pasa de 64 a 123 caracteres por linea,
+   contra las 45-75 que recomienda cualquier guia tipografica. En una ventana
+   estrecha no se paga —a 768 son 76 y a 375, 35—, asi que lo sufre solo el
+   escritorio ancho.
+
+   ⚠️ NO SE COMPENSA CON UN `max-width` DISIMULADO ni volviendo a 600 «porque se
+   lee mejor»: eso es deshacer el encargo. Si algun dia molesta, la palanca
+   honesta es acortar el texto o pasarlo a dos columnas, no reponer el tope.
+
+   Lo que SI decae del razonamiento anterior es lo del canto: con 653 el parrafo
+   sobresalia 53px respecto al formulario y se leia como un desajuste —«casi
+   alinear es peor que no alinear»—. A ancho completo ya no hay casi-alineacion:
+   el parrafo cierra con el <hr> y con el aside, que son los dos elementos que
+   cruzan la fila entera. */
 
 .contacto .entradilla {
   grid-column: 1 / -1;
-  max-width: 600px;
   margin: 0;
 }
 
 /* El filete cierra la banda de entrada y cruza las dos columnas. Sin margen
    propio: los 56 del `gap` de la rejilla ya lo separan por arriba y por abajo,
-   y son el mismo hueco que separa las dos columnas entre si. */
+   y son el mismo hueco que separa las dos columnas entre si.
+
+   ⚠️ SIGUE HACIENDO FALTA, PERO POR OTRO MOTIVO QUE ANTES. Mientras la
+   entradilla se topaba en 600, el <hr> era «lo que hacia de ancho de pagina»
+   —cruzaba 1152 por debajo de un parrafo de 600—. Al soltar el tope, los dos
+   miden lo mismo y esa funcion decae.
+
+   Lo que le queda es la que de verdad importa: separar la banda de entrada de
+   la fila de formulario + aparte. Y gana algo, porque antes era una linea mas
+   ancha que el parrafo que cerraba y ahora comparte canto exacto con el:
+   verificado a 1440, 768 y 375.
+
+   Si alguna vez se quita, lo que hay que mirar no es el ancho sino el hueco: sin
+   el, la entradilla y el formulario quedarian separados solo por los 56 del gap,
+   que es el mismo aire que hay ENTRE las dos columnas. Dejarian de leerse como
+   dos zonas. */
 
 .contacto hr {
   grid-column: 1 / -1;
@@ -4671,43 +4694,24 @@ body:has(.progreso) .cabecera {
   text-transform: uppercase;
 }
 
-/* Descarga del CV en el lateral. Lo unico que declara es la COLOCACION: el
-   boton lo viste `.boton--contorno` entero y aqui no se le toca ni un color.
+/* ⚠️ AQUI VIVIA `.articulo .autor__cv`, LA COLOCACION DEL BOTON «Descargar CV»
+   DEL LATERAL, Y SE RETIRA CON SU UNICO PORTADOR. El cliente quiere el CV solo
+   en sobre/, asi que `plantilla.mjs` ya no pinta ese <p> y la regla se queda
+   sin nada a lo que aplicarse.
 
-   Hacen falta los dos margenes, medidos: sin el de arriba el boton quedaba a
-   5px de «Ver perfil →» y se leia pegado, y el de abajo que traia el <p> por
-   defecto —22px— sobraba, porque el bloque ya cierra con su propio relleno.
+   ⚠️ NO SE TOCA EL BOTON DE `sobre/`. Alli vive en un <p> SIN CLASE dentro de
+   `.sobre__autor-texto`, asi que nunca dependio de esta regla —esta comprobado
+   en su momento— y sigue exactamente igual.
 
-   18 es el mismo hueco que deja el retrato encima del nombre, asi que la
-   columna mantiene su ritmo. */
-
-/* ⚠️ VA PREFIJADO CON `.articulo` Y SIN ESO EL MARGEN NO SE APLICA. Es un <p>
-   dentro de <article class="articulo">, asi que le cae `.articulo p`, que pesa
-   (0,1,1) frente a los (0,1,0) de la clase sola: GANA POR ESPECIFICIDAD, no por
-   orden, asi que declararlo despues no servia de nada.
-
-   Estuvo escrito como `.autor__cv { margin: 18px 0 0 }` y era una regla MUERTA:
-   el margen computado seguia siendo el `0 0 22px` de `.articulo p`. No daba
-   ningun error —el boton se veia, solo que pegado al enlace— y solo se ve
-   mirando el estilo computado, no el archivo. Es la misma trampa que
-   `.articulo h3` contra `.entrada__titulo` en «Continua leyendo».
-
-   LOS DOS HUECOS, medidos en el bloque de 250px:
-
-     «Ver perfil» → boton     28 + 5 de interlineado  =  33
-     boton → filete Etiquetas 22 + 10 del bloque      =  32
-
-   O sea que el boton queda con el mismo aire arriba y abajo, que es lo que lo
-   separa del enlace sin dejarlo huerfano. El margen de abajo no se puede soltar
-   a 0: los 22 que traia `.articulo p` son la mitad de ese hueco inferior.
-
-   `text-align: center` centra el boton, que es inline-flex, como `margin: auto`
-   centra el retrato. */
-
-.articulo .autor__cv {
-  margin: 28px 0 22px;
-  text-align: center;
-}
+   Lo que esta regla dejaba escrito y conviene no perder, porque describe una
+   trampa del proyecto y no solo este boton: iba prefijada con `.articulo`
+   porque es un <p> dentro de <article class="articulo">, y `.articulo p` pesa
+   (0,1,1) frente a los (0,1,0) de una clase sola. Estuvo escrita como
+   `.autor__cv { ... }` a secas y era una REGLA MUERTA: el margen computado
+   seguia siendo el de `.articulo p`. No daba ningun error. Es el mismo patron
+   que `.articulo h3` contra `.entrada__titulo` y que `.articulo ul` contra
+   `.compartir__lista`, y sigue vigente para cualquier clase nueva sobre un <p>,
+   <ul> o <h3> del articulo. */
 
 /* Aqui vivia .indice--lateral, el indice de la columna de apoyo, con sus siete
    reglas. Se retira entero: el indice se ha mudado a la columna del articulo y

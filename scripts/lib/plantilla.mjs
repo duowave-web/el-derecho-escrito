@@ -609,8 +609,12 @@ ${pintarReferencias(art)}
                distinguen.
 
                Pasa a .boton--contorno, el mismo tratamiento que «Descargar CV»
-               en sobre/ y en el lateral: las dos descargas del sitio se ven
-               igual.
+               de sobre/: las dos descargas del sitio se ven igual.
+
+               ⚠️ Decia «en sobre/ y en el lateral», y el del lateral YA NO
+               EXISTE: se retiro por encargo y el CV solo se descarga desde
+               sobre/. Siguen siendo las dos unicas descargas del sitio, pero ya
+               no comparten pagina.
 
                ⚠️ VA ANTES DE «COMPARTIR», no despues, y es deliberado: llevarse
                el articulo es para uno mismo y compartirlo es para terceros. El
@@ -671,7 +675,21 @@ ${pintarReferencias(art)}
         </div>
 
         <aside class="articulo__lateral">
+${/* ⚠️ DEBAJO DE «Ver perfil →» IBA UN BOTÓN «Descargar CV» Y SE RETIRÓ POR
+      ENCARGO: el cliente lo quiere SOLO en sobre/.
 
+      Con él se fue `.autor__cv` de styles.css, que era su única portadora, y el
+      CV pasa de dos puntos de descarga a uno. La salida de este bloque vuelve a
+      ser «Ver perfil →», que lleva justo a la página donde sigue el botón.
+
+      NO se toca el de `sobre/`: vive en un <p> sin clase y nunca dependió de
+      aquella regla. Y el peso en bytes, que estaba escrito a mano en los dos
+      sitios, ahora solo está ahí — una copia menos que mantener.
+
+      ⚠️ ESTE COMENTARIO VA EN JS Y NO EN HTML A PROPÓSITO. Un `<!-- -->` dentro
+      de la plantilla VIAJA AL HTML PUBLICADO de todos los artículos, y explicar
+      una retirada le sirve a quien edita este archivo, no a quien lee la página.
+      Los `<!-- -->` que sí quedan describen lo que hay, no lo que hubo. */ ''}
           <div class="lateral__bloque autor">
             <h2 class="lista__titulo">Autor</h2>
 
@@ -683,23 +701,6 @@ ${pintarReferencias(art)}
             <p class="autor__nombre">${escapar(AUTOR.nombre)}</p>
             <p class="autor__bio">${escapar(AUTOR.bio)}</p>
             <a class="autor__enlace" href="../../sobre/">Ver perfil &rarr;</a>
-
-            <!-- ⚠️ EL SEGUNDO PUNTO DE DESCARGA DEL CV, y el otro está en
-                 sobre/. Los dos apuntan al MISMO archivo, así que sustituirlo
-                 es sustituir uno solo; lo que sí está escrito dos veces es el
-                 PESO, que va a mano en los dos sitios. Está anotado en
-                 CLAUDE.md.
-
-                 Dos niveles de ruta, no uno: el artículo vive en
-                 articulos/<slug>/ y sobre/ cuelga de la raíz.
-
-                 El formato y el peso van en .oculto, como en sobre/: el nombre
-                 accesible queda «Descargar CV (PDF, 63 KB)». -->
-            <p class="autor__cv">
-              <a class="boton boton--contorno" href="../../documentos/CV-Juan-Contera-Miranda.pdf" download>
-                Descargar CV<span class="oculto"> (PDF, 63 KB)</span>
-              </a>
-            </p>
           </div>
 ${pintarEtiquetas(art)}
           <div class="lateral__bloque suscripcion">
