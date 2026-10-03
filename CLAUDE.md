@@ -3400,18 +3400,95 @@ fondo y **sin velo**. Abre las tres páginas de sección —`articulos/`, `sobre
 el título se queda en la rejilla de 1200 gracias al `.contenedor` que lleva
 dentro.
 
-> ⚠️ **LA IMAGEN CAMBIÓ: ERA `img/fondo-cabecera.jpg`.** La nueva está recortada
-> a **4:1 exacto (2560 × 640)** para esta banda, frente al 4,03 de la anterior,
-> y es el mismo veteado de la portada **sin libro ni balanza**.
+> ⚠️ **EL ARCHIVO SE LLAMA IGUAL PERO LA FOTO ES OTRA, Y ESA ES LA TRAMPA DE
+> ESTE CAMBIO.** `img/fondo-paginas.jpg` se **sobrescribió** con una imagen nueva
+> generada con IA: un gris verdoso pálido con franjas diagonales de luz
+> desenfocadas, mucho más simple que el veteado anterior.
 >
-> ✅ **`fondo-cabecera.jpg` se quedó sin uso y YA SE HA BORRADO** en la limpieza
-> del lote. Aquí decía «NO se ha borrado». Esta banda era su único portador, y
-> hoy el nombre solo aparece en prosa: en el comentario de `styles.css` que
-> explica el cambio y en la tabla de contraste de más abajo.
+> **Se sobrescribe en vez de añadir un nombre nuevo, y es deliberado:**
+>
+> | | Sobrescribir | Nombre nuevo |
+> |---|---|---|
+> | CSS | no se toca | hay que editarlo |
+> | Archivos huérfanos | **ninguno** | uno más |
+> | Qué enseña el diff | que la imagen cambió | que hay dos imágenes |
+>
+> El nombre describe **el papel** —«el fondo de las páginas»— y no el dibujo, así
+> que sigue siendo exacto. Y el repositorio ya ha pagado dos veces el precio de
+> acumular imágenes sin uso: `fondo-cabecera.jpg` y `juanconteramiranda.jpeg`
+> necesitaron una limpieza dedicada. Añadir una tercera por no sobrescribir
+> repite justo el error que esa limpieza arregló.
+>
+> **Consecuencia que hay que tener presente:** un `grep` del nombre no dice qué
+> imagen hay. Para saberlo hay que mirar el archivo o esta sección.
+>
+> **Antes de esta, el archivo contuvo el recorte del veteado de la portada**, y
+> antes de eso la banda usaba `img/fondo-cabecera.jpg`, que se borró al quedarse
+> sin uso.
+
+> **Cómo se preparó, y el orden importa.** El original es
+> `Gemini_Generated_Image_vvrrjvvrrjvvrrjv.jpeg`, **3168 × 1344** y 1,6 MB. Para
+> 4:1 usando el ancho entero hace falta una franja de 792 px de alto, y **cuál**
+> de las muchas posibles se elige es la única decisión de diseño que hay aquí:
 >
 > ```sh
-> grep -rn 'fondo-cabecera' --include='*.css' --include='*.html' .
+> # recorte ANTES de reducir, con desplazamiento: la franja y=240..1032
+> sips -c 792 3168 --cropOffset 240 0 original.jpeg --out base.jpg
+> sips -Z 2560 -s format jpeg -s formatOptions 65 base.jpg --out img/fondo-paginas.jpg
 > ```
+>
+> ⚠️ **`--cropOffset` no es opcional.** `sips -c` recorta **centrado**, y el
+> recorte centrado (y=276) no es el que se quiere. Hace falta elegir la Y.
+>
+> **El 240 está medido, no elegido a ojo.** El original tiene una sombra fuerte
+> arriba a la izquierda y una banda oscura en el borde derecho; entre medias hay
+> una meseta clara. Barriendo los desplazamientos posibles y midiendo la
+> luminancia del **tercio central**, que es donde cae el título:
+>
+> | Desplazamiento | Tercio izquierdo | **Tercio central** | Tercio derecho |
+> |---|---|---|---|
+> | **240** | 0,488 | **0,712** | 0,427 |
+> | 384 | 0,541 | 0,621 | 0,427 |
+> | 480 | 0,615 | 0,612 | 0,426 |
+> | 528 | 0,614 | 0,607 | 0,426 |
+>
+> El 240 deja el centro **mucho más claro** que cualquier otro —0,712 contra
+> 0,61— al precio de un tercio izquierdo algo más oscuro, que es donde no hay
+> texto. Los demás se parecen entre sí porque a partir de 384 la meseta ya ha
+> quedado arriba del recorte.
+
+> **La calidad 65 también está medida, y la métrica obvia engaña.** En una imagen
+> tan lisa el riesgo no es perder detalle sino el **bloqueo 8 × 8** del JPEG, que
+> en una superficie plana se ve como bandas. Contar «saltos bruscos» da el
+> resultado al revés —sube con la calidad, porque conserva el grano del
+> original—; lo que sirve es comparar el salto en los bordes de bloque contra el
+> de dentro:
+>
+> | Calidad | Peso | Bloqueo a 2560 (nativo) | Salto absoluto | Ya escalada a 1440 |
+> |---|---|---|---|---|
+> | 55 | 35,6 KB | 7,08× | 0,38/255 | 0,15/255 |
+> | 60 | 36,0 KB | 6,46× | 0,39/255 | 0,16/255 |
+> | **65** | **45,9 KB** | **3,93×** | **0,48/255** | **0,24/255** |
+> | 70 | 64,8 KB | 2,89× | 0,54/255 | 0,32/255 |
+> | 75 | 74,0 KB | 2,23× | 0,62/255 | 0,39/255 |
+>
+> ⚠️ **El ratio de bloqueo asusta más de lo que debe**: el salto absoluto es de
+> medio nivel sobre 255 en todos los casos, o sea invisible. Lo que lo infla es
+> que el gradiente *dentro* del bloque es casi cero, no que el borde se vea.
+>
+> Y **al escalar se suaviza**: a 1440 la imagen se dibuja al 0,5625 y promedia
+> los bloques. Medida la diferencia entre q55 y q75 ya escaladas: **máximo 5/255**,
+> media 0,39/255. O sea que cualquiera valdría; 65 se elige porque es el codo de
+> la curva y porque **en pantalla densa no hay reducción que suavice** —ahí los
+> 2560 px se dibujan casi 1:1—.
+>
+> **Pesa 45,9 KB frente a los 130,7 de la imagen anterior**, un 65 % menos.
+
+> ⚠️ **EL ORIGINAL NO ESTÁ EN EL REPOSITORIO, y sin él no se puede rehacer el
+> recorte.** Es el único insumo del sitio del que no se guarda la fuente —el logo
+> sí la tiene, en `img/logo_elderechoescrito.jpeg`—. Mientras no se guarde, lo
+> único que permite reproducir esta imagen es el comando de arriba **más el
+> archivo original**, que vive fuera del proyecto.
 
 > ⚠️ **SE DESCARTÓ USAR EL FONDO DE LA PORTADA TAL CUAL, y conviene saber por
 > qué antes de volver a intentarlo.** El de la portada no es una imagen de CSS:
@@ -3434,17 +3511,30 @@ falta un velo blanco al 45 % para salvarlo, y aun así lavaba la imagen.
 Con el título **centrado**, cae sobre la franja clara del medio y no hace falta
 velo ninguno. El velo se retiró: protegía a un texto que ya no está ahí.
 
-Medido sobre la imagen de hoy, el píxel más oscuro bajo la caja del `h1`:
+Medido sobre la imagen de hoy, el píxel más oscuro bajo la caja del `h1`,
+muestreando el recorte **ya pintado** —se replica `cover` en un `<canvas>` con la
+geometría real del elemento y se leen los píxeles de la caja del título—:
 
-| Ancho de ventana | 1280 | 1440 |
-|---|---|---|
-| Peor contraste | **11,84:1** | **11,93:1** |
+| Ancho de ventana | 375 | 768 | **901** | **1440** | 1920 |
+|---|---|---|---|---|---|
+| ¿Hay imagen? | **no** | **no** | sí | sí | sí |
+| Peor contraste | 16,67:1 | 16,67:1 | **12,69:1** | **12,69:1** | 12,69:1 |
 
-> **`background-position` sigue en `center`, y no por inercia.** Se midieron
-> cinco posiciones verticales —0, 25, 50, 75 y 100 %— y las cinco dan entre
-> **11,6 y 12,4:1**, porque el título cae sobre el centro claro pase lo que
-> pase. Mover la Y no mejora nada, así que el cambio se queda en el nombre del
-> archivo.
+> ⚠️ **A 768 Y 375 NO HAY IMAGEN, Y ESO SORPRENDE AL MEDIR.** El fondo se declara
+> dentro de `@media (min-width: 901px)` —está razonado en `styles.css`: por
+> debajo no se pide el archivo y además `cover` recortaría una tira inútil—, así
+> que ahí el `h1` cae sobre el blanco de la página y da **16,67:1**. Quien mida
+> el contraste en móvil no está midiendo esta imagen.
+>
+> **Por encima de 901 el número no se mueve**, y tiene explicación: `cover`
+> escala por el ancho en toda esa franja, así que el título siempre cae sobre el
+> mismo punto del archivo. Lo que cambia con la ventana es cuánta imagen se ve a
+> los lados, no lo que hay detrás del texto.
+
+> **`background-position` sigue en `center`.** Con la imagen anterior se midieron
+> cinco posiciones verticales y las cinco daban entre 11,6 y 12,4:1; con esta, el
+> recorte ya se eligió para que el centro fuera la zona más limpia, así que mover
+> la Y solo puede empeorarlo.
 
 Una media de luminancia habría dicho las dos veces que no hacía falta velo,
 porque la imagen es clara *de media*. **Lo que sirve es muestrear el recorte
@@ -3456,20 +3546,26 @@ con la proporción de la caja.
 > 600 y 2,86 a 800, que ya no cumplía**. Y se avisaba de que `sobre/` estuvo a
 > 32 px del límite cuando se titulaba «Sobre El Derecho Escrito» (417,8 px).
 >
-> Medido a 1440 forzando títulos cada vez más anchos:
+> Medido forzando títulos cada vez más anchos. La columna de la derecha es la
+> **imagen de hoy**, remedida; las otras dos se conservan para ver la deriva:
 >
-> | Ancho del título | `fondo-cabecera` | **`fondo-paginas`** |
-> |---|---|---|
-> | 160 px | 14,64 | **11,81** |
-> | 450 px | 12,88 | **10,79** |
-> | 600 px | 12,88 | **8,15** |
-> | 800 px | 12,00 | **8,15** |
-> | 1000 px | 5,56 | **6,61** |
-> | 1200 px | **2,45** ✗ | **6,61** |
+> | Ancho del título | `fondo-cabecera` | veteado anterior | **la de hoy** |
+> |---|---|---|---|
+> | 160 px (el real) | 14,64 | 11,81 | **12,69** |
+> | 450 px | 12,88 | 10,79 | **12,57** |
+> | 600 px | 12,88 | 8,15 | **12,34** |
+> | 800 px | 12,00 | 8,15 | **11,42** |
+> | 1000 px | 5,56 | 6,61 | **10,64** |
+> | 1200 px | **2,45** ✗ | 6,61 | **10,64** |
 >
-> La nueva **no baja de 6,61 ni con un título de 1200 px**, más ancho que
-> cualquier rótulo imaginable. Así que el corte de 450 decae y `sobre/` ya no
-> está al borde de nada.
+> **La de hoy no baja de 10,64 ni con un título de 1200 px**, más ancho que
+> cualquier rótulo imaginable, y es la más plana de las tres: pierde 2 puntos de
+> extremo a extremo donde la anterior perdía 5 y la primera 12. Es lo que se
+> esperaba de una imagen sin motivo, y de haber elegido el recorte por la
+> limpieza del centro.
+>
+> Así que el corte de 450 px sigue sin aplicar y `sobre/` no está al borde de
+> nada aunque recupere un título largo.
 >
 > **Lo que no decae es el método**: si algún día se cambia la imagen, hay que
 > volver a medir esta tabla. El número sale de muestrear, no de mirar.

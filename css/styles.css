@@ -1234,30 +1234,42 @@ body:has(.portada--video) .cabecera--con-linea {
    titular se quedaba en 1,68:1. Con el titulo centrado cae sobre la zona clara
    del centro y no hace falta velo ninguno.
 
-   ⚠️ LA IMAGEN CAMBIO: era `fondo-cabecera.jpg` y ahora es `fondo-paginas.jpg`,
-   recortada a 4:1 exacto (2560x640) para esta banda. Misma familia visual que
-   el veteado de la portada, pero sin libro ni balanza.
+   ⚠️ EL ARCHIVO SE LLAMA IGUAL DESDE HACE DOS IMAGENES, ASI QUE EL NOMBRE NO
+   DICE QUE HAY DENTRO. Hoy `fondo-paginas.jpg` es un gris verdoso palido con
+   franjas diagonales de luz desenfocadas, generado con IA; antes contenia el
+   recorte del veteado de la portada, y antes de eso la banda usaba otro archivo,
+   `fondo-cabecera.jpg`, que se borro al quedarse sin uso.
 
-   `center` NO SE TOCO, y no por inercia: se midieron cinco posiciones
-   verticales y las cinco dan entre 11,6 y 12,4:1, porque el titulo cae sobre el
-   centro claro pase lo que pase. Mover la Y no mejora nada.
+   Se sobrescribe en vez de estrenar nombre para no dejar huerfano el anterior
+   —este repositorio ya ha pagado dos limpiezas por eso— y porque el nombre
+   describe el PAPEL, no el dibujo. Esta razonado en CLAUDE.md, con el comando
+   de sips y el porque del desplazamiento del recorte.
 
-   Contraste del h1 (--tinta sobre el pixel mas oscuro bajo su caja):
+   `center` NO SE TOCO: el recorte ya se eligio para que la zona central fuera
+   la mas limpia, asi que mover la Y solo puede empeorarlo.
 
-     ancho de ventana   1280     1440
-     peor ratio        11,84    11,93
+   Contraste del h1 (--tinta sobre el pixel mas oscuro bajo su caja), medido
+   replicando `cover` en un canvas con la geometria real del elemento:
 
-   GUARDA, y con la imagen nueva es mucho mas holgada que antes. Medido a 1440
-   forzando titulos cada vez mas anchos:
+     ancho de ventana   375    768    901   1440   1920
+     peor ratio       16,67  16,67  12,69  12,69  12,69
+
+   ⚠️ A 375 Y 768 NO HAY IMAGEN —la media query de abajo empieza en 901— asi que
+   esos 16,67 son el h1 sobre el blanco de la pagina, no sobre la foto. Y de 901
+   para arriba el numero no se mueve porque `cover` escala por el ancho en toda
+   esa franja: lo que cambia es cuanta imagen se ve a los lados, no lo que queda
+   detras del texto.
+
+   GUARDA. Medido forzando titulos cada vez mas anchos:
 
      titulo    160    450    600    800   1000   1200 px
-     nuevo   11,81  10,79   8,15   8,15   6,61   6,61
-     viejo   14,64  12,88  12,88  12,00   5,56   2,45  <- incumplia a 1200
+     hoy     12,69  12,57  12,34  11,42  10,64  10,64
+     antes   11,81  10,79   8,15   8,15   6,61   6,61
 
-   O sea que el corte de 450 px que documentaba la imagen anterior ya no
-   aplica: esta no baja de 6,61 ni con un titulo de 1200 px, que es mas ancho
-   que cualquier rotulo imaginable. Aun asi, si algun dia se cambia la imagen
-   hay que volver a medir esta tabla. */
+   No baja de 10,64 ni con un titulo de 1200 px, mas ancho que cualquier rotulo
+   imaginable, y pierde solo 2 puntos de extremo a extremo donde la anterior
+   perdia 5. Aun asi, si algun dia se cambia la imagen hay que volver a medir
+   esta tabla: el numero sale de muestrear, no de mirar. */
 
 @media (min-width: 901px) {
   .mancheta {
