@@ -65,12 +65,35 @@ export const CATEGORIAS = {
    Cambiar de autor es cambiar este bloque y regenerar. Lo que NO cubre es
    `sobre/`, que es una página a mano y tiene dos puntos más —el `src` y el
    `alt` de su retrato—. Y ojo: el nombre está también DENTRO del nombre del
-   archivo de la foto, así que cambiarlo obliga a renombrarla. */
+   archivo de la foto, así que cambiarlo obliga a renombrarla.
 
-const AUTOR = {
+   ⚠️ HAY DOS ARCHIVOS DE RETRATO Y NO ES UNA DUPLICACIÓN DESPISTADA. Son el
+   mismo encuadre 3:4 a dos tamaños, y cada uno sirve a una caja distinta:
+
+     retrato       264×352, 16 KB  → el círculo de 132px de ESTE lateral
+     retratoGrande 600×800, 61 KB  → el rectángulo de 300×400 de `sobre/`,
+                                     y el `author.image` del JSON-LD
+
+   El lateral sale en TODAS las páginas de artículo, así que servirle ahí los
+   600×800 costaría 45 KB por página para enseñar 132px. El JSON-LD lleva la
+   grande porque es la que ve Google, no el lector.
+
+   Los dos son el doble de su caja, que es lo que pide una pantalla densa. Si
+   alguna de las dos cajas cambia de tamaño en el CSS, hay que regenerar su
+   archivo: el procedimiento está en CLAUDE.md, en «Fotografía».
+
+   ⚠️ SE EXPORTA PORQUE `pdf.mjs` TAMBIÉN ESCRIBE EL NOMBRE, en dos sitios: la
+   ficha del bloque de título y la cabecera corriente de cada página. Estuvo
+   ahí en literales, así que cambiar de autor dejaba el PDF firmado por el
+   anterior —y eso **no se ve en pantalla**, solo abriendo el documento—.
+   Importarlo de aquí es lo que hace que «cambiar de autor es tocar este bloque
+   y regenerar» siga siendo verdad. */
+
+export const AUTOR = {
   nombre: 'Juan Contera Miranda',
   cargo: 'Abogado',
-  retrato: 'img/juanconteramiranda.jpeg',
+  retrato: 'img/juanconteramiranda-264x352.jpg',
+  retratoGrande: 'img/juanconteramiranda-600x800.jpg',
   /* ⚠️ LAS MAYÚSCULAS DE «Derecho Administrativo» Y «Urbanismo» SON
      INTENCIONADAS. Contradicen a propósito la convención del cliente —él
      escribe «Derecho administrativo», con minúscula— igual que el titular del
@@ -163,8 +186,29 @@ export function contarPalabras(art) {
 
 /* --------------------------------------------------------- derivados ---- */
 
+/* ⚠️ UNA ACTUALIZACIÓN IGUAL A LA FECHA DE PUBLICACIÓN SE TRATA COMO SI NO
+   EXISTIERA, y es deliberado. En la ficha se leería «28 DE SEPTIEMBRE DE 2026 ·
+   ÚLTIMA ACTUALIZACIÓN: 28 DE SEPTIEMBRE DE 2026»: un dato que ocupa sitio y no
+   dice nada, y que además parece un fallo del generador más que una decisión
+   del autor.
+
+   Aguas abajo tampoco cambia nada: `dateModified` ya vale `datePublished`
+   cuando no hay actualización, que es exactamente lo que daría el campo. Así
+   que descartarlo no pierde información, solo quita ruido.
+
+   Es el caso que va a llegar solo: quien rellene el campo «por completarlo»
+   —o un automatismo que copie `fecha`— produce justo esto. Por eso se descarta
+   aquí, una vez, en vez de comprobarlo en los cuatro sitios que lo consumen.
+
+   No se descarta en SILENCIO: `validar()` saca un aviso diciendo que no se va
+   a ver. */
+
 export function derivar(art) {
   const palabras = contarPalabras(art);
+  const actualizado = art.actualizado && art.actualizado !== art.fecha
+    ? art.actualizado
+    : null;
+
   return {
     ...art,
     palabras,
@@ -174,6 +218,17 @@ export function derivar(art) {
     fechaLarga: fechaLarga(art.fecha),
     fechaCorta: fechaCorta(art.fecha),
     fechaISO: fechaISO(art.fecha),
+
+    /* `actualizado` sustituye a lo que venga en el JSON: si era igual a `fecha`
+       el spread de arriba lo habría dejado puesto. */
+    actualizado,
+    actualizadoLarga: actualizado ? fechaLarga(actualizado) : null,
+    actualizadoISO: actualizado ? fechaISO(actualizado) : null,
+
+    /* Lo que leen los buscadores. Sin actualización, la fecha de modificación
+       ES la de publicación: es lo que ya hacía el sitio y no cambia. */
+    modificadoISO: fechaISO(actualizado || art.fecha),
+    modificadoFecha: actualizado || art.fecha,
   };
 }
 
@@ -298,7 +353,9 @@ function jsonLd(art) {
         url: art.url,
         mainEntityOfPage: { '@id': `${art.url}#webpage` },
         datePublished: art.fechaISO,
-        dateModified: art.fechaISO,
+        /* Sin campo `actualizado` vale lo mismo que datePublished, que es lo
+           que este sitio ha declarado siempre. */
+        dateModified: art.modificadoISO,
         inLanguage: 'es-ES',
         articleSection: art.categoriaTexto,
         keywords: (art.keywords || []).join(', '),
@@ -311,11 +368,13 @@ function jsonLd(art) {
           '@type': 'Person',
           name: AUTOR.nombre,
           url: `${DOMINIO}/sobre/`,
+          /* La GRANDE, no la del lateral: esto lo lee Google para construir la
+             entidad de autor y ahí conviene la mejor resolución que haya. */
           image: {
             '@type': 'ImageObject',
-            url: `${DOMINIO}/${AUTOR.retrato}`,
-            width: 400,
-            height: 400,
+            url: `${DOMINIO}/${AUTOR.retratoGrande}`,
+            width: 600,
+            height: 800,
           },
           jobTitle: AUTOR.cargo,
           description: AUTOR.bio,
@@ -338,7 +397,50 @@ function jsonLd(art) {
 
 /* --------------------------------------------------------- artículo ----- */
 
-export function paginaArticulo(art) {
+/* Navegación entre artículos contiguos, al final del artículo.
+
+   ⚠️ EL ORDEN NO SE CALCULA AQUÍ: llega resuelto desde build.mjs, que ya ordena
+   por fecha descendente con el slug de desempate. Volver a ordenar aquí sería
+   un segundo criterio que podría divergir del primero sin que nada avisara.
+
+   Como la lista va de más nuevo a más viejo, el vecino de ÍNDICE MENOR es el
+   publicado DESPUÉS —o sea «siguiente»— y el de índice mayor, «anterior». Es
+   al revés de lo que sugiere el array, y es el error fácil de cometer.
+
+   Sin vecinos devuelve cadena vacía, no un contenedor con nada dentro: con un
+   solo artículo publicado no debe quedar ni el <nav>. */
+
+export function bloquePaso({ anterior, siguiente } = {}) {
+  if (!anterior && !siguiente) return '';
+
+  /* El rótulo y el título van en dos <span> dentro del MISMO <a>: así el
+     nombre accesible del enlace es «Leer anterior, <título>», que dice a la vez
+     qué hace y adónde lleva. Dos enlaces hermanos obligarían a tabular dos
+     veces para el mismo destino. */
+
+  const enlace = (art, mod, rotulo, flecha) => `
+            <a class="paso__enlace paso__enlace--${mod}" href="../${art.slug}/">
+              <span class="paso__rotulo">${flecha === 'izq' ? '<span class="paso__flecha" aria-hidden="true">&larr;</span>' : ''}${rotulo}${flecha === 'der' ? '<span class="paso__flecha" aria-hidden="true">&rarr;</span>' : ''}</span>
+              <span class="paso__titulo">${escapar(art.titulo)}</span>
+            </a>`;
+
+  /* ⚠️ EL SALTO DE LÍNEA VA DELANTE Y NO DETRÁS, y la plantilla lo interpola
+     PEGADO al `</p>` del aviso. Con el `${…}` en su propia línea, el caso
+     vacío dejaba una línea en blanco de más en el HTML de todo artículo sin
+     vecinos —comprobado: el de MASC cambiaba en una línea sin que hubiera nada
+     que enseñar—. Así, cuando no hay vecinos no se añade ni un byte. */
+
+  return `
+
+          <nav class="paso" aria-label="Más artículos">${
+            anterior ? enlace(anterior, 'anterior', 'Leer anterior', 'izq') : ''
+          }${
+            siguiente ? enlace(siguiente, 'siguiente', 'Leer siguiente', 'der') : ''
+          }
+          </nav>`;
+}
+
+export function paginaArticulo(art, vecinos) {
   const conNumero = art.secciones.some((s) => s.numero_original);
   const titulo = art.titulo_seo || art.titulo;
   const enc = encodeURIComponent;
@@ -383,7 +485,7 @@ export function paginaArticulo(art) {
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="article:published_time" content="${art.fechaISO}">
-<meta property="article:modified_time" content="${art.fechaISO}">
+<meta property="article:modified_time" content="${art.modificadoISO}">
 <meta property="article:section" content="${escapar(art.categoriaTexto)}">
 ${etiquetasMeta}
 
@@ -449,6 +551,12 @@ ${jsonLd(art)}
             <span class="volver__flecha" aria-hidden="true">&larr;</span>Volver a los artículos
           </a>
 
+          <figure class="articulo__portada">
+            <img src="./${art.imagen.archivo}"
+                 alt="${escapar(art.imagen.alt)}"
+                 width="1600" height="1066">
+          </figure>
+
           <p class="etiqueta etiqueta--plana">
             <a href="../../articulos/?categoria=${clave(art.categoria)}"><span class="oculto">Ver artículos de </span>${escapar(art.categoriaTexto)}</a>
           </p>
@@ -458,14 +566,9 @@ ${jsonLd(art)}
           <div class="entrada__meta articulo__ficha">
             <span class="firma">Por <a href="../../sobre/">${escapar(AUTOR.nombre)}</a></span>
             <time datetime="${art.fechaISO}">${art.fechaLarga}</time>
-            <span class="lectura">${art.minutos} min de lectura</span>
+            <span class="lectura">${art.minutos} min de lectura</span>${art.actualizado ? `
+            <time class="actualizado" datetime="${art.actualizadoISO}">Última actualización: ${art.actualizadoLarga}</time>` : ''}
           </div>
-
-          <figure class="articulo__portada">
-            <img src="./${art.imagen.archivo}"
-                 alt="${escapar(art.imagen.alt)}"
-                 width="1600" height="1066">
-          </figure>
 
           <p class="entradilla">${resolverLlamadas(art.entradilla)}</p>
 
@@ -485,6 +588,39 @@ ${pintarReferencias(art)}
           <a class="volver volver--cierre" href="../../articulos/">
             <span class="volver__flecha" aria-hidden="true">&larr;</span>Volver a los artículos
           </a>
+
+          <!-- ⚠️ ERA EL CUARTO ELEMENTO DE «COMPARTIR» Y SALE DE LA LISTA.
+               Alli se veia igual que LinkedIn, WhatsApp y Correo —misma pildora
+               gris— asi que se leia como un destino mas al que mandar el
+               articulo, y no lo es: los otros tres LO ENVIAN A OTRO SITIO y
+               este TE LO DA A TI. Son dos acciones distintas y ahora se
+               distinguen.
+
+               Pasa a .boton--contorno, el mismo tratamiento que «Descargar CV»
+               en sobre/ y en el lateral: las dos descargas del sitio se ven
+               igual.
+
+               ⚠️ VA ANTES DE «COMPARTIR», no despues, y es deliberado: llevarse
+               el articulo es para uno mismo y compartirlo es para terceros. El
+               orden va de lo propio a lo ajeno, que es tambien el orden en que
+               se decide.
+
+               UNA SOLA UBICACION, no dos. Arriba, junto a la ficha, competiria
+               con el arranque de la lectura y empujaria el texto: esa columna
+               ya tiene volver, foto, categoria, titular, ficha, entradilla e
+               indice. Y el momento de descargar es DESPUES de decidir que el
+               articulo interesa, que es justo donde esta. Dos puntos de
+               descarga ademas serian dos sitios que mantener.
+
+               El icono se queda: es un <span aria-hidden> con mask, no entra en
+               el arbol de accesibilidad y aqui distingue «descargar» de un
+               enlace cualquiera. -->
+          <p class="descarga">
+            <a class="boton boton--contorno" href="./${art.slug}.pdf" download>
+              <span class="compartir__icono compartir__icono--pdf" aria-hidden="true"></span>
+              Descargar PDF
+            </a>
+          </p>
 
           <aside class="compartir" aria-labelledby="compartir-titulo">
             <h2 id="compartir-titulo" class="lista__titulo">Compartir</h2>
@@ -510,16 +646,10 @@ ${pintarReferencias(art)}
                   <span>Correo</span>
                 </a>
               </li>
-              <li>
-                <a class="compartir__enlace compartir__enlace--pdf" href="./${art.slug}.pdf" download>
-                  <span class="compartir__icono compartir__icono--pdf" aria-hidden="true"></span>
-                  <span>Descargar PDF</span>
-                </a>
-              </li>
             </ul>
           </aside>
 
-          <p class="aviso"><em>Este artículo tiene carácter informativo y divulgativo y no constituye asesoramiento jurídico. La valoración de un asunto concreto requiere analizar sus circunstancias particulares. Si deseas plantear una consulta relacionada con su contenido o con las materias que aborda, puedes hacerlo a través de la <a href="../../contacto/">página de contacto</a>.</em></p>
+          <p class="aviso"><em>Este artículo tiene carácter informativo y divulgativo y no constituye asesoramiento jurídico. La valoración de un asunto concreto requiere analizar sus circunstancias particulares. Si deseas plantear una consulta relacionada con su contenido o con las materias que aborda, puedes hacerlo a través de la <a href="../../contacto/">página de contacto</a>.</em></p>${bloquePaso(vecinos)}
 
           <section class="continua" id="continua" aria-labelledby="continua-titulo" hidden>
             <h2 id="continua-titulo" class="lista__titulo lista__titulo--destacado">Continúa leyendo</h2>
@@ -536,11 +666,28 @@ ${pintarReferencias(art)}
             <div class="autor__retrato">
               <img src="../../${AUTOR.retrato}"
                    alt="Retrato de ${escapar(AUTOR.nombre)}"
-                   width="400" height="400" loading="lazy" decoding="async">
+                   width="264" height="352" loading="lazy" decoding="async">
             </div>
             <p class="autor__nombre">${escapar(AUTOR.nombre)}</p>
             <p class="autor__bio">${escapar(AUTOR.bio)}</p>
             <a class="autor__enlace" href="../../sobre/">Ver perfil &rarr;</a>
+
+            <!-- ⚠️ EL SEGUNDO PUNTO DE DESCARGA DEL CV, y el otro está en
+                 sobre/. Los dos apuntan al MISMO archivo, así que sustituirlo
+                 es sustituir uno solo; lo que sí está escrito dos veces es el
+                 PESO, que va a mano en los dos sitios. Está anotado en
+                 CLAUDE.md.
+
+                 Dos niveles de ruta, no uno: el artículo vive en
+                 articulos/<slug>/ y sobre/ cuelga de la raíz.
+
+                 El formato y el peso van en .oculto, como en sobre/: el nombre
+                 accesible queda «Descargar CV (PDF, 63 KB)». -->
+            <p class="autor__cv">
+              <a class="boton boton--contorno" href="../../documentos/CV-Juan-Contera-Miranda.pdf" download>
+                Descargar CV<span class="oculto"> (PDF, 63 KB)</span>
+              </a>
+            </p>
           </div>
 ${pintarEtiquetas(art)}
           <div class="lateral__bloque suscripcion">
@@ -644,8 +791,6 @@ export function bloqueDestacado(art) {
         <div class="destacado__texto">
 
           <p class="destacado__antetitulo">
-            <span>Artículo destacado</span>
-            <span class="destacado__antetitulo-sep" aria-hidden="true">·</span>
             <a href="./articulos/?categoria=${clave(art.categoria)}"><span class="oculto">Ver artículos de </span>${escapar(art.categoriaTexto)}</a>
           </p>
 
@@ -734,7 +879,7 @@ ${items}
 export function entradaSitemap(art) {
   return `  <url>
     <loc>${art.url}</loc>
-    <lastmod>${art.fecha}</lastmod>
+    <lastmod>${art.modificadoFecha}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>`;

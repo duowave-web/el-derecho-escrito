@@ -1250,11 +1250,44 @@
       titulo.replaceWith(h3);
     }
 
-    /* Sin extracto y sin caja: son 346 px de ancho y lo que hace falta aquí es
-       reconocer el artículo, no resumirlo. */
+    /* ⚠️ AQUÍ SE BORRABA EL EXTRACTO, Y YA NO. El argumento era que «son 346 px
+       de ancho y lo que hace falta aquí es reconocer el artículo, no
+       resumirlo». Se cambió por encargo: la tarjeta enseña los mismos cinco
+       elementos que las de la portada —imagen, categoría, título, entradilla y
+       metadatos— y el aire entre ellos se recortó para compensar el alto que
+       suma. No hay que volver a quitarlo. */
 
-    const extracto = t.querySelector(".entrada__extracto");
-    if (extracto) extracto.remove();
+    /* La categoría pasa a ser un enlace al filtro, como en las tarjetas de la
+       portada. El listado la escribe en texto plano, así que el enlace se monta
+       aquí —pero SIN inventarse nada: la clave está en `data-categoria`, que es
+       la misma que usa el href de la portada, y por eso se lee ANTES de
+       quitarla unas líneas más abajo.
+
+       El href se arma contra `base`, que ya apunta a articulos/, en vez de
+       pasar por el bucle de reescritura de arriba: ese bucle ya ha corrido y
+       este enlace todavía no existía. */
+
+    const etiqueta = t.querySelector(".etiqueta--plana");
+    const categoria = original.getAttribute("data-categoria");
+
+    if (etiqueta && categoria && !etiqueta.querySelector("a")) {
+      const texto = etiqueta.textContent.trim();
+      const a = document.createElement("a");
+      a.setAttribute("href", base.pathname + "?categoria=" + encodeURIComponent(categoria));
+
+      /* Mismo texto solo-para-lectores que en plantilla.mjs: sin él, el enlace
+         se anuncia como «Jurisprudencia» a secas y no se distingue de la
+         etiqueta informativa que era hasta ahora. */
+      const oculto = document.createElement("span");
+      oculto.className = "oculto";
+      oculto.textContent = "Ver artículos de ";
+
+      a.appendChild(oculto);
+      a.appendChild(document.createTextNode(texto));
+      etiqueta.textContent = "";
+      etiqueta.appendChild(a);
+    }
+
     t.classList.remove("tarjeta--caja");
     t.removeAttribute("data-categoria");
     t.removeAttribute("data-etiquetas");

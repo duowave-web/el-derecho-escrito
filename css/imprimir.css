@@ -47,6 +47,8 @@
 .articulo__lateral,
 .volver,
 .compartir,
+.descarga,
+.paso,
 .continua,
 .suscripcion,
 .busca {
@@ -119,15 +121,18 @@ body {
   padding: 0;
 }
 
-/* ------------------------------------------------- portada -------------- */
+/* --------------------------------------- bloque de titulo --------------- */
 
-/* La inyecta pdf.mjs. Es la unica pieza del PDF que no existe en la web, y por
+/* Lo inyecta pdf.mjs. Es la unica pieza del PDF que no existe en la web, y por
    eso es la unica que se dibuja entera aqui.
 
-   Ocupa la pagina completa con un flex en columna: el logo arriba, el bloque
-   de texto empujado al centro por el `margin-top: auto` del siguiente, y la
-   foto cerrando abajo. Asi no hay ninguna altura escrita a mano —que se
-   rompería con un titulo de cuatro lineas— y la composicion aguanta. */
+   ⚠️ ERA UNA PORTADA DE PAGINA ENTERA. Tenia `height: 259mm` —297 menos los
+   margenes— y `break-after: page`, con la foto cerrando abajo y un
+   `overflow: hidden` de red. Hoy es un bloque que ABRE la primera pagina y
+   fluye con el texto, formato paper.
+
+   Con ello desaparecen tres cosas: la calibracion de 259mm, el riesgo de
+   pagina en blanco por pasarse de esa altura, y la foto. */
 
 .pdf-portada {
   display: none;
@@ -135,29 +140,27 @@ body {
 
 @media print {
   .pdf-portada {
-    display: flex;
-    flex-direction: column;
-    /* 297mm de A4 menos los 20mm de margen de arriba y los 18 de abajo que
-       pone pdf.mjs. Si alli cambian los margenes, cambia este numero. */
-    height: 259mm;
-    break-after: page;
-    /* Red por debajo: si algun dia un ancestro vuelve a meter relleno, lo que
-       sobre se recorta en vez de paginarse. Una portada con la foto tres
-       milimetros mas baja se ve rara; una portada sin foto y una pagina suelta
-       con la foto no se ve como un fallo de maqueta, se ve como un PDF roto. */
-    overflow: hidden;
+    display: block;
+    /* Que no se parta entre el titular y la ficha: es el encabezado del
+       documento y se lee como una unidad. Cabe de sobra en una pagina. */
+    break-inside: avoid;
+    margin: 0 0 24pt;
   }
 }
 
+/* Logo pequeno, como cintillo: en la portada de pagina entera pedia presencia y
+   aqui solo tiene que identificar la cabecera del documento. */
+
 .pdf-portada__logo {
-  flex: none;
-  width: 46pt;
-  height: 42pt;
+  width: 20pt;
+  height: 18pt;
+  vertical-align: -4pt;
+  margin-right: 6pt;
 }
 
 .pdf-portada__marca {
-  flex: none;
-  margin: 10pt 0 0;
+  display: inline-block;
+  margin: 0 0 20pt;
   font-family: var(--display);
   font-size: 13pt;
   font-weight: 600;
@@ -166,8 +169,11 @@ body {
   color: #1e1e1e;
 }
 
+/* ⚠️ LLEVABA `margin-top: auto` para empujarse al centro de la pagina entera.
+   Sin portada no hay hueco que repartir, asi que se suelta. */
+
 .pdf-portada__texto {
-  margin-top: auto;
+  margin-top: 0;
 }
 
 .pdf-portada__categoria {
@@ -183,18 +189,11 @@ body {
 .pdf-portada__titulo {
   margin: 0;
   font-family: var(--display);
-  font-size: 30pt;
+  font-size: 22pt;
   font-weight: 600;
   line-height: 1.1;
   letter-spacing: -0.015em;
   color: #1e1e1e;
-}
-
-.pdf-portada__entradilla {
-  margin: 14pt 0 0;
-  font-size: 12pt;
-  line-height: 1.5;
-  color: #66615b;
 }
 
 /* El filete separa la ficha del texto. Va arriba de la ficha y no abajo de la
@@ -224,35 +223,45 @@ body {
   color: #d8d2c9;
 }
 
-/* La foto cierra abajo. 21:9 recortado con `cover`, que es la unica proporcion
-   panoramica del sistema y la que ya usa la cabecera del articulo en la web.
-   `margin-top: 22pt` la despega de la ficha sin fijarle una altura. */
+/* --------------------------------------------- resumen ------------------ */
 
-.pdf-portada__imagen {
-  flex: none;
-  margin-top: 22pt;
-  height: 52mm;
-  overflow: hidden;
-}
+/* ⚠️ LA ENTRADILLA DEL CUERPO HACE DE RESUMEN, Y ES LA UNICA VEZ QUE APARECE.
 
-.pdf-portada__imagen img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center 30%;
-}
+   Antes el texto de apertura salia DOS VECES: la `descripcion` en la portada y
+   la `entradilla` aqui. Eran parrafos distintos con el mismo papel, y en un
+   paper eso es un resumen duplicado. Hoy la portada no lleva ninguno y este se
+   queda solo, que ademas evita tener que resolver las llamadas de referencia
+   —{{ref:n}}— en pdf.mjs: este parrafo ya viene resuelto del build.
 
-/* ------------------------------------------------- entradilla ----------- */
+   En CURSIVA y con sangria a los DOS lados, sin recuadro: es la convencion del
+   abstract academico y no estrena ningun color ni filete. La sangria simetrica
+   es lo que lo separa del cuerpo; un recuadro habria pedido un fondo que el PDF
+   no usa en ninguna otra parte.
 
-/* Se imprime otra vez, en el cuerpo, porque ahi es la apertura del texto y en
-   la portada es un reclamo. Es el mismo parrafo con dos papeles, igual que en
-   la web el titular esta en la pagina y en la pestaña. */
+   El rotulo va en ::before y no en el marcado porque es decorativo y porque el
+   <p> lo escribe el build para la WEB, donde no hay ningun «Resumen». */
 
 .entradilla {
-  font-size: 12pt;
+  font-family: var(--texto);
+  font-size: 11pt;
+  font-style: italic;
   line-height: 1.5;
   color: #66615b;
-  margin: 0 0 20pt;
+  margin: 0 0 22pt;
+  padding: 0 14mm;
+}
+
+.entradilla::before {
+  content: "Resumen";
+  display: block;
+  margin-bottom: 5pt;
+  font-family: var(--ui);
+  font-size: 7.5pt;
+  font-style: normal;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #2f6e68;
 }
 
 /* ------------------------------------------------- indice --------------- */

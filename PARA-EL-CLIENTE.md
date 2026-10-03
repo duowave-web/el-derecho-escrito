@@ -57,6 +57,18 @@ entre en la web.
 > que no es tuya, una dirección web muy larga, una referencia que se cita y no
 > está en el listado del final.
 
+### Verás que también cambia el artículo anterior. Es normal
+
+Si miras la lista de archivos que toca la propuesta, aparecerá **el artículo
+anterior** además del nuevo. No es un error y no hay que hacer nada.
+
+El motivo es sencillo: al final de cada artículo hay unos enlaces para pasar al
+siguiente y al anterior. Cuando publicas uno nuevo, el que ya estaba necesita
+que le añadan el enlace **«Leer siguiente»**, que antes no tenía porque no había
+ningún artículo después.
+
+Su texto no se toca: solo le aparece ese enlace al final.
+
 ---
 
 ## 4. Si está bien: publicar
@@ -99,9 +111,32 @@ se mira: es justamente para lo que está.
 No. La propuesta se queda ahí hasta que la revises. Nada se publica solo.
 
 **¿Puedo cambiar algo después de publicar?**
-Sí, pero la dirección del artículo (su enlace) ya no se puede cambiar sin
-romper los enlaces que la gente haya compartido. Si el titular no te convence,
-es mejor decirlo **antes** de pulsar el botón.
+Sí, pero **no vuelvas a subirlo a Drive: pásamelo a mí.**
+
+Drive sirve para artículos **nuevos**. Si subes ahí la corrección de uno que ya
+está publicado, el sistema lo trata como si fuera de hoy y **le cambia la fecha
+de publicación**: el artículo aparecería como recién salido, se pondría el
+primero de la lista y volvería a anunciarse a quien esté suscrito. Eso no tiene
+buen arreglo una vez hecho.
+
+Para corregir o actualizar uno ya publicado, mándame el texto —por correo o como
+prefieras— y lo cambio yo conservando su fecha. Si es una revisión de fondo,
+además le pongo un «Última actualización» con la fecha de hoy, que es la forma
+honrada de decir que el artículo se ha revisado sin fingir que es nuevo.
+
+Y una cosa que **no** tiene arreglo en ningún caso: la dirección del artículo
+(su enlace) sale del titular y ya no se puede cambiar sin romper los enlaces que
+la gente haya compartido. Si el titular no te convence, dilo **antes** de pulsar
+el botón verde.
+
+**He actualizado mi CV. ¿Lo subo yo a algún sitio?**
+No: **pásamelo a mí** y lo sustituyo.
+
+El CV se descarga desde dos sitios de la web —tu página «Acerca de» y el lateral
+de cada artículo— y los dos apuntan al mismo archivo. Hay que reemplazarlo
+**conservando el mismo nombre**, porque si se sube con otro nombre deja de
+funcionar cualquier enlace al CV que hayas mandado por correo o puesto en una
+firma. Es un cambio de un minuto, pero conviene hacerlo bien.
 
 **¿Dónde se ve la web publicada?**
 En [duowave-web.github.io/el-derecho-escrito](https://duowave-web.github.io/el-derecho-escrito/)

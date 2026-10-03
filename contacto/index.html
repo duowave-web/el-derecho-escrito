@@ -112,6 +112,15 @@
            mención dentro de un texto. -->
       <p class="entradilla">Puedes utilizar este formulario para plantear una consulta, comentar una publicación, formular una sugerencia, proponer una colaboración o contactar por cualquier otra cuestión relacionada con <em>El Derecho Escrito</em> y las materias que aborda.</p>
 
+      <!-- Cierra la banda de entrada y cruza las dos columnas. Es el mismo
+           filete que cierra `sobre/`: las declaraciones viven agrupadas en
+           styles.css para que no puedan divergir.
+
+           Va en el marcado y no en un `border-bottom` de la entradilla porque
+           tiene que medir lo que mide la FILA, no lo que mide el párrafo, que
+           se topa en los 600 del formulario. -->
+      <hr>
+
       <!-- NOMBRE Y CORREO VAN EN PAREJA y el resto a ancho completo. Aprovechar
            el ancho no es estirarlo todo: un campo de una sola línea de 576px
            son unos 76 caracteres, y para un nombre o un correo eso es espacio

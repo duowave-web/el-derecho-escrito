@@ -108,100 +108,139 @@
   </div>
 
   <div class="articulo">
-  <div class="contenedor">
+  <div class="contenedor contenedor--amplio">
 
-    <!-- Esta entradilla NO es la de la mancheta: es la apertura de la página,
-         contenido, y se queda en la columna de lectura.
+    <!-- ⚠️ ESTA PÁGINA ERA UNA COLUMNA DE LECTURA Y AHORA SON DOS FILAS.
+         Antes iba en `.contenedor` a secas —el ancho de lectura, 820— y abría
+         con una entradilla suelta seguida de los apartados «Contenido» y
+         «Sobre el autor». Pasa a `.contenedor--amplio` porque la primera fila
+         necesita dos columnas y el ancho de lectura no da para dos.
 
-         ⚠️ AQUÍ VIVÍAN CUATRO APARTADOS —«Por qué existe este blog», «Qué vas a
-         encontrar», «Formación y trayectoria» y «Cómo trabajo»—, dos de ellos
-         con texto de relleno entre corchetes. Se sustituyen por la estructura
-         de los textos definitivos: apertura, «Contenido» y «Sobre el autor».
+         La estructura la marca el PDF del cliente: «Enfoque» y «Contenido» a
+         la par, y «Sobre el autor» debajo a todo el ancho.
 
-         No era solo cuestión de redacción: el texto viejo decía que el blog
-         trataba «derecho penal, civil, constitucional, laboral y mercantil», y
-         eso contradice de plano las materias reales. -->
-    <p class="entradilla">El Derecho administrativo es conocido como el rey del Derecho escrito.</p>
+         SE PIERDEN DOS PÁRRAFOS, y fue deliberado: «En esta disciplina
+         confluyen conceptos de difícil delimitación…» y «Los artículos buscan
+         combinar claridad expositiva…». El PDF fija «Enfoque» en tres párrafos
+         y «Contenido» en uno más la lista, así que no tienen sitio.
 
-    <p>La expresión alude al carácter predominantemente escrito de la jurisdicción contencioso-administrativa, en consonancia con la complejidad técnica y normativa de las materias que comprende.</p>
+         LO QUE NO ESTÁ EN EL PDF Y SE CONSERVA POR ENCARGO: el aviso legal del
+         cierre y los dos botones de salida. El PDF describe el cuerpo de la
+         página, no su pie, y el aviso es texto del cliente con fórmula fija. -->
+    <div class="sobre__columnas">
 
-    <p>En esta disciplina confluyen conceptos de difícil delimitación, principios jurídicos y normas de distinto rango, procedencia territorial y ámbito sectorial, junto con una jurisprudencia amplia y en constante evolución.</p>
+      <section>
+        <h2>Enfoque</h2>
 
-    <!-- «El Derecho Escrito» en <em>: el nombre va en cursiva siempre que
-         aparece dentro de un texto corrido. En el título de la página, no. -->
-    <p><em>El Derecho Escrito</em> nace para hacer legible esa complejidad: aclarar conceptos, profundizar en sus fundamentos, analizar la normativa y la jurisprudencia, y conectar la teoría jurídica con la práctica procesal. No se trata de simplificar el Derecho, sino de explicarlo con claridad sin restarle rigor ni profundidad.</p>
+        <p><strong>El Derecho administrativo es conocido como el rey del Derecho escrito.</strong> La expresión alude al carácter predominantemente escrito de la jurisdicción contencioso-administrativa, en consonancia con la complejidad técnica y normativa de las materias que comprende.</p>
 
-    <h2>Contenido</h2>
+        <!-- «El Derecho Escrito» en <em>: el nombre va en cursiva siempre que
+             aparece dentro de un texto corrido. En el título de página, no.
+             Aquí va además dentro del <strong> que el PDF marca en la frase
+             de apertura del párrafo. -->
+        <p><strong><em>El Derecho Escrito</em> nace para hacer legible esa complejidad</strong>: conocer sus fundamentos, comprender su interpretación jurisprudencial y entender su proyección sobre la práctica procesal.</p>
 
-    <p>El blog se centra en el Derecho administrativo, el urbanismo y la jurisdicción contencioso-administrativa a través de distintas líneas de contenido:</p>
+        <p>No se trata de simplificar el Derecho, sino de explicarlo con claridad sin restarle rigor ni profundidad.</p>
+      </section>
 
-    <!-- La coma queda FUERA del <strong> en los tres puntos. El documento la
-         metía dentro solo en el tercero; se iguala a los otros dos. -->
-    <ul>
-      <li><strong>Conceptos y fundamentos</strong>, mediante artículos dirigidos a explicar con claridad instituciones, principios y categorías jurídicas complejas.</li>
-      <li><strong>Normativa y jurisprudencia</strong>, con análisis de disposiciones y resoluciones judiciales relevantes, su contexto, su fundamentación y sus consecuencias interpretativas.</li>
-      <li><strong>Ensayo, opinión y práctica jurídica</strong>, con especial énfasis en las cuestiones procesales y estratégicas propias de la jurisdicción contencioso-administrativa, así como en el análisis crítico de debates actuales, problemas interpretativos y posibles líneas de evolución del Derecho.</li>
-    </ul>
+      <section>
+        <h2>Contenido</h2>
 
-    <p>Los artículos buscan combinar claridad expositiva y profundidad jurídica, conectando los fundamentos teóricos con la interpretación de las fuentes y los problemas que aparecen en la práctica.</p>
+        <p>El blog se centra en el Derecho administrativo, el urbanismo y la jurisdicción contencioso-administrativa a través de distintas líneas de contenido:</p>
 
-    <h2>Sobre el autor</h2>
+        <!-- ⚠️ LOS TRES NOMBRES SON ENLACES AL FILTRO, y es el único sitio del
+             sitio donde el texto del cliente coincide LITERALMENTE con las tres
+             claves de CATEGORIAS: fundamentos, jurisprudencia y ensayos. El
+             href y el «Ver artículos de» oculto son los mismos que usan la
+             portada y la ficha del artículo.
 
-    <!-- El retrato reutiliza juanconteramiranda.jpeg, la misma foto que el
-         lateral del artículo, y hereda de .autor__retrato el círculo, el filete
-         y el recorte. Lo que añade .sobre__autor es la disposición en fila
-         —retrato a la izquierda, texto a la derecha— porque aquí hay sitio y en
-         el lateral no.
+             La coma queda FUERA del <strong> y fuera del enlace: forma parte de
+             la frase, no del nombre de la categoría. -->
+        <ul class="sobre__lineas">
+          <li><strong><a href="../articulos/?categoria=fundamentos"><span class="oculto">Ver artículos de </span>Fundamentos</a></strong>, mediante artículos dirigidos a explicar con claridad instituciones, principios y conceptos jurídicos complejos.</li>
+          <li><strong><a href="../articulos/?categoria=jurisprudencia"><span class="oculto">Ver artículos de </span>Jurisprudencia</a></strong>, con análisis de normas y resoluciones judiciales relevantes, su contexto, su fundamentación y sus consecuencias interpretativas.</li>
+          <li><strong><a href="../articulos/?categoria=ensayos"><span class="oculto">Ver artículos de </span>Ensayos</a></strong>, con especial énfasis en el análisis crítico de debates actuales, problemas interpretativos y posibles líneas de evolución del Derecho.</li>
+        </ul>
+      </section>
 
-         ⚠️ CON ESTO LA AUTORÍA SE REPITE EN UN SITIO MÁS. El nombre del autor
-         está dentro del nombre del archivo, así que al cambiar de autor hay que
-         renombrarlo y tocar el src de los DOS sitios: aquí y el lateral del
-         artículo. Está contado en CLAUDE.md. -->
-    <div class="sobre__autor">
-      <div class="autor__retrato sobre__retrato">
-        <img src="../img/juanconteramiranda.jpeg"
-             alt="Retrato de Juan Contera Miranda"
-             width="400" height="400" loading="lazy" decoding="async">
-      </div>
-      <div class="sobre__autor-texto">
-        <p><strong>Juan Contera Miranda</strong> es abogado colegiado en el Ilustre Colegio de la Abogacía de Madrid y ejerce en el Departamento de Derecho Procesal de <strong>Sterling Abogados</strong>. Su práctica profesional comprende procedimientos administrativos y judiciales, litigación contencioso-administrativa y asuntos relacionados con licencias, sanciones, urbanismo, expropiaciones y responsabilidad patrimonial.</p>
-
-        <p>Es graduado en Derecho y Ciencias Políticas por la Universidad Complutense de Madrid. Su formación de posgrado se ha orientado al estudio de las organizaciones públicas y del Derecho urbanístico: cuenta con un Máster Universitario en Gobierno y Dirección Estratégica de Organizaciones Públicas por la Universidad Europea del Atlántico y un Máster Universitario en Derecho de la Ordenación del Territorio y del Urbanismo por la Universidad Internacional de La Rioja.</p>
-
-        <p>Desde esta doble perspectiva académica y profesional, escribe en <em>El Derecho Escrito</em> sobre los fundamentos de estas disciplinas, la interpretación de sus fuentes y los problemas que plantea su aplicación práctica.</p>
-      </div>
     </div>
 
-    <hr>
+    <section class="sobre__bloque-autor">
+      <h2>Sobre el autor</h2>
 
-    <!-- Aviso de cierre, ahora en la MISMA FÓRMULA que el del artículo: texto
-         del cliente, entero en <em> y con «página de contacto» enlazada.
+      <!-- El retrato es la misma foto que el lateral del artículo, pero NO el
+           mismo archivo: aquí va la de 600×800 y allí una de 264×352, porque
+           allí la caja mide 132 px y servirle esta costaría 45 KB en cada
+           página de artículo. Está razonado en plantilla.mjs, sobre AUTOR.
+           De .autor__retrato hereda el recorte y el fondo de respaldo. La
+           FORMA no: aquí es rectángulo vertical y en el lateral un círculo.
 
-         Aquí había una redacción distinta —«Todo lo que se publica en este blog
-         es divulgación, no asesoramiento…»— y además iba SIN enlace, porque
-         debajo había un «¿Quieres escribirme? Ve a Contacto» y habrían sido dos
-         enlaces seguidos al mismo sitio. Los dos motivos han caído: el texto lo
-         da ahora el cliente y ese enlace suelto lo sustituyeron los botones.
+           ⚠️ ESTUVO EN CÍRCULO Y SE CORRIGIÓ. Se razonó entonces que «el PDF
+           marca estructura y contenido, no estilos»; el encargo posterior fue
+           reproducir el PDF también en composición, así que la forma pasa a ser
+           la suya.
 
-         ⚠️ Queda un tercer enlace a contacto/ en esta pantalla: este y el botón
-         «Contacto» de abajo. Se acepta porque uno es una frase legal al pie y el
-         otro una acción, pero si algún día molesta, el que sobra es este.
+           ⚠️ EL TEXTO VA ANTES QUE LA FOTO EN EL MARCADO, y no es indiferente.
+           El PDF pone la foto a la derecha, así que el orden de lectura es
+           texto → foto; apilado en móvil cae igual sin necesidad de `order`.
+           Antes estaba al revés —retrato primero— y se invirtió. Es la misma
+           regla que se aplicó al reordenar la cabecera del artículo: el orden
+           del DOM es el que oyen los lectores de pantalla.
 
-         El enlace es ../contacto/ —un solo nivel—, no ../../contacto/ como en
-         el artículo: sobre/ está a un nivel de la raíz y el artículo a dos. -->
-    <p class="aviso"><em>Los contenidos de <em>El Derecho Escrito</em> tienen carácter informativo y divulgativo y no sustituyen el análisis jurídico de un asunto concreto. Si deseas plantear una consulta, puedes hacerlo a través de la <a href="../contacto/">página de contacto</a>.</em></p>
+           ⚠️ CON ESTO LA AUTORÍA SE REPITE EN UN SITIO MÁS. El nombre del autor
+           está dentro del nombre de los archivos, así que al cambiar de autor
+           hay que renombrar LOS DOS y tocar el src de los dos sitios: aquí y el
+           lateral del artículo. Está contado en CLAUDE.md. -->
+      <div class="sobre__autor">
+        <div class="sobre__autor-texto">
+          <p><strong>Juan Contera Miranda</strong> es graduado en Derecho y Ciencias Políticas por la UCM, Máster en Gobierno y Dirección Estratégica de Organizaciones Públicas por la UEA y Máster en Derecho de la Ordenación del Territorio y del Urbanismo por la UNIR.</p>
 
-    <!-- Aquí había un enlace suelto, «¿Quieres escribirme? Ve a Contacto →», en
-         .lista__mas. Lo sustituyen los dos botones que pide el documento, que
-         además dan la salida al listado que antes no existía en esta página.
+          <p>Actualmente ejerce como abogado en el Departamento de Derecho Procesal de Sterling Abogados. Su área de especialización es el Derecho Administrativo y el Urbanismo.</p>
 
-         Mismo par que el hero: el principal relleno y el secundario con filete.
-         Reutilizan .portada__acciones, que es solo la fila flex con su hueco y
-         ya trae el apilado a ancho completo por debajo de 600 px. -->
-    <div class="portada__acciones">
-      <a class="boton boton--principal" href="../articulos/">Explorar artículos</a>
-      <a class="boton" href="../contacto/">Contacto</a>
-    </div>
+          <p>Desde esta doble perspectiva académica y profesional, escribe en <em>El Derecho Escrito</em> sobre los fundamentos de estas disciplinas, la interpretación de sus fuentes y los problemas que plantea su aplicación práctica.</p>
+
+          <!-- El formato y el peso van en .oculto y no a la vista: el PDF del
+               cliente pone «Descargar CV» a secas, y el sitio ya resuelve así
+               el texto que solo necesita quien no ve la pantalla —es el mismo
+               recurso que el «Ver artículos de » de las categorías—. El nombre
+               accesible queda «Descargar CV (PDF, 63 KB)».
+
+               ⚠️ EL PESO ESTÁ ESCRITO A MANO. Si el cliente actualiza el CV hay
+               que volver a mirarlo: nada lo comprueba y un número desfasado no
+               da ningún error. Está anotado en CLAUDE.md.
+
+               Ruta relativa, como todo el sitio: sobre/ está a un nivel de la
+               raíz. No hay <base> ni rutas absolutas que la rompan, así que
+               funciona igual en el subdirectorio de GitHub Pages y en el
+               dominio final. -->
+          <p>
+            <a class="boton boton--contorno" href="../documentos/CV-Juan-Contera-Miranda.pdf" download>
+              Descargar CV<span class="oculto"> (PDF, 63 KB)</span>
+            </a>
+          </p>
+        </div>
+
+        <!-- ⚠️ RECTÁNGULO VERTICAL, NO CÍRCULO, y conserva `.autor__retrato`
+             solo por la mecánica —recorte, fondo de respaldo y el dimensionado
+             del <img>—. Lo que `.sobre__retrato` cambia es la forma: 300×400 y
+             radio 0.
+
+             ✅ AQUÍ DECÍA QUE SE VERÍA BLANDA, Y YA NO. La fuente era CUADRADA
+             de 400 px, así que a 3:4 dejaba 300×400 útiles para una caja de
+             300×400: exactamente 1×. La foto nueva es 3:4 de origen y se sirve
+             a 600×800, o sea 2× justos, que es lo que pide una pantalla densa.
+
+             ⚠️ Y AL SER 3:4 EXACTO, `cover` NO RECORTA NADA. El `object-position`
+             que lleva el círculo del lateral aquí no pinta: no hay holgura que
+             repartir. Si alguien cambia la proporción de esta caja, empezará a
+             recortar y habrá que mirar por dónde. -->
+        <div class="autor__retrato sobre__retrato">
+          <img src="../img/juanconteramiranda-600x800.jpg"
+               alt="Retrato de Juan Contera Miranda"
+               width="600" height="800" loading="lazy" decoding="async">
+        </div>
+      </div>
+    </section>
 
   </div>
   </div>

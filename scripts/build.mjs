@@ -66,6 +66,34 @@ function reemplazarRegion(texto, nombre, contenido, archivo) {
 
 const CAMPOS = ['slug', 'titulo', 'descripcion', 'entradilla', 'categoria', 'fecha', 'secciones', 'imagen'];
 
+/* ⚠️ COMPRUEBA QUE LA FECHA EXISTE, NO SOLO QUE TIENE LA FORMA, y el segundo
+   control es el que faltaba.
+
+   La validación era un `/^\d{4}-\d{2}-\d{2}$/` a secas, así que «2026-13-45»
+   pasaba. Y lo que publicaba era esto, sin un solo error:
+
+     ficha            →  «45 de undefined de 2026»
+     <time datetime>  →  2026-13-45T09:00:00+02:00
+     dateModified     →  2026-13-45T09:00:00+02:00
+     <lastmod>        →  2026-13-45
+
+   El «undefined» sale de `MESES[12]`, que no existe. Lo ve cualquiera que mire
+   la página; los otros tres no los ve nadie hasta que un buscador los descarta.
+
+   El día se comprueba contra el mes de verdad —`Date.UTC(a, m, 0)` da el
+   último día del mes `m`, bisiestos incluidos— y no contra un 31 fijo.
+
+   ⚠️ SE APLICA TAMBIÉN A `fecha`, QUE TENÍA EL MISMO AGUJERO. No es un
+   añadido de esta tarea: es que dejar `actualizado` estricto y `fecha` laxo
+   habría sido una incoherencia peor que cualquiera de las dos. */
+
+function fechaValida(s) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(s)) return false;
+  const [a, m, d] = s.split('-').map(Number);
+  if (m < 1 || m > 12) return false;
+  return d >= 1 && d <= new Date(Date.UTC(a, m, 0)).getUTCDate();
+}
+
 function validar(art, ruta) {
   for (const c of CAMPOS) {
     if (art[c] === undefined) errores.push(`${ruta}: falta el campo «${c}»`);
@@ -75,8 +103,49 @@ function validar(art, ruta) {
       `${ruta}: categoría «${art.categoria}» desconocida. Las del sitio son: ${Object.keys(CATEGORIAS).join(', ')}`
     );
   }
-  if (art.fecha && !/^\d{4}-\d{2}-\d{2}$/.test(art.fecha)) {
-    errores.push(`${ruta}: la fecha debe ser YYYY-MM-DD, y es «${art.fecha}»`);
+  if (art.fecha && !fechaValida(art.fecha)) {
+    errores.push(`${ruta}: la fecha debe ser YYYY-MM-DD y existir en el calendario, y es «${art.fecha}»`);
+  }
+
+  /* `actualizado` es OPCIONAL: sin él la página sale exactamente como siempre.
+     Pero si viene, tiene que ser usable, y aquí sí se para el build.
+
+     ⚠️ ES ERROR Y NO AVISO, al revés que el slug largo o los `id` derivados.
+     La diferencia es la de siempre en este archivo: aquellos publican bien y
+     solo son mejorables, mientras que una fecha mal formada aquí **se
+     publicaría rota**. Va a `datetime` del <time>, a `dateModified` del
+     JSON-LD, a `article:modified_time` y al `lastmod` del sitemap: cuatro
+     sitios donde una cadena que no es una fecha es un dato inválido que
+     ningún buscador puede leer, y ninguno de los cuatro da error al servirse.
+
+     Y una anterior a la publicación no es un error de formato sino de sentido
+     —un artículo no se actualiza antes de existir—, con el mismo destino: se
+     declararía un `dateModified` previo al `datePublished`. */
+
+  if (art.actualizado !== undefined && art.actualizado !== null) {
+    if (!fechaValida(art.actualizado)) {
+      errores.push(
+        `${ruta}: «actualizado» debe ser una fecha YYYY-MM-DD que exista en el ` +
+        `calendario, como «fecha», y es «${art.actualizado}»`
+      );
+    } else if (art.fecha && fechaValida(art.fecha)) {
+      /* Comparación de cadenas y no de Date: en formato ISO el orden
+         alfabético ES el cronológico, y así no se arrastra la zona horaria
+         que `new Date('2026-09-28')` interpreta como UTC. */
+      if (art.actualizado < art.fecha) {
+        errores.push(
+          `${ruta}: «actualizado» (${art.actualizado}) es anterior a «fecha» ` +
+          `(${art.fecha}). Un artículo no puede actualizarse antes de publicarse.`
+        );
+      } else if (art.actualizado === art.fecha) {
+        avisos.push(
+          `La fecha de actualización de este artículo es la misma que la de ` +
+          `publicación (${art.fecha}), así que NO se va a mostrar: diría dos ` +
+          `veces lo mismo. Si el artículo se ha revisado de verdad, pon la ` +
+          `fecha de la revisión; si no, quita el campo.`
+        );
+      }
+    }
   }
 
   /* ⚠️ AVISO Y NO ERROR, Y AQUÍ LA DIFERENCIA IMPORTA MÁS QUE EN NINGÚN OTRO
@@ -266,7 +335,7 @@ async function main() {
   let escritos = 0;
 
   /* 1 · páginas de artículo + portadas */
-  for (const art of arts) {
+  for (const [i, art] of arts.entries()) {
     const dir = join(RAIZ, 'articulos', art.slug);
     await mkdir(dir, { recursive: true });
 
@@ -278,7 +347,23 @@ async function main() {
       errores.push(`${art.slug}: no existe la imagen ${art.imagen.archivo}`);
     }
 
-    if (await escribirSiCambia(join(dir, 'index.html'), paginaArticulo(art))) escritos++;
+    /* ⚠️ `arts` VA DE MÁS NUEVO A MÁS VIEJO, así que el de índice MENOR es el
+       publicado después. Es al revés de lo que sugiere el array y es el error
+       fácil de cometer aquí.
+
+       El orden es el mismo que usa todo lo demás —fecha descendente, slug de
+       desempate— y por eso se pasa resuelto en vez de recalcularlo en la
+       plantilla: un segundo criterio podría divergir sin que nada avisara.
+
+       ⚠️ ESTO HACE QUE PUBLICAR UN ARTÍCULO REESCRIBA TAMBIÉN EL HTML DEL
+       ANTERIOR, para añadirle su «Leer siguiente». Es esperado y está
+       documentado en CLAUDE.md: un PR de publicación toca ahora dos páginas de
+       artículo, no una. No rompe la idempotencia —dos pasadas seguidas dan lo
+       mismo— ni el PDF, que no imprime esta navegación. */
+
+    const vecinos = { siguiente: arts[i - 1], anterior: arts[i + 1] };
+
+    if (await escribirSiCambia(join(dir, 'index.html'), paginaArticulo(art, vecinos))) escritos++;
   }
 
   /* 2 · listado */

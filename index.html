@@ -231,8 +231,6 @@
         <div class="destacado__texto">
 
           <p class="destacado__antetitulo">
-            <span>Artículo destacado</span>
-            <span class="destacado__antetitulo-sep" aria-hidden="true">·</span>
             <a href="./articulos/?categoria=jurisprudencia"><span class="oculto">Ver artículos de </span>Jurisprudencia</a>
           </p>
 
@@ -289,9 +287,20 @@
         <h2 id="ultimos-titulo" class="lista__titulo lista__titulo--destacado">Últimos artículos</h2>
         <!-- La flecha va en un <span aria-hidden> y no suelta en el texto: así
              tiene elemento propio que animar, y de paso deja de anunciarse como
-             «flecha derecha» detrás del enlace. -->
+             «flecha derecha» detrás del enlace.
+
+             ⚠️ ESTO ERA UN `.boton .boton--contorno` Y YA NO LO ES. Es un
+             enlace de texto, el mismo estilo que «Leer artículo» del destacado:
+             acento, sin fondo ni filete y con la flecha que se desplaza.
+             Las dos reglas viven juntas en styles.css, agrupadas a propósito.
+
+             No se le devuelven las clases de botón: el encabezado tiene un solo
+             rótulo enfrente y un botón ahí pesaba más que la sección que
+             anuncia. El alto de 44px de pulsación NO se perdió —lo repone
+             `.lista__enlace` con inline-flex y min-height—, así que esto se
+             sigue pudiendo pulsar cómodo en un móvil. -->
         <p class="lista__mas lista__mas--enlinea">
-          <a class="boton boton--contorno" href="./articulos/">Ver todos los artículos <span class="boton__flecha" aria-hidden="true">&rarr;</span></a>
+          <a class="lista__enlace" href="./articulos/">Ver todos los artículos <span class="lista__flecha" aria-hidden="true">&rarr;</span></a>
         </p>
       </div>
 

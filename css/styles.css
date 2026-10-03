@@ -876,23 +876,20 @@ body:has(.portada--video) .cabecera--con-linea {
   outline-offset: 3px;
 }
 
-.boton__flecha {
-  display: inline-block;
-  transition: transform 220ms cubic-bezier(0.2, 0.7, 0.3, 1);
-}
+/* ⚠️ AQUÍ VIVÍA `.boton__flecha`, LA FLECHA DEL BOTÓN, Y SE RETIRÓ CON SU ÚNICO
+   PORTADOR. Lo era «Ver todos los artículos» de la portada, que dejó de ser un
+   botón para pasar a enlace de texto. Eran cuatro reglas: la flecha, su
+   desplazamiento de 4px en hover y las dos del bloque de abajo.
 
-.boton--contorno:hover .boton__flecha {
-  transform: translateX(4px);
-}
+   La flecha que hay hoy en la portada NO es esta: son `.lista__flecha` y
+   `.destacado__flecha`, que viven en su propio bloque y comparten estilo.
+
+   Lo que SÍ se queda es el `transition: none` de `.boton--contorno`, porque el
+   botón sigue animando su relleno y su texto. */
 
 @media (prefers-reduced-motion: reduce) {
-  .boton--contorno,
-  .boton__flecha {
+  .boton--contorno {
     transition: none;
-  }
-
-  .boton--contorno:hover .boton__flecha {
-    transform: none;
   }
 }
 
@@ -1233,23 +1230,58 @@ body:has(.portada--video) .cabecera--con-linea {
    composicion —ni libro, ni balanza—. Seria peso para no ensenar la imagen.
 
    YA NO LLEVA VELO. Tuvo uno blanco al 45% mientras el texto iba a los lados:
-   los manchones oscuros de la imagen estan en los bordes izquierdo y derecho, y
-   ahi el titular se quedaba en 1,68:1. Con el titulo centrado cae sobre la zona
-   clara del centro y da 14,03:1 SIN velo ninguno, identico en los seis anchos
-   medidos porque esa franja es uniforme. El velo protegia a un texto que ya no
-   esta ahi, y quitandolo la imagen recupera el veteado y la balanza.
+   los manchones oscuros estaban en los bordes izquierdo y derecho, y ahi el
+   titular se quedaba en 1,68:1. Con el titulo centrado cae sobre la zona clara
+   del centro y no hace falta velo ninguno.
 
-   GUARDA: ese 14,03 vale para los titulos de ahora, que miden entre 151 y 157
-   px. Medido, hay sitio hasta unos 450 px de titulo (12,71). A 600 baja a 5,79
-   y a 800 se queda en 2,86 y ya no cumple. Un titulo de seccion mas largo que
-   eso obliga a volver a medir, o a devolver el velo. */
+   ⚠️ LA IMAGEN CAMBIO: era `fondo-cabecera.jpg` y ahora es `fondo-paginas.jpg`,
+   recortada a 4:1 exacto (2560x640) para esta banda. Misma familia visual que
+   el veteado de la portada, pero sin libro ni balanza.
+
+   `center` NO SE TOCO, y no por inercia: se midieron cinco posiciones
+   verticales y las cinco dan entre 11,6 y 12,4:1, porque el titulo cae sobre el
+   centro claro pase lo que pase. Mover la Y no mejora nada.
+
+   Contraste del h1 (--tinta sobre el pixel mas oscuro bajo su caja):
+
+     ancho de ventana   1280     1440
+     peor ratio        11,84    11,93
+
+   GUARDA, y con la imagen nueva es mucho mas holgada que antes. Medido a 1440
+   forzando titulos cada vez mas anchos:
+
+     titulo    160    450    600    800   1000   1200 px
+     nuevo   11,81  10,79   8,15   8,15   6,61   6,61
+     viejo   14,64  12,88  12,88  12,00   5,56   2,45  <- incumplia a 1200
+
+   O sea que el corte de 450 px que documentaba la imagen anterior ya no
+   aplica: esta no baja de 6,61 ni con un titulo de 1200 px, que es mas ancho
+   que cualquier rotulo imaginable. Aun asi, si algun dia se cambia la imagen
+   hay que volver a medir esta tabla. */
 
 @media (min-width: 901px) {
   .mancheta {
-    background-image: url(../img/fondo-cabecera.jpg);
+    background-image: url(../img/fondo-paginas.jpg);
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
+  }
+}
+
+/* ⚠️ AL IMPRIMIR NO SALE, Y HACE FALTA DECIRLO AQUI.
+
+   Las tres paginas con mancheta —articulos/, sobre/ y contacto/— NO enlazan
+   `imprimir.css`: esa hoja la cargan solo las paginas de articulo, para el PDF.
+   Asi que esta es la unica hoja desde la que se puede apagar.
+
+   Y hace falta apagarlo explicitamente: los navegadores no imprimen imagenes de
+   fondo POR DEFECTO, pero el usuario puede activar «graficos de fondo», y
+   entonces el `@media (min-width: 901px)` de arriba casa igual —el medio print
+   tambien tiene ancho— y la banda saldria tintada. Con esto no puede pasar. */
+
+@media print {
+  .mancheta {
+    background-image: none;
   }
 }
 
@@ -1670,13 +1702,26 @@ body:has(.portada--video) .cabecera--con-linea {
   transition: transform 600ms ease;
 }
 
-/* El antetitulo lleva dos cosas: el rotulo fijo de la pieza y la categoria
-   real, que sigue siendo enlace al filtro. En Inter y versales, como el resto
-   de lo que se consulta, y en acento porque es la etiqueta de la pieza.
+/* El antetitulo es LA CATEGORIA REAL del articulo, enlazada al filtro del
+   listado. En Inter y versales, como el resto de lo que se consulta, y en
+   acento porque es la etiqueta de la pieza.
 
-   El rotulo va en --acento y la categoria tambien, pero solo la segunda se
-   subraya al pasar: una es texto y la otra es un destino, y esa es la unica
-   diferencia que hay que poder ver. */
+   ⚠️ LLEVABA DOS COSAS Y AHORA LLEVA UNA. Delante de la categoria iba un rotulo
+   fijo, «Articulo destacado», separado por un punto medio; aqui se explicaba
+   que los dos iban en --acento y que solo la categoria se subrayaba al pasar,
+   «una es texto y la otra es un destino».
+
+   Se quito el rotulo: la seccion ya se titula «LECTURA RECOMENDADA» justo
+   encima, asi que decia dos veces lo mismo. Con el se fue la necesidad de
+   distinguirlos, porque ya no hay dos.
+
+   ⚠️ Y CON EL SE VA AHORA `.destacado__antetitulo-sep`, el punto medio que los
+   separaba. Se conservo una pasada por si el rotulo volvia; no ha vuelto y no
+   hay nada que separar, asi que se retira. Si alguien repone un rotulo fijo,
+   que reponga tambien su separador: era `opacity: .55` sobre este mismo color.
+
+   El flex y el gap se quedan aunque hoy solo haya un hijo: no estorban, y son
+   lo que mantiene la fila alineada si algun dia vuelve a haber dos piezas. */
 
 .inicio .destacado__antetitulo {
   margin: 0 0 12px;
@@ -1694,10 +1739,6 @@ body:has(.portada--video) .cabecera--con-linea {
 
 .inicio .destacado__antetitulo a {
   color: inherit;
-}
-
-.inicio .destacado__antetitulo-sep {
-  opacity: 0.55;
 }
 
 /* Tres lineas y el texto completo sigue en el HTML. line-clamp necesita las
@@ -1723,39 +1764,91 @@ body:has(.portada--video) .cabecera--con-linea {
    `:not(:last-child)` deja el ultimo sin barra, sea la lectura en una tarjeta o
    el enlace «Leer articulo» en el destacado, sin saber cual es. */
 
-.inicio .entrada__meta > :not(:last-child)::after {
+/* La regla la comparten la portada y la ficha de cabecera del articulo. Se
+   agrupan para que el caracter, el color, la opacidad y el espaciado se toquen
+   en UN sitio: son el mismo separador, y dos copias divergen en cuanto alguien
+   ajuste una. Los dos selectores no se solapan —`.inicio` no esta en el <body>
+   del articulo y `.articulo__ficha` no existe en la portada—, asi que agrupar
+   no pinta ni una barra de mas. */
+
+.inicio .entrada__meta > :not(:last-child)::after,
+.articulo__ficha > :not(:last-child)::after {
   content: "|";
   margin-left: 12px;
   color: var(--borde-marcado);
   font-weight: 400;
 }
 
-/* El enlace de accion del destacado. En acento y sin subrayado: la flecha ya
-   dice que lleva a algun sitio, y el subrayado competiria con el filete del
-   rotulo que tiene encima.
+/* LOS DOS ENLACES DE ACCION DE LA PORTADA, y comparten estilo a proposito:
+   «Leer articulo» en el destacado y «Ver todos los articulos» en el encabezado
+   de «Ultimos articulos». Hacen lo mismo —sacar de la portada hacia un articulo
+   o hacia el listado— asi que se ven igual. Si se toca uno, se toca el otro: por
+   eso las reglas van agrupadas y no en dos sitios del archivo.
+
+   En acento y sin subrayado: la flecha ya dice que lleva a algun sitio, y el
+   subrayado competiria con el filete del rotulo que tienen encima.
 
    La flecha va en un <span> propio y no suelta en el texto para tener elemento
-   que animar, igual que en .boton--contorno. Y se mueve con transform y no con
-   margin, que dispararia reflow en cada hover. */
+   que animar. Y se mueve con transform y no con margin, que dispararia reflow
+   en cada hover.
 
-.inicio .destacado__leer {
+   ⚠️ «VER TODOS LOS ARTICULOS» ERA UN .boton--contorno. Se le quitaron las dos
+   clases de boton, no se redefinieron: .boton--contorno lo siguen usando los
+   botones de filtro y el del desplegable de etiquetas en articulos/, y tocarlo
+   los habria cambiado a los dos.
+
+   ⚠️ DE AQUEL BOTON HAY QUE CONSERVAR EL ALTO DE 44px, Y ESO NO SE VE. Era el
+   minimo de area de pulsacion y lo ponia su min-height; sin el, el enlace se
+   queda en la altura de su linea —unos 17px— y en un movil es un blanco
+   incomodo de acertar. Lo repone .lista__enlace con inline-flex y min-height,
+   que no pintan nada visible y mantienen la diana.
+
+   El resto de la tipografia NO se repone aqui: el cuerpo, el peso, las versales
+   y el tracking ya los pone .lista__mas--enlinea en el <p> de fuera, con los
+   mismos valores que declaraba .boton--contorno. Por eso quitar las clases no
+   cambia ni una letra. */
+
+.inicio .destacado__leer,
+.inicio .lista__enlace {
   color: var(--acento);
   font-weight: 600;
 }
 
-.inicio .destacado__leer:hover {
+.inicio .lista__enlace {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
+
+.inicio .destacado__leer:hover,
+.inicio .lista__enlace:hover {
   text-decoration: none;
   color: var(--acento-oscuro);
 }
 
-.inicio .destacado__flecha {
+.inicio .destacado__flecha,
+.inicio .lista__flecha {
   display: inline-block;
   margin-left: 4px;
   transition: transform 220ms ease;
 }
 
-.inicio .destacado__leer:hover .destacado__flecha {
+.inicio .destacado__leer:hover .destacado__flecha,
+.inicio .lista__enlace:hover .lista__flecha {
   transform: translateX(4px);
+}
+
+/* ⚠️ EL ANILLO VA EN --acento Y NO EN EL --tinta QUE USABA .boton--contorno, y
+   el cambio no es un descuido: alli el anillo era de tinta porque el boton YA
+   era de acento —filete en reposo, relleno en hover— y uno del mismo color
+   habria quedado pegado a su propio borde. Sin filete esa razon decae, y el
+   analogo real pasa a ser .volver, el otro enlace de texto con flecha del
+   sitio, que usa --acento con el mismo offset y el mismo radio. */
+
+.inicio .lista__enlace:focus-visible {
+  outline: 2px solid var(--acento);
+  outline-offset: 3px;
+  border-radius: 2px;
 }
 
 /* ⚠️ EN ESTRECHO EL ENLACE BAJA DE FILA A PROPOSITO, y con el se va la barra
@@ -2198,6 +2291,28 @@ main > .lista:last-child {
   mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='8' cy='8' r='6.2'/%3E%3Cpath d='M8 4.4V8l2.6 1.6'/%3E%3C/svg%3E") center / contain no-repeat;
 }
 
+/* «Ultima actualizacion», solo en la ficha del articulo y solo si el JSON trae
+   el campo `actualizado`.
+
+   ⚠️ ES UN <time>, ASI QUE YA LE HA CAIDO EL CALENDARIO de la regla de arriba,
+   y esta la sustituye. El selector lleva la clase ADEMAS del elemento —(0,2,2)
+   contra los (0,1,2) de `.entrada__meta time::before`— para ganar por
+   especificidad y no por orden: asi aguanta si alguien reordena el archivo. Es
+   el mismo criterio que `.boton--contorno:hover` documenta en CLAUDE.md, solo
+   que resuelto del modo que no depende de la posicion.
+
+   El icono son dos flechas en circulo, el gesto de «revisado». Mismo viewBox
+   de 16, mismo stroke-width de 1.6 y los mismos remates redondeados que el
+   calendario, el reloj y la persona, para que la fila no se vea despareja.
+
+   Los dos puntos del final de «Ultima actualizacion:» van en el TEXTO y no en
+   un ::after: son parte de lo que se lee, no decoracion. */
+
+.entrada__meta time.actualizado::before {
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M13.6 6.8a5.8 5.8 0 0 0-10.2-2.4'/%3E%3Cpath d='M2.4 9.2a5.8 5.8 0 0 0 10.2 2.4'/%3E%3Cpath d='M2.2 1.9v2.7h2.7M13.8 14.1v-2.7h-2.7'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M13.6 6.8a5.8 5.8 0 0 0-10.2-2.4'/%3E%3Cpath d='M2.4 9.2a5.8 5.8 0 0 0 10.2 2.4'/%3E%3Cpath d='M2.2 1.9v2.7h2.7M13.8 14.1v-2.7h-2.7'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
 .contador {
   font-family: var(--ui);
   font-size: 12px;
@@ -2596,14 +2711,24 @@ main > .lista:last-child {
 /* Con prefers-reduced-motion se va el zoom y se queda el color. Lo que informa
    es que el titular cambie de tono, no que la foto se mueva. */
 
+/* ⚠️ AQUI SE APAGA TAMBIEN EL DESPLAZAMIENTO DE LAS FLECHAS, Y ANTES NO.
+   El bloque quitaba la transicion pero dejaba el `transform: translateX(4px)`
+   del hover: sin transicion no se anima, pero la flecha SALTA igual 4px. Con
+   reduced-motion eso es justo lo que sobra —y .boton--contorno, el boton que
+   «Ver todos los articulos» acaba de dejar de ser, ya lo apagaba entero—. Al
+   compartir estilo los dos enlaces de accion, se igualan por el mas estricto. */
+
 @media (prefers-reduced-motion: reduce) {
   .tarjeta--abierta .tarjeta__imagen img,
   .inicio .destacado__imagen img,
-  .inicio .destacado__flecha {
+  .inicio .destacado__flecha,
+  .inicio .lista__flecha {
     transition: none;
   }
 
-  .tarjeta--abierta:hover .tarjeta__imagen img {
+  .tarjeta--abierta:hover .tarjeta__imagen img,
+  .inicio .destacado__leer:hover .destacado__flecha,
+  .inicio .lista__enlace:hover .lista__flecha {
     transform: none;
   }
 }
@@ -2972,13 +3097,59 @@ em i {
    Los 48 de arriba bajan a 40 para igualar el hueco que la caja de citas deja
    por el otro lado del enlace: 40 y 40. */
 
+/* Descarga del PDF del articulo. Lo unico que declara es la COLOCACION: el
+   boton lo viste `.boton--contorno` entero, igual que «Descargar CV».
+
+   Los 40 de arriba son los mismos que separaban `.compartir` de lo que tiene
+   encima —ahora los lleva este, que paso a ir primero— y los 28 de abajo lo
+   despegan del filete de «Compartir» sin duplicar el hueco. */
+
+/* ⚠️ VA PREFIJADO CON `.articulo` Y SIN ESO NO SE APLICA NADA. Es un <p> dentro
+   de <article class="articulo">, asi que le cae `.articulo p`, que pesa (0,1,1)
+   frente a los (0,1,0) de la clase sola y GANA POR ESPECIFICIDAD.
+
+   Estuvo escrito como `.descarga { margin: 40px 0 28px }` y era una regla
+   MUERTA: el margen computado seguia siendo el `0 0 22px` de `.articulo p`, con
+   lo que el boton quedaba PEGADO a «Volver a los articulos» —hueco medido: 0—.
+   No daba ningun error y solo se ve mirando el estilo computado.
+
+   Es la tercera vez que muerde el mismo patron: antes fue `.articulo h3` contra
+   `.entrada__titulo` en «Continua leyendo» y `.articulo p` contra `.autor__cv`
+   en el lateral. CUALQUIER clase nueva sobre un <p>, <ul> o <h3> dentro del
+   articulo necesita el prefijo.
+
+   LOS 40 DE ARRIBA igualan el hueco que ya hay entre las referencias y
+   «Volver», asi que el enlace queda con el mismo aire por los dos lados y se
+   lee como lo que es: una pieza suelta entre dos bloques. Los 28 de abajo
+   acompanan al 29 del filete y al 28 del rotulo de «Compartir». */
+
+.articulo .descarga {
+  margin: 40px 0 28px;
+}
+
+/* El filete y el aire de arriba pasan a 0 porque ya no es el primer bloque de
+   la fila de acciones: lo precede `.descarga`, que trae su propio margen. */
+
 .compartir {
-  margin: 40px 0 32px;
+  margin: 0 0 32px;
   padding-top: 28px;
   border-top: 1px solid var(--borde);
 }
 
-.compartir__lista {
+/* ⚠️ TAMBIEN PREFIJADA, Y POR LO MISMO: `.articulo ul` —(0,1,1)— le ganaba a
+   `.compartir__lista` —(0,1,0)— y le colaba su `margin: 0 0 22px` y su
+   `padding-left: 24px`.
+
+   El efecto visible era que las pildoras arrancaban 24px MAS A LA DERECHA que
+   el rotulo «COMPARTIR», como si estuvieran sangradas a proposito. No lo
+   estaban: era el relleno por defecto de las listas del cuerpo. Medido: rotulo
+   en 0 y primera pildora en 24.
+
+   El `list-style: none` si se aplicaba, porque `.articulo ul` no lo declara.
+   O sea que de las tres declaraciones de este bloque solo funcionaba una, y
+   las otras dos se veian como decisiones de diseno. */
+
+.articulo .compartir__lista {
   list-style: none;
   margin: 0;
   padding: 0;
@@ -3103,13 +3274,34 @@ em i {
    tercera fila. Verificado midiendo: entradilla en x=42 con 609 de ancho,
    formulario en x=707 y aside en y=798.
 
-   Ocupa toda la fila y ademas se limita a la medida de lectura: a 609px de
-   ancho el parrafo son ~95 caracteres por linea, muy por encima de lo que se
-   lee comodo, y ademas no tiene por que alinear con el formulario. */
+   ⚠️ EL TOPE ERA `34em` —653px— Y PASA A LOS 600 DEL FORMULARIO, que es lo que
+   quita la sensacion de parrafo descolgado.
+
+   El problema no era la medida: a 653 son ~60 caracteres por linea, dentro del
+   rango comodo. Era que 653 no coincide con NINGUN otro canto de la pagina. El
+   formulario de debajo mide 600 y la columna 609, asi que el parrafo sobresalia
+   53px por la derecha: lo justo para leerse como un desajuste y no como una
+   decision. Casi alinear es peor que no alinear.
+
+   Con 600 comparten canto derecho con el formulario y bajan a ~55 caracteres
+   por linea. Y NO se pone al ancho del contenedor: los 1152 dan 125 caracteres
+   por linea, muy por encima de lo que se lee comodo.
+
+   Debajo va un <hr> que cruza la fila entera. La linea es la que hace de ancho
+   de pagina; el parrafo no tiene por que serlo. */
 
 .contacto .entradilla {
   grid-column: 1 / -1;
-  max-width: 34em;
+  max-width: 600px;
+  margin: 0;
+}
+
+/* El filete cierra la banda de entrada y cruza las dos columnas. Sin margen
+   propio: los 56 del `gap` de la rejilla ya lo separan por arriba y por abajo,
+   y son el mismo hueco que separa las dos columnas entre si. */
+
+.contacto hr {
+  grid-column: 1 / -1;
   margin: 0;
 }
 
@@ -3207,7 +3399,25 @@ em i {
   margin: 0 0 10px;
 }
 
-.contacto__aparte h2 + p {
+/* ⚠️ ERA `h2 + p` Y PINTABA SOLO EL PRIMER PARRAFO DE CADA APARTADO. Se
+   escribio cuando cada <h2> de esta caja tenia exactamente UN parrafo debajo,
+   asi que el selector de hermano adyacente los cubria todos.
+
+   «Antes de escribir» paso a tener dos, y el segundo se quedo fuera: no heredo
+   el gris —caia en el --tinta del cuerpo—, ni el `line-height: 1.6`, ni el
+   margen. Dos parrafos seguidos del mismo apartado en dos colores distintos, y
+   sin que nada avisara: el selector seguia siendo valido, solo que ya no
+   describia el contenido.
+
+   Con `p` a secas cubre los cuatro, y aguanta si manana se anade un tercero.
+
+   ⚠️ EL GRIS SE QUEDA, no se sube todo a --tinta. Esta caja es texto de APOYO
+   —fondo --papel-alt, 0,95rem, al lado del formulario— y el sitio ya pinta en
+   gris lo equivalente: .autor__bio y .suscripcion__apoyo del lateral del
+   articulo son exactamente el mismo papel. Los <h2> se quedan en --tinta, que
+   es lo que da la jerarquia dentro de la caja. */
+
+.contacto__aparte p {
   margin: 0 0 24px;
   color: var(--tinta-suave);
   line-height: 1.6;
@@ -3311,9 +3521,23 @@ em i {
   margin-bottom: 9px;
 }
 
-.articulo hr {
+/* El filete lo comparten el cierre de `sobre/` y la cabecera de `contacto/`. Se
+   agrupan para que el grosor y el color se toquen en UN sitio: son la misma
+   linea. `.articulo hr` no alcanzaba a contacto/, que no lleva esa clase, asi
+   que alli un <hr> habria salido con el relieve por defecto del navegador.
+
+   El margen NO lo comparten, y por eso va aparte: en `sobre/` la linea vive en
+   flujo normal y necesita sus 48; en contacto/ es un item de la rejilla y el
+   aire se lo dan los 56 del `gap`, arriba y abajo. Con los dos sumarian 104 por
+   lado. */
+
+.articulo hr,
+.contacto hr {
   border: none;
   border-top: 1px solid var(--borde);
+}
+
+.articulo hr {
   margin: 48px 0;
 }
 
@@ -3627,6 +3851,60 @@ body:has(.progreso) .cabecera {
 
 .articulo__ficha {
   margin: 22px 0 28px;
+}
+
+/* ⚠️ «ULTIMA ACTUALIZACION» VA SIEMPRE EN SU PROPIA FILA, Y NO ES UNA
+   PREFERENCIA: ES QUE NO CABE AL LADO A NINGUN ANCHO. Medido con el mes mas
+   largo —«30 de septiembre de 2026»— sobre el articulo de MASC:
+
+     fecha 198 + 12 + minutos 145,3 + 12 + actualizacion 367,3  =  734,6 px
+
+   y la columna topa en los 720 de `.articulo__principal`. O sea que la fila
+   envolveria igual en un monitor de 2560, porque lo que la limita es el ancho
+   de lectura y no la ventana.
+
+   Con meses cortos si cabria —«5 de mayo de 2026» baja la suma a ~667— y esa
+   es justamente la razon de forzarlo: un diseno que se coloca distinto segun el
+   mes que tenga la fecha no se puede revisar ni explicar. Se hace explicito,
+   que es lo que ya hizo la portada con «Leer articulo» y esta razonado en
+   CLAUDE.md.
+
+   `flex-basis: 100%` y no un <br> ni un contenedor aparte: el elemento sigue
+   siendo un item mas de la misma fila flex, asi que hereda el gap vertical y
+   no hay que recolocar nada. */
+
+.articulo__ficha .actualizado {
+  flex-basis: 100%;
+}
+
+/* Y con ella se va el separador que la precede, que si no se queda COLGANDO al
+   final de la primera linea: una barra sin nada que separar.
+
+   Se apunta al elemento que tiene `.actualizado` justo detras, en vez de a
+   `.lectura` por su nombre: si algun dia cambia el orden de la ficha, la regla
+   sigue sirviendo sola. Es el mismo fallo y la misma cura que
+   `.inicio .destacado .entrada__meta .lectura::after` por debajo de 600. */
+
+.articulo__ficha > :has(+ .actualizado)::after {
+  content: none;
+}
+
+/* ⚠️ POR DEBAJO DE 749 NO HAY SEPARADORES, y el numero esta medido.
+   Ahi abajo la ficha gana la firma —aparece por debajo de 900— y la fila pasa a
+   pedir 582,9 px: firma 215,6 + fecha 198 + minutos 145,3 y sus dos huecos.
+   La columna es la ventana menos 48, asi que envuelve por debajo de ~631, y al
+   envolver vuelve el separador colgando.
+
+   El corte va en el 748 que ya existe —el de las tarjetas— y no en 631: entre
+   esos dos anchos la fila aun cabe de una pieza, pero vale mas pasarse de
+   prudente que atar el corte a un numero que depende del largo de la fecha y
+   del nombre del mes. Perderse una barra decorativa no se nota; una barra
+   colgada al final de una linea se lee como un error. */
+
+@media (max-width: 748px) {
+  .articulo__ficha > :not(:last-child)::after {
+    content: none;
+  }
 }
 
 /* 21:9 y no 16:9: en la columna de 720 pasa de 405 a 309 px de alto, 96 menos,
@@ -3993,11 +4271,33 @@ body:has(.progreso) .cabecera {
   margin: 0 auto 18px;
 }
 
+/* ⚠️ EL `object-position` NO ES DECORATIVO: SIN EL, EL CIRCULO CORTA EL PELO.
+   La foto es 3:4 y la caja es un cuadrado, asi que `cover` escala por el ancho
+   y descarta una franja vertical. Medido sobre el archivo de 264x352 dentro del
+   circulo de 132: la imagen se dibuja a 132x176 y sobran 44px de alto.
+
+   Con el `50%` de serie la ventana empieza en y=22, y la coronilla esta en
+   y=17,6 —se recortan 4,4px de pelo, que en un circulo se lee como una cabeza
+   aplanada por arriba—. Con `10%` empieza en y=4,4: quedan 13px de aire sobre
+   el pelo, la barbilla cae en y=100 y el centro de la cara al 41% del circulo,
+   que es donde se espera en un retrato.
+
+   ⚠️ APLICA TAMBIEN A `.sobre__retrato`, QUE COMPARTE ESTA REGLA, Y ALLI NO
+   PINTA NADA: su caja es 300x400 y su archivo 600x800, o sea la misma
+   proporcion, asi que no hay holgura que repartir y la Y da igual. Se deja en
+   un solo sitio a proposito —el retrato del sitio es uno— pero quien cambie la
+   proporcion de aquella caja tiene que volver a mirar este numero, porque
+   entonces si empezara a recortar.
+
+   El numero sale de la cara de ESTA foto. Si se sustituye, hay que medir donde
+   caen la coronilla y la barbilla y rehacerlo: nada avisa de que corta. */
+
 .autor__retrato img {
   display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center 10%;
 }
 
 /* Retrato del autor en sobre/. Se apoya en .autor__retrato —circulo, recorte y
@@ -4009,15 +4309,46 @@ body:has(.progreso) .cabecera {
    sitio sea uno, no dos que se parecen: si cambia el recorte o el filete, se
    cambia en .autor__retrato y los dos siguen iguales. */
 
+/* ⚠️ ERA UN FLEX Y AHORA ES UNA REJILLA, por una medida: con flex el texto se
+   quedaba con todo lo que sobraba —992 px medidos en el contenedor de 1200— y
+   ahi la linea es incomoda de leer. La primera columna se topa en los 720 del
+   ancho de lectura del articulo, que es el mismo numero, y el retrato ocupa lo
+   que queda.
+
+   `align-items: start` para que el retrato no se estire a la altura de los tres
+   parrafos. */
+
 .sobre__autor {
-  display: flex;
-  align-items: flex-start;
-  gap: 28px;
+  display: grid;
+  grid-template-columns: minmax(0, 720px) minmax(0, 1fr);
+  align-items: start;
+  gap: 56px;
   margin: 0 0 8px;
 }
 
+/* ⚠️ RECTANGULO VERTICAL Y NO CIRCULO, como en el PDF del cliente. Estuvo en
+   circulo de 240 con el argumento de que «el PDF marca estructura y contenido,
+   no estilos»; el encargo posterior fue reproducirlo tambien en composicion.
+
+   `.autor__retrato` sigue puesto por la MECANICA —overflow, fondo de respaldo y
+   el `object-fit: cover` del <img>— y aqui se cambia solo lo que aqui es
+   distinto: la forma, el tamaño y el radio. El lateral del articulo no se
+   entera: conserva su circulo de 132.
+
+   ✅ AQUI SE AVISABA DE QUE LA FUENTE SE QUEDABA JUSTA, Y YA NO. El original
+   era CUADRADO de 400px, asi que a 3:4 dejaba 300x400 utiles para una caja de
+   300x400: exactamente 1x, sin margen para pantalla densa. La foto nueva es 3:4
+   de origen y se sirve a 600x800, o sea 2x justos. El aviso decae.
+
+   Y al coincidir la proporcion, `cover` no recorta nada: se ve la foto entera.
+
+   El `margin: 0 auto 18px` de la clase base centraba el circulo en el lateral;
+   aqui se anula para que la foto alinee con el principio de su columna. */
+
 .sobre__retrato {
-  flex: none;
+  width: 300px;
+  height: 400px;
+  border-radius: 0;
   margin: 6px 0 0;
 }
 
@@ -4029,18 +4360,115 @@ body:has(.progreso) .cabecera {
   margin-top: 0;
 }
 
-/* Por debajo de 600 el retrato se pone encima y el texto debajo: en una columna
-   de ~330px, 132 de foto mas 28 de hueco dejan el parrafo en 170, que parte las
-   palabras largas de este texto —«contencioso-administrativa»— en cada linea. */
+/* ⚠️ POR DEBAJO DE 600 SE APILAN, Y AHORA EL TEXTO QUEDA ARRIBA. Antes el
+   retrato iba primero en el marcado y al apilarse caia encima; hoy el orden del
+   DOM es texto → foto, porque el PDF del cliente pone la foto a la derecha y el
+   orden de lectura tiene que coincidir con el visual. No se usa `order`: es la
+   misma regla que se aplico al reordenar la cabecera del articulo.
+
+   El motivo de apilar sigue siendo el de siempre: en una columna de ~330px, 132
+   de foto mas 28 de hueco dejan el parrafo en 170, que parte las palabras
+   largas de este texto —«contencioso-administrativa»— en cada linea. */
+
+/* ⚠️ APILA CON `grid-template-columns`, NO CON `flex-direction`. Esta regla
+   decia `flex-direction: column` de cuando .sobre__autor era un flex, y al
+   pasar a rejilla se quedo SIN EFECTO: en una grid esa propiedad no pinta nada,
+   asi que el retrato seguia al lado del texto en una columna de 327. No daba
+   ningun error; solo se veia apretado. */
 
 @media (max-width: 600px) {
   .sobre__autor {
-    flex-direction: column;
+    grid-template-columns: minmax(0, 1fr);
     gap: 18px;
   }
 
   .sobre__retrato {
     margin: 0;
+  }
+}
+
+/* ------------------------------------------- Acerca de: dos columnas ----- */
+
+/* La primera fila de sobre/ son «Enfoque» y «Contenido» a la par, como en el
+   PDF del cliente. Se va a `.contenedor--amplio` porque en el ancho de lectura
+   —820— dos columnas quedarian a 380 y el texto se parte mal.
+
+   `gap: 56px` es el mismo hueco que separa la columna del articulo de su
+   lateral, asi que las dos retículas de dos columnas del sitio respiran igual.
+
+   minmax(0, 1fr) y no 1fr por el motivo de siempre: con `1fr` una columna que no
+   puede encoger deja de ceder y aplasta a la vecina en vez de desbordar ella.
+   Esta tiene palabras largas —«contencioso-administrativa»— que es justo lo que
+   lo dispara. */
+
+.sobre__columnas {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 56px;
+}
+
+/* Los h2 de las dos columnas y el de «Sobre el autor» arrancan a la misma
+   altura: `.articulo h2` trae `margin-top: 48px`, y el primero de cada columna
+   lo conserva, asi que la fila entra alineada sin tocar nada. */
+
+/* Viñeta de rombo. Decorativa, asi que va en ::before y NO en el marcado: un
+   pseudo-elemento no entra en el arbol de accesibilidad, de modo que un lector
+   de pantalla lee «Fundamentos, mediante articulos…» sin anunciar un glifo que
+   no aporta nada. Es el mismo criterio que los iconos de la ficha.
+
+   Se prefiere ::before a ::marker con `content`, que es lo que pedia el
+   enunciado: `content` en ::marker no esta soportado en todas las versiones de
+   Safari todavia, y ahi la viñeta se caeria del todo.
+
+   La sangria francesa es la tecnica que ya usa `.lista--marcada`: con
+   `padding-left` en la lista y `text-indent` negativo en el item, la segunda
+   linea alinea con la primera PALABRA y no con el rombo. */
+
+.articulo .sobre__lineas {
+  list-style: none;
+  padding-left: 28px;
+}
+
+.articulo .sobre__lineas li {
+  text-indent: -28px;
+  margin-bottom: 16px;
+}
+
+.sobre__lineas li::before {
+  content: "❖";
+  display: inline-block;
+  width: 20px;
+  margin-right: 8px;
+  text-indent: 0;
+  color: var(--acento);
+}
+
+/* El bloque del autor va a todo el ancho, debajo de las dos columnas. No lleva
+   margen propio: el `margin-top: 48px` de su <h2> ya pone la separacion, el
+   mismo hueco que separa los dos h2 de arriba de lo que tengan encima. */
+
+/* ⚠️ AQUI VIVIA `.sobre__cierre` Y SE RETIRA CON SU UNICO PORTADOR. Topaba en
+   720 el cierre de la pagina —aviso legal y los dos botones de salida—, que se
+   quito al reproducir el PDF del cliente tal cual. El <hr> que lo precedia se
+   fue con el.
+
+   Si alguna vez vuelve un cierre a esta pagina, el argumento sigue valiendo: el
+   resto va a 1200 porque son dos columnas y una fila con foto, pero un texto de
+   13px a 1152 da una linea incomoda de leer. */
+
+/* ⚠️ SE APILAN EN 748, UN CORTE QUE YA EXISTE —el de las tarjetas— y no en el
+   600 que usa `.sobre__autor` aqui mismo. Medido: a 748 el contenedor son 700 y
+   cada columna se queda en 322, que todavia lee bien; a 600 bajarian a 248 y
+   «contencioso-administrativa» ya no cabe en una linea.
+
+   Que los dos cortes de esta pagina no coincidan es a proposito: uno parte una
+   reticula de texto y el otro despega una foto de su parrafo, y no hay motivo
+   para que cedan a la vez. */
+
+@media (max-width: 748px) {
+  .sobre__columnas {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
   }
 }
 
@@ -4065,6 +4493,44 @@ body:has(.progreso) .cabecera {
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
+}
+
+/* Descarga del CV en el lateral. Lo unico que declara es la COLOCACION: el
+   boton lo viste `.boton--contorno` entero y aqui no se le toca ni un color.
+
+   Hacen falta los dos margenes, medidos: sin el de arriba el boton quedaba a
+   5px de «Ver perfil →» y se leia pegado, y el de abajo que traia el <p> por
+   defecto —22px— sobraba, porque el bloque ya cierra con su propio relleno.
+
+   18 es el mismo hueco que deja el retrato encima del nombre, asi que la
+   columna mantiene su ritmo. */
+
+/* ⚠️ VA PREFIJADO CON `.articulo` Y SIN ESO EL MARGEN NO SE APLICA. Es un <p>
+   dentro de <article class="articulo">, asi que le cae `.articulo p`, que pesa
+   (0,1,1) frente a los (0,1,0) de la clase sola: GANA POR ESPECIFICIDAD, no por
+   orden, asi que declararlo despues no servia de nada.
+
+   Estuvo escrito como `.autor__cv { margin: 18px 0 0 }` y era una regla MUERTA:
+   el margen computado seguia siendo el `0 0 22px` de `.articulo p`. No daba
+   ningun error —el boton se veia, solo que pegado al enlace— y solo se ve
+   mirando el estilo computado, no el archivo. Es la misma trampa que
+   `.articulo h3` contra `.entrada__titulo` en «Continua leyendo».
+
+   LOS DOS HUECOS, medidos en el bloque de 250px:
+
+     «Ver perfil» → boton     28 + 5 de interlineado  =  33
+     boton → filete Etiquetas 22 + 10 del bloque      =  32
+
+   O sea que el boton queda con el mismo aire arriba y abajo, que es lo que lo
+   separa del enlace sin dejarlo huerfano. El margen de abajo no se puede soltar
+   a 0: los 22 que traia `.articulo p` son la mitad de ese hueco inferior.
+
+   `text-align: center` centra el boton, que es inline-flex, como `margin: auto`
+   centra el retrato. */
+
+.articulo .autor__cv {
+  margin: 28px 0 22px;
+  text-align: center;
 }
 
 /* Aqui vivia .indice--lateral, el indice de la columna de apoyo, con sus siete
@@ -4289,10 +4755,197 @@ body:has(.progreso) .cabecera {
 
 /* ------------------------------------------- Continua leyendo ----------- */
 
+/* ------------------------------------- Anterior / siguiente ------------- */
+
+/* Navegacion entre articulos contiguos. Va despues del aviso legal y antes de
+   «Continua leyendo», que es donde la pagina pasa de «este articulo» a «otros
+   articulos».
+
+   Lo escribe el BUILD, no el navegador, al reves que «Continua leyendo»: el
+   orden por fecha se conoce al generar, asi que no hay motivo para pedirselo a
+   un fetch y funciona con JavaScript desactivado. */
+
+.paso {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  margin-top: 48px;
+  padding-top: 32px;
+  border-top: 1px solid var(--borde);
+}
+
+/* ⚠️ `margin-left: auto` Y NO SOLO `justify-content`, porque el caso que
+   importa es cuando hay UN SOLO enlace. Con los dos, space-between ya los
+   separa; con solo el siguiente —el articulo mas antiguo no tiene «anterior»—
+   space-between lo dejaria pegado a la izquierda, donde se lee como si fuera el
+   «anterior». El margen automatico lo manda a su lado pase lo que pase. */
+
+.paso__enlace {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  /* El minimo de area de pulsacion. Con dos lineas se supera de sobra, pero
+     escrito aguanta si algun dia el rotulo o el titulo cambian de cuerpo. */
+  min-height: 44px;
+  max-width: 48%;
+  text-decoration: none;
+}
+
+.paso__enlace--siguiente {
+  margin-left: auto;
+  text-align: right;
+}
+
+/* El rotulo es el mismo lenguaje que .volver y .lista__enlace: Inter, versales
+   y acento. El titulo de destino va en la familia de lectura y en --tinta, para
+   que se distinga de la etiqueta y se lea como lo que es, un titular. */
+
+.paso__rotulo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--ui);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--acento);
+}
+
+.paso__enlace--siguiente .paso__rotulo {
+  justify-content: flex-end;
+}
+
+.paso__titulo {
+  font-family: var(--display);
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--tinta);
+}
+
+/* La flecha en su propio elemento para tener algo que animar, igual que en
+   .volver y en .lista__enlace. Se desplaza hacia FUERA en cada sentido. */
+
+.paso__flecha {
+  display: inline-block;
+  transition: transform 180ms cubic-bezier(0.2, 0.7, 0.3, 1);
+}
+
+.paso__enlace:hover .paso__rotulo {
+  color: var(--acento-oscuro);
+}
+
+.paso__enlace:hover .paso__titulo {
+  color: var(--acento-oscuro);
+}
+
+.paso__enlace--anterior:hover .paso__flecha {
+  transform: translateX(-4px);
+}
+
+.paso__enlace--siguiente:hover .paso__flecha {
+  transform: translateX(4px);
+}
+
+/* Mismo anillo que .volver y .lista__enlace: --acento, 3px de separacion y
+   radio 2. Son los tres enlaces de texto con flecha del sitio. */
+
+.paso__enlace:focus-visible {
+  outline: 2px solid var(--acento);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .paso__flecha {
+    transition: none;
+  }
+
+  .paso__enlace--anterior:hover .paso__flecha,
+  .paso__enlace--siguiente:hover .paso__flecha {
+    transform: none;
+  }
+}
+
+/* ⚠️ APILADOS POR DEBAJO DE 600, y el corte es uno que ya existe. En una
+   columna el `max-width: 48%` dejaria cada enlace a media columna con la mitad
+   derecha vacia, y el `text-align: right` del siguiente lo leeria como si
+   apuntara a otro sitio. Los dos se sueltan a la vez. */
+
+@media (max-width: 600px) {
+  .paso {
+    flex-direction: column;
+    gap: 28px;
+  }
+
+  .paso__enlace {
+    max-width: none;
+  }
+
+  .paso__enlace--siguiente {
+    margin-left: 0;
+    text-align: left;
+  }
+
+  .paso__enlace--siguiente .paso__rotulo {
+    justify-content: flex-start;
+  }
+}
+
 .continua {
   margin-top: 56px;
   padding-top: 40px;
   border-top: 1px solid var(--borde);
+}
+
+/* ⚠️ EL TITULAR DE ESTAS TARJETAS SE ESTABA PINTANDO COMO UN EPIGRAFE DEL
+   CUERPO, Y NO SE VEIA VENIR.
+
+   adaptarTarjeta() baja el titular de <h2> a <h3> por jerarquia de
+   encabezados —aqui cuelga del <h2> «Continua leyendo»—. El efecto lateral es
+   que pasa a casar con `.articulo h3`, que pesa (0,1,1) frente a los (0,1,0)
+   de `.entrada__titulo`: GANA POR ESPECIFICIDAD, no por orden, asi que ponerlo
+   despues no arreglaba nada.
+
+   Lo que se veia, medido: Source Serif en vez de Cormorant, 24px en vez de 28
+   y, sobre todo, un `margin-top: 32px` que no pinta ningun titular de tarjeta
+   del sitio. Ese margen era el 90% del hueco de 37px que habia entre la
+   categoria y el titular.
+
+   Se devuelve el componente a su propio estilo con (0,2,0), que gana sin
+   depender del orden del archivo. */
+
+.continua .entrada__titulo {
+  font-family: var(--display);
+  font-size: 28px;
+  line-height: 1.15;
+  margin: 0 0 8px;
+}
+
+/* El aire de dentro de la tarjeta, recortado por encargo al entrar la
+   entradilla: con cinco elementos en una columna de 346px, los huecos de la
+   portada dejaban la tarjeta demasiado suelta.
+
+   Va TODO prefijado con `.continua`. Las tarjetas de la portada y las del
+   listado comparten estas mismas clases —`.tarjeta__imagen`,
+   `.entrada__titulo`, `.entrada__meta`— y sin el prefijo el recorte se colaria
+   en las dos. Verificado que no se mueven.
+
+     imagen -> categoria     18 -> 12
+     categoria -> titular     4 ->  4   (ya era el minimo; lo que sobraba eran
+                                         los 32 del h3 ajeno, arriba)
+     titular -> entradilla   10 ->  8
+     entradilla -> metadatos 16 -> 12
+
+   Los cuatro valores siguen en la escala de 4 del proyecto. */
+
+.continua .tarjeta__imagen {
+  margin-bottom: 12px;
+}
+
+.continua .tarjeta .entrada__meta {
+  padding-top: 12px;
 }
 
 /* DOS columnas y no tres. Aqui la rejilla no vive en la reticula de 1200 sino

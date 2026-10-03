@@ -19,7 +19,12 @@ import { readdir, readFile, writeFile, access, mkdir } from 'node:fs/promises';
 import { join, dirname, resolve } from 'node:path';
 import { pathToFileURL, fileURLToPath } from 'node:url';
 
-import { derivar, escapar, DOMINIO } from './lib/plantilla.mjs';
+/* ⚠️ `AUTOR` SE IMPORTA, NO SE ESCRIBE. El nombre estuvo en dos literales de
+   este archivo —la ficha del bloque de titulo y la cabecera corriente— y eso
+   hacia que cambiar de autor en plantilla.mjs dejara el PDF firmado por el
+   anterior, sin que nada avisara: la web saldria bien y el documento no. */
+
+import { derivar, escapar, DOMINIO, AUTOR } from './lib/plantilla.mjs';
 
 const RAIZ = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const CONTENIDO = join(RAIZ, 'contenido', 'articulos');
@@ -28,29 +33,83 @@ const CONTENIDO = join(RAIZ, 'contenido', 'articulos');
    Chromium ignora el margin de @page cuando se le pasan por la API, asi que
    declararlos en los dos sitios deja uno que miente.
 
-   ⚠️ Si se cambian, hay que cambiar el `height: 259mm` de .pdf-portada, que es
-   297 − 20 − 18 y es lo que hace que la portada ocupe exactamente una pagina.
-   Si no, la portada empuja una segunda pagina en blanco. */
+   ⚠️ EL SUPERIOR SUBIO DE 20 A 28mm PARA HACERLE SITIO A LA CABECERA CORRIENTE.
+   Chromium dibuja la cabecera DENTRO del margen superior, no sobre el texto, asi
+   que sin esos 8mm de mas la linea del titulo abreviado se solapa con el cuerpo.
 
-const MARGENES = { top: '20mm', bottom: '18mm', left: '20mm', right: '20mm' };
+   ⚠️ Y LA CALIBRACION DE 259mm YA NO EXISTE. Aqui decia que al tocar estos
+   numeros habia que cambiar el `height: 259mm` de .pdf-portada, que era
+   297 − 20 − 18 y lo que hacia que la portada ocupase una pagina exacta. Sin
+   portada aparte no hay nada que calibrar: el bloque de titulo fluye con el
+   texto, asi que tampoco puede empujar una pagina en blanco. */
+
+const MARGENES = { top: '28mm', bottom: '18mm', left: '20mm', right: '20mm' };
+
+/* ⚠️ COMO SE ABREVIA EL TITULO DE LA CABECERA, y conviene tenerlo escrito porque
+   el corte se ve.
+
+   Se corta a 60 caracteres y SIEMPRE EN UN ESPACIO: se retrocede hasta el ultimo
+   blanco antes del limite, de modo que no se parte una palabra por la mitad. Si
+   no hubiera ningun espacio en los primeros 60 —un titulo de una sola palabra
+   larguisima— se corta en seco, que es el unico caso en que puede partirse.
+
+   Los 60 no aprietan: el de MASC mide 82 y queda en 57 mas la elision. En la
+   banda de cabecera, a 7px Helvetica sobre los 170mm utiles menos el nombre del
+   autor, caben del orden de 130 caracteres. El limite esta para que la cabecera
+   siga siendo una REFERENCIA y no una segunda portada. */
+
+const LIMITE_CABECERA = 60;
+
+function abreviar(titulo) {
+  if (titulo.length <= LIMITE_CABECERA) return titulo;
+  const corte = titulo.lastIndexOf(' ', LIMITE_CABECERA);
+  return titulo.slice(0, corte > 0 ? corte : LIMITE_CABECERA).trimEnd() + '…';
+}
 
 async function existe(p) {
   try { await access(p); return true; } catch { return false; }
 }
 
-/* --------------------------------------------------------- portada ------ */
+/* --------------------------------------------- bloque de titulo --------- */
 
-/* El logo va INCRUSTADO en base64 y no por <img src>. Chromium carga la pagina
+/* ⚠️ ESTO ERA UNA PORTADA DE PAGINA ENTERA Y HOY ES UN BLOQUE DE TITULO que
+   abre la primera pagina, formato paper. Lo que se fue con ella:
+
+     · el `break-after: page` y el `height: 259mm` — y con ellos la calibracion
+     · la FOTO del articulo, que en un paper no pinta nada
+     · el parrafo de `descripcion`, porque el resumen pasa a ser la ENTRADILLA
+       del cuerpo, que ya estaba ahi: ver mas abajo
+
+   El resultado es que el texto empieza en la pagina 1 y el PDF baja de 9 a 8
+   paginas.
+
+   El logo va INCRUSTADO en base64 y no por <img src>. Chromium carga la pagina
    desde file://, y aunque una ruta relativa funcionaria, el PDF se genera
    tambien en CI sobre una copia del repo: una ruta rota ahi no da error, solo
    deja un hueco blanco donde iba la marca. Incrustado no puede fallar. */
 
-async function portada(art, logoDataUri) {
-  const img = join(RAIZ, 'articulos', art.slug, art.imagen.archivo);
-  const imagen = (await existe(img))
-    ? `<div class="pdf-portada__imagen"><img src="./${art.imagen.archivo}" alt=""></div>`
-    : '';
+/* ⚠️ «ULTIMA ACTUALIZACION» VA EN LA MISMA LINEA, Y EN LA WEB VA EN LA SUYA.
+   Parece una incoherencia y no lo es: AQUI CABE Y ALLI NO. Medido con el mes
+   mas largo y el dia de dos digitos, que es el peor caso:
 
+     fecha 161,8 + minutos 104,2 + actualizacion 293,5 + dos separadores 37,3
+       = 596,8 px = 157,9 mm,  sobre los 170 mm utiles de un A4 con estos
+         margenes. Holgura: 12,1 mm.
+
+   La misma fila en la web pide 734,6 px sobre una columna de 720. La
+   diferencia no es el ancho —la columna web son 190 mm, mas que estos 170—
+   sino el ESTILO: la ficha de la web va en VERSALES, con tracking de 0,06em y
+   con un icono por dato; la de aqui va en caja baja, sin iconos y con 0,04em.
+   Las versales y los iconos son lo que la desbordan alli.
+
+   Si algun dia se le pusieran versales o iconos a esta ficha, hay que volver a
+   medir: se come la holgura de golpe.
+
+   Y si la linea llegara a envolver no pasa nada: el bloque fluye con el texto,
+   asi que simplemente ocupa una linea mas. Antes habia que vigilarlo porque el
+   `overflow: hidden` de la portada de 259mm recortaba lo que sobrara. */
+
+function bloqueTitulo(art, logoDataUri) {
   return `
 <div class="pdf-portada">
   <img class="pdf-portada__logo" src="${logoDataUri}" alt="">
@@ -59,16 +118,16 @@ async function portada(art, logoDataUri) {
   <div class="pdf-portada__texto">
     <p class="pdf-portada__categoria">${escapar(art.categoriaTexto)}</p>
     <h1 class="pdf-portada__titulo">${escapar(art.titulo)}</h1>
-    <p class="pdf-portada__entradilla">${escapar(art.descripcion)}</p>
 
     <div class="pdf-portada__ficha">
-      <strong>Juan Contera Miranda</strong>
+      <strong>${escapar(AUTOR.nombre)}</strong>
       <time datetime="${art.fecha}">${art.fechaLarga}</time>
       <span class="pdf-portada__sep" aria-hidden="true">·</span>
-      <span>${art.minutos} min de lectura</span>
+      <span>${art.minutos} min de lectura</span>${art.actualizado ? `
+      <span class="pdf-portada__sep" aria-hidden="true">·</span>
+      <time datetime="${art.actualizado}">Última actualización: ${art.actualizadoLarga}</time>` : ''}
     </div>
   </div>
-${imagen}
 </div>`;
 }
 
@@ -86,6 +145,33 @@ ${imagen}
    ⚠️ La plantilla del pie es un DOCUMENTO APARTE: no hereda ni los estilos de
    la pagina ni los margenes. Por eso repite el padding lateral a mano —para
    alinear con la mancha de texto— y trae sus propias fuentes. */
+
+/* ⚠️ LA CABECERA SE IMPRIME TAMBIEN EN LA PRIMERA PAGINA, Y NO HAY FORMA DE
+   EVITARLO. Es la misma limitacion que ya tenia el pie: Chromium aplica estas
+   plantillas a TODAS las paginas y no ofrece ningun selector por numero —el
+   numero llega como TEXTO dentro de un <span class="pageNumber">—. Tampoco sirve
+   `@page :first`, porque los margenes vienen por la API y Chromium ignora los
+   del @page.
+
+   Asi que en la pagina 1 la cabecera corriente queda encima del bloque de
+   titulo. Se asume: es una linea de 7px en gris claro y funciona como cintillo.
+   Evitarlo pediria generar dos PDF y unirlos, que es una libreria mas y
+   descuadra la numeracion.
+
+   ⚠️ Y LA CABECERA NO PUEDE IR VACIA, que es lo que estaba antes. Sin plantilla
+   —o con una vacia— Chromium pinta LA SUYA, con el titulo de la pagina y LA
+   FECHA DEL DIA, y eso rompe el determinismo del PDF. Llenarla es, ademas de
+   diseno, lo que mantiene esa puerta cerrada. */
+
+function cabecera(art) {
+  return `
+<div style="width:100%;padding:0 20mm;font-family:Helvetica,Arial,sans-serif;
+            font-size:7px;color:#8a857f;display:flex;justify-content:space-between;
+            align-items:baseline;">
+  <span>${escapar(abreviar(art.titulo))}</span>
+  <span>${escapar(AUTOR.nombre)}</span>
+</div>`;
+}
 
 function pie(art) {
   return `
@@ -138,8 +224,28 @@ const HORA_PDF = "090000+02'00'";
 
 const FECHAS = /\/(CreationDate|ModDate)\s*\(D:\d{14}(?:[+-]\d{2}'\d{2}'|Z)?\)/g;
 
+/* ⚠️ LOS DOS CAMPOS YA NO VALEN LO MISMO, Y ANTES SI.
+
+   /CreationDate es cuando se creo el documento —la publicacion— y /ModDate
+   cuando se modifico por ultima vez. Mientras no existio el campo
+   `actualizado`, los dos salian de `fecha` porque era lo unico que habia; con
+   el campo, /ModDate pasa a decir la verdad.
+
+   ⚠️ NO ROMPE EL DETERMINISMO, que es lo unico intocable aqui: la fecha nueva
+   sale del JSON igual que la vieja, nunca del reloj. Y un articulo SIN
+   `actualizado` da exactamente el mismo PDF que antes —verificado byte a
+   byte—, porque `art.actualizado` llega ya normalizado desde derivar(), que lo
+   deja en null cuando falta y tambien cuando es igual a `fecha`.
+
+   Las dos marcas miden los mismos 23 bytes: solo cambian los digitos del dia.
+   La guarda de longitud de abajo sigue cubriendo las dos. */
+
 function conFechasFijas(pdf, art) {
-  const marca = `D:${art.fecha.replaceAll('-', '')}${HORA_PDF}`;
+  const marca = (iso) => `D:${iso.replaceAll('-', '')}${HORA_PDF}`;
+  const fechas = {
+    CreationDate: marca(art.fecha),
+    ModDate: marca(art.actualizado || art.fecha),
+  };
   let halladas = 0;
 
   /* latin1 y no utf8: el PDF es binario y latin1 es el unico round-trip
@@ -149,7 +255,7 @@ function conFechasFijas(pdf, art) {
   const salida = Buffer.from(
     pdf.toString('latin1').replace(FECHAS, (_, campo) => {
       halladas++;
-      return `/${campo} (${marca})`;
+      return `/${campo} (${fechas[campo]})`;
     }),
     'latin1',
   );
@@ -262,24 +368,14 @@ async function main() {
     await p.evaluate((html) => {
       const principal = document.querySelector('.articulo__principal');
       principal.insertAdjacentHTML('afterbegin', html);
-    }, await portada(art, logoDataUri));
+    }, bloqueTitulo(art, logoDataUri));
 
-    /* ⚠️ HAY QUE ESPERAR A LA FOTO DE LA PORTADA, Y SU AUSENCIA NO DA ERROR.
-       La inyeccion ocurre DESPUES del `networkidle`, asi que el <img> empieza a
-       cargarse cuando la pagina ya se considera quieta: sin esta espera,
-       page.pdf() dispara antes y la portada sale con un hueco blanco donde iba
-       la imagen. El PDF se genera igual y nada avisa.
+    /* ⚠️ AQUI SE ESPERABA A QUE CARGARA LA FOTO DE LA PORTADA, Y YA NO HACE
+       FALTA: el bloque de titulo no lleva imagen. La unica que quedaba era la
+       portada del articulo y en formato paper no se imprime.
 
-       El logo no necesita espera porque va incrustado en base64. */
-
-    await p.evaluate(async () => {
-      const img = document.querySelector('.pdf-portada__imagen img');
-      if (!img || img.complete) return;
-      await new Promise((ok) => {
-        img.addEventListener('load', ok, { once: true });
-        img.addEventListener('error', ok, { once: true });
-      });
-    });
+       El logo tampoco necesita espera: va incrustado en base64, que es
+       justamente por lo que se eligio asi. */
 
     /* El JS de la pagina mete cosas que en papel no pintan nada: la barra de
        progreso y los relacionados, que se traen por fetch y aqui ni siquiera
@@ -301,8 +397,12 @@ async function main() {
       displayHeaderFooter: true,
       /* Chromium exige los dos: sin headerTemplate pinta el suyo, con el
          titulo de la pagina y la fecha del dia. Lo segundo ademas romperia la
-         idempotencia del repositorio, porque cambiaria cada dia. */
-      headerTemplate: '<span></span>',
+         idempotencia del repositorio, porque cambiaria cada dia.
+
+         ⚠️ ESTO ERA UN <span> VACIO y hoy lleva la cabecera corriente. La razon
+         de que no pudiera faltar NO ha cambiado: lo que la mantiene cerrada es
+         que haya CONTENIDO, no que este vacia. */
+      headerTemplate: cabecera(art),
       footerTemplate: pie(art),
       preferCSSPageSize: false,
     });
