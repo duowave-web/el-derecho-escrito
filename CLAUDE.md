@@ -238,7 +238,7 @@ cabecera y lo que se escriba dentro se pierde en el siguiente build.
 Lo monta `paginaArticulo()` en `scripts/lib/plantilla.mjs`, y es este:
 
 ```
-.volver              ← Volver a los artículos
+.articulo__acciones  ← Volver a los artículos  ·  Descargar PDF ↓
 .articulo__portada   la foto, 21:9
 .etiqueta--plana     la categoría, enlazada al filtro
 h1.articulo__titular el titular, con su filete en ::after
@@ -247,6 +247,15 @@ h1.articulo__titular el titular, con su filete en ::after
 nav.indice
 .articulo__cuerpo
 ```
+
+> ⚠️ **EL PRIMER ELEMENTO ERA `.volver` A SECAS Y AHORA ES UNA FILA DE DOS.**
+> «Descargar PDF» vivía al final del artículo, entre el «Volver» de cierre y
+> «Compartir», y subió aquí **por encargo**. Tiene su propia sección, abajo.
+>
+> **No ocupa fila propia**: comparte la que ya existía, así que la foto no baja
+> ni un píxel —verificado, los 24 px de `.articulo__acciones` a la foto son los
+> mismos 24 que tenía `.volver`—. Esa era la objeción escrita contra subirlo, y
+> no se materializa porque no se le dio línea propia.
 
 > ⚠️ **LA FOTO ESTABA EN CUARTO LUGAR, DESPUÉS DE LA FICHA, Y SUBIÓ AL SEGUNDO.**
 > El orden era categoría → titular → ficha → **foto** → entradilla. Se cambió
@@ -3580,16 +3589,39 @@ propia.
 > pone lo que solo necesita quien no ve la pantalla, el mismo recurso que el
 > «Ver artículos de » de las categorías.
 
-> ⚠️ **ESTE ARGUMENTO DECAYÓ A MEDIAS: «Descargar PDF» ya no vive en la lista.**
-> Salió de `.compartir` y hoy es un `.boton--contorno` propio, igual que este,
-> **pero conservó su icono**. O sea que la diferencia entre los dos botones de
-> descarga del sitio es hoy solo esa, y es la que habría que revisar si alguna
-> vez se unifican. El razonamiento original se conserva entero debajo.
+> ⚠️ **ESTE ARGUMENTO DECAYÓ DEL TODO, Y YA NO HAY NADA QUE UNIFICAR.** Decía
+> que «Descargar PDF» había salido de `.compartir` y era «un `.boton--contorno`
+> propio, igual que este», de modo que la única diferencia entre los dos botones
+> de descarga del sitio era el icono.
+>
+> **Hoy no son dos botones.** El del artículo se mudó a la fila de «Volver» y es
+> un **enlace de texto** con un `<svg>` en línea; este sigue siendo un botón con
+> caja. Son dos componentes distintos en dos páginas distintas, y está razonado
+> en «Descargar PDF abre el artículo».
+>
+> **No hay que volver a igualarlos.** Ponerle caja al del artículo metería un
+> botón en una fila de dos enlaces planos; quitársela a este dejaría el bloque
+> de biografía sin su cierre.
+>
+> ⚠️ **Y ESTE SÍ SIGUE SIENDO «el único `.boton--contorno` de descarga del
+> sitio»**, que es lo que de verdad cambió. El razonamiento del icono se
+> conserva entero debajo y **sigue valiendo para este botón**.
 
 > ⚠️ **NO LLEVA ICONO, al contrario que «Descargar PDF» del artículo.** Aquel
 > vive en `.compartir`, una lista de cuatro acciones donde el icono distingue
 > una de otra; este es un botón suelto y un icono ahí sería adorno. Si algún día
 > se le pone, va por `mask` en `::before` como los demás, no como `<svg>`.
+>
+> ⚠️ **La premisa de ese «aquel» ya no es cierta** —«Descargar PDF» no vive en
+> `.compartir` desde hace dos mudanzas— pero **la conclusión se mantiene por su
+> propio pie**: este botón sigue siendo uno suelto, y un icono ahí seguiría
+> siendo adorno.
+>
+> ⚠️ **Lo que sí hay que corregir es la última frase si algún día se le pone
+> icono.** Decía «por `mask`, no como `<svg>`», y el del artículo es hoy
+> precisamente un **`<svg>` en línea** — porque necesita animar una parte del
+> dibujo. Este no necesita animar nada, así que la `mask` le sigue sirviendo;
+> pero ya no se puede decir que el `<svg>` sea ajeno al sitio.
 
 ### Texto sobre imagen: hay que medir dónde cae, no la media
 
@@ -5112,82 +5144,174 @@ Lo que evita que el PDF se lea como generado sin cuidado:
 > entera a la última, dejando media página en blanco antes. Lo que se protege es
 > **cada referencia por separado**, que es donde el corte se ve mal.
 
-### El botón «Descargar PDF»
+### «Descargar PDF» abre el artículo, en la fila de «Volver»
 
-Es un `.boton--contorno` propio, **antes** del bloque «Compartir», con el icono
-de línea dentro. Apunta a `./<slug>.pdf`, en la misma carpeta del artículo.
+Es un **enlace de texto** —no un botón— en `.articulo__acciones`, arriba del
+todo, alineado a la derecha y a ras del canto derecho de la foto. Apunta a
+`./<slug>.pdf`, en la misma carpeta del artículo.
 
-> ⚠️ **ERA EL CUARTO ELEMENTO DE LA LISTA DE COMPARTIR Y SALIÓ DE ELLA.** Allí
-> se veía igual que LinkedIn, WhatsApp y Correo —misma píldora gris— así que se
-> leía como un destino más al que mandar el artículo. **Y no lo es: los otros
-> tres lo envían a otro sitio y este te lo da a ti.**
+> ⚠️ **ESTA SECCIÓN SE TITULABA «El botón» Y DESCRIBÍA OTRA COSA EN OTRO SITIO.**
+> Era un `.boton--contorno` con caja, **al final** del artículo, entre el
+> «Volver» de cierre y «Compartir». Se mudó aquí **por encargo**.
 >
-> Con `.boton--contorno` pasa a verse como «Descargar CV» de `sobre/` y del
-> lateral: **las dos descargas del sitio se ven igual**, que es la relación que
-> de verdad tienen.
+> El historial completo, porque el elemento ya ha cambiado de sitio dos veces y
+> cada posición traía su propio argumento escrito:
+>
+> | Pasada | Dónde | Qué era |
+> |---|---|---|
+> | 1ª | cuarto elemento de «Compartir» | píldora gris, como LinkedIn |
+> | 2ª | suelto, antes de «Compartir» | `.boton--contorno` con caja |
+> | **3ª** | **fila de «Volver», arriba** | **enlace de texto** |
 
-> ⚠️ **VA ANTES DE «COMPARTIR», NO DESPUÉS.** Llevarse el artículo es para uno
-> mismo; compartirlo es para terceros. El orden va de lo propio a lo ajeno, que
-> es también el orden en que se decide.
+> ⚠️ **Y DECAEN DOS ARGUMENTOS QUE ESTABAN ESCRITOS AQUÍ.** Conviene saber
+> cuáles, porque los dos suenan razonables y pueden volver:
 >
-> Con él se mudaron los márgenes: los 40 de arriba que tenía `.compartir` los
-> lleva ahora `.descarga`, que es quien abre la fila de acciones, y `.compartir`
-> se queda en `margin: 0 0 32px` con su filete.
+> **1. «Las dos descargas del sitio se ven igual».** Era el motivo de darle
+> `.boton--contorno`, el mismo que «Descargar CV» de `sobre/`. Ya no se ven
+> igual: aquel sigue siendo un botón con caja y este es un enlace de texto.
+> **No hay que volver a igualarlos**: están en páginas distintas y en contextos
+> distintos —allí cierra un bloque de biografía, aquí abre un artículo en una
+> fila que ya tenía otro enlace de texto—. Igualarlos ahora significaría meter
+> una caja en una fila de dos enlaces planos.
+>
+> **2. «Arriba competiría con el arranque de la lectura y empujaría el texto».**
+> Era la objeción contra esta posición, y **no se materializa, porque no ocupa
+> fila propia**: comparte la de «Volver», que ya estaba. Medido: de la fila a la
+> foto hay los mismos **24 px** que había de `.volver` a la foto. La columna no
+> se mueve ni un píxel.
+>
+> **Lo que SÍ sigue vigente de aquella sección es «UNA SOLA UBICACIÓN».** No se
+> repone el de abajo. Dos puntos de descarga serían dos sitios que mantener.
 
-> ⚠️ **`.descarga` Y `.compartir__lista` VAN PREFIJADAS CON `.articulo`, Y SIN
-> ESO NO SE APLICAN. LAS DOS ESTUVIERON MUERTAS A LA VEZ.**
->
-> | Regla | Declaraba | Computaba | Quién ganaba |
-> |---|---|---|---|
-> | `.descarga` | `margin: 40px 0 28px` | `0 0 22px` | `.articulo p` |
-> | `.compartir__lista` | `margin: 0; padding: 0` | `padding-left: 24px` | `.articulo ul` |
->
-> Las dos son (0,1,0) contra los (0,1,1) del selector del cuerpo: **ganan por
-> especificidad, no por orden**.
->
-> Lo que se veía: el botón **pegado** a «Volver a los artículos» —hueco medido:
-> **0**— y las píldoras de compartir arrancando **24 px más a la derecha** que
-> el rótulo «COMPARTIR», como si estuvieran sangradas a propósito. **No lo
-> estaban**: era el relleno por defecto de las listas del cuerpo.
->
-> De las tres declaraciones de `.compartir__lista` solo funcionaba
-> `list-style: none`, porque `.articulo ul` no lo declara.
->
-> ⚠️ **ES LA TERCERA VEZ QUE MUERDE ESTE PATRÓN**: antes fueron `.articulo h3`
-> contra `.entrada__titulo` en «Continúa leyendo» y `.articulo p` contra
-> `.autor__cv` en el lateral. **Cualquier clase nueva sobre un `<p>`, `<ul>` o
-> `<h3>` dentro del artículo necesita el prefijo**, y el fallo no da ningún
-> error: solo se ve mirando el estilo computado.
+> **El ancho de la fila no se declara, y no hay que declararlo.**
+> `.articulo__acciones` es un bloque hijo de `.articulo__principal`, igual que
+> `.articulo__portada`, así que ya mide lo que mide la foto —720 px en
+> escritorio— sin repetir ningún número. Un `max-width` aquí sería un segundo
+> sitio donde mantener el ancho de la columna.
 
-> **Los huecos de la zona, ya con las reglas vivas:**
+> ⚠️ **EL ICONO ES UN `<svg>` EN LÍNEA Y NO UNA `mask`, y el motivo es que hay
+> que animar UNA PARTE del dibujo.** La flecha baja y la bandeja se queda; con
+> una `mask` el icono es una sola superficie y no hay nada que animar por
+> separado. Por eso el trazado lleva un `<g class="descarga__flecha">`.
 >
-> | | px |
-> |---|---|
-> | referencias → «Volver» | 40 |
-> | **«Volver» → botón PDF** | **40** |
-> | botón → filete de «Compartir» | 28 |
-> | filete → rótulo | 29 |
-> | rótulo → píldoras | 28 |
+> Sigue las convenciones del único otro `<svg>` en línea del sitio, la lupa de
+> la cabecera: `viewBox` de 24, sin relleno, trazo en `currentColor` a 1,8 y
+> extremos redondeados. Y va `aria-hidden`, así que el nombre accesible sigue
+> siendo «Descargar PDF» a secas.
 >
-> Los 40 igualan el hueco que ya había encima de «Volver», así que el enlace
-> queda con el mismo aire por los dos lados y se lee como una pieza suelta entre
-> dos bloques. Y **todo alinea a 0** con la columna: «Volver», el botón, el
-> rótulo, las píldoras y el aviso.
+> ⚠️ **EL DESPLAZAMIENTO VA EN UNIDADES DEL `viewBox`, NO EN PÍXELES.** El
+> `transform` de un hijo de SVG se interpreta en el sistema de coordenadas
+> local, así que `translateY(4px)` son **4/24 del alto del icono**: a 15 px de
+> caja salen **2,5 px reales**, medidos. Si alguien cambia el tamaño del icono
+> el gesto escala con él —que es lo que se quiere— pero el número seguirá
+> diciendo 4.
+>
+> Los 180 ms y la curva son los de `.volver__flecha`: las dos flechas de la fila
+> se mueven igual.
 
-> **UNA SOLA UBICACIÓN, y se descartó la segunda.** Arriba, junto a la ficha,
-> competiría con el arranque de la lectura y empujaría el texto: esa columna ya
-> lleva `.volver`, foto, categoría, titular, ficha, entradilla e índice. Y el
-> momento de descargar es **después** de decidir que el artículo interesa, que
-> es justo donde está. Dos puntos de descarga serían además dos sitios que
-> mantener.
+> ⚠️ **SE APAGAN LAS DOS COSAS CON `prefers-reduced-motion`**, la transición
+> **y** el `transform`. Quitando solo la transición la flecha **saltaría** los
+> 4 de golpe, que es justo lo que sobra con esa preferencia. Es la misma lección
+> que dejó `.boton__flecha`.
 
-> **El icono se queda, y eso cambia lo que decía la sección del CV.** Allí está
-> escrito que el botón del CV no lleva icono «al contrario que Descargar PDF del
-> artículo, que vive en una lista de cuatro acciones donde el icono distingue
-> una de otra». Ese argumento decae: el botón ya no vive en la lista. Se
-> conserva porque aquí distingue «descargar» de un enlace cualquiera, y porque
-> es un `<span aria-hidden>` con `mask` que no entra en el árbol de
-> accesibilidad.
+> ⚠️ **EL ICONO DE `mask` VIEJO SE QUEDÓ SIN USO: `.compartir__icono--pdf`.**
+> Era el documento con la esquina doblada que llevaba el botón. Comprobado que
+> no lo usa nadie —cero apariciones en HTML, JS y `.mjs`— **y NO se ha borrado**:
+> es una limpieza aparte, como ya se hizo con `.boton__flecha` y
+> `.sobre__cierre`. Sus cuatro hermanos —`--linkedin`, `--whatsapp`, `--correo`
+> y `--enlace`— sí siguen vivos, así que no se puede borrar la familia entera.
+
+#### Apila sin punto de corte, y eso arregla una regresión que introdujo la fila
+
+Los dos enlaces piden **297 px** —160 de «Volver», 121 de «Descargar PDF» y los
+16 del hueco—, así que por debajo de unos **345 px de ventana** ya no caben en
+una línea.
+
+> ⚠️ **SIN `flex-wrap` NO DESBORDAN, Y ESO ES LO QUE DESPISTA: lo que pasa es que
+> «Volver» ENCOGE y su texto se parte en dos renglones.** Medido a 320: pasaba de
+> 160 a 135 px. **Antes de juntar los dos enlaces no ocurría**, porque «Volver»
+> tenía la fila entera para él: es una regresión que introduce esta fila, no un
+> defecto que ya estuviera.
+>
+> Lo resuelven `flex-wrap: wrap` en la fila y `flex: none` en los dos enlaces:
+> como ninguno cede, cuando no caben es la **línea** la que se parte, y el `gap`
+> de 16 pasa a hacer de separación vertical.
+
+**No lleva media query, y es deliberado.** El ancho al que dejan de caber
+depende del largo de los dos textos, y un número escrito en el CSS se quedaría
+atrás en silencio el día que alguien toque cualquiera de los dos — que es
+exactamente lo que ya ha pasado **dos veces** con los cortes de la cabecera.
+Es el mismo recurso que `auto-fit` en `.campos-par`: mide el navegador.
+
+Barrido de verificación:
+
+| Ventana | 320 | 344 | 345 | **346** | 375 | 768 | 1440 |
+|---|---|---|---|---|---|---|---|
+| Disposición | apilados | apilados | apilados | **una fila** | una fila | una fila | una fila |
+| Ancho de «Volver» | 160 | 160 | 160 | 160 | 160 | 160 | 160 |
+| ¿Cuadra con la foto? | sí | sí | sí | sí | sí | sí | sí |
+| Desborde horizontal | no | no | no | no | no | no | no |
+
+En **375, que es donde se pidió comprobarlo, van en una fila** con 46 px de
+sobra. Y en ningún ancho se parte «Volver».
+
+> ⚠️ **`margin-left: auto` EN EL ENLACE, Y NO `justify-content: space-between`
+> EN LA FILA.** Es la misma lección que ya dejó `.paso__enlace--siguiente`. Con
+> los dos en una línea `space-between` también los separaría; lo que no resuelve
+> es el caso **apilado**, donde cada línea tiene un solo elemento y
+> `space-between` lo manda al principio: el enlace se iría a la izquierda justo
+> cuando el diseño pide que cierre contra el canto derecho de la foto.
+
+#### El ritmo del final del artículo se quedó en 40 limpio
+
+Al irse el botón, la zona pasa de cinco huecos a cuatro, y todos iguales:
+
+| | Antes | Ahora |
+|---|---|---|
+| referencias → «Volver» | 40 | **40** |
+| «Volver» → botón PDF | 40 | — |
+| botón → filete de «Compartir» | 28 | — |
+| **«Volver» → «Compartir»** | — | **40** |
+| «Compartir» → «Comentarios» | 40 | **40** |
+| «Comentarios» → aviso legal | 40 | **40** |
+
+Idéntico a 1440, 768 y 375. Desaparece el 28, que era el único hueco distinto
+de la zona y estaba ahí para no duplicar el aire contra el filete.
+
+> ⚠️ **`.compartir` RECUPERA SU `margin-top: 40px`, QUE ESTABA EN 0.** Lo soltó
+> el botón cuando se metió en medio trayendo su propio margen; al mudarse
+> arriba, `.compartir` vuelve a ser el primer bloque de la fila de acciones y
+> **sin esos 40 su filete queda pegado a «Volver a los artículos»** —hueco: 0—.
+> No es un número nuevo: es el que tenía antes de que el botón existiera.
+
+> ⚠️ **`.descarga` SIGUE PREFIJADA CON `.articulo`, PERO YA NO POR EL MISMO
+> MOTIVO.** Era un `<p>` y la vencía `.articulo p`; hoy es un `<a>`, así que esa
+> regla no le alcanza. El prefijo está ahora por el **subrayado**, que lo pone la
+> regla de enlaces del artículo. `.volver` lo quita con una sola clase, pero no
+> conviene fiarlo a un empate de orden.
+>
+> **Lo que NO decae es la lección**, que se conserva íntegra en el apartado de
+> `.compartir__lista`: cualquier clase nueva sobre un `<p>`, `<ul>` o `<h3>`
+> dentro del artículo necesita el prefijo.
+
+#### `.compartir__lista` sigue prefijada, y por el motivo de siempre
+
+> ⚠️ **`.compartir__lista` VA PREFIJADA CON `.articulo` Y SIN ESO NO SE APLICA.**
+> Es (0,1,0) contra los (0,1,1) de `.articulo ul`, que **gana por especificidad,
+> no por orden**, y le colaba su `margin: 0 0 22px` y su `padding-left: 24px`.
+>
+> Lo que se veía: las píldoras arrancando **24 px más a la derecha** que el
+> rótulo «COMPARTIR», como si estuvieran sangradas a propósito. **No lo
+> estaban**: era el relleno por defecto de las listas del cuerpo. De sus tres
+> declaraciones solo funcionaba `list-style: none`, porque `.articulo ul` no lo
+> declara.
+>
+> ⚠️ **ES UN PATRÓN QUE HA MORDIDO CUATRO VECES**: `.entrada__titulo` contra
+> `.articulo h3` en «Continúa leyendo», `.autor__cv` y la vieja `.descarga`
+> contra `.articulo p`, esta contra `.articulo ul`, y
+> **`.comentarios__nota` contra `.articulo p`** — la última, documentada en la
+> sección de los comentarios. **El fallo no da ningún error: solo se ve mirando
+> el estilo computado.**
 
 > ⚠️ **NO LLEVA EL PESO EN BYTES, al contrario que «Descargar CV», y no es un
 > olvido.** El del CV se escribe a mano porque el archivo es fijo. El del
@@ -5661,20 +5785,32 @@ La lectura del bloque entero es: primero el artículo, después lo que puedes
 | Hueco | px |
 |---|---|
 | referencias → «Volver» | 40 |
-| «Volver» → botón PDF | 40 |
-| botón PDF → filete de «Compartir» | **28** — el par apretado, deliberado |
+| **«Volver» → filete de «Compartir»** | **40** |
 | «Compartir» → filete de COMENTARIOS | **40** |
 | COMENTARIOS → aviso legal | **40** |
 | aviso → `.paso` | 48 |
 | `.paso` → `.continua` | 56 |
 
-Idéntico a 1440, 768 y 375. La zona se lee a un solo ritmo de 40, con el 28 como
-única excepción, y a partir del aviso el aire crece conforme se aleja del texto.
+Idéntico a 1440, 768 y 375. La zona se lee a un **solo ritmo de 40, ya sin
+excepciones**, y a partir del aviso el aire crece conforme se aleja del texto.
+
+> ⚠️ **ESTA TABLA TENÍA DOS FILAS MÁS Y UN 28.** Eran «Volver → botón PDF: 40» y
+> «botón PDF → filete de Compartir: **28** — el par apretado, deliberado». Las
+> dos se fueron con el botón, que **se mudó al principio del artículo**.
+>
+> El 28 era el único hueco distinto de la zona y estaba ahí para no duplicar el
+> aire contra el filete. Al desaparecer el elemento que lo pedía, la zona queda
+> en 40 limpio — **no hay que reintroducirlo** buscando «el par apretado»: no
+> queda ningún par que apretar.
 
 > ⚠️ **ARRIBA ESTUVO EN 56 Y DESENTONABA.** Era el valor de `.continua`, que
 > cierra la página; aquí caía justo **después** del hueco más apretado de la
 > zona —los 28— y hacía el salto más grande de toda la columna. Con 40, el
 > `margin-bottom: 32` de `.compartir` colapsa con él y manda el mayor.
+>
+> **El argumento se queda sin su «después de los 28»**, que ya no existen, pero
+> la conclusión no cambia: 40 es el ritmo de la zona y 56 seguiría siendo el
+> salto más grande de la columna.
 
 > ⚠️ **EL `margin-bottom` NO SE PUEDE SOLTAR A 0, y el motivo cambió con la
 > posición.** En la 2ª posición existía para que «Volver» no quedara pegado
@@ -6129,6 +6265,39 @@ forzarlo. El tercero no tiene opción para quitarlo y se oculta con
 Nace **detrás** de la caja, para que se vea sin JavaScript, y el JS la recoloca
 bajo el editor si Artalk ha montado. Si Artalk cambiara el nombre de
 `.atk-main-editor`, la nota se queda donde estaba en vez de desaparecer.
+
+> ⚠️ **SUS DOS REGLAS VAN PREFIJADAS CON `.articulo`, Y ESTUVIERON SIN PREFIJO:
+> SUS MÁRGENES LLEVABAN MUERTOS DESDE LA INTEGRACIÓN.** La nota es un `<p>`
+> dentro de `<article class="articulo">`, así que le cae `.articulo p`, que pesa
+> (0,1,1) frente a los (0,1,0) de `.comentarios__nota` y
+> `.comentarios__nota--bajo-editor`. **Gana por especificidad, no por orden.**
+>
+> | | Declaraba | Computaba |
+> |---|---|---|
+> | `.comentarios__nota` | `margin: 18px 0 0` | `0 0 22px` |
+> | `.comentarios__nota--bajo-editor` | `margin: 12px 0 28px` | `0 0 22px` |
+>
+> **Lo que se veía: la nota PEGADA al botón «Publicar», hueco medido 0.** El
+> resto de la regla —cuerpo, interlineado y color— sí se aplicaba, porque
+> `.articulo p` no los declara, así que la nota parecía correcta salvo por el
+> hueco. Solo se encuentra mirando el estilo computado.
+>
+> ⚠️ **Y EL DIAGNÓSTICO FÁCIL ERA OTRO, que es lo que lo hace traicionero.** Al
+> leer el archivo se veía un `margin-top: 12px`, así que el problema parecía ser
+> «12 es poco» y la solución, subirlo. **Subirlo no arregla nada**: la regla
+> sigue sin aplicarse. Si alguna vez vuelve a verse pegada, lo primero es mirar
+> el computado, no el declarado.
+>
+> Es la **cuarta** vez que muerde este patrón en el proyecto. Las otras tres
+> están en «`.compartir__lista` sigue prefijada», con la lista completa.
+
+> **Ya con el prefijo, el hueco al botón es de 28 px**, medido sobre el editor
+> real de Artalk montado en la página. 28 no es un número nuevo: es el
+> `padding-top` de `.compartir`, el relleno de `.indice` y `.referencias` y el
+> hueco que el propio widget deja entre su rótulo y las píldoras. En este sitio
+> **12 es aire dentro de un componente y 28 es lo que separa dos cosas
+> distintas**, que es lo que hace falta: la nota no es una condición del botón,
+> es un aviso sobre qué se hace con el correo y vale para el formulario entero.
 
 > ⚠️ **ENLAZA A `/privacidad/`, QUE TODAVÍA NO EXISTE.** Hoy ese enlace da 404.
 > Está puesto a propósito, para no tener que acordarse de añadirlo después,
