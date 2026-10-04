@@ -112,6 +112,44 @@ const MESES = [
   'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre',
 ];
 
+/* ---------------------------------------------------- la newsletter --- */
+
+/* ⚠️ ESTO NO ES `DOMINIO`, Y JUNTARLOS ROMPERIA TODOS LOS CORREOS. Son dos
+   constantes con dos valores distintos a proposito:
+
+     DOMINIO  https://elderechoescrito.es          el dominio CANONICO
+     SITIO    https://duowave-web.github.io/...    donde se sirve HOY
+
+   `DOMINIO` es lo que el sitio DECLARA en canonical, og:url, el sitemap y el
+   feed. El CLAUDE.md dice que esas URL ya apuntan a elderechoescrito.es y que
+   no se tocan: son metadatos para buscadores y pueden ir por delante de la
+   mudanza sin que nadie se rompa, porque nadie las pulsa.
+
+   `SITIO` es donde el articulo se puede ABRIR de verdad hoy, y es lo unico que
+   puede ir en un correo. Un enlace del boletin SI lo pulsa una persona: si
+   saliera de `DOMINIO`, cada suscriptor recibiria enlaces muertos hasta el dia
+   de la mudanza, y nada avisaria —el correo se envia bien y el fallo solo
+   aparece al hacer clic—.
+
+   ⚠️ EL DIA DE LA MUDANZA LOS DOS VALORES SE IGUALAN, y entonces parecera que
+   esta constante sobra. NO sobra: lo que la justifica no es que los valores
+   difieran, sino que una es una declaracion y la otra una direccion que se
+   pulsa. Si el sitio vuelve a servirse en otro sitio —una preview, un dominio
+   de pruebas— vuelven a separarse.
+
+   Es el UNICO sitio del que salen las URL del boletin. El `action` de los dos
+   formularios de suscripcion apunta a Listmonk, que es otro servidor y otro
+   dominio: no tiene nada que ver con este. */
+
+export const SITIO = 'https://duowave-web.github.io/el-derecho-escrito';
+
+/* El id numerico lo pide la API de campanas —el campo `lists` es un array de
+   enteros— y el uuid lo pide el formulario publico. Son la MISMA lista y
+   Listmonk no deja deducir uno del otro, asi que van los dos. */
+
+export const LISTA_ID = 34;
+export const LISTA_UUID = '0be3e1f2-8abf-4135-8141-009fc915255c';
+
 /* --------------------------------------------------------- utilidades --- */
 
 export function escapar(t) {
@@ -858,10 +896,41 @@ ${pintarEtiquetas(art)}
 
             <p class="suscripcion__reclamo">Sigue <em>El Derecho Escrito</em></p>
             <p class="suscripcion__apoyo">Suscríbete para recibir los nuevos artículos sobre Derecho administrativo, urbanismo y jurisdicción contencioso-administrativa.</p>
-            <label class="oculto" for="correo">Correo electrónico</label>
-            <input type="email" id="correo" placeholder="Correo electrónico" disabled>
-            <button class="boton boton--principal" type="button" disabled>Suscribirme</button>
-            <p class="suscripcion__nota">Un correo con cada nueva publicación. Puedes darte de baja en cualquier momento.</p>
+
+            <!-- ⚠️ YA NO VA DESHABILITADO. Estuvo sin <form> y con los controles
+                 en «disabled» a proposito, porque no habia backend; hoy envia a
+                 Listmonk. El de la portada es el mismo componente y cambio a la
+                 vez: si se toca uno, se toca el otro.
+
+                 ⚠️ EL «action» ES LA UNICA DECLARACION DEL SERVIDOR aqui, y el
+                 JS saca de ahi el origen para llamar a la API. No hay una
+                 segunda copia de la direccion.
+
+                 Sin JavaScript funciona igual: POST normal a la pagina publica
+                 de Listmonk. -->
+            <form class="suscripcion__accion" method="post"
+                  action="https://listas.elderechoescrito.es/subscription/form">
+              <label class="oculto" for="correo">Correo electrónico</label>
+              <input type="email" id="correo" name="email" required
+                     autocomplete="email" placeholder="Correo electrónico">
+
+              <!-- El honeypot de Listmonk. Va VACIO y lo esconde el CSS, no un
+                   «type="hidden"»: un campo invisible de verdad no lo rellena
+                   ningun bot y entonces no atrapa a nadie. -->
+              <input class="trampa" type="text" name="nonce" value=""
+                     tabindex="-1" autocomplete="off" aria-hidden="true">
+
+              <input type="hidden" name="l" value="${LISTA_UUID}">
+
+              <button class="boton boton--principal" type="submit">Suscribirme</button>
+
+              <p class="suscripcion__aviso" role="status"></p>
+
+              <!-- ⚠️ La primera frase es del cliente y no se toca. La segunda se
+                   AÑADE para enlazar la pagina de privacidad. Ruta relativa de
+                   dos niveles, como todo lo del articulo. -->
+              <p class="suscripcion__nota">Un correo con cada nueva publicación. Puedes darte de baja en cualquier momento. <a href="../../privacidad/">Cómo tratamos tu correo</a>.</p>
+            </form>
           </div>
 
         </aside>

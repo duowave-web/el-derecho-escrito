@@ -1,0 +1,177 @@
+# ==========================================================================
+# Avisa por correo de cada artículo NUEVO.
+#
+# Se dispara con cada push a main, mira si ese push ha AÑADIDO una carpeta en
+# contenido/articulos/, espera a que GitHub Pages sirva el artículo y crea la
+# campaña en Listmonk.
+#
+# ⚠️ NUEVO SÍ, CORREGIDO NO. Lo que decide es el estado «A» (added) del diff de
+# git sobre el articulo.json: un artículo que se corrige sale como «M»
+# (modified) y no dispara nada. Es la diferencia entre publicar y retocar, y es
+# justo la que un filtro por rutas no sabe hacer.
+# ==========================================================================
+
+name: Avisar de un artículo nuevo
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'contenido/articulos/**'
+
+  # ⚠️ EL DISPARO A MANO ADMITE UN SLUG Y ES LA VÁLVULA DE ESCAPE. Sirve para
+  # reenviar algo que falló, para probar en seco sin tocar nada, y para el caso
+  # en que el push automático no detectó el alta —por ejemplo si el artículo
+  # llegó a main en un merge raro—.
+  workflow_dispatch:
+    inputs:
+      slug:
+        description: 'Slug del artículo (vacío = detectar del último commit)'
+        required: false
+        type: string
+      seco:
+        description: 'Prueba en seco: enseña la campaña y no llama a la API'
+        required: false
+        type: boolean
+        default: true
+
+concurrency:
+  # Nunca dos a la vez sobre el mismo commit. No se cancela la que esté en
+  # curso: si ya está creando una campaña, matarla a medias es peor.
+  group: newsletter-${{ github.sha }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+env:
+  # ──────────────────────────────────────────────────────────────────────
+  # ⚠️ EL INTERRUPTOR. «si» envía; CUALQUIER otro valor deja la campaña en
+  # borrador, lista para repasarla y darle a enviar desde el panel.
+  #
+  # Para cambiarlo se edita ESTA línea y se hace commit. No hay que tocar
+  # ningún secreto ni ningún ajuste de GitHub.
+  #
+  # Se deja en «no» hasta que el primer envío se haya revisado entero: un
+  # borrador se puede corregir, un correo enviado no se puede retirar.
+  # ──────────────────────────────────────────────────────────────────────
+  NEWSLETTER_ENVIAR: 'no'
+
+jobs:
+  avisar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar el repositorio
+        uses: actions/checkout@v4
+        with:
+          # Hacen falta DOS commits para poder comparar el push con lo que
+          # había antes. Con el checkout superficial de serie no hay con qué
+          # comparar y el diff saldría vacío.
+          fetch-depth: 2
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Averiguar si hay un artículo nuevo
+        id: detectar
+        run: |
+          set -euo pipefail
+
+          MANUAL="${{ inputs.slug }}"
+          if [ -n "$MANUAL" ]; then
+            echo "Slug dado a mano: $MANUAL"
+            echo "slug=$MANUAL" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # ⚠️ --diff-filter=A: SOLO lo AÑADIDO. Un articulo.json modificado
+          # tiene estado M y no entra, que es lo que separa «publicar» de
+          # «corregir».
+          #
+          # ⚠️ Y SE MIRA EL articulo.json, NO LA CARPETA. Una carpeta puede
+          # aparecer en el diff porque se le añada la portada o se le retoque
+          # cualquier cosa; el articulo.json solo se añade una vez, cuando el
+          # artículo nace.
+          NUEVOS=$(git diff --name-only --diff-filter=A \
+                     "${{ github.event.before }}" "${{ github.sha }}" \
+                     -- 'contenido/articulos/*/articulo.json' || true)
+
+          if [ -z "$NUEVOS" ]; then
+            echo "No hay ningún artículo nuevo en este push."
+            echo "slug=" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          CUANTOS=$(echo "$NUEVOS" | wc -l | tr -d ' ')
+          if [ "$CUANTOS" -gt 1 ]; then
+            echo "::warning::El push trae $CUANTOS artículos nuevos. Se avisa solo del primero; los demás se lanzan a mano con workflow_dispatch."
+          fi
+
+          SLUG=$(echo "$NUEVOS" | head -1 | cut -d/ -f3)
+          echo "Artículo nuevo: $SLUG"
+          echo "slug=$SLUG" >> "$GITHUB_OUTPUT"
+
+      - name: Esperar a que GitHub Pages sirva el artículo
+        if: steps.detectar.outputs.slug != ''
+        run: |
+          set -euo pipefail
+
+          # ⚠️ EL DOMINIO NO SE ESCRIBE AQUÍ: SE LE PREGUNTA A plantilla.mjs.
+          # Es el mismo valor del que salen las URL del correo, así que no
+          # puede comprobarse una dirección y anunciarse otra. El día de la
+          # mudanza se cambia esa constante y este paso la sigue solo.
+          SITIO=$(node -e "import('./scripts/lib/plantilla.mjs').then(m => process.stdout.write(m.SITIO))")
+          URL="$SITIO/articulos/${{ steps.detectar.outputs.slug }}/"
+          echo "Esperando a $URL"
+
+          # ⚠️ ESTO NO ES UN `sleep`. Pages tarda lo que tarda —a veces 30
+          # segundos, a veces tres minutos— y un sleep fijo o se queda corto o
+          # desperdicia tiempo. Se pregunta hasta que responda 200.
+          #
+          # Si al cabo de 5 minutos no está, se PARA: mandar un correo con un
+          # enlace que da 404 es peor que no mandarlo.
+          for i in $(seq 1 30); do
+            CODIGO=$(curl -s -o /dev/null -w '%{http_code}' "$URL" || echo 000)
+            if [ "$CODIGO" = "200" ]; then
+              echo "Servido tras $((i * 10)) s."
+              exit 0
+            fi
+            echo "  intento $i: HTTP $CODIGO"
+            sleep 10
+          done
+
+          echo "::error::El artículo no responde 200 tras 5 minutos. No se crea la campaña."
+          exit 1
+
+      - name: Crear la campaña
+        if: steps.detectar.outputs.slug != ''
+        env:
+          LISTMONK_URL: ${{ secrets.LISTMONK_URL }}
+          LISTMONK_USUARIO: ${{ secrets.LISTMONK_USUARIO }}
+          LISTMONK_TOKEN: ${{ secrets.LISTMONK_TOKEN }}
+        run: |
+          set -euo pipefail
+          SECO=""
+          if [ "${{ inputs.seco }}" = "true" ]; then
+            SECO="--seco"
+            echo "Prueba en seco: no se llama a la API."
+          fi
+          node scripts/newsletter.mjs "${{ steps.detectar.outputs.slug }}" $SECO
+
+      - name: Resumen
+        if: always()
+        run: |
+          SLUG="${{ steps.detectar.outputs.slug }}"
+          {
+            echo "### Boletín"
+            if [ -z "$SLUG" ]; then
+              echo ""
+              echo "Este push no añade ningún artículo nuevo. No se ha creado ninguna campaña."
+            else
+              echo ""
+              echo "- Artículo: \`$SLUG\`"
+              echo "- Modo: ${{ inputs.seco == true && 'prueba en seco' || 'real' }}"
+              echo "- Tras crearla: ${{ env.NEWSLETTER_ENVIAR == 'si' && 'SE ENVÍA' || 'se queda en BORRADOR' }}"
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"

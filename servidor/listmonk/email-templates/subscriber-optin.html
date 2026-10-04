@@ -1,0 +1,115 @@
+{{ define "subscriber-optin" }}<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--
+  Correo de confirmacion de alta de El Derecho Escrito.
+
+  OJO AL EDITAR: este comentario viaja dentro de cada correo que se envia, asi
+  que va corto. Todo lo demas esta razonado en CLAUDE.md, en «La newsletter».
+-->
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark">
+<title>Confirma tu suscripcion</title>
+</head>
+
+<body style="margin:0; padding:0; width:100%; background-color:#f6f5f7;">
+
+<!-- Preencabezado: lo que el gestor de correo enseña como resumen junto al
+     asunto. Oculto en el cuerpo del mensaje. -->
+<div style="display:none; font-size:1px; color:#f6f5f7; line-height:1px; max-height:0; max-width:0; opacity:0; overflow:hidden;">
+  Un clic y listo: confirma que quieres recibir los articulos.
+</div>
+
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+       style="background-color:#f6f5f7; margin:0; padding:0;">
+  <tr>
+    <td align="center" style="padding:24px 12px;">
+
+      <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0"
+             style="width:100%; max-width:600px; background-color:#ffffff; border:1px solid #e5e1da;">
+
+        <!-- Mancheta. El logo va por URL absoluta al sitio publicado: un
+             correo no tiene pagina desde la que resolver una ruta relativa. -->
+        <tr>
+          <td align="center" style="padding:32px 30px 0 30px;">
+            <img src="https://duowave-web.github.io/el-derecho-escrito/apple-touch-icon.png"
+                 width="54" height="54" alt=""
+                 style="display:block; border:0; border-radius:6px;">
+          </td>
+        </tr>
+
+        <tr>
+          <td align="center" style="padding:16px 30px 0 30px;">
+            <p style="margin:0; font-family:Georgia,'Times New Roman',serif; font-size:15px; font-weight:bold; letter-spacing:0.08em; text-transform:uppercase; color:#1e1e1e;">
+              El Derecho Escrito
+            </p>
+          </td>
+        </tr>
+
+        <tr>
+          <td align="center" style="padding:26px 30px 0 30px;">
+            <p style="margin:0; font-family:Georgia,'Times New Roman',serif; font-size:24px; line-height:1.3; color:#1e1e1e;">
+              Confirma tu suscripci&oacute;n
+            </p>
+          </td>
+        </tr>
+
+        <tr>
+          <td align="center" style="padding:14px 30px 0 30px;">
+            <p style="margin:0; font-family:Georgia,'Times New Roman',serif; font-size:16px; line-height:1.65; color:#66615b;">
+              Pulsa el bot&oacute;n y empezar&aacute;s a recibir un aviso con cada art&iacute;culo nuevo.
+            </p>
+          </td>
+        </tr>
+
+        <!-- Boton. Va como tabla con fondo y no como <a> con padding porque
+             Outlook ignora el padding de un enlace y el boton se queda en una
+             linea de texto suelta. -->
+        <tr>
+          <td align="center" style="padding:28px 30px 0 30px;">
+            <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+              <tr>
+                <td align="center" style="background-color:#2f6e68;">
+                  <a href="{{ .OptinURL }}"
+                     style="display:inline-block; padding:15px 32px;
+                            font-family:Helvetica,Arial,sans-serif; font-size:15px;
+                            font-weight:bold; letter-spacing:0.01em;
+                            color:#ffffff; text-decoration:none;">
+                    Confirmar suscripci&oacute;n
+                  </a>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- Enlace en texto, por si el boton no se pinta o el cliente bloquea
+             los estilos. Sin esto, un correo sin CSS se queda sin salida. -->
+        <tr>
+          <td align="center" style="padding:18px 30px 0 30px;">
+            <p style="margin:0; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:1.6; color:#66615b;">
+              Si el bot&oacute;n no funciona, copia esta direcci&oacute;n en tu navegador:<br>
+              <a href="{{ .OptinURL }}" style="color:#2f6e68; text-decoration:underline; word-break:break-all;">{{ .OptinURL }}</a>
+            </p>
+          </td>
+        </tr>
+
+        <tr>
+          <td style="padding:26px 30px 30px 30px;">
+            <p style="margin:0; font-family:Helvetica,Arial,sans-serif; font-size:13px; line-height:1.6; color:#66615b; text-align:center;">
+              Si no lo has pedido, ignora este correo: sin confirmar no te
+              llegar&aacute; nada m&aacute;s.
+            </p>
+          </td>
+        </tr>
+
+      </table>
+    </td>
+  </tr>
+</table>
+
+</body>
+</html>
+{{ end }}
