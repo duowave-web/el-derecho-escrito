@@ -12,7 +12,7 @@
 
   ⚠️ LLEVA LA ENVOLTURA, NO EL ARTICULO. Lo que cambia en cada envio —la foto,
   la categoria, el titular, la entradilla y los dos botones— lo escribe
-  scripts/newsletter.mjs y entra por {{ template "content" . }}.
+  scripts/newsletter.mjs y entra por el marcador de contenido de Listmonk.
 
   OJO AL EDITAR: este comentario viaja dentro de cada correo. Va corto; el
   razonamiento entero esta en CLAUDE.md.
@@ -86,7 +86,7 @@
               <a href="{{ MessageURL }}" style="color:#66615b; text-decoration:underline;">Ver en el navegador</a>
             </p>
 
-            <!-- ⚠️ AQUI NO VA {{ TrackView }}, Y ES DELIBERADO. Ese marcador es
+            <!-- ⚠️ AQUI NO VA el marcador TrackView, Y ES DELIBERADO. Ese marcador es
                  el pixel de seguimiento de aperturas, y el seguimiento esta
                  DESACTIVADO en los ajustes por decision de privacidad. Ponerlo
                  contradiria ese ajuste en el unico sitio donde no se ve. -->

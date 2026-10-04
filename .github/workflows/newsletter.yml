@@ -55,7 +55,7 @@ env:
   # Se deja en «no» hasta que el primer envío se haya revisado entero: un
   # borrador se puede corregir, un correo enviado no se puede retirar.
   # ──────────────────────────────────────────────────────────────────────
-  NEWSLETTER_ENVIAR: 'no'
+  NEWSLETTER_ENVIAR: 'si'
 
 jobs:
   avisar:
