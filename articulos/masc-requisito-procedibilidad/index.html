@@ -154,9 +154,61 @@
 
         <div class="articulo__principal">
 
-          <a class="volver" href="../../articulos/">
-            <span class="volver__flecha" aria-hidden="true">&larr;</span>Volver a los artículos
-          </a>
+          <!-- ⚠️ LA FILA DE ACCIONES: «Volver» a la izquierda y «Descargar PDF»
+               a la derecha, a ras del borde derecho de la foto.
+
+               El ancho sale solo: el envoltorio es un bloque hijo de
+               .articulo__principal, igual que .articulo__portada, asi que mide
+               lo mismo que la foto sin que haya que repetir ningun numero.
+
+               ⚠️ EL BOTON DE DESCARGA ESTABA ABAJO, entre «Volver a los
+               articulos» del cierre y «Compartir», y era un .boton--contorno
+               con caja. Se movio aqui POR ENCARGO. Lo que decia el comentario
+               que habia alli, y que ya NO describe el sitio:
+
+                 «UNA SOLA UBICACION, no dos. Arriba, junto a la ficha,
+                  competiria con el arranque de la lectura y empujaria el
+                  texto. Y el momento de descargar es DESPUES de decidir que el
+                  articulo interesa.»
+
+               Lo de «una sola ubicacion» SIGUE VIGENTE y es lo que hay que
+               respetar: no se repone el de abajo. Lo que decae es donde esta
+               esa ubicacion unica. Y no empuja el texto porque no ocupa fila
+               propia: comparte la de «Volver», que ya estaba. -->
+          <div class="articulo__acciones">
+
+            <a class="volver" href="../../articulos/">
+              <span class="volver__flecha" aria-hidden="true">&larr;</span>Volver a los artículos
+            </a>
+
+            <!-- El icono va a la DERECHA del texto, al reves que la flecha de
+                 «Volver», y eso no es simetria decorativa: cada flecha apunta a
+                 donde lleva su enlace. La de volver mira a la izquierda y va
+                 delante; esta baja y va detras, que es el orden en que se lee
+                 «descargar» y luego «hacia abajo».
+
+                 Es un <svg> en linea y no una mask como .compartir__icono,
+                 porque hay que animar una PARTE del dibujo: la flecha se mueve
+                 y la bandeja de abajo se queda. Con una mask el icono es una
+                 sola superficie y no hay nada que animar por separado.
+
+                 Sigue las convenciones de dibujo del unico otro svg en linea
+                 del sitio, la lupa de la cabecera: viewBox de 24, sin relleno,
+                 trazo en currentColor a 1.8 y extremos redondeados. -->
+            <a class="descarga" href="./masc-requisito-procedibilidad.pdf" download>
+              Descargar PDF
+              <svg class="descarga__icono" width="15" height="15" viewBox="0 0 24 24"
+                   fill="none" stroke="currentColor" stroke-width="1.8"
+                   stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <g class="descarga__flecha">
+                  <path d="M12 3v11"></path>
+                  <path d="m7.5 9.5 4.5 4.5 4.5-4.5"></path>
+                </g>
+                <path d="M4.5 20.5h15"></path>
+              </svg>
+            </a>
+
+          </div>
 
           <figure class="articulo__portada">
             <img src="./portada.jpg"
@@ -352,42 +404,20 @@
             <span class="volver__flecha" aria-hidden="true">&larr;</span>Volver a los artículos
           </a>
 
-          <!-- ⚠️ ERA EL CUARTO ELEMENTO DE «COMPARTIR» Y SALE DE LA LISTA.
-               Alli se veia igual que LinkedIn, WhatsApp y Correo —misma pildora
-               gris— asi que se leia como un destino mas al que mandar el
-               articulo, y no lo es: los otros tres LO ENVIAN A OTRO SITIO y
-               este TE LO DA A TI. Son dos acciones distintas y ahora se
-               distinguen.
+          <!-- ⚠️ AQUI IBA «DESCARGAR PDF» Y SE MUDO ARRIBA, a la fila de
+               «Volver». No se repone: sigue habiendo UNA SOLA ubicacion, que es
+               la regla que se conserva de cuando estaba aqui.
 
-               Pasa a .boton--contorno, el mismo tratamiento que «Descargar CV»
-               de sobre/: las dos descargas del sitio se ven igual.
+               Con el se fue el .boton--contorno: arriba es un enlace de texto.
+               Eso deja «Descargar CV» de sobre/ como el unico .boton--contorno
+               de descarga del sitio, asi que las dos descargas YA NO SE VEN
+               IGUAL —que era el argumento de ponerle caja a este—. Esta
+               razonado en CLAUDE.md.
 
-               ⚠️ Decia «en sobre/ y en el lateral», y el del lateral YA NO
-               EXISTE: se retiro por encargo y el CV solo se descarga desde
-               sobre/. Siguen siendo las dos unicas descargas del sitio, pero ya
-               no comparten pagina.
-
-               ⚠️ VA ANTES DE «COMPARTIR», no despues, y es deliberado: llevarse
-               el articulo es para uno mismo y compartirlo es para terceros. El
-               orden va de lo propio a lo ajeno, que es tambien el orden en que
-               se decide.
-
-               UNA SOLA UBICACION, no dos. Arriba, junto a la ficha, competiria
-               con el arranque de la lectura y empujaria el texto: esa columna
-               ya tiene volver, foto, categoria, titular, ficha, entradilla e
-               indice. Y el momento de descargar es DESPUES de decidir que el
-               articulo interesa, que es justo donde esta. Dos puntos de
-               descarga ademas serian dos sitios que mantener.
-
-               El icono se queda: es un <span aria-hidden> con mask, no entra en
-               el arbol de accesibilidad y aqui distingue «descargar» de un
-               enlace cualquiera. -->
-          <p class="descarga">
-            <a class="boton boton--contorno" href="./masc-requisito-procedibilidad.pdf" download>
-              <span class="compartir__icono compartir__icono--pdf" aria-hidden="true"></span>
-              Descargar PDF
-            </a>
-          </p>
+               ⚠️ Y .compartir RECUPERA SU margen de arriba de 40, que habia
+               pasado a 0 cuando este bloque se metio en medio y traia el suyo.
+               Sin devolverlo, el filete de «Compartir» queda PEGADO a «Volver
+               a los articulos». -->
 
           <aside class="compartir" aria-labelledby="compartir-titulo">
             <h2 id="compartir-titulo" class="lista__titulo">Compartir</h2>

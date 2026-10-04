@@ -45,6 +45,7 @@
 .cabecera,
 .pie,
 .articulo__lateral,
+.articulo__acciones,
 .volver,
 .compartir,
 .descarga,
@@ -55,6 +56,15 @@
 .busca {
   display: none !important;
 }
+
+/* ⚠️ `.articulo__acciones` ES EL ENVOLTORIO DE LA FILA DE ARRIBA, y hace falta
+   aunque sus dos hijos —`.volver` y `.descarga`— ya esten en esta lista. Sin el,
+   la fila se queda sin contenido pero CONSERVA su `margin-bottom: 24px`, que es
+   un hueco de la nada justo antes del titulo en la primera pagina del PDF.
+
+   `.volver` y `.descarga` se quedan igualmente: el primero porque lo necesita
+   `.volver--cierre`, al final del articulo y fuera de esta fila, y el segundo
+   para que esta lista siga diciendo de un vistazo QUE desaparece. */
 
 /* ⚠️ `.comentarios` TAPA LA SECCION ENTERA, Y HAY QUE DEJARLO ASI. Un PDF con
    los comentarios del dia que se descargo seria un documento que envejece solo,

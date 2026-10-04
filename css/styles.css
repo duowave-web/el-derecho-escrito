@@ -3109,41 +3109,30 @@ em i {
    Los 48 de arriba bajan a 40 para igualar el hueco que la caja de citas deja
    por el otro lado del enlace: 40 y 40. */
 
-/* Descarga del PDF del articulo. Lo unico que declara es la COLOCACION: el
-   boton lo viste `.boton--contorno` entero, igual que «Descargar CV».
+/* ⚠️ AQUI VIVIA `.articulo .descarga`, QUE ERA EL BOTON DEL FINAL DEL ARTICULO.
+   El enlace se mudo a la fila de «Volver», arriba del todo, y su regla nueva
+   está junto a `.volver`, que es el componente al que hoy se parece. Aquí no
+   queda nada que buscar.
 
-   Los 40 de arriba son los mismos que separaban `.compartir` de lo que tiene
-   encima —ahora los lleva este, que paso a ir primero— y los 28 de abajo lo
-   despegan del filete de «Compartir» sin duplicar el hueco. */
+   Lo que aquella regla dejaba escrito y NO hay que perder, porque describe una
+   trampa del proyecto y no solo ese botón: iba prefijada con `.articulo` porque
+   era un <p> dentro de <article class="articulo">, y `.articulo p` pesa (0,1,1)
+   frente a los (0,1,0) de una clase sola. Estuvo escrita SIN el prefijo y era
+   una regla muerta —el botón quedaba pegado a «Volver», hueco medido: 0— sin
+   dar ningún error. Sigue vigente para cualquier clase nueva sobre un <p>,
+   <ul> o <h3> del artículo. */
 
-/* ⚠️ VA PREFIJADO CON `.articulo` Y SIN ESO NO SE APLICA NADA. Es un <p> dentro
-   de <article class="articulo">, asi que le cae `.articulo p`, que pesa (0,1,1)
-   frente a los (0,1,0) de la clase sola y GANA POR ESPECIFICIDAD.
+/* ⚠️ EL `margin-top` VUELVE A 40 Y ESTUVO EN 0. Lo soltó el botón de descarga
+   cuando se metió entre «Volver» y esto trayendo su propio margen; al mudarse
+   arriba, `.compartir` vuelve a ser el primer bloque de la fila de acciones y
+   sin estos 40 su filete queda PEGADO a «Volver a los artículos» —hueco: 0—.
 
-   Estuvo escrito como `.descarga { margin: 40px 0 28px }` y era una regla
-   MUERTA: el margen computado seguia siendo el `0 0 22px` de `.articulo p`, con
-   lo que el boton quedaba PEGADO a «Volver a los articulos» —hueco medido: 0—.
-   No daba ningun error y solo se ve mirando el estilo computado.
-
-   Es la tercera vez que muerde el mismo patron: antes fue `.articulo h3` contra
-   `.entrada__titulo` en «Continua leyendo» y `.articulo p` contra `.autor__cv`
-   en el lateral. CUALQUIER clase nueva sobre un <p>, <ul> o <h3> dentro del
-   articulo necesita el prefijo.
-
-   LOS 40 DE ARRIBA igualan el hueco que ya hay entre las referencias y
-   «Volver», asi que el enlace queda con el mismo aire por los dos lados y se
-   lee como lo que es: una pieza suelta entre dos bloques. Los 28 de abajo
-   acompanan al 29 del filete y al 28 del rotulo de «Compartir». */
-
-.articulo .descarga {
-  margin: 40px 0 28px;
-}
-
-/* El filete y el aire de arriba pasan a 0 porque ya no es el primer bloque de
-   la fila de acciones: lo precede `.descarga`, que trae su propio margen. */
+   No es un número nuevo: es el que tenía antes de que existiera el botón, y el
+   mismo que separa las referencias de «Volver», así que el enlace queda con el
+   mismo aire por los dos lados. */
 
 .compartir {
-  margin: 0 0 32px;
+  margin: 40px 0 32px;
   padding-top: 28px;
   border-top: 1px solid var(--borde);
 }
@@ -3678,12 +3667,163 @@ em i {
   margin-bottom: 0;
 }
 
+/* ---- La fila de acciones que abre el artículo -------------------------- */
+
+/* «Volver a los artículos» a la izquierda y «Descargar PDF» a la derecha, a ras
+   del borde derecho de la foto.
+
+   ⚠️ EL ANCHO NO SE DECLARA Y NO HAY QUE DECLARARLO. El envoltorio es un bloque
+   hijo de `.articulo__principal`, igual que `.articulo__portada`, así que ya
+   mide lo que mide la foto —720 px en escritorio— sin repetir ningún número.
+   Un `max-width` aquí sería un segundo sitio donde mantener el ancho de la
+   columna, y se desincronizaría en silencio el día que cambie el otro.
+
+   `baseline` y no `center`: lo que tiene que alinear es el TEXTO de los dos
+   enlaces, y tienen alturas distintas —el de la derecha lleva un icono—. Con
+   `center` las dos líneas de texto quedarían descuadradas entre sí.
+
+   ⚠️ `flex-wrap: wrap` Y LOS DOS ENLACES EN `flex: none`: ESO APILA SIN NINGÚN
+   PUNTO DE CORTE, y hace falta. Los dos piden 297 px —160 de «Volver», 121 de
+   «Descargar PDF» y los 16 del hueco— así que por debajo de unos 345 px de
+   ventana ya no caben en una línea.
+
+   Sin esto no desbordan, que es lo que despista: lo que pasa es que `.volver`
+   ENCOGE y su texto se parte en dos líneas. Medido a 320: pasaba de 160 a 135
+   px y «Volver a los artículos» se leía en dos renglones. Antes de juntar los
+   dos enlaces no ocurría, porque «Volver» tenía la fila entera para él: es una
+   regresión que introduce esta fila, no un defecto que ya estuviera.
+
+   Con `flex: none` ninguno de los dos cede, así que cuando no caben es la LÍNEA
+   la que se parte, y el `gap` de 16 pasa a hacer de separación vertical.
+
+   **No lleva media query a propósito.** El ancho al que dejan de caber depende
+   del largo de los dos textos, y un número escrito aquí se quedaría atrás en
+   silencio el día que alguien toque cualquiera de los dos —que es exactamente
+   lo que ya ha pasado dos veces con los cortes de la cabecera—. Es el mismo
+   recurso que `auto-fit` en `.campos-par`: el navegador mide, nosotros no.
+
+   El `gap` de 16 solo actúa si los dos enlaces llegan a tocarse; a 375 sobran
+   46 px. Está para que no se peguen, no para separarlos. */
+
+.articulo__acciones {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+/* ⚠️ Los 24 pasan al envoltorio y aquí hay que soltarlos. `.volver` los trae de
+   serie para separarse de la foto, y dentro de un flex NO colapsan: se sumarían
+   a los del envoltorio y la foto bajaría a 48.
+
+   El `flex: none` es lo que impide que encoja; está razonado arriba. Va
+   prefijado para no alcanzar a `.volver--cierre`, que cierra el artículo fuera
+   de esta fila. */
+
+.articulo__acciones .volver {
+  flex: none;
+  margin-bottom: 0;
+}
+
+/* Mismo estilo que `.volver` —Inter 14/500, sin subrayado— y el color se deja
+   heredar a propósito, igual que hace `.volver`: así los dos extremos de la
+   fila no pueden divergir si algún día cambia el tono de los enlaces.
+
+   ⚠️ VA PREFIJADO CON `.articulo`, y no por el patrón de siempre. Aquí ya no es
+   un `<p>` —es un `<a>`— así que `.articulo p` no le alcanza; el prefijo está
+   por el SUBRAYADO, que lo pone la regla de enlaces del artículo. `.volver`
+   consigue quitarlo con una sola clase, pero no conviene fiarlo al empate: con
+   `.articulo` gana por especificidad y aguanta si alguien reordena el archivo.
+
+   ⚠️ Y `.descarga` ERA OTRA COSA HASTA HACE NADA: un `<p>` al final del
+   artículo con `margin: 40px 0 28px` que envolvía un `.boton--contorno`. Esa
+   regla ya no existe. Quien busque por qué el botón de abajo no tiene margen,
+   que mire antes si el botón de abajo existe. */
+
+/* ⚠️ `margin-left: auto` Y NO `justify-content: space-between` EN LA FILA, y es
+   la misma lección que ya dejó `.paso__enlace--siguiente`. Con los dos enlaces
+   en una línea, `space-between` también los separaría; lo que no resuelve es el
+   caso apilado, donde cada línea tiene UN solo elemento y `space-between` lo
+   manda al principio. El enlace se iría a la izquierda justo cuando el diseño
+   pide que cierre contra el canto derecho de la foto.
+
+   El margen automático lo manda a su lado pase lo que pase, caben o no. */
+
+.articulo .descarga {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex: none;
+  margin-left: auto;
+  font-family: var(--ui);
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.articulo .descarga:hover {
+  text-decoration: none;
+}
+
+.articulo .descarga:focus-visible {
+  outline: 2px solid var(--acento);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* ⚠️ `align-items: center` DENTRO del enlace, aunque la fila de fuera vaya en
+   `baseline`. No se contradicen: fuera se alinean los dos textos entre sí y
+   aquí el icono con SU texto. Un `<svg>` es contenido reemplazado y su línea
+   base es el canto inferior, así que en `baseline` el icono se iría hacia
+   arriba y quedaría colgando por encima de la x. */
+
+.descarga__icono {
+  flex: none;
+}
+
+/* Se mueve SOLO la flecha y la bandeja se queda, que es lo que hace que el
+   gesto se lea como «esto baja a tu equipo» y no como un icono que se desplaza.
+   Por eso el dibujo lleva un <g>: con una mask no habría nada que animar por
+   separado.
+
+   ⚠️ EL DESPLAZAMIENTO VA EN UNIDADES DEL viewBox, NO EN PÍXELES DE PANTALLA.
+   El `transform` de un hijo de SVG se interpreta en el sistema de coordenadas
+   local, así que estos 4 son 4/24 del alto del icono: a 15 px de caja salen
+   2,5 px reales. Si alguien cambia el tamaño del icono, el gesto escala con él
+   —que es lo que se quiere— pero el número de aquí seguirá diciendo 4.
+
+   Los 180 ms y la curva son los mismos de `.volver__flecha`: las dos flechas de
+   esta fila se mueven igual. */
+
+.descarga__flecha {
+  transition: transform 180ms cubic-bezier(0.2, 0.7, 0.3, 1);
+}
+
+.articulo .descarga:hover .descarga__flecha,
+.articulo .descarga:focus-visible .descarga__flecha {
+  transform: translateY(4px);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .volver__flecha {
     transition: none;
   }
 
   .volver:hover .volver__flecha {
+    transform: none;
+  }
+
+  /* Se apagan las DOS cosas, la transición y el desplazamiento. Quitando solo
+     la transición la flecha SALTARÍA los 4, que es justo lo que sobra con esta
+     preferencia. Es la misma lección que dejó `.boton__flecha`. */
+
+  .descarga__flecha {
+    transition: none;
+  }
+
+  .articulo .descarga:hover .descarga__flecha,
+  .articulo .descarga:focus-visible .descarga__flecha {
     transform: none;
   }
 }
@@ -5701,17 +5841,51 @@ body:has(.progreso) .cabecera {
 
 /* La nota de privacidad. Nace detras de la caja —para que se vea sin
    JavaScript— y el JS la recoloca bajo el editor si Artalk ha montado. Los dos
-   sitios necesitan su aire, de ahi las dos reglas. */
+   sitios necesitan su aire, de ahi las dos reglas.
 
-.comentarios__nota {
+   ⚠️ LAS DOS VAN PREFIJADAS CON `.articulo` Y SIN ESO SUS MÁRGENES NO EXISTEN.
+   La nota es un <p> dentro de <article class="articulo">, así que le cae
+   `.articulo p { margin: 0 0 22px }`, que pesa (0,1,1) frente a los (0,1,0) de
+   estas clases y GANA POR ESPECIFICIDAD, no por orden.
+
+   ⚠️ ESTUVIERON ESCRITAS SIN EL PREFIJO Y ERAN DOS REGLAS MUERTAS. Lo que se
+   veía: el margen computado era el `0 0 22px` de `.articulo p`, o sea que la
+   nota quedaba PEGADA al botón «Publicar» —hueco medido: 0— y se leía como su
+   pie de foto. El resto de la regla —cuerpo, interlineado y color— sí se
+   aplicaba, porque `.articulo p` no los declara, así que la nota se veía
+   correcta salvo por el hueco: solo se encuentra mirando el estilo computado.
+
+   ⚠️ Y EL DIAGNÓSTICO FÁCIL ERA OTRO. Aquí había escrito un `margin-top: 12px`
+   que no hacía nada, así que al mirar el archivo el problema parecía ser «12 es
+   poco» y la solución, subirlo. Subirlo no arregla nada: la regla sigue sin
+   aplicarse. Si alguna vez vuelve a verse pegada, lo primero es mirar el
+   computado, no el declarado.
+
+   Es la CUARTA vez que muerde este patrón —antes fueron `.autor__cv`, la vieja
+   `.descarga` y `.compartir__lista`—. Cualquier clase nueva sobre un <p>, <ul>
+   o <h3> dentro del artículo necesita el prefijo. */
+
+.articulo .comentarios__nota {
   margin: 18px 0 0;
   font-size: 0.85rem;
   line-height: 1.6;
   color: var(--tinta-suave);
 }
 
-.comentarios__nota--bajo-editor {
-  margin: 12px 0 28px;
+/* ⚠️ DECLARABA 12 ARRIBA Y AHORA 28, pero el hueco real no pasó de 12 a 28:
+   pasó de CERO a 28. Los 12 nunca llegaron a aplicarse, por lo que explica el
+   bloque de arriba. Quien compare los dos números y no vea una diferencia de
+   16 px, que mire el computado.
+
+   28 no es un número nuevo: es el `padding-top` de `.compartir`, el relleno de
+   `.indice` y `.referencias` y el hueco que el propio widget deja entre su
+   rótulo y las píldoras. En este sitio 12 es aire DENTRO de un componente y 28
+   es lo que separa dos cosas distintas, que es justo lo que hace falta aquí: la
+   nota no es una condición del botón, es un aviso sobre qué se hace con el
+   correo y vale para el formulario entero. */
+
+.articulo .comentarios__nota--bajo-editor {
+  margin: 28px 0;
 }
 
 .comentarios__nota a {
