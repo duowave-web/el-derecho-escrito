@@ -24,6 +24,7 @@
   copiarEnlace();
   articulosRelacionados();
   comentarios();
+  suscripcion();
 
   /* ---------------------------------------------------- Buscador ------- */
 
@@ -1852,5 +1853,118 @@
     open: "Abrir",
     openName: "Abrir {name}",
   };
+
+  /* ------------------------------------------- Suscripción ------------- */
+
+  /* Los dos formularios de suscripción —la banda de la portada y el lateral
+     del artículo— envían a Listmonk sin recargar la página.
+
+     ⚠️ EL SERVIDOR NO ESTÁ ESCRITO AQUÍ: SALE DEL `action` DEL FORMULARIO.
+     De ahí se toma el ORIGEN y se le pega la ruta de la API. Así la dirección
+     se declara UNA vez por formulario, en el sitio donde además hace falta
+     para que funcione sin JavaScript, y no puede haber una copia en este
+     archivo que se quede atrás el día que el servidor cambie de dominio.
+
+     Lo mismo con la lista: sale del `<input name="l">` del propio formulario.
+
+     ⚠️ SON DOS ENDPOINTS DISTINTOS Y CADA UNO ES PARA UN CAMINO:
+
+     | | Sin JavaScript | Con JavaScript |
+     |---|---|---|
+     | Destino | `/subscription/form` | `/api/public/subscription` |
+     | Cómo viaja | envío normal del navegador | `fetch` con JSON |
+     | Qué devuelve | una página de Listmonk | `{"data":{"has_optin":true}}` |
+     | CORS | no aplica | hace falta autorizar el origen |
+
+     El primero es el `action` y funciona solo. El segundo es el que permite
+     responder en la misma página.
+
+     ⚠️ EL HONEYPOT SOLO LO COMPRUEBA EL PRIMERO. Verificado en el código de
+     Listmonk 6.2: `handleSubscriptionForm` rechaza el envío si `nonce` llega
+     con algo escrito, y el manejador de la API NO hace esa comprobación. Por
+     eso aquí se repite a mano antes de llamar: si no, el camino con
+     JavaScript —que es el que usa casi todo el mundo— se quedaría sin trampa.
+
+     Lo que esto NO puede frenar es un bot que llame a la API directamente, sin
+     pasar por la página. Eso no lo arregla nada que se escriba aquí; lo
+     contiene la doble confirmación, que es la pieza que de verdad protege:
+     un alta sin confirmar no recibe ningún envío y no cuenta como suscriptor. */
+
+  const MENSAJES = {
+    ok: "Casi está: te hemos enviado un correo. Confirma tu suscripción con un clic.",
+    invalido: "Ese correo no parece válido. Revísalo y vuelve a intentarlo.",
+    repetido: "Ese correo ya está en la lista. Si no recibiste la confirmación, mira en la carpeta de spam.",
+    caido: "No hemos podido conectar ahora mismo. Inténtalo de nuevo en unos minutos.",
+    enviando: "Enviando…",
+  };
+
+  function suscripcion() {
+    const formularios = document.querySelectorAll("form.suscripcion__accion");
+    if (!formularios.length || !("fetch" in window)) return;
+
+    formularios.forEach(function (form) {
+      form.addEventListener("submit", function (e) {
+        const correo = form.querySelector('input[name="email"]');
+        const trampa = form.querySelector('input[name="nonce"]');
+        const lista = form.querySelector('input[name="l"]');
+        const aviso = form.querySelector(".suscripcion__aviso");
+        const boton = form.querySelector('button[type="submit"]');
+        if (!correo || !lista || !aviso) return;   // sin esto, que envíe solo
+
+        /* La trampa: si viene con algo, no se envía nada y se finge
+           normalidad. Decirle al bot que se le ha visto es enseñarle a
+           esquivarlo la próxima vez. */
+        if (trampa && trampa.value !== "") {
+          e.preventDefault();
+          pintar(aviso, MENSAJES.ok, false);
+          form.reset();
+          return;
+        }
+
+        /* La validación del navegador va primero: si el campo no es válido,
+           no se intercepta nada y el navegador enseña su propio mensaje, que
+           está traducido y es el que el lector espera. */
+        if (!form.checkValidity()) return;
+
+        e.preventDefault();
+        pintar(aviso, MENSAJES.enviando, false);
+        if (boton) boton.disabled = true;
+
+        const api = new URL(form.getAttribute("action")).origin +
+                    "/api/public/subscription";
+
+        fetch(api, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: correo.value.trim(),
+            list_uuids: [lista.value],
+          }),
+        })
+          .then(function (r) {
+            if (r.ok) return { texto: MENSAJES.ok, error: false, limpiar: true };
+            if (r.status === 409) return { texto: MENSAJES.repetido, error: true };
+            if (r.status === 400) return { texto: MENSAJES.invalido, error: true };
+            return { texto: MENSAJES.caido, error: true };
+          })
+          .catch(function () {
+            /* Aquí cae tanto el servidor apagado como el CORS sin autorizar, y
+               el navegador no deja distinguirlos: en los dos casos el `fetch`
+               rechaza sin status. El mensaje tiene que servir para ambos. */
+            return { texto: MENSAJES.caido, error: true };
+          })
+          .then(function (res) {
+            pintar(aviso, res.texto, res.error);
+            if (res.limpiar) form.reset();
+            if (boton) boton.disabled = false;
+          });
+      });
+    });
+  }
+
+  function pintar(aviso, texto, esError) {
+    aviso.textContent = texto;
+    aviso.classList.toggle("suscripcion__aviso--error", !!esError);
+  }
 
 })();

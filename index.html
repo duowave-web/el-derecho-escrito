@@ -468,9 +468,21 @@
     <div class="contenedor contenedor--amplio">
 
       <!-- Banda de newsletter. Mismo componente que el del lateral del
-           artículo, en su variante horizontal. Sin backend, igual que aquel:
-           a propósito no hay <form> y los controles van deshabilitados, para
-           que no se pueda enviar nada por accidente. -->
+           artículo, en su variante horizontal.
+
+           ⚠️ YA TIENE BACKEND, Y ESTE COMENTARIO DECÍA LO CONTRARIO. Decía que
+           a propósito no había <form> y los controles iban deshabilitados
+           «para que no se pueda enviar nada por accidente». Eso describía el
+           estado anterior: hoy envía a Listmonk, en listas.elderechoescrito.es.
+
+           ⚠️ EL `action` ES LA ÚNICA DECLARACIÓN DEL SERVIDOR EN ESTE ARCHIVO,
+           y es deliberado: el JS saca de ahí el origen para llamar a la API,
+           así que no hay una segunda copia de la dirección que pueda quedarse
+           atrás. Está razonado en js/main.js, sobre suscripcion().
+
+           Sin JavaScript funciona igual: es un POST normal a
+           /subscription/form, la propia página pública de Listmonk, y el
+           lector acaba en su pantalla de «revisa tu correo». -->
       <aside class="suscripcion suscripcion--banda" aria-labelledby="suscripcion-titulo">
         <svg class="suscripcion__icono" width="34" height="34" viewBox="0 0 24 24" fill="none"
              stroke="currentColor" stroke-width="1.4" aria-hidden="true">
@@ -490,12 +502,42 @@
           <p class="suscripcion__apoyo">Suscríbete para recibir los nuevos artículos sobre Derecho administrativo, urbanismo y jurisdicción contencioso-administrativa.</p>
         </div>
 
-        <div class="suscripcion__accion">
+        <form class="suscripcion__accion" method="post"
+              action="https://listas.elderechoescrito.es/subscription/form">
           <label class="oculto" for="correo-banda">Correo electrónico</label>
-          <input type="email" id="correo-banda" placeholder="Correo electrónico" disabled>
-          <button class="boton boton--principal" type="button" disabled>Suscribirme</button>
-          <p class="suscripcion__nota">Recibirás un correo con cada nueva publicación. Puedes darte de baja en cualquier momento.</p>
-        </div>
+          <input type="email" id="correo-banda" name="email" required
+                 autocomplete="email" placeholder="Correo electrónico">
+
+          <!-- ⚠️ EL HONEYPOT ES DE LISTMONK, NO NUESTRO, Y SE LLAMA `nonce`. Su
+               formulario público lo trae de serie y su manejador rechaza el
+               envío si llega con algo escrito. Tiene que ir VACÍO: un bot que
+               rellena todos los campos se delata solo.
+
+               No se le cambia el nombre ni se le pone `type="hidden"`: oculto
+               de verdad no lo rellenaría ningún bot, y entonces no atrapa a
+               nadie. Lo esconde el CSS, en `.trampa`. -->
+          <input class="trampa" type="text" name="nonce" value=""
+                 tabindex="-1" autocomplete="off" aria-hidden="true">
+
+          <input type="hidden" name="l" value="0be3e1f2-8abf-4135-8141-009fc915255c">
+
+          <button class="boton boton--principal" type="submit">Suscribirme</button>
+
+          <!-- `role="status"` YA ES `aria-live="polite"`: no se declaran los
+               dos. Vive vacío en el HTML para que el lector de pantalla tenga
+               la región antes de que haya nada que anunciar; si naciera con el
+               mensaje dentro, no se anunciaría. -->
+          <p class="suscripcion__aviso" role="status"></p>
+
+          <!-- ⚠️ LAS DOS PRIMERAS FRASES SON DEL CLIENTE Y NO SE TOCAN. La
+               tercera se AÑADE, no las reescribe: hacía falta el enlace a la
+               página de privacidad y no había dónde ponerlo.
+
+               ⚠️ Y VA EN RUTA RELATIVA, no en `/privacidad/`: la web se sirve
+               hoy en un subdirectorio de github.io y una ruta absoluta
+               apuntaría fuera del sitio. -->
+          <p class="suscripcion__nota">Recibirás un correo con cada nueva publicación. Puedes darte de baja en cualquier momento. <a href="./privacidad/">Cómo tratamos tu correo</a>.</p>
+        </form>
       </aside>
 
     </div>

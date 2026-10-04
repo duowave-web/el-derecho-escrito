@@ -5117,8 +5117,24 @@ body:has(.progreso) .cabecera {
   gap: 10px;
 }
 
-.suscripcion--banda .suscripcion__nota {
+/* ⚠️ LOS DOS PÁRRAFOS CRUZAN LA REJILLA, y el aviso hay que decirlo aparte.
+   `.suscripcion__accion` es una rejilla de dos columnas —campo y botón— y
+   cualquier hijo nuevo cae por defecto en la primera, que mide 260 px.
+
+   Al aviso le pasó: medido, se quedaba en 260 contra los 681 de la nota y el
+   mensaje de error se partía en tres líneas debajo del campo, como si fuera un
+   pie de ese campo y no una respuesta del formulario. No daba ningún error y
+   solo se ve con el aviso lleno, que es un estado que no se mira al maquetar.
+
+   Si algún día se añade otro elemento a este formulario, hay que decidir su
+   columna aquí o le pasará lo mismo. */
+
+.suscripcion--banda .suscripcion__nota,
+.suscripcion--banda .suscripcion__aviso {
   grid-column: 1 / -1;
+}
+
+.suscripcion--banda .suscripcion__nota {
   margin: 2px 0 0;
 }
 
@@ -5158,6 +5174,74 @@ body:has(.progreso) .cabecera {
   background: var(--acento);
   border-color: var(--acento);
   color: #fff;
+}
+
+/* ---- El honeypot de Listmonk ------------------------------------------- */
+
+/* ⚠️ NO ES `display: none` NI `type="hidden"`, Y ESA ES TODA LA GRACIA. Un
+   campo que el navegador no pinta tampoco lo rellena un bot, así que la trampa
+   no atraparía a nadie: tiene que estar en el flujo y ser invisible solo para
+   quien mira la pantalla.
+
+   De ahí la combinación: fuera del viewport con `position: absolute`, sin
+   altura que empuje nada, y `tabindex="-1"` más `aria-hidden` en el marcado
+   para que no lo encuentren ni el tabulador ni un lector de pantalla. Lo que
+   sí lo encuentra es un robot que lee el HTML y rellena todos los `<input>`.
+
+   Se llama `nonce` porque es el nombre que espera Listmonk; no se le cambia.
+   Va con `!important` porque `.suscripcion input` declara `width: 100%` y un
+   relleno de 12/14 que, sumados, devolverían el campo a la vista. */
+
+.trampa {
+  position: absolute !important;
+  left: -9999px !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: 0 !important;
+  overflow: hidden;
+}
+
+/* ---- El aviso de la suscripción ---------------------------------------- */
+
+/* Vive vacío y sin ocupar sitio hasta que hay algo que decir: `:empty` evita
+   que el margen abra un hueco en un formulario que todavía no ha hecho nada.
+
+   ⚠️ EL ERROR NO SE DISTINGUE SOLO POR EL COLOR. Lleva además un filete
+   lateral de 2 px, que es la misma señal que usa `.cita--extracto`. Un cambio
+   de color a secas incumpliría WCAG 1.4.1 y, sobre todo, no lo vería quien
+   tiene dificultad para distinguir rojos.
+
+   El tono es el `--acento-oscuro` del sistema y no un rojo nuevo: este aviso
+   no es una alarma del navegador, es una respuesta del formulario, y el sitio
+   no tiene paleta de error. Si algún día hace falta un rojo, se añade al
+   sistema de color, no aquí. */
+
+.suscripcion__aviso {
+  margin: 12px 0 0;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--tinta);
+}
+
+.suscripcion__aviso:empty {
+  display: none;
+}
+
+.suscripcion__aviso--error {
+  padding-left: 10px;
+  border-left: 2px solid var(--acento-oscuro);
+  color: var(--tinta-suave);
+}
+
+/* El enlace de la nota hereda el acento como el resto de enlaces del sitio.
+   Se subraya porque va DENTRO de un párrafo, que es justo el supuesto en el
+   que `.volver` y las píldoras pueden prescindir del subrayado y este no:
+   hay texto en línea alrededor con el que se podría confundir. */
+
+.suscripcion__nota a {
+  color: var(--acento);
 }
 
 /* ------------------------------------------- Continua leyendo ----------- */

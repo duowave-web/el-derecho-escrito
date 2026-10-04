@@ -4094,10 +4094,14 @@ node r.mjs img/logo.svg /tmp/logo-w512.png 512
 - ✅ **Ya hay colegio y despacho**: Ilustre Colegio de la Abogacía de Madrid y
   Sterling Abogados, en `sobre/`. **Siguen faltando** número de colegiado,
   tarifas y plazos de respuesta, y no se inventan.
-- **Ninguna de las dos suscripciones envía nada**, ni la banda de la portada ni
-  la del lateral del artículo: comparten componente y las dos van sin `<form>`
-  y con los controles deshabilitados, a propósito, para que no se pueda enviar
-  por accidente. Al conectar backend hay que tocar las dos.
+- ✅ **LAS DOS SUSCRIPCIONES YA ENVÍAN.** Aquí decía que ninguna lo hacía, que
+  iban sin `<form>` y con los controles deshabilitados «para que no se pueda
+  enviar por accidente», y que al conectar backend habría que tocar las dos.
+  **Hecho**: las dos envían a Listmonk y están descritas enteras en «La
+  newsletter», al final de este archivo.
+
+  **Lo que sigue siendo cierto es que comparten componente**: si se toca una,
+  se toca la otra.
 
   ⚠️ **Y desde los textos definitivos, las dos NO dicen lo mismo.** El cliente
   dio una versión para cada una y se respetan:
@@ -4109,6 +4113,13 @@ node r.mjs img/logo.svg /tmp/logo-w512.png 512
 
   El apoyo («Suscríbete para recibir…») y el placeholder («Correo electrónico»)
   sí son idénticos. La versión corta es la de la columna de 300 px.
+
+  ⚠️ **Y a las dos notas se les AÑADIÓ una frase con el enlace a
+  `privacidad/`.** No se reescribió nada: las frases del cliente siguen
+  enteras y la nueva va detrás. Hacía falta el enlace y no había dónde ponerlo.
+  **La página `privacidad/` todavía no existe**, así que hoy ese enlace da 404
+  — igual que el de la nota de los comentarios, y hay que crearla antes de
+  abrir la newsletter al público.
 - El formulario de contacto tampoco tiene backend: no envía nada. Su `action`
   apunta a `formspree.io/f/TU_ENDPOINT_AQUI`, que es literalmente un marcador.
 - ✅ **El correo ya es real: `jcontera@icam.es`.** Aquí había un aviso de que
@@ -6484,3 +6495,304 @@ sin=re.sub(r'/\*.*?\*/','',t,flags=re.S)
 print('cierres sueltos:', sin.count('*/'))
 "
 ```
+
+---
+
+# La newsletter
+
+**Listmonk 6.2.0 autoalojado**, en `https://listas.elderechoescrito.es`, en
+español. Envía por SMTP de Brevo desde
+`El Derecho Escrito <boletin@elderechoescrito.es>`, con el dominio autenticado.
+
+| | |
+|---|---|
+| Lista | **El Derecho Escrito**, pública, con doble confirmación |
+| `id` | **34** — lo pide la API de campañas |
+| `uuid` | **0be3e1f2-…** — lo pide el formulario público |
+| Seguimiento | **desactivado**, aperturas y clics |
+
+> ⚠️ **EL `id` Y EL `uuid` SON LA MISMA LISTA Y HACEN FALTA LOS DOS.** Listmonk
+> no deja deducir uno del otro: el campo `lists` de una campaña es un array de
+> **enteros** y el formulario público solo acepta **uuid**. Están los dos en
+> `plantilla.mjs`, uno al lado del otro, para que nadie busque el que falta.
+
+## Los formularios de la web
+
+Son **dos y comparten componente**: la banda de la portada y el lateral del
+artículo. Si se toca uno, se toca el otro — el de la portada vive en
+`index.html` y el del artículo lo escribe `plantilla.mjs`.
+
+### Dos endpoints, uno por camino
+
+| | Sin JavaScript | Con JavaScript |
+|---|---|---|
+| Destino | `/subscription/form` | `/api/public/subscription` |
+| Cómo viaja | envío normal del navegador | `fetch` con JSON |
+| Qué devuelve | una página de Listmonk | `{"data":{"has_optin":true}}` |
+| CORS | **no aplica** | hace falta autorizar el origen |
+| Qué ve el lector | navega a Listmonk | el mensaje en la misma página |
+
+El primero es el `action` del `<form>` y **funciona solo**: un envío de
+formulario no es una petición de script y no está sujeto a CORS. El segundo es
+el que permite responder sin recargar.
+
+> ⚠️ **EL SERVIDOR SE DECLARA UNA VEZ POR FORMULARIO, EN EL `action`, Y EL JS
+> LO DEDUCE DE AHÍ.** `suscripcion()` toma el **origen** de ese `action` y le
+> pega la ruta de la API. No hay ninguna copia de la dirección en `main.js`, así
+> que no puede quedarse atrás el día que el servidor cambie de dominio.
+>
+> Lo mismo con la lista: sale del `<input name="l">` del propio formulario. Es
+> el mismo recurso que `data-pagekey` en los comentarios.
+
+### El antispam: honeypot, y la doble confirmación es lo que de verdad protege
+
+Listmonk trae un honeypot **de serie** y se llama **`nonce`**. Lo verificamos
+en el formulario que sirve el propio servidor, no deduciéndolo: su manejador
+rechaza el envío si ese campo llega con algo escrito.
+
+> ⚠️ **PERO LA API JSON NO LO COMPRUEBA.** Leído en el código de la 6.2:
+> `handleSubscriptionForm` mira el `nonce` y el manejador de
+> `/api/public/subscription` **no**. Por eso `main.js` lo repite a mano antes de
+> llamar: si no, el camino con JavaScript —que es el que usa casi todo el
+> mundo— se quedaría sin trampa.
+
+> ⚠️ **NO SE OCULTA CON `display: none` NI CON `type="hidden"`, y esa es toda la
+> gracia.** Un campo que el navegador no pinta tampoco lo rellena un bot, así
+> que la trampa no atraparía a nadie. Lo esconde `.trampa`, que lo saca del
+> viewport pero lo deja en el flujo, con `tabindex="-1"` y `aria-hidden` para
+> que no lo encuentren ni el tabulador ni un lector de pantalla.
+
+> ⚠️ **LO QUE ESTO NO PUEDE FRENAR es un bot que llame a la API directamente,
+> sin pasar por la página.** No lo arregla nada que se escriba en el sitio: la
+> API es pública y no autenticada por diseño. **Lo contiene la doble
+> confirmación**, que es la pieza que de verdad protege — un alta sin confirmar
+> no recibe ningún envío y no cuenta como suscriptor —, y en segunda línea un
+> límite de peticiones en Caddy.
+>
+> **Nada de reCAPTCHA**, por encargo. Listmonk admite hCaptcha y Altcha, pero
+> el primero es un tercero y el segundo tampoco se ha activado.
+
+### Los mensajes
+
+Van en un `<p class="suscripcion__aviso" role="status">` que vive **vacío** en
+el HTML. Tiene que nacer vacío: si naciera con el texto dentro, un lector de
+pantalla no lo anunciaría, porque solo anuncia los cambios de una región que ya
+existía.
+
+> **`role="status"` YA ES `aria-live="polite"`.** No se declaran los dos.
+
+| Respuesta | Qué se dice |
+|---|---|
+| 200 | «Casi está: te hemos enviado un correo. Confirma tu suscripción con un clic.» |
+| 409 | «Ese correo ya está en la lista…» |
+| 400 | «Ese correo no parece válido…» |
+| cualquier otra, o red caída | «No hemos podido conectar ahora mismo…» |
+
+> ⚠️ **EL SERVIDOR CAÍDO Y EL CORS SIN AUTORIZAR DAN EL MISMO MENSAJE, Y NO HAY
+> FORMA DE DISTINGUIRLOS.** En los dos casos el `fetch` rechaza sin `status`:
+> el navegador oculta a propósito el motivo de un fallo de CORS. El mensaje
+> tiene que servir para los dos.
+
+> ⚠️ **EL ERROR NO SE DISTINGUE SOLO POR EL COLOR.** Lleva un filete lateral de
+> 2 px, el mismo recurso de `.cita--extracto`. Un cambio de color a secas
+> incumpliría WCAG 1.4.1. Y el tono es `--acento-oscuro`, no un rojo nuevo: el
+> sitio no tiene paleta de error y esto no es una alarma, es una respuesta.
+
+> ⚠️ **EL AVISO CRUZA LA REJILLA DE LA BANDA, Y HAY QUE DECIRLO.**
+> `.suscripcion__accion` es una rejilla de dos columnas —campo y botón— y
+> cualquier hijo nuevo cae en la primera, que mide 260 px. Al aviso le pasó:
+> medido, se quedaba en 260 contra los 681 de la nota y el error se partía en
+> **tres líneas** bajo el campo, como si fuera un pie de ese campo. Lo arregla
+> `grid-column: 1 / -1`, que la nota ya tenía. **Cualquier elemento que se
+> añada a ese formulario necesita decidir su columna.**
+
+### Antes de abrir esto al público
+
+⚠️ **Falta `privacidad/`.** Las dos notas la enlazan y hoy da **404**. Es el
+mismo enlace pendiente que ya tiene la nota de los comentarios.
+
+## Las tres piezas de Listmonk, y solo una es un archivo
+
+Están en `servidor/listmonk/`, con sus pasos exactos en el `README.md` de esa
+carpeta. Lo que conviene saber desde aquí:
+
+| Pieza | Dónde vive | Cómo se instala | ¿Reinicia? |
+|---|---|---|---|
+| `custom.css` | ajuste del panel | se **pega** en Apariencia | no |
+| `plantilla-campana.html` | base de datos | se **pega** en Plantillas | no |
+| `email-templates/subscriber-optin.html` | **archivo** | `scp` + compose | **sí** |
+
+> ⚠️ **NADA DE ESA CARPETA LO SIRVE LA WEB, pero TODO ES DESCARGABLE.** Vive en
+> el repositorio para tenerlo versionado; quien lo usa es el servidor de listas.
+> Y como el repositorio es público y Pages sirve la raíz, es accesible en
+> `/servidor/listmonk/…`: **no puede llevar ni un secreto.** Es la misma regla
+> que ya rige en `servidor/artalk/correo.html`.
+
+> ✅ **NO HAY QUE CLONAR EL DIRECTORIO ESTÁTICO ENTERO, y es lo que hace
+> llevadero el tercero.** Verificado en el código de `initFS()`: con
+> `--static-dir`, Listmonk **fusiona** ese directorio sobre los archivos
+> empotrados y solo se queda con lo que exista de verdad en él. Lo que falte
+> cae al de fábrica. O sea que basta con ese archivo.
+>
+> ⚠️ **La ruta dentro del directorio tiene que ser `email-templates/`**, porque
+> Listmonk la compone como `<static-dir>/email-templates/…`. Si no coincide **no
+> falla**: se queda con la plantilla de fábrica y el correo sale en inglés
+> genérico. Se comprueba en el log: `loading static files from: …`.
+
+> ⚠️ **EL OPT-IN NO SE PUEDE EDITAR DESDE EL PANEL, y no es por no haber
+> mirado.** En la 6.2 las plantillas **de sistema** —ese correo y las páginas
+> públicas— están empotradas en el binario, y `Campañas → Plantillas` solo
+> gestiona las de campaña y las transaccionales, que viven en la base de datos.
+> La única vía es `--static-dir`.
+
+> **Las páginas públicas sí se visten sin tocar archivos**, con el CSS de
+> Apariencia. Por eso la identidad del formulario, la confirmación, la baja y la
+> gestión de preferencias es una pieza de panel y no de disco.
+
+> ⚠️ **NO SE OCULTA EL «Propulsado por listmonk», al revés que con Artalk.** La
+> licencia lo permitiría, pero allí era un widget incrustado **dentro de una
+> página nuestra**, donde una firma ajena desentona; esto es el sitio de
+> Listmonk, en su propio dominio. Quitarla aquí sería fingir que la página es
+> nuestra. Se baja de tono, que es otra cosa.
+
+> ⚠️ **LA PLANTILLA DE CAMPAÑA TIENE QUE QUEDAR MARCADA COMO PREDETERMINADA.**
+> `newsletter.mjs` **no manda `template_id`** a propósito: fijar un número en el
+> repositorio lo ataría a un id de la base de datos del servidor, que cambia si
+> la plantilla se borra y se recrea, y desde aquí no hay forma de comprobarlo.
+> Al no mandarlo, Listmonk usa la predeterminada. **Si ninguna lo es, las
+> campañas salen con la plantilla de fábrica y nadie avisa.**
+
+> ⚠️ **LA PLANTILLA NO LLEVA `{{ TrackView }}`, Y ES DELIBERADO.** Ese marcador
+> es el píxel de seguimiento de aperturas, y el seguimiento está **desactivado**
+> en los ajustes por decisión de privacidad. Ponerlo contradiría ese ajuste en
+> el único sitio donde no se ve.
+
+> **La plantilla lleva la ENVOLTURA, no el artículo.** Logo, mancheta, pie y
+> baja. Lo que cambia en cada envío —foto, categoría, titular, entradilla y los
+> dos botones— lo escribe `newsletter.mjs` y entra por
+> `{{ template "content" . }}`, que Listmonk exige en toda plantilla de campaña.
+
+## CORS: qué hay que autorizar
+
+| | |
+|---|---|
+| **Ruta** | `/api/public/subscription` |
+| **Métodos** | `POST`, `OPTIONS` |
+| **Cabeceras** | `Content-Type` |
+| **Orígenes** | `https://duowave-web.github.io` y `https://elderechoescrito.es` |
+
+> ⚠️ **EL ORIGEN ES SOLO ESQUEMA Y HOST, SIN LA RUTA.** Para Pages es
+> `https://duowave-web.github.io`, **no** `…/el-derecho-escrito`: el navegador
+> manda el origen sin el subdirectorio y un valor con ruta no casa nunca. Es el
+> fallo más fácil de cometer, y se ve como un error de red sin explicación.
+
+> **Comprobado en la preview**: hoy el `OPTIONS` de preflight devuelve **404** y
+> el `POST` **no llega a salir**. Por eso Caddy tiene que contestar el preflight
+> él mismo, no pasárselo a Listmonk.
+
+> **Si no se autoriza, el formulario NO se rompe del todo**: el `fetch` falla,
+> se enseña «No hemos podido conectar» y el camino sin JavaScript sigue
+> funcionando. El peor caso es que la suscripción deje de ser silenciosa.
+
+## El envío automático al publicar
+
+Lo dispara `.github/workflows/newsletter.yml` con cada push a `main`.
+
+> ⚠️ **NUEVO SÍ, CORREGIDO NO, Y ESO NO LO SABE HACER UN FILTRO POR RUTAS.** Lo
+> decide el estado **`A` (added)** del diff de git sobre el `articulo.json`: un
+> artículo que se retoca sale como `M` y no dispara nada.
+>
+> **Y se mira el `articulo.json`, no la carpeta.** Una carpeta aparece en el
+> diff por cualquier cosa que se le añada —la portada, un retoque—; el
+> `articulo.json` solo se añade una vez, cuando el artículo nace.
+
+> ⚠️ **ESPERA A PAGES, Y NO CON UN `sleep`.** Pregunta por la URL del artículo
+> hasta que responda 200, hasta 5 minutos. Si no llega, **para**: mandar un
+> correo con un enlace que da 404 es peor que no mandarlo. Un `sleep` fijo o se
+> queda corto o desperdicia tiempo, porque Pages tarda lo que tarda.
+
+> ⚠️ **EL DOMINIO DEL PASO DE ESPERA SE LE PREGUNTA A `plantilla.mjs`**, no se
+> escribe en el YAML. Es el mismo valor del que salen las URL del correo, así
+> que no puede comprobarse una dirección y anunciarse otra.
+
+### Los duplicados los evita una etiqueta
+
+Cada campaña se crea con la etiqueta **`auto-<slug>`**, y antes de crear nada se
+pregunta si ya existe. Si el workflow se ejecuta dos veces sobre el mismo commit
+—un reintento, un `re-run`, dos pushes que tocan la misma carpeta— la segunda no
+hace nada.
+
+> **Se usa una etiqueta y no el nombre** porque el filtro por nombre de Listmonk
+> es de texto libre —busca por subcadena en nombre y asunto— y un titular que
+> contenga a otro daría un falso positivo. Además se comprueba la etiqueta
+> exacta sobre lo devuelto: la pregunta no es «¿hay algo parecido?» sino «¿existe
+> ya esta?».
+
+### El interruptor
+
+```yaml
+env:
+  NEWSLETTER_ENVIAR: 'no'
+```
+
+**`si` envía; cualquier otro valor deja la campaña en borrador.** Se cambia
+editando esa línea y haciendo commit — no hay que tocar ningún secreto ni ningún
+ajuste de GitHub.
+
+> **Se deja en `no` hasta que el primer envío se haya revisado entero.** Un
+> borrador se corrige; un correo enviado no se retira.
+
+> ⚠️ **LA API NO DEJA CREAR UNA CAMPAÑA YA ENVIADA.** Siempre nace en `draft` y
+> hay que pasarla a `running` con `PUT /api/campaigns/<id>/status`. Son dos
+> llamadas y no una, así que entre ellas puede quedar una campaña creada y sin
+> enviar: eso **no es un fallo**, es el estado que deja el interruptor en `no`.
+
+### La prueba en seco
+
+```sh
+node scripts/newsletter.mjs <slug> --seco
+```
+
+Enseña el nombre, el asunto, la lista, la etiqueta, si se enviaría o no, y el
+cuerpo HTML entero. **No llama a la API.** Desde Actions, el disparo a mano
+(`workflow_dispatch`) viene con la prueba en seco **marcada por defecto**; el
+push automático va en real.
+
+### Los secretos
+
+| Secreto | Valor |
+|---|---|
+| `LISTMONK_URL` | `https://listas.elderechoescrito.es` |
+| `LISTMONK_USUARIO` | el nombre del usuario de API |
+| `LISTMONK_TOKEN` | el token, que Listmonk enseña **una sola vez** |
+
+Permisos mínimos del usuario: `campaigns:get`, `campaigns:manage`, `lists:get`.
+
+## `SITIO` no es `DOMINIO`, y juntarlos rompería todos los correos
+
+Son dos constantes de `plantilla.mjs` con valores distintos **a propósito**:
+
+| | Valor | Qué es |
+|---|---|---|
+| `DOMINIO` | `https://elderechoescrito.es` | el dominio **canónico** |
+| `SITIO` | `https://duowave-web.github.io/…` | donde se sirve **hoy** |
+
+`DOMINIO` es lo que el sitio **declara** en `canonical`, `og:url`, el sitemap y
+el feed. Son metadatos para buscadores y pueden ir por delante de la mudanza sin
+que nadie se rompa, porque **nadie los pulsa**.
+
+`SITIO` es donde el artículo se puede **abrir** de verdad hoy, y es lo único que
+puede ir en un correo.
+
+> ⚠️ **UN ENLACE DEL BOLETÍN SÍ LO PULSA UNA PERSONA.** Si saliera de `DOMINIO`,
+> cada suscriptor recibiría enlaces muertos hasta el día de la mudanza, y **nada
+> avisaría**: el correo se envía bien y el fallo solo aparece al hacer clic.
+
+> ⚠️ **EL DÍA DE LA MUDANZA LOS DOS VALORES SE IGUALAN, y entonces parecerá que
+> `SITIO` sobra. NO sobra**: lo que la justifica no es que los valores difieran,
+> sino que una es una declaración y la otra una dirección que se pulsa. Si el
+> sitio vuelve a servirse en otro lado —una preview, un dominio de pruebas—
+> vuelven a separarse.
+
+**`SITIO` es el único sitio del que salen las URL del boletín.** La mudanza es
+cambiar ese valor.

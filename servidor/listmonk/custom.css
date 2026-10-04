@@ -1,0 +1,269 @@
+/* ==========================================================================
+   El Derecho Escrito — identidad de las páginas públicas de Listmonk.
+
+   ⚠️ ESTE ARCHIVO NO LO SIRVE LA WEB NI LO LEE NINGÚN NAVEGADOR DESDE AQUÍ.
+   Vive en el repositorio solo para tenerlo versionado y poder revisarlo en un
+   PR. Quien lo usa es Listmonk, que lo sirve en /public/custom.css.
+
+   ⚠️ NO SE COPIA AL SERVIDOR CON scp: SE PEGA EN EL PANEL.
+   Ajustes → Apariencia → Público → «CSS personalizado».
+   Es la única pieza de las tres que no es un archivo, y por eso no hace falta
+   tocar el docker-compose.yml ni reiniciar nada para cambiarla.
+
+   ⚠️ Y NO PUEDE LLEVAR NI UN SECRETO. El repositorio es público y, además,
+   Listmonk sirve este CSS sin autenticar a cualquiera que abra la página de
+   suscripción. Son colores y tipografías; que siga siendo así.
+
+   QUÉ PÁGINAS VISTE, todas las que ve el lector:
+     /subscription/form              el formulario público
+     /subscription/<uuid>/<uuid>     gestionar la suscripción
+     /subscription/optin/...         confirmar el alta
+     la pantalla de mensaje          «te has dado de baja», errores…
+
+   Las clases son las de Listmonk 6.2.0, leídas del HTML que sirve el servidor
+   —no deducidas—: .container, .wrap, .header .logo, .form, .lists, .button,
+   .box, footer.
+   ========================================================================== */
+
+/* Las fuentes se piden a Google igual que en la web. Es el mismo tercero que
+   ya carga el sitio, así que no se añade ninguno nuevo. */
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Inter:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap');
+
+:root {
+  --tinta: #1e1e1e;
+  --tinta-suave: #66615b;
+  --acento: #2f6e68;
+  --acento-oscuro: #1f4d48;
+  --papel: #ffffff;
+  --papel-alt: #f6f5f7;
+  --borde: #e5e1da;
+  --borde-marcado: #d8d2c9;
+}
+
+body {
+  background: var(--papel-alt);
+  color: var(--tinta);
+  font-family: 'Source Serif 4', Georgia, serif;
+  font-size: 17px;
+  line-height: 1.65;
+}
+
+/* La caja de contenido, sobre el fondo gris. Mismo radio y filete que las
+   cajas de la web: `.indice`, `.referencias` y el lateral del artículo. */
+.container.wrap,
+.wrap {
+  max-width: 560px;
+  margin: 40px auto;
+  padding: 36px 40px;
+  background: var(--papel);
+  border: 1px solid var(--borde);
+  border-radius: 4px;
+}
+
+/* ---- La mancheta ------------------------------------------------------- */
+
+/* ⚠️ EL LOGO NO SE PONE AQUÍ: ES UN AJUSTE DEL PANEL.
+   Ajustes → Apariencia → Público → «URL del logo». Hoy apunta al
+   apple-touch-icon de la web. Desde el CSS solo se le da tamaño y aire; la
+   dirección vive allí porque Listmonk la mete en el <img src>. */
+
+.header {
+  text-align: center;
+  padding-bottom: 24px;
+  margin-bottom: 28px;
+  border-bottom: 1px solid var(--borde-marcado);
+}
+
+.header .logo img {
+  width: 54px;
+  height: 54px;
+  border-radius: 6px;
+}
+
+/* ---- Títulos ----------------------------------------------------------- */
+
+/* Cormorant para lo que se mira, igual que en la web. Es la misma regla
+   mental: Cormorant mira, Source Serif lee, Inter consulta. */
+h1, h2, h3 {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-weight: 600;
+  line-height: 1.15;
+  color: var(--tinta);
+  margin: 0 0 18px;
+}
+
+h1 { font-size: 34px }
+h2 { font-size: 28px }
+h3 { font-size: 22px }
+
+p { margin: 0 0 18px }
+
+a {
+  color: var(--acento);
+  text-decoration: underline;
+}
+
+a:hover { color: var(--acento-oscuro) }
+
+/* ---- El formulario ----------------------------------------------------- */
+
+/* Los campos copian los de `contacto/` y los de los comentarios: relleno
+   12/14, Inter a 0,95rem, filete de 1px y radio 0. Son los terceros controles
+   del proyecto y se ven como los otros dos. */
+
+.form input[type="text"],
+.form input[type="email"],
+input[type="text"],
+input[type="email"] {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px 14px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 0.95rem;
+  color: var(--tinta);
+  background: var(--papel);
+  border: 1px solid var(--borde);
+  border-radius: 0;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus {
+  outline: 2px solid var(--acento);
+  outline-offset: 1px;
+  border-color: var(--acento);
+}
+
+label {
+  display: block;
+  margin-bottom: 6px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--tinta-suave);
+}
+
+/* ⚠️ `.nonce` ES EL HONEYPOT DE LISTMONK Y TIENE QUE SEGUIR INVISIBLE.
+   Su hoja base ya lo esconde; esto lo repite porque las reglas de `input` de
+   arriba son más específicas que las suyas y se lo devolverían a la vista. Un
+   honeypot visible no solo deja de atrapar bots: le pide un dato sin sentido a
+   una persona. */
+
+.nonce,
+input.nonce {
+  position: absolute !important;
+  left: -9999px !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  border: 0 !important;
+}
+
+/* El botón, con el relleno de acento de `.boton--principal`. */
+.button,
+button,
+input[type="submit"] {
+  display: inline-block;
+  padding: 13px 26px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--papel);
+  background: var(--acento);
+  border: 1px solid var(--acento);
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.button:hover,
+button:hover,
+input[type="submit"]:hover {
+  background: var(--acento-oscuro);
+  border-color: var(--acento-oscuro);
+  color: var(--papel);
+  text-decoration: none;
+}
+
+/* ---- La lista de listas ------------------------------------------------ */
+
+/* En la página de gestión se ven las listas a las que uno está suscrito. Con
+   una sola lista esto apenas se nota, pero se viste igualmente: si algún día
+   hay dos, no habrá que volver aquí. */
+
+ul.lists {
+  list-style: none;
+  padding: 0;
+  margin: 24px 0;
+}
+
+ul.lists li {
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  background: var(--papel-alt);
+  border: 1px solid var(--borde);
+  border-radius: 4px;
+}
+
+ul.lists label {
+  display: inline;
+  margin: 0 0 0 6px;
+  font-family: 'Source Serif 4', Georgia, serif;
+  font-size: 17px;
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--tinta);
+}
+
+ul.lists .description {
+  margin: 8px 0 0 22px;
+  font-size: 14px;
+  color: var(--tinta-suave);
+}
+
+.box {
+  padding: 18px 20px;
+  background: var(--papel-alt);
+  border: 1px solid var(--borde);
+  border-radius: 4px;
+}
+
+/* ---- El pie ------------------------------------------------------------ */
+
+/* ⚠️ NO SE OCULTA EL «Propulsado por listmonk», y es deliberado. La licencia
+   lo permitiría —es lo que se hizo con el de Artalk en los comentarios— pero
+   allí era un widget incrustado dentro de una página nuestra, donde una firma
+   ajena desentona. Esto es el SITIO de Listmonk, en su propio dominio: quitar
+   la atribución aquí sería fingir que la página es nuestra.
+
+   Se baja de tono, que es otra cosa. */
+
+footer.container,
+footer {
+  max-width: 560px;
+  margin: 0 auto 40px;
+  text-align: center;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 12px;
+  color: var(--tinta-suave);
+}
+
+footer a {
+  color: var(--tinta-suave);
+  text-decoration: underline;
+}
+
+@media (max-width: 600px) {
+  .container.wrap,
+  .wrap {
+    margin: 0;
+    padding: 28px 24px;
+    border-left: 0;
+    border-right: 0;
+    border-radius: 0;
+  }
+
+  h1 { font-size: 28px }
+  h2 { font-size: 24px }
+}

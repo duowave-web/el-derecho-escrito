@@ -250,3 +250,92 @@ quién ha comentado y en qué artículo, muestran el comentario y traen un botó
 >
 > Por eso ahora mismo puede que el asunto diga «has recibido una respuesta»
 > aunque sea un comentario nuevo. El contenido del correo sí es correcto.
+
+---
+
+# El boletín por correo
+
+Quien quiera puede dejar su correo en la web y recibir un aviso cada vez que
+publicas un artículo. Hay dos sitios para hacerlo: la banda del final de la
+portada y la columna de la derecha de cada artículo.
+
+## Qué pasa cuando alguien se suscribe
+
+1. Escribe su correo y pulsa **Suscribirme**.
+2. En la misma página le aparece: *«Casi está: te hemos enviado un correo.»*
+3. Le llega un correo con un botón **Confirmar suscripción**.
+4. Hasta que no pulsa ese botón, **no está suscrito y no recibe nada**.
+
+> **Ese segundo paso no es un estorbo, es lo que protege la lista.** Evita que
+> alguien apunte el correo de otra persona, y es lo que hace que tus envíos
+> lleguen a la bandeja de entrada en vez de a la carpeta de spam.
+
+Solo se le pide **el correo**. Ni el nombre ni nada más.
+
+## Qué recibe el lector cuando publicas
+
+Un correo con la cabecera del blog, la foto del artículo, la categoría, el
+titular, la entradilla y dos botones: **Leer el artículo** y **Descargar el
+PDF**. Al pie, el motivo por el que lo recibe y un enlace para darse de baja.
+
+**No lleva ningún rastreador.** No sabemos quién abre los correos ni quién pulsa
+los enlaces, porque esa opción está desactivada a propósito.
+
+## Dónde ves los suscriptores
+
+En **https://listas.elderechoescrito.es/admin**, con tu usuario.
+
+- **Suscriptores** — la lista entera. Cada uno aparece como *confirmado* o
+  *sin confirmar*; los que no han pulsado el botón del correo no reciben nada.
+- **Listas** — el número total, de un vistazo.
+- **Campañas** — cada envío que se ha hecho, con la fecha.
+
+> **Si alguien te pide que le des de baja**, puedes hacerlo tú desde
+> **Suscriptores**: lo buscas por su correo y lo borras. Pero normalmente no
+> hace falta: todos los correos llevan su propio enlace de baja al pie.
+
+## Cómo se envía: automático, pero con freno
+
+Cuando publicas un artículo nuevo, el sistema prepara solo el correo y lo deja
+**en borrador**. No sale nada hasta que alguien le da a enviar.
+
+Para verlo y mandarlo:
+
+1. Entra en el panel, en **Campañas**.
+2. El artículo nuevo aparece arriba, marcado como **Borrador**.
+3. Púlsalo, repasa cómo ha quedado y dale a **Iniciar campaña**.
+
+> **Está así a propósito mientras arrancamos.** Un borrador se corrige; un
+> correo enviado no se puede retirar. Cuando los primeros envíos hayan salido
+> bien, se puede dejar que se manden solos: es un cambio de un minuto y me lo
+> pides.
+
+## Cómo pausas un envío que ya ha empezado
+
+Si te das cuenta de algo a mitad:
+
+1. **Campañas**, y entra en la que se está enviando.
+2. Botón **Pausar**.
+
+Se detiene al momento. Los correos que ya hayan salido no se pueden recuperar,
+pero el resto se queda parado hasta que decidas. Desde ahí puedes **reanudar** o
+**cancelar**.
+
+## Preguntas frecuentes
+
+**¿Y si corrijo un artículo ya publicado? ¿Se vuelve a enviar?**
+No. El aviso sale **solo con artículos nuevos**. Corregir uno que ya existe no
+manda nada a nadie.
+
+**¿Puedo escribir un correo que no sea un artículo?**
+Sí, desde **Campañas → Nueva**. Pero el formato está pensado para artículos; si
+quieres mandar otra cosa, dímelo y lo preparamos.
+
+**Alguien dice que no le llega el correo de confirmación.**
+Que mire en spam. Si tampoco está, búscalo en **Suscriptores**: si aparece como
+*sin confirmar*, puedes reenviarle la confirmación desde ahí.
+
+**¿Puedo ver cuánta gente abre los correos?**
+No, y es una decisión tomada: el seguimiento de aperturas y clics está apagado
+porque implica meter un rastreador en el correo de cada lector. Lo que sí ves es
+cuántos suscriptores hay y cuántos correos se enviaron.
