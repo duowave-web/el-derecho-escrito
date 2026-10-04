@@ -4601,6 +4601,95 @@ body:has(.progreso) .cabecera {
    entre si —antes lo estaban por conservar los dos el mismo margen, y ahora por
    no tener ninguno—, que era lo que pedia el comentario de `.sobre__columnas`. */
 
+/* ---- privacidad/ ------------------------------------------------------- */
+
+/* ⚠️ VA COMO `.articulo.privacidad`, con LAS DOS CLASES, y no `.privacidad` a
+   secas. Están en el MISMO elemento, así que una clase sola pesaría (0,1,0) y
+   `.articulo h2` pesa (0,1,1): ganaría el artículo y esto sería una regla
+   muerta. Con las dos son (0,2,0).
+
+   Es la QUINTA vez que este patrón aparece en el proyecto —antes fueron
+   `.entrada__titulo`, `.autor__cv`, `.compartir__lista` y `.comentarios__nota`—
+   y las cuatro anteriores acabaron en reglas que no se aplicaban sin dar
+   ningún error. */
+
+/* Mismo arranque que `articulos/`, `contacto/` y `sobre/`: 48 px bajo la
+   mancheta. `.articulo` trae 56 de serie y el primer `h2` añadiría su margen
+   encima, así que hay que soltar los dos. */
+
+.articulo.privacidad {
+  padding-top: 48px;
+}
+
+.articulo.privacidad > .contenedor > :first-child {
+  margin-top: 0;
+}
+
+/* La fecha de cierre. Es un dato, no prosa: va en Inter pequeña y gris, como
+   los metadatos del resto del sitio. */
+
+.articulo.privacidad .privacidad__fecha {
+  font-family: var(--ui);
+  font-size: 13px;
+  color: var(--tinta-suave);
+}
+
+/* ---- Tabla ------------------------------------------------------------- */
+
+/* La usa hoy un solo sitio, la lista de proveedores de `privacidad/`, pero se
+   escribe sin prefijo de página porque una tabla es un elemento de contenido y
+   el día que un artículo traiga una, tiene que verse igual.
+
+   ⚠️ EL ENVOLTORIO NO ES DECORATIVO. Una tabla no encoge por debajo del ancho
+   de su contenido, así que en un móvil se saldría y arrastraría scroll
+   horizontal a TODA la página —el mismo fallo que ya mordió una vez con el
+   retrato de `sobre/`, y que allí no se vio porque se salía sobre blanco—.
+   El envoltorio se lo come desplazándose él solo.
+
+   Lleva `tabindex="0"` desde el HTML para que se pueda desplazar también con
+   el teclado: una zona con scroll que solo responde al ratón deja fuera a
+   quien navega tabulando. */
+
+.tabla-envoltorio {
+  overflow-x: auto;
+  margin: 0 0 22px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.articulo .tabla {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.articulo .tabla th,
+.articulo .tabla td {
+  padding: 10px 14px 10px 0;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid var(--borde);
+}
+
+/* La cabecera en versales de Inter, como el resto de rótulos de consulta del
+   sitio: es lo que se mira para orientarse, no lo que se lee seguido. */
+
+.articulo .tabla th {
+  font-family: var(--ui);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--tinta-suave);
+  border-bottom-color: var(--borde-marcado);
+  white-space: nowrap;
+}
+
+.articulo .tabla tbody tr:last-child th,
+.articulo .tabla tbody tr:last-child td {
+  border-bottom: 0;
+}
+
 .articulo.sobre {
   padding-top: 48px;
 }
