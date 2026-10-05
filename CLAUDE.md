@@ -6861,6 +6861,55 @@ bundle que sirve el servidor, y por eso la lista de abajo es también la de
 > al revés, nombra uno que sí interviene y no se declara. El segundo caso es el
 > grave.
 
+## ⚠️ La vista previa copiaba una LISTA FIJA, y por eso esta página daba 404
+
+Durante un tiempo `privacidad/` existía, estaba commiteada y el pie la enlazaba
+bien, pero en la vista previa del PR daba **404**. La causa no estaba en la
+página: estaba en `contenido.yml`.
+
+El paso que copia el sitio al repositorio de previews **enumeraba lo que sí se
+copia** —`index.html`, `404.html`, los favicons, `css`, `js`, `img`, `video`,
+`articulos`, `sobre`, `contacto`— así que **cualquier página nueva nacía
+invisible** en la preview.
+
+> ⚠️ **Y NO FUE LA PRIMERA VÍCTIMA: `documentos/` llevaba fuera desde siempre.**
+> Ahí vive el CV, así que el botón «Descargar CV» de `sobre/` daba 404 en
+> **todas** las vistas previas y nadie lo había notado. Se arregló en el mismo
+> cambio.
+
+> **El comentario que había describía la solución correcta y el código hacía la
+> contraria.** Decía «Todo lo que se sirve. Fuera `scripts/`, `contenido/` y
+> `.github/`» —una lista de exclusión— mientras el bucle era de inclusión. La
+> intención estaba bien; la implementación, al revés.
+
+> ⚠️ **EL MODO DE FALLAR ERA EL PEOR POSIBLE.** El workflow terminaba **en
+> verde**, la vista previa se publicaba y el comentario del bot traía su enlace.
+> Solo fallaba la página concreta que nadie había pensado en abrir. Comprobado
+> sondeando la preview del PR #15: `/`, `/sobre/`, `/contacto/`, `/articulos/` y
+> `/css/styles.css` daban **200**, y solo `/privacidad/` y el PDF del CV daban
+> 404. O sea que **el run no falló**: hizo exactamente lo que se le pedía.
+
+**Hoy está invertido**: se copia todo menos lo que no es el sitio. Una página
+nueva se sirve sola, y la lista solo se toca al añadir algo que **no** deba
+publicarse — que es el caso raro y además el que se nota, porque aparecería
+donde no toca.
+
+> ⚠️ **PRODUCCIÓN NUNCA ESTUVO AFECTADA, y conviene saberlo para no buscar el
+> fallo donde no está.** GitHub Pages sirve la raíz del repositorio tal cual, así
+> que allí `privacidad/` y `documentos/` funcionan desde el primer día. El fallo
+> era **solo de la vista previa** — que es, precisamente, con lo que se revisa.
+
+> **Se añadió además una guarda** que comprueba que `index.html`, `privacidad`,
+> `sobre`, `contacto`, `articulos`, `documentos`, `css` y `js` han llegado al
+> preview, y falla el job si falta alguno. Sin ella, una exclusión de más
+> volvería a dejar una página dando 404 en silencio durante semanas.
+
+> ⚠️ **Y NO SE ACTIVA `dotglob`, a propósito.** Sin él, `*` no casa con los
+> ocultos, y ninguno de los que hay debe publicarse. Activarlo arrastraría la
+> basura local que acabe en el runner, y **un `.git` copiado dentro de la
+> preview sería un lío de verdad**. Si algún día hiciera falta un `.nojekyll`,
+> habría que añadirlo a mano.
+
 ## Dónde está enlazada
 
 En el **pie de todas las páginas**, que son seis más la plantilla:
