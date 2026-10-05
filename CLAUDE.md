@@ -1789,6 +1789,21 @@ listado padre al que volver. Dejó de sostenerse cuando las tres páginas de
 sección pasaron a abrir con la misma banda a sangre: el título de la banda ya
 dice dónde estás, y la cabecera dice cómo salir.
 
+> ⚠️ **Y LO MISMO SE DECIDIÓ PARA `privacidad/`, QUE ES LA CUARTA.** Se pidió
+> añadirle un «← Volver al inicio» encima del contenido y **se descartó por
+> encargo**, tras comprobar que su cabecera es idéntica a la de `sobre/` y
+> `contacto/` —marca enlazada a la portada incluida— y que el argumento de
+> arriba le aplica palabra por palabra: misma mancheta, misma cabecera.
+>
+> **Queda anotado porque la pregunta vuelve sola.** `privacidad/` es la única
+> página de sección que **no** está en el menú, así que parece más huérfana de
+> lo que es, y quien la mire de nuevo pensará que le falta la salida. No le
+> falta: la da la marca de la cabecera, igual que en las otras tres.
+>
+> Si algún día se repone, **hay que reponerlo en las cuatro**: lo que no puede
+> quedar es una sola página de sección con un «volver» suelto que las demás no
+> tienen.
+
 En el artículo las sustituye `.volver`, un enlace de vuelta al listado. Es el
 mismo componente que cierra el artículo abajo: **misma clase, mismo texto y
 mismo destino**, y la única diferencia es el modificador `--cierre`, que solo
