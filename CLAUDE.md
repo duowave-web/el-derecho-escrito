@@ -1789,6 +1789,21 @@ listado padre al que volver. Dejó de sostenerse cuando las tres páginas de
 sección pasaron a abrir con la misma banda a sangre: el título de la banda ya
 dice dónde estás, y la cabecera dice cómo salir.
 
+> ⚠️ **Y LO MISMO SE DECIDIÓ PARA `privacidad/`, QUE ES LA CUARTA.** Se pidió
+> añadirle un «← Volver al inicio» encima del contenido y **se descartó por
+> encargo**, tras comprobar que su cabecera es idéntica a la de `sobre/` y
+> `contacto/` —marca enlazada a la portada incluida— y que el argumento de
+> arriba le aplica palabra por palabra: misma mancheta, misma cabecera.
+>
+> **Queda anotado porque la pregunta vuelve sola.** `privacidad/` es la única
+> página de sección que **no** está en el menú, así que parece más huérfana de
+> lo que es, y quien la mire de nuevo pensará que le falta la salida. No le
+> falta: la da la marca de la cabecera, igual que en las otras tres.
+>
+> Si algún día se repone, **hay que reponerlo en las cuatro**: lo que no puede
+> quedar es una sola página de sección con un «volver» suelto que las demás no
+> tienen.
+
 En el artículo las sustituye `.volver`, un enlace de vuelta al listado. Es el
 mismo componente que cierra el artículo abajo: **misma clase, mismo texto y
 mismo destino**, y la única diferencia es el modificador `--cierre`, que solo
@@ -4117,9 +4132,9 @@ node r.mjs img/logo.svg /tmp/logo-w512.png 512
   ⚠️ **Y a las dos notas se les AÑADIÓ una frase con el enlace a
   `privacidad/`.** No se reescribió nada: las frases del cliente siguen
   enteras y la nueva va detrás. Hacía falta el enlace y no había dónde ponerlo.
-  **La página `privacidad/` todavía no existe**, así que hoy ese enlace da 404
-  — igual que el de la nota de los comentarios, y hay que crearla antes de
-  abrir la newsletter al público.
+  ✅ **La página `privacidad/` YA EXISTE** y los dos enlaces resuelven. Aquí
+  decía que daba 404 y que había que crearla antes de abrir la newsletter al
+  público; está hecho y tiene su propia sección al final de este archivo.
 - El formulario de contacto tampoco tiene backend: no envía nada. Su `action`
   apunta a `formspree.io/f/TU_ENDPOINT_AQUI`, que es literalmente un marcador.
 - ✅ **El correo ya es real: `jcontera@icam.es`.** Aquí había un aviso de que
@@ -6310,9 +6325,10 @@ bajo el editor si Artalk ha montado. Si Artalk cambiara el nombre de
 > distintas**, que es lo que hace falta: la nota no es una condición del botón,
 > es un aviso sobre qué se hace con el correo y vale para el formulario entero.
 
-> ⚠️ **ENLAZA A `/privacidad/`, QUE TODAVÍA NO EXISTE.** Hoy ese enlace da 404.
-> Está puesto a propósito, para no tener que acordarse de añadirlo después,
-> pero **hay que crear la página antes de abrir los comentarios al público**.
+> ✅ **ENLAZA A `../../privacidad/`, QUE YA EXISTE.** Aquí decía que daba 404 y
+> que había que crear la página antes de abrir los comentarios al público. Está
+> hecha, y el apartado de cookies describe exactamente lo que Artalk guarda:
+> `ArtalkUser` y `ArtalkContent` en el almacenamiento local.
 
 ### El estilo: se remapean sus variables, no se pelea con sus selectores
 
@@ -6608,8 +6624,9 @@ existía.
 
 ### Antes de abrir esto al público
 
-⚠️ **Falta `privacidad/`.** Las dos notas la enlazan y hoy da **404**. Es el
-mismo enlace pendiente que ya tiene la nota de los comentarios.
+✅ **`privacidad/` YA EXISTE.** Aquí decía que faltaba y que las dos notas
+daban 404. Verificado que los tres enlaces del sitio —los dos de suscripción y
+el de la nota de comentarios— resuelven con **200**.
 
 ## Las tres piezas de Listmonk, y solo una es un archivo
 
@@ -6796,3 +6813,290 @@ puede ir en un correo.
 
 **`SITIO` es el único sitio del que salen las URL del boletín.** La mudanza es
 cambiar ese valor.
+
+---
+
+# La página de privacidad
+
+`privacidad/index.html`, **escrita a mano** como `sobre/`, `contacto/` y
+`404.html`. El generador no la toca, y no debe: no es contenido que varíe con
+los artículos.
+
+## ⚠️ La limpieza de altas sin confirmar es MANUAL, y la política lo nota
+
+La página decía **«Las altas que no se confirman se eliminan a los 30 días»** y
+era una promesa que el sistema no cumple: **no hay ninguna limpieza automática
+configurada en Listmonk**. Hoy dice que esas altas no reciben nada y «se
+eliminan periódicamente», que es lo que de verdad ocurre.
+
+> ⚠️ **ESO CONVIERTE LA DEPURACIÓN EN UNA TAREA PENDIENTE, no en un detalle de
+> redacción.** Un suscriptor sin confirmar es un dato personal guardado sin
+> base legal útil: no consintió nada. Si nadie la hace, se acumulan.
+
+Se hace desde el panel, en **Configuraciones → Mantenimiento**, que permite
+borrar suscriptores por estado. La otra vía es programarla en el servidor con
+una tarea periódica contra la API.
+
+> **Si algún día se automatiza de verdad, se puede volver a poner un plazo
+> concreto en la política** — y entonces hay que escribir **el que realmente se
+> aplique**, no uno redondo que suene bien. Ese fue justamente el error.
+
+## Lo que la página AFIRMA está verificado contra el código
+
+No se escribió de memoria. Cada afirmación sale de mirar el repositorio o el
+bundle que sirve el servidor, y por eso la lista de abajo es también la de
+**qué hay que volver a comprobar** si algo cambia.
+
+| Afirmación de la página | De dónde salió |
+|---|---|
+| No hay cookies, ni propias ni de Artalk | `grep document.cookie` en `js/main.js` y en el bundle de Artalk: **cero** en los dos |
+| Artalk guarda `ArtalkUser` y `ArtalkContent` | las dos claves literales del bundle servido |
+| Las tipografías son de Google | el `@import` de la **primera línea** de `css/styles.css` |
+| No hay analítica | no hay ningún script de medición en el repositorio |
+| GitHub: DPF **y** cláusulas tipo | su declaración de privacidad: certificación ante el Departamento de Comercio **y** Decisión de Ejecución (UE) 2021/914 |
+
+> ⚠️ **EL FORMULARIO DE CONTACTO NO ENVÍA A NINGUNA PARTE, y la página lo dice.**
+> Su `action` sigue apuntando a `formspree.io/f/TU_ENDPOINT_AQUI`, que es
+> literalmente un marcador. El apartado 3 avisa de que no está operativo y
+> remite al correo.
+>
+> **Cuando se conecte el servicio hay que hacer DOS cosas**: sustituir ese
+> párrafo —hay un comentario HTML encima que lo dice— **y añadir el proveedor a
+> la tabla de encargados**. Olvidar la segunda deja una política que nombra un
+> tratamiento sin decir quién lo procesa.
+>
+> **No se escribió «los datos los trata Formspree»** porque hoy no los trata
+> nadie: una política que describe un tratamiento que no existe es peor que una
+> que avisa de que falta algo.
+
+> ⚠️ **EL PÁRRAFO DE GOOGLE FONTS SE BORRA EL DÍA QUE LAS FUENTES SE ALOJEN
+> AQUÍ**, y hay que acordarse de los dos sitios: el `@import` de `styles.css` y
+> ese párrafo, **más la fila de la tabla de encargados**. Si se retira el
+> `@import` y no el texto, la política nombra un tercero que ya no interviene;
+> al revés, nombra uno que sí interviene y no se declara. El segundo caso es el
+> grave.
+
+## ⚠️ La vista previa copiaba una LISTA FIJA, y por eso esta página daba 404
+
+Durante un tiempo `privacidad/` existía, estaba commiteada y el pie la enlazaba
+bien, pero en la vista previa del PR daba **404**. La causa no estaba en la
+página: estaba en `contenido.yml`.
+
+El paso que copia el sitio al repositorio de previews **enumeraba lo que sí se
+copia** —`index.html`, `404.html`, los favicons, `css`, `js`, `img`, `video`,
+`articulos`, `sobre`, `contacto`— así que **cualquier página nueva nacía
+invisible** en la preview.
+
+> ⚠️ **Y NO FUE LA PRIMERA VÍCTIMA: `documentos/` llevaba fuera desde siempre.**
+> Ahí vive el CV, así que el botón «Descargar CV» de `sobre/` daba 404 en
+> **todas** las vistas previas y nadie lo había notado. Se arregló en el mismo
+> cambio.
+
+> **El comentario que había describía la solución correcta y el código hacía la
+> contraria.** Decía «Todo lo que se sirve. Fuera `scripts/`, `contenido/` y
+> `.github/`» —una lista de exclusión— mientras el bucle era de inclusión. La
+> intención estaba bien; la implementación, al revés.
+
+> ⚠️ **EL MODO DE FALLAR ERA EL PEOR POSIBLE.** El workflow terminaba **en
+> verde**, la vista previa se publicaba y el comentario del bot traía su enlace.
+> Solo fallaba la página concreta que nadie había pensado en abrir. Comprobado
+> sondeando la preview del PR #15: `/`, `/sobre/`, `/contacto/`, `/articulos/` y
+> `/css/styles.css` daban **200**, y solo `/privacidad/` y el PDF del CV daban
+> 404. O sea que **el run no falló**: hizo exactamente lo que se le pedía.
+
+**Hoy está invertido**: se copia todo menos lo que no es el sitio. Una página
+nueva se sirve sola, y la lista solo se toca al añadir algo que **no** deba
+publicarse — que es el caso raro y además el que se nota, porque aparecería
+donde no toca.
+
+> ⚠️ **PRODUCCIÓN NUNCA ESTUVO AFECTADA, y conviene saberlo para no buscar el
+> fallo donde no está.** GitHub Pages sirve la raíz del repositorio tal cual, así
+> que allí `privacidad/` y `documentos/` funcionan desde el primer día. El fallo
+> era **solo de la vista previa** — que es, precisamente, con lo que se revisa.
+
+> **Se añadió además una guarda** que comprueba que `index.html`, `privacidad`,
+> `sobre`, `contacto`, `articulos`, `documentos`, `css` y `js` han llegado al
+> preview, y falla el job si falta alguno. Sin ella, una exclusión de más
+> volvería a dejar una página dando 404 en silencio durante semanas.
+
+> ⚠️ **Y NO SE ACTIVA `dotglob`, a propósito.** Sin él, `*` no casa con los
+> ocultos, y ninguno de los que hay debe publicarse. Activarlo arrastraría la
+> basura local que acabe en el runner, y **un `.git` copiado dentro de la
+> preview sería un lío de verdad**. Si algún día hiciera falta un `.nojekyll`,
+> habría que añadirlo a mano.
+
+## Dónde está enlazada
+
+En el **pie de todas las páginas**, que son seis más la plantilla:
+
+```sh
+grep -rn 'privacidad/">Privacidad' --include='*.html' --include='*.mjs' .
+```
+
+> ⚠️ **CADA PIE LLEVA SU PREFIJO Y SON CUATRO DISTINTOS**, porque las rutas del
+> sitio son relativas mientras viva en el subdirectorio de GitHub Pages:
+> `./` en la portada, `../` en las tres páginas de sección y en la propia
+> `privacidad/`, `../../` en el artículo —que lo escribe `plantilla.mjs`— y
+> **`/el-derecho-escrito/` en `404.html`**, que es el caso aparte de siempre.
+
+Y en los **tres enlaces que ya existían** antes de la página: las notas de los
+dos formularios de suscripción y la de los comentarios. Verificado que los tres
+devuelven **200**.
+
+## No va en el sitemap, y eso NO es una excepción
+
+`sitemap.xml` lista la portada, el listado y los artículos. **`sobre/` y
+`contacto/` tampoco están**, así que dejar fuera `privacidad/` es seguir el
+precedente del archivo, no una decisión que haya que defender aparte.
+
+> **Sí es indexable**: lleva `robots: index, follow`, igual que las otras dos.
+> No estar en el sitemap no es lo mismo que estar en `noindex`.
+
+## Las dos clases del envoltorio, y por qué las dos
+
+`<div class="articulo privacidad">`, igual que `sobre/`. `articulo` da la
+tipografía del cuerpo; `privacidad` es el gancho de lo que aquí es distinto.
+
+> ⚠️ **LAS REGLAS VAN COMO `.articulo.privacidad`, NO COMO `.privacidad` A
+> SECAS.** Las dos clases están en el **mismo elemento**, así que `.privacidad
+> h2` pesaría (0,1,1) igual que `.articulo h2` y el empate lo rompería el orden
+> del archivo. Con las dos juntas son (0,2,0) y ganan por especificidad.
+>
+> Es la **quinta** vez que este patrón aparece en el proyecto —antes fueron
+> `.entrada__titulo`, `.autor__cv`, `.compartir__lista` y `.comentarios__nota`—
+> y las cuatro anteriores acabaron en reglas muertas que no daban ningún error.
+
+**Contenedor de lectura y no `--amplio`**, al revés que `sobre/` y `contacto/`:
+esas dos tienen dos columnas y esto es prosa seguida. Arranque a **48 px** bajo
+la mancheta, medido, el mismo que las otras tres páginas de sección.
+
+## La tabla es nueva y el envoltorio no es decorativo
+
+`.tabla` y `.tabla-envoltorio` se estrenan aquí. Van **sin prefijo de página**
+porque una tabla es un elemento de contenido: el día que un artículo traiga una,
+tiene que verse igual.
+
+> ⚠️ **EL ENVOLTORIO EVITA UN DESBORDE QUE ARRASTRARÍA LA PÁGINA ENTERA.** Una
+> tabla no encoge por debajo del ancho de su contenido, así que sin él un móvil
+> estrecho se llevaría scroll horizontal en todo el documento — el mismo fallo
+> que ya mordió una vez con el retrato de `sobre/`, y que allí tardó meses en
+> verse porque se salía sobre blanco.
+>
+> Lleva `tabindex="0"` y `role="region"`: una zona que se desplaza y solo
+> responde al dedo deja fuera a quien navega con teclado.
+
+Medido, sin desborde en ninguno de los tres anchos:
+
+| | 1440 | 768 | 375 |
+|---|---|---|---|
+| Columna de lectura | 760 | 760 | 375 |
+| Tabla | 712 | 712 | **327** |
+| ¿Necesita desplazarse? | no | no | **no** |
+| Desborde de página | no | no | no |
+
+A 375 la tabla **cabe**, así que el envoltorio no llega a actuar: está como red
+para cuando se le añada una fila más larga o una columna.
+
+## Qué hay que actualizar si se añade un servicio
+
+El orden importa, porque el tercer punto es el que se olvida:
+
+1. **El apartado del tratamiento** — qué datos, para qué, base legal y plazo.
+2. **La tabla de encargados** — proveedor, para qué y dónde está.
+3. **El apartado de transferencias**, si está fuera de la UE, citando el marco
+   concreto que invoque ese proveedor. **No vale «cláusulas tipo» a secas**: hay
+   que mirar su política y decir cuál.
+4. **El apartado de cookies**, si pone cookies o escribe en el navegador.
+5. **La fecha de «Última actualización»**, que está en dos sitios de la misma
+   línea: el `datetime` del `<time>` y el texto visible. Cambiar solo uno no da
+   ningún error.
+
+> ⚠️ **Y el `dateModified` del JSON-LD de la cabecera es un TERCER sitio con esa
+> misma fecha.** No se ve al leer la página, así que es el que más fácil se
+> queda atrás.
+>
+> ```sh
+> grep -n '2026-10-04\|4 de octubre de 2026' privacidad/index.html
+> ```
+
+## DuoWave es encargado del tratamiento, y Hetzner su subencargado
+
+La tabla de encargados abre con **DuoWave** y Hetzner va debajo. **El orden no
+es alfabético: es la cadena real.** DuoWave administra técnicamente la web, el
+servidor y los servicios por cuenta del responsable, y tiene contratado el
+servidor a Hetzner — de ahí que Hetzner sea **subencargado** y no encargado
+directo.
+
+> ⚠️ **SI SE REORDENA LA TABLA, EL PÁRRAFO DE DEBAJO DEJA DE LEERSE BIEN.** Ese
+> párrafo explica la cadena dando por hecho que las dos filas van en ese orden.
+
+> ⚠️ **AQUÍ DECÍA «nadie más accede a sus datos» Y NO ERA EXACTO.** Lo decía del
+> boletín y los comentarios, con el argumento de que Listmonk y Artalk son
+> software propio y autoalojado. Pero autoalojado no significa sin encargado:
+> **accede DuoWave**, para copias, actualizaciones e incidencias.
+>
+> Una política que dice «nadie» cuando hay un administrador de sistemas detrás
+> está ocultando justo la figura que el RGPD obliga a declarar. Hoy dice quién
+> accede y para qué.
+
+## Menores de 14 años
+
+La frase va **una sola vez**, en la entrada común de «Qué datos se tratan», y no
+repetida en el boletín y en los comentarios: son los dos tratamientos que se
+apoyan en el consentimiento del propio lector, y decirlo dos veces alarga la
+página sin añadir nada. Cita el **artículo 7 de la LOPDGDD**.
+
+## El registro es la tercera persona, y hay que mantenerlo
+
+El texto habla del **«responsable»** de principio a fin. Estuvo roto en un solo
+punto —el cierre decía **«escríbeme»**, la única primera persona de la página— y
+en otro con un «no tenemos acceso».
+
+> **Al reescribir cualquier párrafo, el criterio es: tercera persona o fórmulas
+> impersonales.** Nunca «escríbeme», «tenemos» ni «nuestro». Se detecta así:
+>
+> ```sh
+> grep -n 'escríbeme\|dímelo\|avísame\|tenemos\|usamos\|nuestr' privacidad/index.html
+> ```
+
+## El crédito del pie
+
+`«Desarrollado por DuoWave»`, lo último del pie en **las seis páginas a mano, el
+404 y la plantilla del artículo**.
+
+> ⚠️ **TRES DECISIONES DEL ENLACE QUE SON DE POSICIONAMIENTO, NO DE DISEÑO**, y
+> que es fácil «arreglar» sin saber lo que se toca:
+>
+> | | Por qué |
+> |---|---|
+> | **sin `rel="nofollow"`** | es un crédito honesto de quien hizo el sitio, no un enlace pagado |
+> | **sin `target="_blank"`** | no hay motivo para sacar al lector en otra ventana, y obligaría a `rel="noopener"` |
+> | **el texto es la marca** | un ancla con palabras clave en el pie de todas las páginas es el patrón que los buscadores penalizan |
+>
+> ⚠️ **Y SOLO «DuoWave» VA DENTRO DEL `<a>`**, no la frase entera: si se enlaza
+> «Desarrollado por DuoWave» completo, el texto del ancla pasa a ser esa frase.
+
+> ⚠️ **EL 0,55 DE OPACIDAD ES UN SUELO DE CONTRASTE, NO UN VALOR ELEGIDO.**
+> Estuvo en 0,45 —que es lo que pedía el encargo, «que no destaque»— y **no
+> llega a AA**: medido sobre `--pie` #242424 da **4,32:1**, por debajo del 4,5
+> que exige un texto normal de 12 px.
+>
+> | Opacidad | Contraste |
+> |---|---|
+> | 0,45 | **4,32 ✗** |
+> | 0,50 | 4,99 |
+> | **0,55 — la actual** | **5,65** |
+> | 0,65 — el aviso legal | 7,32 |
+>
+> **El objetivo se cumple igual**: el aviso legal que tiene encima va al 0,65,
+> así que el crédito sigue siendo lo más apagado del pie, solo que legible.
+> Quien quiera bajarlo más, que mida: por debajo de 0,5 se sale de AA.
+
+> ⚠️ **SE OCULTA AL IMPRIMIR DESDE `styles.css`, NO DESDE `imprimir.css`, y los
+> dos sitios hacen falta por motivos distintos.** `imprimir.css` la cargan solo
+> las páginas de artículo, y allí ya estaba cubierto porque esa hoja oculta
+> `.pie` entero. Pero `sobre/`, `contacto/` y `privacidad/` **no la cargan**:
+> para esas, la única regla que alcanza es el `@media print` de `styles.css`.
+>
+> Verificado: el PDF del artículo sigue en **543 730 bytes**, los mismos, y no
+> contiene ni «DuoWave» ni «Desarrollado».

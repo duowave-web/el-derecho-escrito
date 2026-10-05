@@ -339,3 +339,76 @@ Que mire en spam. Si tampoco está, búscalo en **Suscriptores**: si aparece com
 No, y es una decisión tomada: el seguimiento de aperturas y clics está apagado
 porque implica meter un rastreador en el correo de cada lector. Lo que sí ves es
 cuántos suscriptores hay y cuántos correos se enviaron.
+
+---
+
+# La política de privacidad
+
+Está en **tu-web/privacidad/** y se enlaza desde el pie de todas las páginas,
+desde los dos formularios de suscripción y desde la nota de los comentarios.
+
+Explica, en lenguaje llano, qué datos recoge el blog en cada caso —boletín,
+comentarios, formulario de contacto y simples visitas—, para qué se usan,
+cuánto se guardan, quién más los trata y cómo pedir que se borren.
+
+> **No hace falta aviso de cookies**, y no es un olvido: esta web **no usa
+> cookies**. Ni propias ni de terceros, ni de analítica ni de publicidad. Lo
+> único que se guarda en el navegador de quien comenta es su nombre y su correo,
+> para no tener que reescribirlos, y eso no sale de su equipo.
+
+## Lo que hoy está pendiente y la propia página avisa
+
+**El formulario de contacto todavía no envía a ningún sitio.** La política lo
+dice con esas palabras y remite a tu correo, que sí funciona. Cuando se conecte,
+hay que actualizar ese apartado: avísame y lo hago.
+
+**Las tipografías se cargan desde Google.** Está previsto traerlas a la propia
+web; cuando se haga, ese párrafo desaparece.
+
+## Si algún día añadimos un servicio nuevo
+
+Esto es lo importante, y el motivo de que esta sección exista: **cada vez que el
+blog empiece a usar un servicio nuevo que toque datos de los lectores, hay que
+actualizar la política.** No es un trámite: una política que no describe lo que
+de verdad se hace es peor que no tenerla.
+
+Pasa, por ejemplo, si algún día se añade:
+
+- una herramienta de estadísticas de visitas,
+- vídeos incrustados de YouTube o Vimeo,
+- un chat, un buscador externo o un sistema de reservas,
+- un proveedor distinto para enviar los correos,
+- botones de redes sociales que carguen contenido de esas redes.
+
+**No lo decidas por tu cuenta ni lo descartes: dímelo y lo miramos.** Casi
+siempre es un párrafo nuevo y una línea en la tabla de proveedores, cuestión de
+minutos. Lo que no puede pasar es que el servicio entre y la política se quede
+como estaba.
+
+> **Y hay un caso en el que además hay que avisar a los suscriptores**: si el
+> cambio afecta a datos que ya estamos tratando con su consentimiento. También
+> eso lo vemos juntos.
+
+## Una tarea de mantenimiento que hay que hacer de vez en cuando
+
+Cuando alguien deja su correo en el boletín pero **nunca llega a pulsar el botón
+de confirmación**, su dirección se queda guardada en el sistema sin estar
+suscrita. No recibe nada —eso está garantizado— pero ahí sigue.
+
+**Esas altas sin confirmar hay que borrarlas cada cierto tiempo**, y hoy **no se
+borran solas**: es una tarea manual. La política de privacidad dice que se
+eliminan periódicamente, así que conviene que sea verdad.
+
+Se hace en el panel del boletín, en **Configuraciones → Mantenimiento**, que
+permite borrar suscriptores según su estado. Con un par de veces al año basta.
+
+> **Si prefieres no ocuparte**, dímelo y lo dejo programado en el servidor para
+> que se haga solo. Entonces podremos poner en la política un plazo concreto
+> —«a los 30 días», por ejemplo—, que ahora mismo no se puede prometer porque
+> no sería cierto.
+
+## La fecha de abajo
+
+Al final de la página pone **«Última actualización»**. Esa fecha cambia cada vez
+que se toca el texto, y es lo que permite a un lector saber si está leyendo la
+versión vigente. La actualizo yo al hacer el cambio.

@@ -336,12 +336,66 @@ jobs:
 
           rm -rf "$DEST/pr-$PR"
           mkdir -p "$DEST/pr-$PR"
-          # Todo lo que se sirve. Fuera scripts/, contenido/ y .github/, que no
-          # son parte del sitio, y .git, que no se copia nunca.
-          for x in index.html 404.html robots.txt sitemap.xml feed.xml og.png \
-                   favicon.svg favicon-16.png favicon-32.png apple-touch-icon.png \
-                   css js img video articulos sobre contacto; do
-            [ -e "$x" ] && cp -R "$x" "$DEST/pr-$PR/"
+
+          # ⚠️ ESTO ERA UNA LISTA DE LO QUE SI SE COPIA, Y DEJABA FUERA DOS
+          # COSAS SIN QUE NADA AVISARA. Enumeraba index.html, 404.html,
+          # robots.txt, sitemap.xml, feed.xml, og.png, los favicons, css, js,
+          # img, video, articulos, sobre y contacto — y nada mas.
+          #
+          # Asi que cualquier pagina nueva nacia invisible en la vista previa.
+          # Paso con `privacidad/`, que daba 404 con el enlace del pie ya
+          # desplegado y apuntando a ella, y llevaba pasando con `documentos/`,
+          # donde vive el CV: el boton «Descargar CV» de `sobre/` daba 404 en
+          # TODAS las previews y nadie lo habia notado.
+          #
+          # El comentario que habia aqui decia «Todo lo que se sirve. Fuera
+          # scripts/, contenido/ y .github/»: describia una lista de EXCLUSION
+          # mientras el codigo hacia una de INCLUSION. La intencion era la
+          # correcta; la implementacion, la contraria.
+          #
+          # ⚠️ Y EL MODO DE FALLAR ERA EL PEOR POSIBLE: el workflow terminaba en
+          # verde, la vista previa se publicaba y el comentario del bot traia su
+          # enlace. Solo fallaba la pagina que nadie habia pensado en mirar.
+          #
+          # Invertido: se copia TODO menos lo que no es el sitio. Una pagina
+          # nueva se sirve sola, y esta lista solo hay que tocarla al añadir
+          # algo que NO deba publicarse — que es el caso raro y ademas el que se
+          # nota, porque aparece donde no toca.
+          #
+          # ⚠️ PRODUCCION NO NECESITABA ESTE ARREGLO, y conviene saberlo para no
+          # buscar el fallo donde no esta: Pages sirve la raiz del repositorio
+          # tal cual, asi que alli `privacidad/` y `documentos/` funcionan desde
+          # el primer dia. El fallo era SOLO de la vista previa, que es
+          # justamente la que se usa para revisar.
+          # ⚠️ SIN `dotglob`, A PROPOSITO: `*` no casa con los archivos ocultos,
+          # y ninguno de los que hay debe publicarse —`.git`, `.github` y
+          # `.gitignore`—. Activarlo arrastraria ademas cualquier basura local
+          # que acabe en el runner, y un `.git` copiado dentro de la preview
+          # seria un lio de verdad. Si algun dia hace falta un `.nojekyll`,
+          # habra que añadirlo a mano: hoy no existe ni se necesita, porque no
+          # hay ninguna carpeta del sitio que empiece por guion bajo.
+          shopt -s nullglob
+          for x in *; do
+            case "$x" in
+              # No es el sitio: fuentes del generador, contenido sin compilar,
+              # configuracion del servidor y documentacion interna.
+              contenido|scripts|servidor) continue ;;
+              CLAUDE.md|PARA-EL-CLIENTE.md|README.md) continue ;;
+              # Fuente de la tarjeta social; lo que se sirve es og.png.
+              og.svg) continue ;;
+            esac
+            cp -R "$x" "$DEST/pr-$PR/"
+          done
+          shopt -u nullglob
+
+          # Que la vista previa tenga lo que tiene que tener. Si alguien añade
+          # una exclusion de mas, esto lo dice aqui en vez de dejar otra pagina
+          # dando 404 en silencio durante semanas.
+          for x in index.html privacidad sobre contacto articulos documentos css js; do
+            if [ ! -e "$DEST/pr-$PR/$x" ]; then
+              echo "::error title=Vista previa incompleta::Falta «$x» en el preview. Revisa las exclusiones del paso de copia."
+              exit 1
+            fi
           done
 
           # ⚠️ LA VISTA PREVIA VA CON noindex, Y ES LA ÚNICA DIFERENCIA A
