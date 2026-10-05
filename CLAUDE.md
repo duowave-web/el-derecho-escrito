@@ -6807,6 +6807,25 @@ cambiar ese valor.
 `404.html`. El generador no la toca, y no debe: no es contenido que varíe con
 los artículos.
 
+## ⚠️ La limpieza de altas sin confirmar es MANUAL, y la política lo nota
+
+La página decía **«Las altas que no se confirman se eliminan a los 30 días»** y
+era una promesa que el sistema no cumple: **no hay ninguna limpieza automática
+configurada en Listmonk**. Hoy dice que esas altas no reciben nada y «se
+eliminan periódicamente», que es lo que de verdad ocurre.
+
+> ⚠️ **ESO CONVIERTE LA DEPURACIÓN EN UNA TAREA PENDIENTE, no en un detalle de
+> redacción.** Un suscriptor sin confirmar es un dato personal guardado sin
+> base legal útil: no consintió nada. Si nadie la hace, se acumulan.
+
+Se hace desde el panel, en **Configuraciones → Mantenimiento**, que permite
+borrar suscriptores por estado. La otra vía es programarla en el servidor con
+una tarea periódica contra la API.
+
+> **Si algún día se automatiza de verdad, se puede volver a poner un plazo
+> concreto en la política** — y entonces hay que escribir **el que realmente se
+> aplique**, no uno redondo que suene bien. Ese fue justamente el error.
+
 ## Lo que la página AFIRMA está verificado contra el código
 
 No se escribió de memoria. Cada afirmación sale de mirar el repositorio o el
@@ -6935,3 +6954,85 @@ El orden importa, porque el tercer punto es el que se olvida:
 > ```sh
 > grep -n '2026-10-04\|4 de octubre de 2026' privacidad/index.html
 > ```
+
+## DuoWave es encargado del tratamiento, y Hetzner su subencargado
+
+La tabla de encargados abre con **DuoWave** y Hetzner va debajo. **El orden no
+es alfabético: es la cadena real.** DuoWave administra técnicamente la web, el
+servidor y los servicios por cuenta del responsable, y tiene contratado el
+servidor a Hetzner — de ahí que Hetzner sea **subencargado** y no encargado
+directo.
+
+> ⚠️ **SI SE REORDENA LA TABLA, EL PÁRRAFO DE DEBAJO DEJA DE LEERSE BIEN.** Ese
+> párrafo explica la cadena dando por hecho que las dos filas van en ese orden.
+
+> ⚠️ **AQUÍ DECÍA «nadie más accede a sus datos» Y NO ERA EXACTO.** Lo decía del
+> boletín y los comentarios, con el argumento de que Listmonk y Artalk son
+> software propio y autoalojado. Pero autoalojado no significa sin encargado:
+> **accede DuoWave**, para copias, actualizaciones e incidencias.
+>
+> Una política que dice «nadie» cuando hay un administrador de sistemas detrás
+> está ocultando justo la figura que el RGPD obliga a declarar. Hoy dice quién
+> accede y para qué.
+
+## Menores de 14 años
+
+La frase va **una sola vez**, en la entrada común de «Qué datos se tratan», y no
+repetida en el boletín y en los comentarios: son los dos tratamientos que se
+apoyan en el consentimiento del propio lector, y decirlo dos veces alarga la
+página sin añadir nada. Cita el **artículo 7 de la LOPDGDD**.
+
+## El registro es la tercera persona, y hay que mantenerlo
+
+El texto habla del **«responsable»** de principio a fin. Estuvo roto en un solo
+punto —el cierre decía **«escríbeme»**, la única primera persona de la página— y
+en otro con un «no tenemos acceso».
+
+> **Al reescribir cualquier párrafo, el criterio es: tercera persona o fórmulas
+> impersonales.** Nunca «escríbeme», «tenemos» ni «nuestro». Se detecta así:
+>
+> ```sh
+> grep -n 'escríbeme\|dímelo\|avísame\|tenemos\|usamos\|nuestr' privacidad/index.html
+> ```
+
+## El crédito del pie
+
+`«Desarrollado por DuoWave»`, lo último del pie en **las seis páginas a mano, el
+404 y la plantilla del artículo**.
+
+> ⚠️ **TRES DECISIONES DEL ENLACE QUE SON DE POSICIONAMIENTO, NO DE DISEÑO**, y
+> que es fácil «arreglar» sin saber lo que se toca:
+>
+> | | Por qué |
+> |---|---|
+> | **sin `rel="nofollow"`** | es un crédito honesto de quien hizo el sitio, no un enlace pagado |
+> | **sin `target="_blank"`** | no hay motivo para sacar al lector en otra ventana, y obligaría a `rel="noopener"` |
+> | **el texto es la marca** | un ancla con palabras clave en el pie de todas las páginas es el patrón que los buscadores penalizan |
+>
+> ⚠️ **Y SOLO «DuoWave» VA DENTRO DEL `<a>`**, no la frase entera: si se enlaza
+> «Desarrollado por DuoWave» completo, el texto del ancla pasa a ser esa frase.
+
+> ⚠️ **EL 0,55 DE OPACIDAD ES UN SUELO DE CONTRASTE, NO UN VALOR ELEGIDO.**
+> Estuvo en 0,45 —que es lo que pedía el encargo, «que no destaque»— y **no
+> llega a AA**: medido sobre `--pie` #242424 da **4,32:1**, por debajo del 4,5
+> que exige un texto normal de 12 px.
+>
+> | Opacidad | Contraste |
+> |---|---|
+> | 0,45 | **4,32 ✗** |
+> | 0,50 | 4,99 |
+> | **0,55 — la actual** | **5,65** |
+> | 0,65 — el aviso legal | 7,32 |
+>
+> **El objetivo se cumple igual**: el aviso legal que tiene encima va al 0,65,
+> así que el crédito sigue siendo lo más apagado del pie, solo que legible.
+> Quien quiera bajarlo más, que mida: por debajo de 0,5 se sale de AA.
+
+> ⚠️ **SE OCULTA AL IMPRIMIR DESDE `styles.css`, NO DESDE `imprimir.css`, y los
+> dos sitios hacen falta por motivos distintos.** `imprimir.css` la cargan solo
+> las páginas de artículo, y allí ya estaba cubierto porque esa hoja oculta
+> `.pie` entero. Pero `sobre/`, `contacto/` y `privacidad/` **no la cargan**:
+> para esas, la única regla que alcanza es el `@media print` de `styles.css`.
+>
+> Verificado: el PDF del artículo sigue en **543 730 bytes**, los mismos, y no
+> contiene ni «DuoWave» ni «Desarrollado».

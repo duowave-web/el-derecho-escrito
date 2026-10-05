@@ -389,6 +389,24 @@ como estaba.
 > cambio afecta a datos que ya estamos tratando con su consentimiento. También
 > eso lo vemos juntos.
 
+## Una tarea de mantenimiento que hay que hacer de vez en cuando
+
+Cuando alguien deja su correo en el boletín pero **nunca llega a pulsar el botón
+de confirmación**, su dirección se queda guardada en el sistema sin estar
+suscrita. No recibe nada —eso está garantizado— pero ahí sigue.
+
+**Esas altas sin confirmar hay que borrarlas cada cierto tiempo**, y hoy **no se
+borran solas**: es una tarea manual. La política de privacidad dice que se
+eliminan periódicamente, así que conviene que sea verdad.
+
+Se hace en el panel del boletín, en **Configuraciones → Mantenimiento**, que
+permite borrar suscriptores según su estado. Con un par de veces al año basta.
+
+> **Si prefieres no ocuparte**, dímelo y lo dejo programado en el servidor para
+> que se haga solo. Entonces podremos poner en la política un plazo concreto
+> —«a los 30 días», por ejemplo—, que ahora mismo no se puede prometer porque
+> no sería cierto.
+
 ## La fecha de abajo
 
 Al final de la página pone **«Última actualización»**. Esa fecha cambia cada vez
