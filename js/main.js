@@ -134,11 +134,16 @@
        clave. Para comparar se normaliza aquí, que es lo mismo que hace el bloque
        de relacionados. */
 
+    /* ⚠️ `claveURL` Y NO `normalizar`: esto produce la identidad con la que se
+       compara contra lo que pide la URL, y la URL la escribe el generador con
+       `clave()`. Con `normalizar` aquí quedaba «requisito de procedibilidad»
+       frente al «requisito-de-procedibilidad» del enlace, y no casaba nunca. */
+
     function etiquetasDe(el) {
       return (el.getAttribute("data-etiquetas") || "")
         .split(",")
         .map(function (t) {
-          return normalizar(t.trim());
+          return claveURL(t);
         })
         .filter(Boolean);
     }
@@ -522,7 +527,12 @@
 
     paginaActiva = Number.isFinite(pagina) && pagina > 1 ? pagina : 1;
 
-    montarFiltros(categoria ? normalizar(categoria.trim()) : null);
+    /* ⚠️ La categoría también por `claveURL`. Hoy las tres son de una palabra
+       —ensayos, fundamentos, jurisprudencia— así que con `normalizar` daba el
+       mismo resultado y no se notaba: es la MISMA bomba de relojería que tenían
+       las etiquetas antes de que llegara la primera con espacios. Si algún día
+       se añade «derecho de la competencia», esto ya está. */
+    montarFiltros(categoria ? claveURL(categoria) : null);
     montarEtiquetas(parametros.get("etiquetas"));
 
     if (consulta && consulta.trim()) {
@@ -555,7 +565,7 @@
       entradas.forEach(function (el) {
         (el.getAttribute("data-etiquetas") || "").split(",").forEach(function (t) {
           const texto = t.trim();
-          const clave = normalizar(texto);
+          const clave = claveURL(texto);
           if (clave && !vistas[clave]) vistas[clave] = texto;
         });
       });
@@ -572,11 +582,18 @@
         return;
       }
 
-      // Solo se aceptan las que existen: la URL la escribe quien quiera.
+      /* Solo se aceptan las que existen: la URL la escribe quien quiera.
+
+         ⚠️ Y `claveURL` AQUÍ ES LO QUE DA LA COMPATIBILIDAD HACIA ATRÁS. Pasa
+         por la misma función lo que venga en la dirección, así que entran por
+         igual el enlace nuevo —`?etiquetas=requisito-de-procedibilidad`— y
+         cualquiera antiguo que se compartiera con el texto tal cual
+         —`?etiquetas=requisito%20de%20procedibilidad`—: los dos producen la
+         misma clave. No hace falta una tabla de equivalencias. */
       etiquetasActivas = (pedidas || "")
         .split(",")
         .map(function (t) {
-          return normalizar(t.trim());
+          return claveURL(t);
         })
         .filter(function (t) {
           return t && claves.indexOf(t) !== -1;
@@ -1140,10 +1157,16 @@
        de sus propias píldoras del lateral, que ya están en el DOM. El atributo
        data-etiquetas solo hace falta en el listado, o sea para los OTROS. */
 
+    /* `claveURL` en los dos lados de la comparación —aquí y en las tarjetas del
+       listado, unas líneas más abajo—, para que «afinidad por etiqueta» use la
+       misma identidad que el filtro. Con `normalizar` también casaban entre sí,
+       porque los dos extremos son texto visible, pero habría dos nociones
+       distintas de «misma etiqueta» conviviendo en el mismo archivo. */
+
     const propias = new Set(
       Array.prototype.map
         .call(document.querySelectorAll(".etiqueta--tag"), function (el) {
-          return normalizar(el.textContent.replace(/^#/, "").trim());
+          return claveURL(el.textContent.replace(/^#/, ""));
         })
         .filter(Boolean)
     );
@@ -1176,7 +1199,7 @@
             const etiquetas = (art.getAttribute("data-etiquetas") || "")
               .split(",")
               .map(function (t) {
-                return normalizar(t.trim());
+                return claveURL(t);
               })
               .filter(Boolean);
 
@@ -1297,12 +1320,60 @@
     return t;
   }
 
+  /* \u26a0\ufe0f HAY DOS NORMALIZACIONES Y HACEN COSAS DISTINTAS. Confundirlas es
+     exactamente lo que rompi\u00f3 el filtro de etiquetas, as\u00ed que conviene tener
+     clara la frontera antes de tocar cualquiera de las dos:
+
+       normalizar()  compara TEXTO LIBRE. Min\u00fasculas y sin acentos, pero
+                     conserva espacios y signos, porque la b\u00fasqueda es por
+                     subcadena: quien escribe \u00abde procedibilidad\u00bb tiene que
+                     encontrar \u00abrequisito de procedibilidad\u00bb.
+
+       claveURL()    produce la CLAVE que viaja en la URL. Adem\u00e1s de lo
+                     anterior, convierte en guion todo lo que no sea letra o
+                     n\u00famero. Es una identidad, no un texto.
+
+     La b\u00fasqueda (?q=) usa la primera. Las etiquetas y las categor\u00edas usan la
+     segunda. Son dos preguntas distintas \u2014\u00ab\u00bfse parece?\u00bb y \u00ab\u00bfes la misma?\u00bb\u2014 y
+     cada una tiene su funci\u00f3n. */
+
   function normalizar(texto) {
     return texto
       .toLowerCase()
       .normalize("NFD")
       .replace(/[\u0300-\u036f]/g, ""); // ignora acentos
   }
+
+  /* \u26a0\ufe0f ESTA FUNCI\u00d3N ES GEMELA DE `clave()`, en scripts/lib/plantilla.mjs, Y
+     TIENEN QUE DAR EXACTAMENTE EL MISMO RESULTADO. Una escribe los enlaces al
+     generar y la otra los interpreta en el navegador: si divergen, el enlace
+     lleva a un filtro que no selecciona nada y la p\u00e1gina se ve entera, como si
+     no se hubiera pulsado. No da ning\u00fan error.
+
+     \u26a0\ufe0f SON DOS COPIAS A LA FUERZA, NO POR DESCUIDO. `plantilla.mjs` es un
+     m\u00f3dulo de Node que no se sirve al navegador, y este archivo es un script
+     cl\u00e1sico que no puede importarlo sin convertir el sitio en algo con build.
+     La regla dura del proyecto \u2014HTML, CSS y JS puro\u2014 es lo que impide tener
+     una sola copia.
+
+     Lo que s\u00ed se puede es comprobar que coinciden, y eso lo hace
+     `scripts/comprobar-claves.mjs`, que EXTRAE esta funci\u00f3n del archivo y la
+     ejecuta contra la otra sobre un corpus de casos. Corre en cada build. Si
+     alguien toca una de las dos sin tocar la otra, el build falla.
+
+     \u26a0\ufe0f POR ESO LA FUNCI\u00d3N SE ESCRIBE ENTRE SUS DOS MARCAS y no se les cambia
+     el texto: son las que usa el extractor para encontrarla. */
+
+  /* CLAVE-URL:inicio */
+  function claveURL(texto) {
+    return String(texto)
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "");
+  }
+  /* CLAVE-URL:fin */
 
   /* ------------------------------------------------- Comentarios ------- */
 

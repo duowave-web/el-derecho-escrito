@@ -388,15 +388,40 @@ jobs:
           done
           shopt -u nullglob
 
-          # Que la vista previa tenga lo que tiene que tener. Si alguien añade
-          # una exclusion de mas, esto lo dice aqui en vez de dejar otra pagina
-          # dando 404 en silencio durante semanas.
-          for x in index.html privacidad sobre contacto articulos documentos css js; do
-            if [ ! -e "$DEST/pr-$PR/$x" ]; then
-              echo "::error title=Vista previa incompleta::Falta «$x» en el preview. Revisa las exclusiones del paso de copia."
-              exit 1
-            fi
+          # ⚠️ LA GUARDA ENUMERABA LAS PAGINAS A MANO Y ESO ERA EL MISMO FALLO
+          # UN PISO MAS ARRIBA. Decia
+          #
+          #   for x in index.html privacidad sobre contacto articulos documentos css js
+          #
+          # o sea una lista que tambien hay que acordarse de ampliar. Si alguien
+          # añadiera `faq/` y de paso lo excluyera por error del bucle de copia,
+          # la guarda no lo echaria de menos: no esta en su lista.
+          #
+          # Ahora la lista NO se escribe: se DERIVA. Toda carpeta del
+          # repositorio que tenga un index.html es una pagina del sitio, y tiene
+          # que estar en la vista previa. Una pagina nueva se comprueba sola.
+          #
+          # Se recorren solo dos niveles —`*/index.html` y `*/*/index.html`—
+          # porque es lo que hay: las paginas de seccion y los articulos.
+          FALTAN=""
+          shopt -s nullglob
+          for f in index.html */index.html */*/index.html; do
+            case "$f" in
+              contenido/*|scripts/*|servidor/*) continue ;;
+            esac
+            [ -e "$DEST/pr-$PR/$f" ] || FALTAN="$FALTAN $f"
           done
+          # Y lo que no es una pagina pero sin ello la preview no sirve.
+          for f in css js documentos; do
+            [ -e "$f" ] && [ ! -e "$DEST/pr-$PR/$f" ] && FALTAN="$FALTAN $f/"
+          done
+          shopt -u nullglob
+
+          if [ -n "$FALTAN" ]; then
+            echo "::error title=Vista previa incompleta::Falta en el preview:$FALTAN — revisa las exclusiones del paso de copia."
+            exit 1
+          fi
+          echo "Vista previa completa: $(find "$DEST/pr-$PR" -name index.html | wc -l) pagina(s)."
 
           # ⚠️ LA VISTA PREVIA VA CON noindex, Y ES LA ÚNICA DIFERENCIA A
           # PROPÓSITO ENTRE EL PREVIEW Y PRODUCCIÓN.

@@ -1036,6 +1036,128 @@ Y categoría Y (etiqueta1 O etiqueta2). Es la convención de filtros por facetas
 además lo pide la escala: con Y, marcar dos etiquetas que no coincidan en ningún
 artículo daría **cero al instante** y el control parecería roto.
 
+#### ⚠️ La forma de una etiqueta en la URL se define en UN SOLO SITIO
+
+**Regla dura: la clave que viaja en una URL —`?etiquetas=`, `?categoria=`— la
+produce `clave()`, y nada más.** Cualquier cambio en esa forma pasa por la
+comprobación del build.
+
+Hay **dos implementaciones a la fuerza**, y conviene saber por qué no es un
+descuido:
+
+| | Dónde | Quién la usa |
+|---|---|---|
+| `clave()` | `scripts/lib/plantilla.mjs` | **escribe** los enlaces al generar |
+| `claveURL()` | `js/main.js` | los **interpreta** en el navegador |
+
+`plantilla.mjs` es un módulo de Node que no se sirve, y `main.js` es un script
+clásico que no puede importarlo sin convertir el sitio en algo con build. **La
+regla dura del proyecto —HTML, CSS y JS puro— es lo que impide tener una sola.**
+
+> ⚠️ **LO QUE SÍ SE COMPRUEBA ES QUE COINCIDEN**, y lo hace
+> `scripts/comprobar-claves.mjs` en cada build. **Extrae la función de
+> `js/main.js`** entre las marcas `/* CLAVE-URL:inicio */` y `/* CLAVE-URL:fin */`
+> y la ejecuta contra la otra sobre 21 casos.
+>
+> **No se reescribe la función en la prueba**: una copia a mano verificaría la
+> copia, no el código publicado, y pasaría en verde justo el día que alguien
+> tocara `main.js` — el único día en que la prueba sirve de algo.
+>
+> **Si se mueve la función, hay que mover las marcas con ella.** Sin marcas, el
+> build falla diciéndolo, que es el modo de fallar bueno.
+
+#### ⚠️ Y NO ES LO MISMO que `normalizar()`, que es la otra de `main.js`
+
+Confundirlas es **exactamente** lo que rompió el filtro:
+
+| | Qué hace | Para qué |
+|---|---|---|
+| `normalizar()` | minúsculas, sin acentos | comparar **texto libre**: la búsqueda `?q=` es por subcadena |
+| `claveURL()` | lo anterior **+ todo lo no alfanumérico a guion** | producir una **identidad** |
+
+Son dos preguntas distintas —«¿se parece?» y «¿es la misma?»— y cada una tiene
+su función. **La búsqueda no puede usar la segunda**: quien escribe
+«de procedibilidad» tiene que encontrar «requisito de procedibilidad», y con
+guiones no casaría.
+
+#### ⚠️ EL FALLO QUE ESTO ARREGLA, Y POR QUÉ NO LO ROMPIÓ NINGÚN COMMIT
+
+Las etiquetas del lateral enlazaban a
+`?etiquetas=requisito-de-procedibilidad` mientras el listado construía sus
+claves con `normalizar()` y obtenía «requisito de procedibilidad». **No casaba
+ninguna**, así que el filtro no marcaba nada y se veía la lista entera, como si
+no se hubiera pulsado. Solo funcionaban las etiquetas de una palabra.
+
+> **Buscar el commit culpable no lleva a ninguna parte, porque no lo hay.** La
+> asimetría existía desde el principio; lo que pasa es que **para una etiqueta
+> de una sola palabra las dos funciones dan lo mismo**:
+>
+> | | `clave()` | `normalizar()` | |
+> |---|---|---|---|
+> | `Garantías` | `garantias` | `garantias` | = |
+> | `Divulgación` | `divulgacion` | `divulgacion` | = |
+> | `requisito de procedibilidad` | `requisito-de-procedibilidad` | `requisito de procedibilidad` | **✗** |
+> | `LO 1/2025` | `lo-1-2025` | `lo 1/2025` | **✗** |
+>
+> Y **todas las etiquetas que tuvo el sitio hasta MASC eran de una palabra**:
+> Legalidad, Fundamento, Garantías, Taxatividad, Irretroactividad, Docencia,
+> Divulgación. Verificado en el árbol anterior al generador.
+>
+> O sea que **lo que cambió fue el contenido, no el código**: el artículo de
+> MASC trajo las primeras etiquetas con espacios y barras, y ahí se destapó una
+> asimetría que llevaba meses latente. El generador formalizó `clave()` en los
+> enlaces, pero producía exactamente lo mismo que los enlaces escritos a mano
+> para las etiquetas que existían entonces.
+
+#### La comprobación que impide que vuelva
+
+`scripts/comprobar-enlaces.mjs`, también en cada build. Lee el **HTML generado**
+—no los JSON— y verifica que cada `?etiquetas=` y cada `?categoria=` de la
+portada, el listado y los artículos corresponde a algo que el listado conoce.
+
+El mensaje dice **archivo, enlace, valor, clave esperada y claves conocidas**.
+
+> **Se comprueba la salida y no la entrada, a propósito**: lo que puede divergir
+> es lo que se publica. Una comprobación sobre los `articulo.json` no habría
+> cazado este fallo, porque el JSON estaba bien.
+
+> ⚠️ **SE IGNORAN LOS COMENTARIOS HTML**, y hay un motivo concreto: `index.html`
+> lleva una plantilla de tarjeta comentada con marcadores literales
+> —`?categoria=CLAVE`— para quien tenga que escribir una a mano. La primera
+> versión de la comprobación la marcó como enlace roto. Tenía razón en lo
+> literal, pero eso no es un enlace: nadie lo puede pulsar.
+
+#### ⚠️ Una etiqueta NO puede llevar una coma, y el build lo rechaza
+
+Lo encontró esta misma comprobación al probarla con símbolos. `data-etiquetas`
+es una lista **separada por comas**, así que «STC 163/2016, de 3 de octubre» se
+parte en dos —«STC 163/2016» y «de 3 de octubre»— y el enlace del lateral, que
+sí lleva la etiqueta entera, deja de corresponder con ninguna.
+
+> **La salida no es escapar la coma ni cambiar el separador.** `data-etiquetas`
+> lo lee el navegador con un `split(",")`, así que cualquiera de las dos cosas
+> obligaría a tocar las dos puntas por una etiqueta que además se lee peor. Se
+> parte en dos y listo.
+
+Y si dos etiquetas distintas producen **la misma clave**, sale un **aviso**, no
+un error: la página funciona, pero el autor escribió dos cosas y verá una.
+
+**Verificado** con las seis etiquetas reales de MASC y con un artículo temporal
+—borrado después de `contenido/` **y** de `articulos/`— que llevaba
+`Art. 439.1 LEC`, `STC 163/2016`, `¿Y esto? ¡sí!`, `C++ / C#` y una con espacios
+repetidos. Todas filtran, por slug y por texto crudo.
+
+#### Compatibilidad con los enlaces antiguos
+
+El navegador pasa por `claveURL()` **lo que venga en la dirección**, así que
+entran por igual `?etiquetas=requisito-de-procedibilidad` y
+`?etiquetas=requisito%20de%20procedibilidad`: los dos producen la misma clave.
+**No hace falta ninguna tabla de equivalencias.**
+
+Y el viaje de ida y vuelta es estable: marcando «LO 1/2025» en el desplegable
+del listado, la URL que escribe es `?etiquetas=lo-1-2025` — **la misma** que
+genera el enlace del artículo. Verificado.
+
 #### `data-etiquetas` guarda el TEXTO VISIBLE, no la clave
 
 Y es lo contrario que `data-categoria`, así que merece explicarse:
@@ -6914,10 +7036,23 @@ donde no toca.
 > que allí `privacidad/` y `documentos/` funcionan desde el primer día. El fallo
 > era **solo de la vista previa** — que es, precisamente, con lo que se revisa.
 
-> **Se añadió además una guarda** que comprueba que `index.html`, `privacidad`,
-> `sobre`, `contacto`, `articulos`, `documentos`, `css` y `js` han llegado al
-> preview, y falla el job si falta alguno. Sin ella, una exclusión de más
-> volvería a dejar una página dando 404 en silencio durante semanas.
+> ⚠️ **LA GUARDA ENUMERABA LAS PÁGINAS A MANO, Y ESO ERA EL MISMO FALLO UN PISO
+> MÁS ARRIBA.** Comprobaba una lista escrita —`index.html privacidad sobre
+> contacto articulos documentos css js`— o sea otra lista que hay que acordarse
+> de ampliar. Si alguien añadiera `faq/` y de paso lo excluyera por error del
+> bucle de copia, la guarda **no lo echaría de menos**: no está en su lista.
+>
+> **Ahora la lista no se escribe: se DERIVA.** Toda carpeta del repositorio que
+> tenga un `index.html` es una página del sitio y tiene que estar en la vista
+> previa. Una página nueva se comprueba sola.
+>
+> Se recorren dos niveles —`*/index.html` y `*/*/index.html`— porque es lo que
+> hay: las páginas de sección y los artículos.
+>
+> **Probado en las dos direcciones**: excluyendo `privacidad` a propósito, la
+> guarda lo caza y nombra el archivo que falta; y creando una carpeta
+> `faq-simulada/` con su `index.html`, la detecta sin tocar nada —retirada
+> después—.
 
 > ⚠️ **Y NO SE ACTIVA `dotglob`, a propósito.** Sin él, `*` no casa con los
 > ocultos, y ninguno de los que hay debe publicarse. Activarlo arrastraría la
