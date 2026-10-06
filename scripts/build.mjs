@@ -32,6 +32,8 @@ import {
 } from './lib/plantilla.mjs';
 import { llamadasDe } from './lib/refs.mjs';
 import { procesarPortada } from './lib/imagen.mjs';
+import { comprobarClaves } from './comprobar-claves.mjs';
+import { comprobarEnlaces } from './comprobar-enlaces.mjs';
 
 const RAIZ = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const CONTENIDO = join(RAIZ, 'contenido', 'articulos');
@@ -105,6 +107,50 @@ function validar(art, ruta) {
   }
   if (art.fecha && !fechaValida(art.fecha)) {
     errores.push(`${ruta}: la fecha debe ser YYYY-MM-DD y existir en el calendario, y es «${art.fecha}»`);
+  }
+
+  /* ⚠️ UNA ETIQUETA CON COMA ROMPE EL LISTADO, Y NO SE VE AL MIRAR LA PÁGINA.
+     Las etiquetas viajan al listado en `data-etiquetas`, que es una lista
+     SEPARADA POR COMAS, así que «STC 163/2016, de 3 de octubre» se parte en
+     dos —«STC 163/2016» y «de 3 de octubre»— y el desplegable enseña dos
+     etiquetas donde había una. El enlace del lateral, que sí lleva la etiqueta
+     entera, deja entonces de corresponder con ninguna.
+
+     Lo descubrió la comprobación de enlaces al probar con símbolos. Es error y
+     no aviso: se publica roto, y el único momento en que se puede arreglar sin
+     dolor es antes de publicar.
+
+     ⚠️ La salida NO es escapar la coma ni cambiar el separador: `data-etiquetas`
+     lo lee el navegador con un `split(",")` y cualquiera de las dos cosas
+     obligaría a tocar las dos puntas por una etiqueta que, además, se lee peor.
+     Se parte en dos etiquetas y listo. */
+  if (Array.isArray(art.etiquetas)) {
+    for (const e of art.etiquetas) {
+      if (String(e).includes(',')) {
+        errores.push(
+          `${ruta}: la etiqueta «${e}» lleva una coma, y las etiquetas viajan ` +
+          'al listado separadas por comas: se partiría en dos. Divídela o quita la coma.'
+        );
+      }
+    }
+
+    /* Dos etiquetas distintas que produzcan la misma clave se funden en una
+       sola en el desplegable, y gana la primera grafía. Es AVISO y no error:
+       la página funciona —el filtro selecciona— pero el autor escribió dos
+       cosas y verá una. */
+    const porClave = new Map();
+    for (const e of art.etiquetas) {
+      const k = clave(e);
+      if (!k) continue;
+      if (porClave.has(k) && porClave.get(k) !== e) {
+        avisos.push(
+          `${art.slug || ruta}: las etiquetas «${porClave.get(k)}» y «${e}» dan la misma ` +
+          `clave de URL («${k}»), así que el listado las tratará como una sola.`
+        );
+      } else {
+        porClave.set(k, e);
+      }
+    }
   }
 
   /* `actualizado` sigue siendo OPCIONAL EN EL JSON, pero ya no es opcional en
@@ -433,6 +479,26 @@ async function main() {
   if (errores.length) {
     console.error('\n✗ Errores:\n');
     for (const e of errores) console.error('   ' + e);
+    process.exit(1);
+  }
+
+  /* ⚠️ LAS DOS COMPROBACIONES VAN AQUÍ, DESPUÉS DE ESCRIBIR, Y ES DELIBERADO.
+     La segunda lee el HTML generado, así que tiene que correr con los archivos
+     ya en disco: comprobar los JSON de origen no habría cazado este fallo,
+     porque lo que divergía era lo publicado.
+
+     Son ERRORES y no avisos. Un enlace de filtro que no selecciona nada no da
+     ningún error al pulsarlo —el listado se abre entero, como si no se hubiera
+     filtrado— así que si esto no para el build, no lo para nada. */
+  try {
+    const casos = await comprobarClaves();
+    const r = await comprobarEnlaces();
+    console.log(
+      `\n✓ Claves: ${casos} caso(s) coinciden entre plantilla.mjs y main.js.` +
+      (r.nota ? `\n  ${r.nota}` : `\n✓ Enlaces de filtro: ${r.revisados} revisado(s), todos válidos.`)
+    );
+  } catch (e) {
+    console.error(`\n✗ ${e.message}\n`);
     process.exit(1);
   }
 
