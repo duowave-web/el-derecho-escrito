@@ -47,6 +47,22 @@ const errores = [];
    Si las marcas no están, es un error y no un aviso: significa que alguien las
    ha borrado y el build dejaría de actualizar ese sitio en silencio. */
 
+/* «Últimos artículos» se enseña solo cuando hay algo que listar. Con un único
+   artículo publicado —el destacado— la rejilla quedaría vacía bajo su rótulo,
+   así que la <section> lleva `hidden`; con el segundo artículo se enciende.
+
+   Lo pone y lo quita el build, no la mano: la etiqueta de apertura de la
+   sección se reconoce por su aria-labelledby, que es lo único estable de ella.
+   Si alguien cambia ese atributo, el build falla diciéndolo. */
+function seccionUltimos(texto, visible) {
+  const re = /<section class="lista"( hidden)? aria-labelledby="ultimos-titulo">/;
+  if (!re.test(texto)) {
+    errores.push('No encuentro la <section> de «Últimos artículos» en index.html (aria-labelledby="ultimos-titulo")');
+    return texto;
+  }
+  return texto.replace(re, `<section class="lista"${visible ? '' : ' hidden'} aria-labelledby="ultimos-titulo">`);
+}
+
 function reemplazarRegion(texto, nombre, contenido, archivo) {
   const ini = `<!-- GENERADO:${nombre} inicio`;
   const fin = `<!-- GENERADO:${nombre} fin -->`;
@@ -463,6 +479,7 @@ async function main() {
   let ph = await readFile(portada, 'utf8');
   ph = reemplazarRegion(ph, 'destacado', bloqueDest, 'index.html');
   ph = reemplazarRegion(ph, 'ultimos', resto.map(tarjetaPortada).join('\n\n'), 'index.html');
+  ph = seccionUltimos(ph, resto.length > 0);
   if (await escribirSiCambia(portada, ph)) escritos++;
 
   /* 4 · sitemap y feed */

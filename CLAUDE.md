@@ -4168,12 +4168,18 @@ node r.mjs img/logo.svg /tmp/logo-w512.png 512
 
 ## Deuda pendiente
 
-- **Las tarjetas de ejemplo siguen puestas, y ahora conviven con contenido
-  real.** Tres en la portada y tres entradas provisionales en el listado. Con un
-  solo artículo de verdad se distinguían; con dos ya no tanto, y la portada
-  enseña **cuatro** tarjetas de las que tres son atrezo. Se borran a mano —cada
-  una tiene su sección— y el generador no las toca porque están fuera de las
-  regiones marcadas.
+- ~~**Las tarjetas de ejemplo siguen puestas.**~~ **RESUELTO (16/10/2026)**: se
+  borraron las tres de la portada y las dos del listado, con sus dos reglas de
+  CSS (`.tarjeta--ejemplo:hover …` y `.tarjeta--caja.tarjeta--ejemplo
+  .entrada__titulo`). Queda solo la tarjeta de «Próximamente» del listado, que
+  es mobiliario. **Todo lo que este archivo dice sobre «el atrezo» describe un
+  estado pasado.**
+
+  ⚠️ **Y el `hidden` de «Últimos artículos» YA NO SE PONE A MANO**: lo pone y
+  lo quita `seccionUltimos()` en `scripts/build.mjs` según haya o no artículos
+  que listar aparte del destacado. Con un solo artículo publicado la sección va
+  oculta; con el segundo se enciende sola. Quien lo toque a mano verá cómo el
+  siguiente build lo deshace.
 - **El PDF no se regenera si solo cambia el CSS de impresión**, salvo que se
   lance `regenerar.yml` a mano. Es deliberado, pero es una de esas cosas que se
   olvidan: tocar `css/imprimir.css` y dar por hecho que los PDF publicados ya lo

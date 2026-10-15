@@ -299,11 +299,7 @@
 
         <!-- GENERADO:articulos inicio — una tarjeta por cada
              contenido/articulos/<slug>/articulo.json, en orden de fecha
-             descendente. Lo reescribe scripts/build.mjs.
-
-             ⚠️ Las tarjetas de EJEMPLO de más abajo quedan FUERA de esta
-             región a propósito: son atrezo escrito a mano y el generador no
-             debe tocarlas ni borrarlas. -->
+             descendente. Lo reescribe scripts/build.mjs. -->
         <article class="tarjeta tarjeta--caja" data-categoria="jurisprudencia"
                  data-etiquetas="Derecho procesal,Legislación,Procedimiento judicial,Tutela judicial efectiva">
           <div class="tarjeta__imagen">
@@ -323,75 +319,6 @@
         </article>
         <!-- GENERADO:articulos fin -->
 
-        <!-- ================================================================
-             PROVISIONAL: entradas de ejemplo, borrar antes de entregar
-             ================================================================
-
-             Las DOS tarjetas de aquí abajo NO son artículos. Son atrezo, para
-             que el listado no se vea vacío con un único artículo real.
-
-             ⚠️ ESTE COMENTARIO DECÍA OTRA COSA Y CONVIENE SABERLO. Eran TRES,
-             llevaban etiqueta de categoría y su titular era un enlace, y se
-             explicaba aquí que sus destinos DABAN 404 a propósito: existían
-             para alimentar el bloque «Continúa leyendo» del artículo, que
-             necesita candidatos con `<a>` en el titular.
-
-             Las tres cosas se retiraron por encargo:
-
-               · la etiqueta, para que las únicas visibles del sitio sean las
-                 reales del artículo de MASC;
-               · el enlace, porque un 404 en una demo al cliente es peor que
-                 una tarjeta quieta;
-               · una de las tres, porque los titulares se repiten demasiado.
-
-             ⚠️ LA CONSECUENCIA ES QUE «CONTINÚA LEYENDO» YA NO SALE, y es lo
-             buscado. `articulosRelacionados()` descarta toda tarjeta sin `<a>`
-             en el titular, así que estas dos no son candidatas y el bloque se
-             oculta solo. Con un solo artículo real, no recomendar nada es lo
-             honesto. NO hay que devolverles el enlace para «arreglarlo».
-
-             ⚠️ NO LLEVAN `data-etiquetas`, Y NO SE LES PUEDE PONER. Ese
-             atributo es lo que alimenta el desplegable de etiquetas del
-             listado, así que cualquier atrezo que lo lleve mete etiquetas
-             falsas en un control visible.
-
-             Sí conservan `data-categoria`: cuentan en el contador —que dice
-             «3 artículos publicados»— y entran en el filtro de Fundamento.
-
-             AL BORRARLAS: quitar este comentario y los dos <article> hasta la
-             marca de FIN, y retirar del CSS la regla
-             `.tarjeta--caja.tarjeta--ejemplo .entrada__titulo`, que repone el
-             hueco de la etiqueta y se queda sin uso. -->
-
-        <article class="tarjeta tarjeta--caja tarjeta--ejemplo" data-categoria="fundamentos">
-          <div class="tarjeta__imagen">
-            <img src="../img/damajusticia.jpg"
-                 alt="Figura de bronce de la justicia, con los ojos vendados y los dos platos de la balanza vacíos"
-                 width="1600" height="1066" loading="lazy" decoding="async">
-          </div>
-          <h2 class="entrada__titulo">El principio de legalidad penal: las cuatro exigencias</h2>
-          <p class="entrada__extracto">Entrada de ejemplo. Lex scripta, praevia, certa y stricta: cuatro exigencias que se citan juntas y se cumplen por separado.</p>
-          <div class="entrada__meta">
-            <time datetime="2026-05-12">12 mayo 2026</time>
-            <span class="lectura">6 min</span>
-          </div>
-        </article>
-
-        <article class="tarjeta tarjeta--caja tarjeta--ejemplo" data-categoria="fundamentos">
-          <div class="tarjeta__imagen">
-            <img src="../img/damajusticia.jpg"
-                 alt="Figura de bronce de la justicia, con los ojos vendados y los dos platos de la balanza vacíos"
-                 width="1600" height="1066" loading="lazy" decoding="async">
-          </div>
-          <h2 class="entrada__titulo">El principio de legalidad penal: por qué importa fuera del aula</h2>
-          <p class="entrada__extracto">Entrada de ejemplo. La garantía no se agota en el manual: aparece cada vez que una administración sanciona sin norma que la ampare.</p>
-          <div class="entrada__meta">
-            <time datetime="2026-07-30">30 julio 2026</time>
-            <span class="lectura">5 min</span>
-          </div>
-        </article>
-
-        <!-- ============ FIN PROVISIONAL: entradas de ejemplo ============ -->
 
         <!-- Cierra la rejilla, igual que en la portada, y SE VE SIEMPRE: con
              filtro, con búsqueda y en todas las páginas. El JS no la esconde
