@@ -259,28 +259,18 @@
     </div>
   </section>
 
-  <!-- ═══ ÚLTIMOS ARTÍCULOS — ENCENDIDO CON TARJETAS DE EJEMPLO ═══
+  <!-- ═══ ÚLTIMOS ARTÍCULOS ═══
 
-       ⚠️ LAS TRES TARJETAS DE DENTRO SON DE EJEMPLO Y SE BORRAN. Están solo
-       para que el cliente vea la maqueta de la sección con contenido; sus
-       artículos NO existen. Van marcadas con `.tarjeta--ejemplo` y entre las
-       marcas de INICIO y FIN de más abajo, así que se quitan de golpe.
+       Lista los artículos que NO son el destacado (máximo tres). Las tarjetas
+       las escribe scripts/build.mjs en la región GENERADO:ultimos, y el mismo
+       build pone o quita el atributo `hidden` de esta <section> según haya o
+       no artículos que listar: con un solo artículo publicado (el destacado) la
+       sección se apaga sola, y se enciende con el segundo.
 
-       LA REGLA DE FONDO no cambia: esta sección lista los artículos que NO son
-       el destacado, y se enseña cuando haya al menos uno. Hoy no hay ninguno
-       —solo existe el artículo destacado—, así que lo que se ve es atrezo.
+       ⚠️ NO poner ni quitar `hidden` a mano: lo reescribe el siguiente build.
 
-       CUANDO HAYA ARTÍCULOS REALES: se borran las tres tarjetas de ejemplo y se
-       pega una tarjeta real por artículo, con la plantilla que hay en el
-       comentario de dentro. Si se publican artículos y NO se borran, la portada
-       enseñará artículos inventados junto a los de verdad.
-
-       SI SE QUISIERA VOLVER A APAGAR la sección entera, se le devuelve el
-       atributo `hidden` a la <section>. El aire y la banda de suscripción se
-       recolocan solos, que para eso van en secciones separadas.
-
-       Está explicado en CLAUDE.md, en «Las tarjetas de ejemplo de la portada». -->
-  <section class="lista" aria-labelledby="ultimos-titulo">
+       Las tarjetas de ejemplo que hubo aquí se retiraron. -->
+  <section class="lista" hidden aria-labelledby="ultimos-titulo">
     <div class="contenedor contenedor--amplio">
 
       <div class="lista__encabezado">
@@ -359,11 +349,7 @@
            hace el ::after del titular, que está en el CSS. Tampoco separadores
            «|» en los metadatos — los pone el CSS.
 
-           ⚠️ OJO A LA DIFERENCIA CON LAS TARJETAS DE EJEMPLO DE ABAJO: una
-           tarjeta real lleva DOS enlaces —el titular y la categoría— y no lleva
-           `.tarjeta--ejemplo`. Las de ejemplo no llevan ninguno. Al sustituir,
-           no basta con cambiar los textos: hay que envolver el titular y la
-           categoría en sus <a> y quitar la clase de ejemplo. -->
+           Una tarjeta real lleva DOS enlaces: el titular y la categoría. -->
       <div class="tarjetas">
 
         <!-- GENERADO:ultimos inicio — los artículos que NO son el
@@ -371,78 +357,6 @@
 
         <!-- GENERADO:ultimos fin -->
 
-        <!-- ╔══════════════════════════════════════════════════════════════╗
-             ║  EJEMPLO — BORRAR CUANDO HAYA ARTÍCULOS REALES               ║
-             ╚══════════════════════════════════════════════════════════════╝
-
-             Las tres tarjetas que siguen son ATREZO VISUAL. Sus artículos no
-             existen: no están en articulos/, ni en el sitemap, ni en el feed,
-             ni en el buscador, ni en los datos estructurados. Y es correcto que
-             no estén — son ejemplos, no contenido.
-
-             POR ESO NO LLEVAN NINGÚN ENLACE, y es la diferencia que importa:
-             ni el titular ni la categoría. Un enlace daría 404, y uno que
-             apuntara al artículo real mentiría sobre lo que abre. Sin <a> no
-             hay cursor de mano ni subrayado, así que nada invita a pulsarlas.
-
-             `.tarjeta--ejemplo` apaga además el zoom de la imagen al pasar el
-             ratón: una tarjeta que reacciona pero no lleva a ningún sitio es
-             peor que una quieta. El resto del aspecto lo da `.tarjeta--abierta`,
-             el mismo modificador que usarán las tarjetas reales.
-
-             Las imágenes son las que ya había en img/ y NO tienen relación con
-             los titulares inventados. Al poner artículos reales, cada uno trae
-             la suya.
-
-             PARA BORRARLAS: se quita todo lo que hay entre esta marca y la de
-             FIN EJEMPLO. Si al hacerlo no queda ninguna tarjeta, hay que
-             devolver el atributo `hidden` a la <section> de arriba. -->
-
-        <article class="tarjeta tarjeta--abierta tarjeta--ejemplo">
-          <div class="tarjeta__imagen">
-            <img src="./img/damajusticia.jpg"
-                 alt="Figura de bronce de la justicia con los ojos vendados y los dos platos de la balanza"
-                 width="1600" height="1066" loading="lazy" decoding="async">
-          </div>
-          <h3 class="entrada__titulo">La discrecionalidad técnica de la Administración</h3>
-          <p class="entrada__extracto">Análisis de los límites de la discrecionalidad técnica en la toma de decisiones públicas y su control jurisdiccional.</p>
-          <div class="entrada__meta">
-            <time datetime="2026-05-20">20 mayo 2026</time>
-            <span class="lectura">12 min</span>
-          </div>
-        </article>
-
-        <article class="tarjeta tarjeta--abierta tarjeta--ejemplo">
-          <div class="tarjeta__imagen">
-            <img src="./img/damajusticia.jpg"
-                 alt="Figura de bronce de la justicia con los ojos vendados y los dos platos de la balanza"
-                 width="1600" height="1066" loading="lazy" decoding="async">
-          </div>
-          <h3 class="entrada__titulo">El interés legítimo en el recurso contencioso-administrativo</h3>
-          <p class="entrada__extracto">A propósito de la jurisprudencia reciente sobre legitimación activa y el concepto de interés legítimo.</p>
-          <div class="entrada__meta">
-            <time datetime="2026-04-22">22 abril 2026</time>
-            <span class="lectura">14 min</span>
-          </div>
-        </article>
-
-        <article class="tarjeta tarjeta--abierta tarjeta--ejemplo">
-          <div class="tarjeta__imagen">
-            <img src="./img/damajusticia.jpg"
-                 alt="Figura de bronce de la justicia con los ojos vendados y los dos platos de la balanza"
-                 width="1600" height="1066" loading="lazy" decoding="async">
-          </div>
-          <h3 class="entrada__titulo">El control judicial de los planes parciales: límites y estándares</h3>
-          <p class="entrada__extracto">Sobre el alcance del control judicial en la revisión de los planes parciales y los estándares de motivación exigibles.</p>
-          <div class="entrada__meta">
-            <time datetime="2026-04-15">15 abril 2026</time>
-            <span class="lectura">11 min</span>
-          </div>
-        </article>
-
-        <!-- ╔══════════════════════════════════════════════════════════════╗
-             ║  FIN EJEMPLO — hasta aquí lo que hay que borrar              ║
-             ╚══════════════════════════════════════════════════════════════╝ -->
 
       </div>
       <!-- FIN LISTADO -->
