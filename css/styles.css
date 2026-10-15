@@ -4173,7 +4173,8 @@ body:has(.progreso) .cabecera {
    No da ningun error y solo se ve saltando desde el indice en ese tramo. */
 
 @media (max-width: 740px) {
-  .articulo__cuerpo h2 {
+  .articulo__cuerpo h2,
+  .sobre__bloque-autor {
     scroll-margin-top: 162px;
   }
 }
@@ -4794,7 +4795,12 @@ body:has(.progreso) .cabecera {
    Y el hueco contra las columnas de arriba, que antes ponia ese mismo margen
    del h2, pasa a la propia caja. */
 
+/* Destino de «Ver perfil →» (sobre/#autor): el salto deja la caja por debajo
+   de la cabecera fija, con la misma holgura que los epigrafes del articulo
+   (126 en una fila, 162 cuando la cabecera va en dos, por debajo de 740). */
+
 .sobre__bloque-autor {
+  scroll-margin-top: 126px;
   margin-top: 48px;
   padding: 26px 30px;
   background: var(--papel-alt);

@@ -914,7 +914,7 @@ ${/* ⚠️ DEBAJO DE «Ver perfil →» IBA UN BOTÓN «Descargar CV» Y SE RET
             </div>
             <p class="autor__nombre">${escapar(AUTOR.nombre)}</p>
             <p class="autor__bio">${escapar(AUTOR.bio)}</p>
-            <a class="autor__enlace" href="../../sobre/">Ver perfil &rarr;</a>
+            <a class="autor__enlace" href="../../sobre/#autor">Ver perfil &rarr;</a>
           </div>
 ${pintarEtiquetas(art)}
           <div class="lateral__bloque suscripcion">
