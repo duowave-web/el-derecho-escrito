@@ -3,7 +3,7 @@
   "titulo": "La vivienda no es un derecho (y por qué no debería serlo)",
   "titulo_seo": "La vivienda no es un derecho (y por qué no debería serlo)",
   "descripcion": "El art. 47 CE no reconoce un derecho fundamental a la vivienda, sino un principio rector. El artículo analiza su alcance y el papel del urbanismo en la oferta.",
-  "entradilla": "La reciente consigna «derecho a techo» posee una indudable eficacia como fórmula de movilización y propaganda política, pero una notable debilidad como categoría jurídica. La Constitución proclama el derecho a disfrutar de una vivienda digna y adecuada, pero no reconoce un derecho fundamental prestacional a obtener una vivienda de los poderes públicos. Precisar esta diferencia no es una mera cuestión terminológica: permite entender qué exige realmente el art. 47 CE y desplazar el debate desde la proclamación de nuevos derechos hacia las condiciones —también urbanísticas— que hacen posible que exista vivienda allí donde se necesita y pueda producirse en condiciones razonables. Este artículo examina ambas dimensiones del problema: qué significa jurídicamente hablar de un derecho a la vivienda y qué condiciones hacen posible que ese derecho, cualquiera que sea su configuración, pueda alcanzar una efectividad real.",
+  "entradilla": "<p>La reciente consigna «derecho a techo» posee una indudable eficacia como fórmula de movilización y propaganda política, pero una notable debilidad como categoría jurídica. La Constitución proclama el derecho a disfrutar de una vivienda digna y adecuada, pero no reconoce un derecho fundamental prestacional a obtener una vivienda de los poderes públicos.</p><p>Precisar esta diferencia no es una mera cuestión terminológica: permite entender qué exige realmente el art. 47 CE y desplazar el debate desde la proclamación de nuevos derechos hacia las condiciones —también urbanísticas— que hacen posible que exista vivienda allí donde se necesita y pueda producirse en condiciones razonables.</p><p>Este artículo examina ambas dimensiones del problema: qué significa jurídicamente hablar de un derecho a la vivienda y qué condiciones hacen posible que ese derecho, cualquiera que sea su configuración, pueda alcanzar una efectividad real.</p>",
   "categoria": "ensayos",
   "etiquetas": [
     "Derecho Constitucional",
@@ -15,11 +15,11 @@
   "keywords": [
     "derecho a la vivienda en España",
     "artículo 47 Constitución Española vivienda",
-    "principio rector política social vivienda",
-    "ley 12/2023 derecho a la vivienda",
+    "vivienda digna y adecuada principio rector",
+    "Ley 12/2023 derecho a la vivienda",
     "urbanismo y oferta de vivienda",
-    "derecho fundamental a la vivienda debate",
-    "déficit de vivienda y suelo urbano España"
+    "STC 32/2019 derecho a la vivienda",
+    "escasez de vivienda y planeamiento urbanístico"
   ],
   "secciones": [
     {
@@ -667,19 +667,20 @@
     }
   ],
   "imagen": {
-    "alt": "Fachada clásica de un edificio residencial español con balcones, evocando la vivienda como hogar",
+    "alt": "Llaves de una vivienda sobre un plano urbanístico, junto al mazo de un juez",
     "prompt": null,
-    "archivo": "portada.png",
+    "archivo": "portada.jpg",
     "origen": "cliente"
   },
   "avisos": [
-    "El epígrafe 3.2.2 ('La vivienda tiene coordenadas') aparece marcado en el documento original como encabezado de segundo nivel, al igual que 3.1, 3.2 y 3.3, mientras que los epígrafes 3.2.1, 3.3.1 y 3.3.2 se marcan como de tercer nivel; se ha mantenido el mismo tratamiento de 'subtitulo' para todos, respetando la numeración original.",
-    "La enumeración de etiquetas del autor 'Derecho Constitucional, Derecho Administrativo, Urbanismo, Vivienda, Propiedad y Políticas Públicas' se ha interpretado como seis etiquetas independientes (separando 'Propiedad' y 'Políticas Públicas'), al tratarse de una enumeración en español con conjunción final."
+    "Las etiquetas del autor se recibieron como una lista separada por comas terminada en 'y' (formato habitual de enumeración en español); se han interpretado como seis etiquetas independientes: Derecho Constitucional, Derecho Administrativo, Urbanismo, Vivienda, Propiedad y Políticas Públicas, en vez de fusionar las dos últimas en una sola etiqueta.",
+    "La entradilla del Word no aparece enteramente en cursiva o negrita (solo lleva énfasis puntuales), por lo que se han unido sus tres párrafos iniciales, anteriores al primer epígrafe numerado, como contenido completo del campo 'entradilla'.",
+    "En la referencia [29] el apellido 'SIMON' aparece sin tilde en el Word (lo habitual sería 'SIMÓN'); se ha transcrito tal cual, sin corregir."
   ],
   "fecha": "2026-10-16",
   "fuente": {
     "docx": "La_vivienda_no_es_un_derecho_revision_final.docx",
-    "procesado": "2026-10-16T07:07:38.007Z"
+    "procesado": "2026-10-16T07:36:49.679Z"
   },
   "actualizado": "2026-10-16"
 }
