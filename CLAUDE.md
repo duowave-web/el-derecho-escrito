@@ -96,7 +96,24 @@ aviso de `sobre/` adoptó la fórmula del artículo.
 
 ## Rutas — leer antes de tocar enlaces
 
-El repo se llama `el-derecho-escrito`, así que Pages lo sirve en un
+> ✅ **LA WEB SE SIRVE YA EN LA RAÍZ DE `elderechoescrito.es` (16/10/2026),
+> desde Cloudflare Pages conectado a este repo —rama `main`, sin build—.** La
+> copia de GitHub Pages (`duowave-web.github.io/el-derecho-escrito/`) deja de
+> ser la dirección publicada. Los DNS del dominio están en la cuenta de
+> Cloudflare de DuoWave; el registro sigue en Hostinger, a nombre del cliente.
+>
+> **Las rutas relativas SE QUEDARON COMO ESTABAN.** Esta sección mandaba
+> «revertir todo a rutas absolutas» al conectar el dominio, y no se hizo a
+> propósito: una ruta relativa resuelve igual en la raíz que en un
+> subdirectorio, así que el cambio no arreglaba nada y tocaba todas las
+> páginas y la plantilla. Lo único que dependía de verdad del subdirectorio
+> era `404.html`, que ya va con `/` a secas, y la constante `SITIO` de
+> `plantilla.mjs`, que ya apunta al dominio.
+>
+> Lo de abajo describe de dónde viene la convención y sigue valiendo para
+> escribir enlaces nuevos.
+
+El repo se llama `el-derecho-escrito`, y GitHub Pages lo servía en un
 **subdirectorio**: `https://duowave-web.github.io/el-derecho-escrito/`.
 
 Por eso todas las rutas internas son **relativas**, no absolutas:
@@ -108,13 +125,14 @@ Por eso todas las rutas internas son **relativas**, no absolutas:
 | `articulos/<slug>/index.html` | `../../` |
 | `css/styles.css` (url de `img/logo.svg`) | `../` |
 
-Excepción: `404.html` usa rutas absolutas con el prefijo `/el-derecho-escrito/`,
-porque GitHub Pages lo sirve desde cualquier profundidad y una ruta relativa se
-rompería.
+Excepción: `404.html` usa rutas absolutas desde la raíz (`/css/styles.css`),
+porque se sirve desde cualquier profundidad y una ruta relativa se rompería.
+**Llevaba el prefijo `/el-derecho-escrito/` mientras vivió en GitHub Pages**;
+al pasar al dominio se le quitó. Es la única página que cambió con la mudanza.
 
-**Cuando se conecte `elderechoescrito.es`**, la web pasará a servirse en la raíz
-del dominio y hay que revertir todo a rutas absolutas (`/css/styles.css`,
-`/articulos/`). Es un cambio mecánico pero hay que acordarse.
+**La web ya se sirve en `elderechoescrito.es`.** Si algún día volviera a un
+subdirectorio, lo único que habría que tocar sería el prefijo de `404.html`
+y `SITIO` en `plantilla.mjs`.
 
 Las URL absolutas completas (`canonical`, `og:url`, `og:image`, `sitemap.xml`,
 `feed.xml`) ya apuntan a `elderechoescrito.es` y **no se tocan**.
@@ -2197,14 +2215,11 @@ autor, pero esa página sigue con texto de relleno entre corchetes y no menciona
 a nadie. Hoy Google va de un `Person` con nombre a una página que no lo
 confirma. Cerrar las dos cosas a la vez.
 
-## Estado actual: no indexar
+## Estado actual: INDEXABLE
 
-`robots.txt` está en `Disallow: /` a propósito, porque esto es una demo en
-revisión. La versión de producción está comentada dentro del propio archivo.
-
-Ojo: `robots.txt` solo se lee en la raíz del dominio. Mientras la web viva en un
-subdirectorio de `github.io`, ese archivo **no protege nada**. Lo que evita la
-indexación es la etiqueta `canonical` de cada página.
+`robots.txt` lleva ya la versión de producción (`Allow: /`, con el sitemap).
+Estuvo en `Disallow: /` mientras la web era una demo en GitHub Pages; ahí ni
+siquiera protegía nada, porque solo se lee en la raíz del dominio.
 
 ---
 

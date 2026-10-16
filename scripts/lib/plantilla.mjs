@@ -117,8 +117,10 @@ const MESES = [
 /* ⚠️ ESTO NO ES `DOMINIO`, Y JUNTARLOS ROMPERIA TODOS LOS CORREOS. Son dos
    constantes con dos valores distintos a proposito:
 
-     DOMINIO  https://elderechoescrito.es          el dominio CANONICO
-     SITIO    https://duowave-web.github.io/...    donde se sirve HOY
+     DOMINIO  https://elderechoescrito.es   el dominio CANONICO
+     SITIO    https://elderechoescrito.es   donde se sirve HOY (coinciden
+                                            desde la mudanza del 16/10/2026;
+                                            antes era duowave-web.github.io/...)
 
    `DOMINIO` es lo que el sitio DECLARA en canonical, og:url, el sitemap y el
    feed. El CLAUDE.md dice que esas URL ya apuntan a elderechoescrito.es y que
@@ -141,7 +143,7 @@ const MESES = [
    formularios de suscripcion apunta a Listmonk, que es otro servidor y otro
    dominio: no tiene nada que ver con este. */
 
-export const SITIO = 'https://duowave-web.github.io/el-derecho-escrito';
+export const SITIO = 'https://elderechoescrito.es';
 
 /* El id numerico lo pide la API de campanas —el campo `lists` es un array de
    enteros— y el uuid lo pide el formulario publico. Son la MISMA lista y
@@ -565,14 +567,14 @@ function jsonLd(art) {
    ⚠️ EL `pageKey` SE ESCRIBE AQUÍ Y NO SE DEDUCE EN EL NAVEGADOR. Es la ruta
    limpia del artículo, SIN el prefijo de GitHub Pages:
 
-     hoy      duowave-web.github.io/el-derecho-escrito/articulos/<slug>/
-     mañana   elderechoescrito.es/articulos/<slug>/
+     antes    duowave-web.github.io/el-derecho-escrito/articulos/<slug>/
+     hoy      elderechoescrito.es/articulos/<slug>/
      pageKey  /articulos/<slug>/            <- igual en los dos
 
-   Artalk, por defecto, usa `location.pathname`, que HOY incluye
-   `/el-derecho-escrito/` y mañana no: los comentarios de cada artículo
-   quedarían huérfanos al mudar el dominio, sin dar ningún error —simplemente
-   aparecería una caja vacía—. Al escribirlo el generador, la clave es la misma
+   Artalk, por defecto, usa `location.pathname`, que en GitHub Pages incluía
+   `/el-derecho-escrito/` y en el dominio no: los comentarios de cada artículo
+   habrían quedado huérfanos al mudar el dominio, sin dar ningún error
+   —simplemente aparecería una caja vacía—. Al escribirlo el generador, la clave es la misma
    antes y después de la mudanza y no depende de dónde esté servida la página.
 
    ⚠️ NO HAY QUE CAMBIARLO NUNCA para un artículo ya publicado: la clave es lo
