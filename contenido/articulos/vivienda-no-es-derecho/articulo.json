@@ -13,14 +13,13 @@
     "Propiedad y Políticas Públicas"
   ],
   "keywords": [
-    "derecho a la vivienda en la Constitución española",
-    "artículo 47 CE vivienda digna y adecuada",
-    "principio rector frente a derecho fundamental",
+    "derecho a la vivienda en España",
+    "artículo 47 Constitución Española vivienda",
+    "principio rector política social vivienda",
+    "ley 12/2023 derecho a la vivienda",
     "urbanismo y oferta de vivienda",
-    "STC 32/2019 derecho a la vivienda",
-    "Ley 12/2023 derecho a la vivienda",
-    "escasez de vivienda y planeamiento urbanístico",
-    "derecho subjetivo a la vivienda en España"
+    "derecho fundamental a la vivienda debate",
+    "déficit de vivienda y suelo urbano España"
   ],
   "secciones": [
     {
@@ -668,19 +667,19 @@
     }
   ],
   "imagen": {
-    "alt": "Calle residencial tranquila con edificios de viviendas en una ciudad española iluminados por luz de tarde",
+    "alt": "Fachada clásica de un edificio residencial español con balcones, evocando la vivienda como hogar",
     "prompt": null,
     "archivo": "portada.png",
     "origen": "cliente"
   },
   "avisos": [
-    "El texto previo al epígrafe 'I. Introducción' (tres párrafos) se ha tratado como entradilla al no estar delimitado de otro modo en el Word.",
-    "Los subapartados '3.2.2. La vivienda tiene coordenadas' y '3.3.1./3.3.2.' presentan niveles de encabezado (h2/h3) inconsistentes entre sí en el documento original, aunque se ha respetado su numeración y jerarquía textual.",
-    "La referencia [13] cita 'Censo de Población y Viviendas de 2021' en el cuerpo del texto, mientras que en el listado de referencias aparece como 'Censos de Población y Viviendas 2021'; se ha dejado tal cual figura en cada lugar del Word."
+    "El epígrafe 3.2.2 ('La vivienda tiene coordenadas') aparece marcado en el documento original como encabezado de segundo nivel, al igual que 3.1, 3.2 y 3.3, mientras que los epígrafes 3.2.1, 3.3.1 y 3.3.2 se marcan como de tercer nivel; se ha mantenido el mismo tratamiento de 'subtitulo' para todos, respetando la numeración original.",
+    "La enumeración de etiquetas del autor 'Derecho Constitucional, Derecho Administrativo, Urbanismo, Vivienda, Propiedad y Políticas Públicas' se ha interpretado como seis etiquetas independientes (separando 'Propiedad' y 'Políticas Públicas'), al tratarse de una enumeración en español con conjunción final."
   ],
   "fecha": "2026-10-16",
   "fuente": {
     "docx": "La_vivienda_no_es_un_derecho_revision_final.docx",
-    "procesado": "2026-10-16T06:24:47.054Z"
-  }
+    "procesado": "2026-10-16T07:07:38.007Z"
+  },
+  "actualizado": "2026-10-16"
 }
