@@ -1,6 +1,6 @@
 {
   "slug": "terreno-edificable-comprarlo",
-  "titulo": "Cómo saber si un terreno es edificable antes de comprarlo: clasificación urbanística, derecho a edificar y comprobaciones necesarias para construir una vivienda.",
+  "titulo": "Cómo saber si un terreno es edificable antes de comprarlo: claves urbanísticas, comprobaciones necesarias y garantías para el comprador.",
   "titulo_seo": "Cómo saber si un terreno es edificable antes de comprarlo",
   "descripcion": "Guía jurídica para comprobar si un terreno es edificable antes de comprarlo: clasificación urbanística, due diligence y riesgos del contrato de arras.",
   "entradilla": "La adquisición de un terreno para construir una vivienda exige conocer previamente su régimen urbanístico. La clasificación del suelo, la existencia de edificaciones próximas o la disponibilidad de determinados servicios no permiten determinar, por sí solas, si una parcela es edificable. Para ello, resulta necesario distinguir entre las posibilidades de edificación previstas por el planeamiento, las condiciones exigidas para materializarlas y las obligaciones que pueden acompañar a la adquisición.",
@@ -15,12 +15,12 @@
   ],
   "keywords": [
     "cómo saber si un terreno es edificable",
-    "clasificación urbanística del suelo",
-    "due diligence urbanística antes de comprar un terreno",
-    "diferencias entre suelo urbano urbanizable y rústico",
-    "obligaciones urbanísticas al comprar un terreno",
-    "riesgos del contrato de arras al comprar un terreno",
-    "artículo 27 TRLSRU transmisión de fincas"
+    "clasificación del suelo urbano urbanizable y rústico",
+    "due diligence jurídico-urbanística antes de comprar un terreno",
+    "condición de solar requisitos urbanísticos",
+    "riesgos de las arras en compraventa de terrenos",
+    "artículo 27 TRLSRU transmisión de fincas",
+    "cómo comprobar la edificabilidad de una parcela"
   ],
   "secciones": [
     {
@@ -97,11 +97,19 @@
         },
         {
           "tipo": "parrafo",
-          "html": "Tradicionalmente, el Derecho urbanístico español ha distinguido entre suelo urbano, urbanizable y no urbanizable (o rústico). Sin embargo, corresponde a las comunidades autónomas establecer las clases y categorías de suelo, de conformidad con el reparto constitucional de competencias en materia de urbanismo del artículo 148.1.3.ª CE."
+          "html": "Tradicionalmente, el Derecho urbanístico español ha distinguido entre suelo urbano, urbanizable y no urbanizable (o rústico). Sin embargo, corresponde a las comunidades Autónomas establecer las clases y categorías de suelo, conforme al reparto constitucional de competencias en materia de urbanismo previsto en el artículo 148.1.3.ª CE."
         },
         {
           "tipo": "parrafo",
           "html": "Por ello, esta clasificación no es necesariamente uniforme en todo el territorio nacional. Así, mientras que la Ley 7/2021, de 1 de diciembre, de impulso para la sostenibilidad del territorio de Andalucía (LISTA), distingue entre suelo urbano y rústico, {{ref:3}} la Ley 2/2016, de 10 de febrero, del suelo de Galicia, contempla también el suelo urbanizable y el de núcleo rural. {{ref:4}}"
+        },
+        {
+          "tipo": "parrafo",
+          "html": "Dentro de cada clase pueden establecerse, además, <strong>distintas categorías que precisan el régimen urbanístico aplicable</strong>. Por ejemplo, determinadas legislaciones autonómicas distinguen entre suelo urbano consolidado y no consolidado, atendiendo a sus condiciones de urbanización y a las actuaciones urbanísticas que resulten necesarias."
+        },
+        {
+          "tipo": "parrafo",
+          "html": "Desde la perspectiva del comprador, la clasificación permite conocer el régimen general del terreno y sus posibilidades de utilización o transformación. Sin embargo, <strong>no determina, por sí sola, si una parcela concreta admite la construcción de una vivienda ni si esta puede ejecutarse inmediatamente</strong>."
         },
         {
           "tipo": "subtitulo",
@@ -109,19 +117,35 @@
         },
         {
           "tipo": "parrafo",
-          "html": "En segundo lugar, <strong>las situaciones básicas del suelo constituyen una categoría establecida por la legislación estatal, que el artículo 21 TRLSRU distingue entre suelo rural y urbanizado</strong>. {{ref:2}}"
+          "html": "En segundo lugar, debe distinguirse la clasificación urbanística de las denominadas <strong>situaciones básicas del suelo</strong>, establecidas por la legislación estatal."
         },
         {
           "tipo": "parrafo",
-          "html": "A diferencia de la clasificación urbanística, esta distinción atiende a los presupuestos establecidos por la legislación estatal para determinar la situación jurídica del terreno a sus propios efectos. De este modo, el suelo rural no comprende exclusivamente los terrenos preservados de la transformación urbanística, sino también aquellos cuya urbanización esté prevista o permitida mientras no haya concluido la correspondiente actuación."
+          "html": "El artículo 21 TRLSRU contempla únicamente dos situaciones básicas: <strong>suelo rural y suelo urbanizado</strong>. {{ref:2}} Esta distinción no sustituye a las clases de suelo previstas por las Comunidades Autónomas, sino que responde a una finalidad diferente: determinar la situación del terreno conforme a los criterios de la legislación estatal, con consecuencias, entre otras materias, sobre el régimen jurídico de la propiedad y las valoraciones urbanísticas."
         },
         {
           "tipo": "parrafo",
-          "html": "<strong>Por ejemplo, un terreno destinado por el planeamiento a una futura urbanización residencial puede estar clasificado como urbanizable y permanecer, sin embargo, en situación básica rural hasta que se complete su urbanización</strong>. No existe contradicción entre ambas categorías: la primera identifica su régimen conforme a la legislación y ordenación autonómicas, mientras que la segunda determina su situación conforme a los criterios establecidos por la legislación estatal."
+          "html": "En particular, el suelo en situación básica rural no comprende exclusivamente los terrenos preservados de la transformación urbanística, sino también aquellos cuya urbanización esté prevista o permitida mientras no haya concluido la correspondiente actuación."
         },
         {
           "tipo": "parrafo",
-          "html": "Como explica Marcos Vaquer Caballería, esta regulación permite diferenciar la situación en que se encuentra el suelo de las actuaciones urbanísticas necesarias para transformarlo, distinción especialmente relevante para comprender las relaciones entre suelo urbano, urbanizado y consolidado. {{ref:5}}"
+          "html": "Por ejemplo, <strong>un terreno clasificado como urbanizable y destinado por el planeamiento a un futuro desarrollo residencial permanecerá, con carácter general, en situación básica rural hasta que concluya su urbanización</strong>."
+        },
+        {
+          "tipo": "parrafo",
+          "html": "De este modo, debe tenerse presente que <strong>suelo rural no equivale necesariamente a suelo rústico o no urbanizable</strong>. También pueden encontrarse en situación básica rural terrenos destinados a convertirse en suelo urbano, pero que todavía no han completado su proceso de transformación."
+        },
+        {
+          "tipo": "parrafo",
+          "html": "Por su parte, el suelo urbanizado debe reunir los requisitos del artículo 21.3 TRLSRU, entre los que destaca su integración legal en una malla urbana conformada por una red de viales, dotaciones y parcelas propia de un núcleo de población, además de cumplir alguna de las condiciones adicionales previstas legalmente. No basta, por tanto, con que el terreno se encuentre próximo a una zona edificada o disponga de determinados servicios aislados."
+        },
+        {
+          "tipo": "parrafo",
+          "html": "Como explica Marcos Vaquer Caballería, esta regulación permite diferenciar <strong>la situación en que se encuentra el suelo de las actuaciones urbanísticas necesarias para transformarlo</strong>, distinción especialmente relevante para comprender las relaciones entre suelo urbano, urbanizado y consolidado. {{ref:5}}"
+        },
+        {
+          "tipo": "parrafo",
+          "html": "En consecuencia, la existencia de una previsión urbanística para construir viviendas no significa necesariamente que el terreno se encuentre ya en condiciones de ser edificado."
         },
         {
           "tipo": "subtitulo",
@@ -129,15 +153,27 @@
         },
         {
           "tipo": "parrafo",
-          "html": "Finalmente, <strong>la calificación urbanística concreta el destino y las condiciones de utilización y edificación establecidos por el planeamiento</strong>. A través de sus determinaciones se identifican los usos permitidos y los principales parámetros edificatorios, como la edificabilidad, la ocupación, la altura o los retranqueos."
+          "html": "Finalmente, <strong>la calificación urbanística concreta el destino y las condiciones de utilización y edificación que el planeamiento establece para el terreno</strong>."
         },
         {
           "tipo": "parrafo",
-          "html": "Esta última cuestión resulta particularmente importante, pues <strong>un terreno puede encontrarse clasificado como urbano y, sin embargo, tener asignado un uso distinto del residencial</strong>, como el comercial, industrial, terciario de oficinas o dotacional, que impida desarrollar el proyecto de vivienda pretendido."
+          "html": "Mientras que la clasificación permite conocer la clase de suelo, la calificación determina qué usos se encuentran permitidos y bajo qué condiciones pueden desarrollarse. Así, el planeamiento puede destinar determinados terrenos a usos residenciales, industriales, comerciales, de oficinas o dotacionales, entre otros."
         },
         {
           "tipo": "parrafo",
-          "html": "En consecuencia, para determinar las posibilidades edificatorias de una parcela no basta con conocer su clasificación. Es necesario examinar conjuntamente su situación jurídica y las determinaciones concretas de la ordenación urbanística."
+          "html": "Además, la ordenación urbanística establece las condiciones que deben respetar las edificaciones, como la superficie mínima de parcela, la edificabilidad máxima, la ocupación del terreno, las alturas permitidas o los retranqueos respecto de sus límites."
+        },
+        {
+          "tipo": "parrafo",
+          "html": "Esta distinción tiene importantes consecuencias prácticas. <strong>Una parcela puede estar clasificada como suelo urbano y, sin embargo, tener asignado un uso industrial que impida construir una vivienda</strong>. Del mismo modo, un terreno destinado a uso residencial unifamiliar no permite necesariamente construir un edificio de varias viviendas, aunque ambos proyectos tengan carácter residencial."
+        },
+        {
+          "tipo": "parrafo",
+          "html": "Incluso cuando el uso pretendido esté permitido, las dimensiones de la parcela o las condiciones establecidas por el planeamiento pueden impedir desarrollar la edificación proyectada."
+        },
+        {
+          "tipo": "parrafo",
+          "html": "Por tanto, <strong>la clasificación permite identificar la clase de suelo, la situación básica determina su consideración conforme a la legislación estatal y la calificación concreta los usos y condiciones de edificación previstos por el planeamiento</strong>. Ahora bien, todavía será necesario comprobar si esas posibilidades pueden materializarse de forma inmediata o requieren actuaciones previas."
         },
         {
           "tipo": "subtitulo",
@@ -145,7 +181,11 @@
         },
         {
           "tipo": "parrafo",
-          "html": "La distinción entre las diferentes clases de suelo permite comprender que la posibilidad de construir una vivienda depende tanto del régimen jurídico aplicable como del grado de desarrollo urbanístico del terreno."
+          "html": "Una vez aclarados estos conceptos, conviene examinar cómo se traducen en las posibilidades reales de construir una vivienda."
+        },
+        {
+          "tipo": "parrafo",
+          "html": "Aunque las clases de suelo dependen de la legislación autonómica, la distinción tradicional entre suelo urbano, urbanizable y rústico permite comprender los principales supuestos que pueden encontrarse al adquirir un terreno y, especialmente, las diferencias entre <strong>la posibilidad jurídica de construir y las condiciones necesarias para hacerlo</strong>."
         },
         {
           "tipo": "subtitulo",
@@ -153,27 +193,35 @@
         },
         {
           "tipo": "parrafo",
-          "html": "Por lo que respecta al <strong>suelo urbano</strong>, su consideración como tal no implica necesariamente que pueda edificarse de manera inmediata. Las legislaciones autonómicas pueden distinguir entre suelo urbano consolidado y no consolidado, atendiendo a su grado de urbanización y a las actuaciones urbanísticas que resulten necesarias."
+          "html": "El <strong>suelo urbano</strong> comprende, conforme a los requisitos de la legislación autonómica aplicable, los terrenos que reúnen las condiciones legalmente exigidas para formar parte de la estructura urbana. Sin embargo, <strong>su clasificación como tal no implica necesariamente que pueda edificarse de manera inmediata</strong>."
         },
         {
           "tipo": "parrafo",
-          "html": "En este contexto adquiere especial importancia la <strong>condición de solar</strong>, que identifica, conforme a los requisitos establecidos por cada legislación autonómica, aquellas parcelas que reúnen las condiciones urbanísticas necesarias para su edificación."
+          "html": "En efecto, determinadas legislaciones autonómicas distinguen entre suelo urbano consolidado y no consolidado. Mientras que el primero comprende, con carácter general, terrenos cuya urbanización se encuentra consolidada, el segundo puede estar sujeto a actuaciones de reforma, renovación o urbanización que deban ejecutarse antes de materializar las edificaciones previstas."
         },
         {
           "tipo": "parrafo",
-          "html": "Con carácter general, esta condición exige que el terreno disponga de los servicios e infraestructuras urbanísticas necesarios y reúna los demás requisitos establecidos por la ordenación aplicable. Ahora bien, debe distinguirse de la situación básica de suelo urbanizado, regulada en el artículo 21.3 TRLSRU."
+          "html": "Por ejemplo, una parcela situada dentro de un municipio, en una antigua zona industrial que el planeamiento pretende transformar en un nuevo ámbito residencial, puede estar clasificada como suelo urbano y tener previsto un uso residencial. Sin embargo, es posible que todavía resulte necesario aprobar una reparcelación, ejecutar nuevas calles o completar las infraestructuras antes de poder construir las viviendas."
         },
         {
           "tipo": "parrafo",
-          "html": "Este precepto exige que el terreno se encuentre legalmente integrado en una <strong>malla urbana</strong>, conformada por la red de viales, dotaciones y parcelas propia del núcleo de población, además de cumplir alguna de las condiciones adicionales previstas legalmente. {{ref:2}}"
+          "html": "En este contexto adquiere especial importancia la <strong>condición de solar</strong>, que identifica aquellas parcelas que reúnen los requisitos urbanísticos establecidos por la legislación aplicable para su edificación. Con carácter general, esta condición exige disponer de los servicios e infraestructuras necesarios y cumplir las restantes exigencias establecidas por la ordenación."
         },
         {
           "tipo": "parrafo",
-          "html": "La exigencia de integración en la malla urbana ha sido destacada por la jurisprudencia al examinar el carácter reglado de la clasificación del suelo urbano. Como expone Juan Antonio Chinchilla Peinado en su análisis de la jurisprudencia recaída en 2006, la mera existencia de determinados servicios urbanísticos no resulta suficiente cuando el terreno carece de una integración efectiva en la estructura urbana. {{ref:6}}"
+          "html": "Ahora bien, <strong>la condición de solar no debe confundirse con la situación básica de suelo urbanizado</strong>, regulada en el artículo 21 TRLSRU. Mientras que la primera se refiere a las condiciones que debe reunir una parcela para poder edificarse conforme a la legislación urbanística aplicable, la segunda responde a los requisitos establecidos por la legislación estatal."
         },
         {
           "tipo": "parrafo",
-          "html": "De este modo, una parcela situada junto a una urbanización puede disponer de determinados servicios y, sin embargo, carecer de las condiciones urbanísticas necesarias para edificar. La proximidad física a un núcleo urbano no equivale necesariamente a su integración efectiva en él."
+          "html": "Entre estos últimos destaca la integración legal del terreno en una <strong>malla urbana</strong>, cuya importancia ha sido reiteradamente reconocida por la jurisprudencia al examinar el carácter reglado de la clasificación del suelo urbano. Como expone Juan Antonio Chinchilla Peinado en su análisis de la jurisprudencia recaída en 2006, la mera existencia de determinados servicios urbanísticos no resulta suficiente cuando el terreno carece de una integración efectiva en la estructura urbana. {{ref:6}}"
+        },
+        {
+          "tipo": "parrafo",
+          "html": "De este modo, una finca situada junto a una urbanización, con acceso por carretera y suministros próximos, no tiene necesariamente la condición de suelo urbano ni reúne por esa sola circunstancia los requisitos exigidos para construir."
+        },
+        {
+          "tipo": "parrafo",
+          "html": "Por ello, antes de adquirir una parcela urbana, resulta necesario comprobar no solo que el planeamiento permita el uso residencial pretendido, sino también <strong>si reúne las condiciones urbanísticas necesarias para edificar o si existen actuaciones pendientes que puedan condicionar su aprovechamiento</strong>."
         },
         {
           "tipo": "subtitulo",
@@ -181,19 +229,27 @@
         },
         {
           "tipo": "parrafo",
-          "html": "En cuanto al <strong>suelo urbanizable</strong>, allí donde la legislación autonómica mantiene esta categoría, comprende los terrenos cuya transformación urbanística se encuentra prevista o permitida conforme a la ordenación aplicable."
+          "html": "Por su parte, el <strong>suelo urbanizable</strong>, allí donde la legislación autonómica mantiene esta categoría, comprende los terrenos cuya transformación urbanística está prevista o permitida por el planeamiento."
         },
         {
           "tipo": "parrafo",
-          "html": "Sin embargo, su clasificación como urbanizable no significa que el terreno esté preparado para construir. La materialización de sus posibilidades edificatorias puede requerir la aprobación de instrumentos de planeamiento, la ejecución de actuaciones de gestión urbanística y la realización de las correspondientes obras de urbanización."
+          "html": "Sin embargo, <strong>la clasificación como urbanizable no significa que el terreno esté preparado para construir</strong>. Su desarrollo puede requerir la aprobación de instrumentos de planeamiento y gestión urbanística, así como la ejecución de las correspondientes obras de urbanización."
         },
         {
           "tipo": "parrafo",
-          "html": "Estas actuaciones pueden comportar, además, obligaciones de cesión, distribución de beneficios y cargas y participación de los propietarios en los costes de urbanización. Como indica Felipe Iglesias González, estas técnicas forman parte de la configuración tradicional del sistema español de ejecución del planeamiento y continúan desempeñando un papel fundamental en la transformación del suelo. {{ref:7}}"
+          "html": "Por ejemplo, puede encontrarse a la venta un terreno incluido en un futuro sector residencial, incluso con un planeamiento que contemple su división en parcelas destinadas a viviendas unifamiliares. No obstante, para que esas parcelas puedan edificarse puede resultar necesario aprobar previamente los instrumentos de gestión, distribuir los terrenos entre los propietarios y ejecutar las infraestructuras y servicios urbanísticos exigibles."
         },
         {
           "tipo": "parrafo",
-          "html": "Por tanto, que un terreno sea susceptible de urbanización no implica que pueda edificarse inmediatamente, ni permite determinar por sí solo cuándo estará en condiciones de hacerlo."
+          "html": "Estas actuaciones pueden comportar, además, <strong>obligaciones de cesión de suelo, distribución de beneficios y cargas y participación en los costes de urbanización</strong>. Como indica Felipe Iglesias González, estos mecanismos forman parte de la configuración tradicional del sistema español de ejecución del planeamiento y continúan desempeñando un papel fundamental en la transformación del suelo. {{ref:7}}"
+        },
+        {
+          "tipo": "parrafo",
+          "html": "Por tanto, el comprador puede adquirir un terreno destinado a un futuro desarrollo residencial y encontrarse obligado a participar en actuaciones urbanísticas cuyo coste y duración todavía no se hayan concretado suficientemente."
+        },
+        {
+          "tipo": "parrafo",
+          "html": "En consecuencia, <strong>la clasificación como urbanizable expresa una posibilidad de transformación urbanística, pero no garantiza que pueda construirse una vivienda de forma inmediata ni permite determinar, por sí sola, cuándo estará el terreno en condiciones de hacerlo</strong>."
         },
         {
           "tipo": "subtitulo",
@@ -201,19 +257,31 @@
         },
         {
           "tipo": "parrafo",
-          "html": "Finalmente, el <strong>suelo rústico o no urbanizable</strong> se encuentra sometido a un régimen específico de utilización y, en su caso, de protección, que condiciona sus posibilidades de transformación y edificación."
+          "html": "Finalmente, el <strong>suelo rústico o no urbanizable</strong> se encuentra sometido a un régimen específico de utilización, generalmente vinculado a su naturaleza rural y, cuando corresponda, a la preservación de los valores que justifican su protección."
         },
         {
           "tipo": "parrafo",
-          "html": "No obstante, tampoco constituye una categoría uniforme ni implica necesariamente la prohibición absoluta de cualquier construcción. Las legislaciones autonómicas distinguen diferentes categorías de suelo rústico y contemplan determinados usos y actuaciones que pueden resultar admisibles bajo condiciones específicas."
+          "html": "Esto no significa que cualquier construcción se encuentre necesariamente prohibida. Las legislaciones autonómicas establecen distintas categorías de suelo rústico y contemplan determinados usos, instalaciones y edificaciones que pueden resultar admisibles bajo condiciones específicas."
         },
         {
           "tipo": "parrafo",
-          "html": "En particular, la construcción de viviendas se encuentra generalmente restringida y su eventual autorización depende de los presupuestos establecidos por la legislación autonómica, la categoría del terreno y las limitaciones sectoriales aplicables."
+          "html": "Sin embargo, <strong>la construcción de viviendas se encuentra generalmente restringida</strong>, y su eventual autorización depende de la categoría del terreno, de la legislación autonómica aplicable y del cumplimiento de los requisitos exigidos para cada supuesto."
         },
         {
           "tipo": "parrafo",
-          "html": "En definitiva, <strong>las denominaciones urbano, urbanizable y rústico permiten identificar el régimen general de un terreno, pero no resultan suficientes para determinar si una vivienda concreta puede construirse en él</strong>. Para ello será necesario examinar la ordenación urbanística y las condiciones exigidas para materializar sus posibilidades edificatorias."
+          "html": "Así, una finca rústica de varias hectáreas, con acceso por camino y viviendas construidas en parcelas próximas, puede no admitir la construcción de una nueva vivienda. La existencia de edificaciones cercanas no demuestra que el uso residencial esté permitido, pues aquellas pueden responder a autorizaciones anteriores, regímenes excepcionales o situaciones urbanísticas diferentes."
+        },
+        {
+          "tipo": "parrafo",
+          "html": "Por ello, antes de adquirir un terreno rústico con la intención de construir una vivienda, resulta especialmente importante comprobar si ese uso está permitido y bajo qué condiciones puede autorizarse."
+        },
+        {
+          "tipo": "parrafo",
+          "html": "En definitiva, <strong>las denominaciones urbano, urbanizable y rústico permiten identificar el régimen general de un terreno, pero no resultan suficientes para determinar si una vivienda concreta puede construirse en él</strong>."
+        },
+        {
+          "tipo": "parrafo",
+          "html": "Para ello, es necesario examinar si el planeamiento admite el uso residencial pretendido, si la parcela reúne las condiciones necesarias para edificar y qué actuaciones u obligaciones pueden quedar pendientes. Estas son, precisamente, las cuestiones que deben comprobarse antes de comprometer la adquisición."
         }
       ]
     },
@@ -575,18 +643,20 @@
     }
   ],
   "imagen": {
-    "alt": "Terreno rústico a las afueras de un pueblo español, con campos abiertos y construcciones tradicionales al fondo",
+    "alt": "Fotografía de un terreno rural con un documento de planeamiento urbanístico sobre una mesa de madera, simbolizando la comprobación legal antes de comprar una parcela.",
     "prompt": null,
     "archivo": "portada.png",
     "origen": "cliente"
   },
   "avisos": [
-    "La referencia [7] cita la revista «Ciudades», núm. 29, con el año 2026, posterior a la fecha de redacción del artículo; podría tratarse de una errata en el Word original.",
-    "El ordinal '148.1.3.ª' y expresiones similares se han transcrito tal cual aparecen en el Word, sin normalizar."
+    "En el texto aparece «comunidades Autónomas» con minúscula inicial en «comunidades», mientras que en otros pasajes se escribe «Comunidades Autónomas» con mayúscula; se ha dejado tal cual en cada caso.",
+    "La referencia [7] (IGLESIAS GONZÁLEZ, Felipe) indica el año de publicación 2026, posterior a la fecha de redacción habitual; se ha dejado tal cual por tratarse posiblemente de una errata del original.",
+    "Los elementos de la lista de la sección V no llevan numeral explícito en el Word (solo viñetas de lista), por lo que se ha dejado 'marcador': null en todos ellos."
   ],
   "fecha": "2026-10-16",
   "fuente": {
     "docx": "Cómo saber si un terreno es edificable antes de comprarlo.docx",
-    "procesado": "2026-10-16T06:44:54.402Z"
-  }
+    "procesado": "2026-10-16T16:11:34.056Z"
+  },
+  "actualizado": "2026-10-16"
 }
