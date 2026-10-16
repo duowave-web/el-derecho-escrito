@@ -4085,6 +4085,10 @@ body:has(.progreso) .cabecera {
 
 .articulo__cuerpo {
   counter-reset: seccion;
+  /* Red para el cuerpo: una palabra o un enlace sin espacios mas largo que la
+     columna se parte en vez de salirse. Solo actua cuando hace falta; el texto
+     normal no se entera. */
+  overflow-wrap: break-word;
 }
 
 /* El salto desde el indice tiene que dejar el epigrafe POR DEBAJO de lo que hay
@@ -4255,6 +4259,10 @@ body:has(.progreso) .cabecera {
 
 .referencias li {
   margin-bottom: 8px;
+  /* Las referencias llevan URL enteras —BOE, DOI, prensa— que no tienen
+     espacios por donde partir. Sin esto, en una columna de 327px la URL se
+     sale de la caja por la derecha aunque la rejilla ya no la deje crecer. */
+  overflow-wrap: anywhere;
 }
 
 .referencias li:last-child {
@@ -6259,9 +6267,20 @@ body:has(.progreso) .cabecera {
     background: rgba(255, 255, 255, 0.9);
   }
 
-  /* El lateral pasa debajo del articulo, no a un lado. */
+  /* El lateral pasa debajo del articulo, no a un lado.
+
+     minmax(0, 1fr) y NO 1fr, y es lo que evitaba que el movil se viera bien.
+     Con 1fr la pista no baja de su min-content, y el min-content lo marca la
+     palabra mas larga de la columna: una URL de las referencias
+     (https://www.boe.es/buscar/act.php?id=...). Con ella la columna media
+     mas que la ventana —394px en el articulo del terreno, 704 en el de la
+     vivienda, con 375 de ventana— y la pagina ENTERA se iba con scroll
+     horizontal: foto, titular y fila de acciones cortados por la derecha.
+     El de MASC no lo sufria porque no trae ninguna URL. El desborde se
+     veia como "no respeta los margenes": el izquierdo estaba y el derecho
+     se salia de la pantalla. */
   .articulo__disposicion {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     gap: 48px;
   }
 
