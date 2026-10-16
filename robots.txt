@@ -1,19 +1,16 @@
-# DEMO EN PRUEBAS — no indexar.
-# Al pasar la web al dominio real, restaura el bloque de abajo.
+# Produccion: elderechoescrito.es
+# (La demo en GitHub Pages iba en Disallow: /; al servirse en la raiz del
+# dominio, este archivo es el que manda.)
 User-agent: *
-Disallow: /
+Allow: /
 
-# --- Version para produccion (elderechoescrito.es) ---
-# User-agent: *
-# Allow: /
-#
-# User-agent: GPTBot
-# Allow: /
-#
-# User-agent: ClaudeBot
-# Allow: /
-#
-# User-agent: PerplexityBot
-# Allow: /
-#
-# Sitemap: https://elderechoescrito.es/sitemap.xml
+User-agent: GPTBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+Sitemap: https://elderechoescrito.es/sitemap.xml

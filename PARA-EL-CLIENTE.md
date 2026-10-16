@@ -163,8 +163,7 @@ funcionar cualquier enlace al CV que hayas mandado por correo o puesto en una
 firma. Es un cambio de un minuto, pero conviene hacerlo bien.
 
 **¿Dónde se ve la web publicada?**
-En [duowave-web.github.io/el-derecho-escrito](https://duowave-web.github.io/el-derecho-escrito/)
-mientras estamos en pruebas.
+En [elderechoescrito.es](https://elderechoescrito.es/).
 
 ---
 
