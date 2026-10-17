@@ -1,9 +1,9 @@
 {
   "slug": "terreno-edificable-comprarlo",
-  "titulo": "Cómo saber si un terreno es edificable antes de comprarlo: claves urbanísticas, comprobaciones necesarias y garantías para el comprador.",
+  "titulo": "Cómo saber si un terreno es edificable antes de comprarlo",
   "titulo_seo": "Cómo saber si un terreno es edificable antes de comprarlo",
   "descripcion": "Guía jurídica para comprobar si un terreno es edificable antes de comprarlo: clasificación urbanística, due diligence y riesgos del contrato de arras.",
-  "entradilla": "La adquisición de un terreno para construir una vivienda exige conocer previamente su régimen urbanístico. La clasificación del suelo, la existencia de edificaciones próximas o la disponibilidad de determinados servicios no permiten determinar, por sí solas, si una parcela es edificable. Para ello, resulta necesario distinguir entre las posibilidades de edificación previstas por el planeamiento, las condiciones exigidas para materializarlas y las obligaciones que pueden acompañar a la adquisición.",
+  "entradilla": "La adquisición de un terreno para construir una vivienda exige conocer previamente su régimen urbanístico. La clasificación del suelo, la existencia de edificaciones próximas o la disponibilidad de determinados servicios no permiten determinar, por sí solas, si una parcela es edificable. Para ello, resulta necesario distinguir entre las posibilidades de edificación previstas por el planeamiento, las condiciones exigidas para materializarlas y las obligaciones que pueden acompañar a la adquisición",
   "categoria": "fundamentos",
   "etiquetas": [
     "Derecho Urbanístico",
@@ -15,13 +15,13 @@
   ],
   "keywords": [
     "cómo saber si un terreno es edificable",
+    "due diligence jurídico urbanística",
     "clasificación urbanística del suelo",
-    "diferencias entre suelo urbano urbanizable y rústico",
-    "due diligence jurídico urbanística de un terreno",
-    "comprar terreno para construir una vivienda",
+    "diferencia entre suelo urbano y urbanizable",
     "condición de solar requisitos",
-    "artículo 27 TRLSRU transmisión de fincas",
-    "riesgos de las arras al comprar un terreno"
+    "arras y riesgos urbanísticos",
+    "comprar terreno para construir vivienda",
+    "situación básica del suelo TRLSRU"
   ],
   "secciones": [
     {
@@ -31,11 +31,11 @@
       "bloques": [
         {
           "tipo": "parrafo",
-          "html": "Encontrar una parcela a un precio atractivo, con superficie suficiente para construir una vivienda y situada en las proximidades de un núcleo urbano, puede parecer una buena oportunidad de compra. Esta impresión se refuerza cuando el anuncio inmobiliario indica que el terreno es urbanizable, dispone de acceso por carretera y cuenta con edificaciones residenciales en sus inmediaciones."
+          "html": "Encontrar una parcela a un precio atractivo, con superficie suficiente para construir una vivienda y situada cerca de un núcleo urbano puede parecer una buena oportunidad de compra. Esta impresión se refuerza cuando el anuncio inmobiliario indica que el terreno es urbanizable, dispone de acceso por carretera o cuenta con edificaciones residenciales en sus inmediaciones."
         },
         {
           "tipo": "parrafo",
-          "html": "Sin embargo, ninguna de estas circunstancias garantiza que pueda construirse una vivienda en él. Puede ocurrir que el planeamiento contemple su futuro desarrollo residencial, pero que todavía deban aprobarse determinados instrumentos urbanísticos, ejecutarse obras de urbanización o cumplirse obligaciones económicas. También puede suceder que el uso residencial esté permitido, pero que las características de la parcela o las condiciones establecidas por el planeamiento impidan desarrollar la edificación proyectada."
+          "html": "Sin embargo, <strong>ninguna de estas circunstancias garantiza por sí sola que pueda construirse una vivienda</strong>. Puede ocurrir que el planeamiento contemple un futuro desarrollo residencial, pero que todavía deban aprobarse instrumentos urbanísticos, ejecutarse obras de urbanización o cumplirse obligaciones económicas. También puede suceder que el uso residencial esté permitido, pero que las características de la parcela o las condiciones del planeamiento impidan desarrollar la edificación proyectada."
         },
         {
           "tipo": "parrafo",
@@ -43,7 +43,7 @@
         },
         {
           "tipo": "parrafo",
-          "html": "Por ello, antes de adquirir una parcela para construir una vivienda, resulta necesario conocer qué permite el planeamiento, si el terreno reúne las condiciones necesarias para edificar y qué actuaciones u obligaciones pueden quedar pendientes. Esta distinción permite comprender que la edificabilidad de un terreno no depende exclusivamente de su clasificación urbanística, sino también de las condiciones jurídicas y materiales exigidas para hacerla efectiva."
+          "html": "Por ello, antes de adquirir una parcela para construir una vivienda, <strong>resulta necesario comprobar qué permite exactamente el planeamiento</strong>, si el terreno reúne las condiciones necesarias para edificar y qué actuaciones u obligaciones pueden quedar pendientes. Para ello, conviene distinguir las categorías jurídicas que determinan su régimen urbanístico y comprobar después cómo se aplican a la finca concreta."
         }
       ]
     },
@@ -58,27 +58,19 @@
         },
         {
           "tipo": "parrafo",
-          "html": "El artículo 33 de la Constitución Española (CE) reconoce el derecho a la propiedad privada y establece que su función social delimitará su contenido de acuerdo con las leyes. {{ref:1}} En el ámbito urbanístico, esta previsión se concreta en un régimen jurídico que condiciona las facultades de uso y transformación de los terrenos."
+          "html": "El artículo 33 de la Constitución Española (CE) reconoce el derecho a la propiedad privada y establece que su función social delimitará su contenido de acuerdo con las leyes {{ref:1}}. En el ámbito urbanístico, esta previsión se concreta en el régimen estatutario de la propiedad del suelo, recogido en el artículo 11.1 del Real Decreto Legislativo 7/2015, de 30 de octubre, por el que se aprueba el texto refundido de la Ley de Suelo y Rehabilitación Urbana (TRLSRU) {{ref:2}}."
         },
         {
           "tipo": "parrafo",
-          "html": "Así, el artículo 11.1 del Real Decreto Legislativo 7/2015, de 30 de octubre, por el que se aprueba el texto refundido de la Ley de Suelo y Rehabilitación Urbana (TRLSRU), establece el <strong>carácter estatutario de la propiedad del suelo</strong>, cuyo contenido resulta de su vinculación a los destinos definidos por la legislación territorial y urbanística. {{ref:2}}"
+          "html": "Esto significa que <strong>las facultades del propietario no derivan exclusivamente de la titularidad del terreno</strong>, sino del régimen jurídico que le corresponde conforme a la legislación y al planeamiento aplicables. La propiedad no comprende, por tanto, un derecho incondicionado a transformar o edificar la finca, sino las facultades reconocidas por su concreta situación urbanística."
         },
         {
           "tipo": "parrafo",
-          "html": "Esto significa que las facultades del propietario no derivan exclusivamente de su titularidad sobre el terreno, sino del régimen jurídico que le corresponde conforme a la ordenación aplicable. En consecuencia, la propiedad no comprende un derecho incondicionado a transformar o edificar la finca, sino las facultades que resulten de su concreta situación urbanística."
+          "html": "El artículo 11.2 TRLSRU precisa, además, que <strong>la previsión de edificabilidad por el planeamiento no se integra por sí sola en el contenido del derecho de propiedad</strong> {{ref:2}}. Su materialización queda condicionada al cumplimiento de los deberes y cargas correspondientes."
         },
         {
           "tipo": "parrafo",
-          "html": "El artículo 11.2 TRLSRU precisa, además, que la previsión de edificabilidad por el planeamiento no se integra, por sí sola, en el contenido del derecho de propiedad. Su patrimonialización se produce con su realización efectiva y queda condicionada al cumplimiento de los deberes y cargas correspondientes. {{ref:2}}"
-        },
-        {
-          "tipo": "parrafo",
-          "html": "Conviene, por tanto, distinguir entre <strong>la edificabilidad prevista por el planeamiento y la posibilidad de materializarla</strong>. Que un terreno tenga atribuido un determinado aprovechamiento urbanístico no significa necesariamente que su propietario pueda ejecutar inmediatamente una edificación, pues ello dependerá del cumplimiento de las condiciones legalmente exigibles."
-        },
-        {
-          "tipo": "parrafo",
-          "html": "Esta distinción entre la edificabilidad prevista por el planeamiento y la posibilidad de materializarla exige conocer el régimen urbanístico aplicable al terreno. Para ello, resulta necesario distinguir entre las categorías que identifican la clase de suelo, su situación conforme a la legislación estatal y los usos y condiciones de edificación establecidos por el planeamiento."
+          "html": "Conviene distinguir, por ello, entre la edificabilidad prevista por el planeamiento y la posibilidad real de materializarla. Que un terreno tenga atribuido un determinado aprovechamiento urbanístico no significa necesariamente que su propietario pueda construir de inmediato, pues ello dependerá del cumplimiento de las condiciones legalmente exigibles."
         },
         {
           "tipo": "subtitulo",
@@ -86,7 +78,7 @@
         },
         {
           "tipo": "parrafo",
-          "html": "Para determinar si una parcela puede destinarse a la construcción de una vivienda, no basta con conocer su clasificación urbanística. También es necesario identificar su situación conforme a la legislación estatal y examinar los usos y condiciones de edificación establecidos por el planeamiento. Estas categorías responden a criterios distintos y permiten conocer diferentes aspectos del régimen jurídico del terreno."
+          "html": "Para determinar si una parcela puede destinarse a la construcción de una vivienda, el primer paso es conocer el régimen jurídico al que se encuentra sujeto. Para ello, es fundamental saber identificar tres elementos: la clase de suelo, su situación conforme a la legislación estatal y los usos y parámetros edificatorios establecidos por el planeamiento. Cada una de estas categorías responde a criterios distintos y permite conocer un aspecto diferente del régimen jurídico del terreno."
         },
         {
           "tipo": "subtitulo",
@@ -94,23 +86,19 @@
         },
         {
           "tipo": "parrafo",
-          "html": "En primer lugar, <strong>la clasificación urbanística determina la clase de suelo a la que pertenece un terreno y el régimen jurídico general que le resulta aplicable</strong>."
+          "html": "La clasificación urbanística determina la clase de suelo a la que pertenece un terreno y el régimen jurídico general que le resulta aplicable."
         },
         {
           "tipo": "parrafo",
-          "html": "Tradicionalmente, el Derecho urbanístico español ha distinguido entre suelo urbano, urbanizable y no urbanizable (o rústico). Sin embargo, corresponde a las comunidades autónomas establecer las clases y categorías de suelo, conforme al reparto constitucional de competencias en materia de urbanismo previsto en el artículo 148.1.3.ª CE."
+          "html": "Tradicionalmente, el Derecho urbanístico español ha distinguido entre suelo urbano, urbanizable y no urbanizable o rústico. Sin embargo, <strong>corresponde a las comunidades autónomas establecer las clases y categorías de suelo</strong>, por lo que la clasificación no es uniforme en todo el territorio nacional. Así, mientras que la Ley 7/2021, de 1 de diciembre, de impulso para la sostenibilidad del territorio de Andalucía (LISTA), distingue entre suelo urbano y rústico {{ref:3}}, la Ley 2/2016, de 10 de febrero, del suelo de Galicia, contempla también el suelo urbanizable y el de núcleo rural {{ref:4}}."
         },
         {
           "tipo": "parrafo",
-          "html": "Por ello, esta clasificación no es necesariamente uniforme en todo el territorio nacional. Así, mientras que la Ley 7/2021, de 1 de diciembre, de impulso para la sostenibilidad del territorio de Andalucía (LISTA), distingue entre suelo urbano y rústico, {{ref:3}} la Ley 2/2016, de 10 de febrero, del suelo de Galicia, contempla también el suelo urbanizable y el de núcleo rural. {{ref:4}}"
+          "html": "Dentro de cada clase pueden establecerse distintas categorías que precisan el régimen aplicable. Algunas legislaciones autonómicas, por ejemplo, distinguen entre suelo urbano consolidado y no consolidado atendiendo a sus condiciones de urbanización y a las actuaciones necesarias."
         },
         {
           "tipo": "parrafo",
-          "html": "Dentro de cada clase pueden establecerse, además, <strong>distintas categorías que precisan el régimen urbanístico aplicable</strong>. Por ejemplo, determinadas legislaciones autonómicas distinguen entre suelo urbano consolidado y no consolidado, atendiendo a sus condiciones de urbanización y a las actuaciones urbanísticas que resulten necesarias."
-        },
-        {
-          "tipo": "parrafo",
-          "html": "Desde la perspectiva del comprador, la clasificación permite conocer el régimen general del terreno y sus posibilidades de utilización o transformación. No obstante, <strong>no determina por sí sola si una parcela concreta admite la construcción de una vivienda ni si esta puede ejecutarse inmediatamente</strong>. Para ello, es necesario examinar también su situación básica y los usos y condiciones de edificación establecidos por el planeamiento."
+          "html": "Desde la perspectiva del comprador, <strong>la clasificación permite conocer el régimen general del terreno</strong>, pero no determina por sí sola si una parcela concreta admite la construcción de una vivienda ni si puede edificarse de forma inmediata."
         },
         {
           "tipo": "subtitulo",
@@ -118,35 +106,23 @@
         },
         {
           "tipo": "parrafo",
-          "html": "En segundo lugar, debe distinguirse la clasificación urbanística de las denominadas <strong>situaciones básicas del suelo</strong>, establecidas por la legislación estatal."
+          "html": "La clasificación urbanística debe distinguirse de las situaciones básicas del suelo, previstas en la legislación estatal. El artículo 21 TRLSRU contempla dos: <strong>suelo rural y suelo urbanizado</strong> {{ref:2}}."
         },
         {
           "tipo": "parrafo",
-          "html": "El artículo 21 TRLSRU contempla únicamente dos situaciones básicas: suelo rural y suelo urbanizado. {{ref:2}} Esta distinción no sustituye a las clases de suelo previstas por las comunidades autónomas, sino que responde a una finalidad diferente: determinar la situación del terreno conforme a los criterios de la legislación estatal, con consecuencias, entre otras materias, sobre el régimen jurídico de la propiedad y las valoraciones urbanísticas."
+          "html": "Esta distinción no sustituye a las clases de suelo establecidas por las comunidades autónomas, sino que responde a una finalidad diferente: determinar la situación del terreno conforme a los criterios de la legislación estatal, con consecuencias, entre otras materias, sobre las valoraciones urbanísticas."
         },
         {
           "tipo": "parrafo",
-          "html": "Esta diferencia resulta especialmente relevante cuando un terreno está destinado a un futuro desarrollo urbano. <strong>Un suelo puede estar previsto para su urbanización y seguir en situación básica rural mientras no haya concluido la correspondiente actuación de urbanización</strong>."
+          "html": "La diferencia resulta especialmente relevante cuando un terreno está destinado a un futuro desarrollo urbano. Puede estar previsto para su urbanización y seguir en situación básica rural mientras no haya concluido la correspondiente actuación. Por tanto, <strong>suelo rural no equivale necesariamente a suelo rústico o no urbanizable</strong>: también pueden encontrarse en situación básica rural terrenos destinados a transformarse urbanísticamente."
         },
         {
           "tipo": "parrafo",
-          "html": "Así ocurre, por ejemplo, con un terreno clasificado como urbanizable y destinado por el planeamiento a un futuro desarrollo residencial que todavía no ha completado su proceso de urbanización."
+          "html": "Por su parte, el suelo urbanizado debe reunir los requisitos del artículo 21.3 TRLSRU, entre los que destaca su integración legal en una malla urbana conformada por viales, dotaciones y parcelas propias de un núcleo de población, además de cumplir alguna de las condiciones adicionales previstas legalmente {{ref:2}}. No basta con que el terreno esté próximo a una zona edificada o disponga de determinados servicios aislados."
         },
         {
           "tipo": "parrafo",
-          "html": "Por tanto, <strong>suelo rural no equivale necesariamente a suelo rústico o no urbanizable</strong>. También pueden encontrarse en situación básica rural terrenos destinados a convertirse en suelo urbano, pero que todavía no han completado su proceso de transformación."
-        },
-        {
-          "tipo": "parrafo",
-          "html": "Por su parte, el suelo urbanizado debe reunir los requisitos del artículo 21.3 TRLSRU, entre los que destaca su integración legal en una malla urbana conformada por una red de viales, dotaciones y parcelas propia de un núcleo de población, además de cumplir alguna de las condiciones adicionales previstas legalmente. No basta, por tanto, con que el terreno se encuentre próximo a una zona edificada o disponga de determinados servicios aislados."
-        },
-        {
-          "tipo": "parrafo",
-          "html": "Como explica Marcos Vaquer Caballería, esta regulación permite diferenciar <strong>la situación en que se encuentra el suelo de las actuaciones urbanísticas necesarias para transformarlo</strong>, distinción especialmente relevante para comprender las relaciones entre suelo urbano, urbanizado y consolidado. {{ref:5}}"
-        },
-        {
-          "tipo": "parrafo",
-          "html": "En consecuencia, la previsión de un futuro desarrollo residencial no significa necesariamente que el terreno esté ya urbanizado ni que se encuentre en condiciones de ser edificado. Puede ser necesario completar determinadas actuaciones antes de que resulte posible materializar sus posibilidades edificatorias."
+          "html": "Como explica <strong>Marcos Vaquer Caballería</strong> {{ref:5}}, esta regulación permite diferenciar la situación en que se encuentra el suelo de las actuaciones urbanísticas necesarias para transformarlo, distinción relevante para comprender las relaciones entre suelo urbano, urbanizado y consolidado."
         },
         {
           "tipo": "subtitulo",
@@ -154,35 +130,19 @@
         },
         {
           "tipo": "parrafo",
-          "html": "Finalmente, <strong>la calificación urbanística concreta los usos y las condiciones de utilización y edificación establecidos por el planeamiento</strong>."
+          "html": "La calificación urbanística concreta los usos y las condiciones de utilización y edificación establecidos por el planeamiento."
         },
         {
           "tipo": "parrafo",
-          "html": "Mientras que la clasificación permite conocer la clase de suelo, la calificación determina qué usos se encuentran permitidos y bajo qué condiciones pueden desarrollarse. Así, el planeamiento puede destinar determinados terrenos a usos residenciales, industriales, comerciales, de oficinas o dotacionales, entre otros."
+          "html": "Mientras que la clasificación identifica la clase de suelo, <strong>la calificación determina qué usos se permiten y bajo qué condiciones pueden desarrollarse</strong>. El planeamiento puede destinar determinados terrenos a usos residenciales, industriales, comerciales, de oficinas o dotacionales, entre otros, y establecer parámetros como la parcela mínima, la edificabilidad máxima, la ocupación, las alturas o los retranqueos."
         },
         {
           "tipo": "parrafo",
-          "html": "Además, la ordenación urbanística establece las condiciones que deben respetar las edificaciones, como la superficie mínima de parcela, la edificabilidad máxima, la ocupación del terreno, las alturas permitidas o los retranqueos respecto de sus límites."
+          "html": "Esta distinción tiene importantes consecuencias prácticas. Una parcela puede estar clasificada como suelo urbano y tener asignado un uso industrial que impida construir una vivienda. Del mismo modo, un terreno destinado a uso residencial unifamiliar no permite necesariamente construir un edificio de varias viviendas. Incluso cuando el uso pretendido está permitido, las dimensiones de la parcela pueden impedir desarrollar el proyecto previsto."
         },
         {
           "tipo": "parrafo",
-          "html": "Esta distinción tiene importantes consecuencias prácticas. <strong>Una parcela puede estar clasificada como suelo urbano y, sin embargo, tener asignado un uso industrial que impida construir una vivienda</strong>. Del mismo modo, un terreno destinado a uso residencial unifamiliar no permite necesariamente construir un edificio de varias viviendas, aunque ambos proyectos tengan carácter residencial."
-        },
-        {
-          "tipo": "parrafo",
-          "html": "Incluso cuando el uso pretendido esté permitido, las dimensiones de la parcela o las condiciones establecidas por el planeamiento pueden impedir desarrollar la edificación proyectada. Por ejemplo, una parcela puede admitir el uso residencial, pero no reunir la superficie mínima exigida o no permitir una edificación con las dimensiones previstas."
-        },
-        {
-          "tipo": "parrafo",
-          "html": "Por ello, antes de comprar un terreno para construir, no basta con comprobar que sea urbano o que esté destinado genéricamente a uso residencial. Es necesario verificar que <strong>el planeamiento permite el proyecto concreto que se pretende ejecutar y que la parcela cumple las condiciones exigidas para ello</strong>."
-        },
-        {
-          "tipo": "parrafo",
-          "html": "En definitiva, las tres categorías permiten conocer aspectos distintos del régimen urbanístico de un terreno: <strong>la clasificación identifica la clase de suelo; la situación básica determina su consideración conforme a la legislación estatal; y la calificación concreta los usos y las condiciones de edificación previstos por el planeamiento</strong>."
-        },
-        {
-          "tipo": "parrafo",
-          "html": "Ahora bien, conocer estas categorías no permite concluir, por sí solo, que una parcela esté preparada para construir. Para determinar sus posibilidades efectivas de edificación, es necesario examinar el régimen específico de la clase de suelo a la que pertenece y comprobar si existen actuaciones u obligaciones pendientes. Esta cuestión resulta especialmente relevante al distinguir entre suelo urbano, urbanizable y rústico."
+          "html": "Por ello, antes de comprar un terreno para construir, <strong>no basta con comprobar que sea urbano o que esté destinado genéricamente a uso residencial</strong>. Es necesario verificar que el planeamiento permite el proyecto concreto y que la parcela cumple todas las condiciones exigidas."
         },
         {
           "tipo": "subtitulo",
@@ -190,11 +150,7 @@
         },
         {
           "tipo": "parrafo",
-          "html": "Las categorías anteriores permiten comprender el régimen urbanístico de un terreno, pero sus consecuencias prácticas dependen también de la clase de suelo y de las condiciones establecidas por la legislación autonómica y el planeamiento aplicable."
-        },
-        {
-          "tipo": "parrafo",
-          "html": "Por ello, antes de adquirir una parcela, conviene conocer qué caracteriza al suelo urbano, al urbanizable y al rústico, qué actuaciones pueden resultar necesarias para construir en cada caso y qué limitaciones pueden afectar a la vivienda proyectada. Esta distinción constituye un punto de partida para valorar las posibilidades de edificación del terreno, aunque será necesario comprobar las circunstancias concretas de la finca antes de tomar una decisión de compra."
+          "html": "Junto a lo anterior, resulta imprescindible examinar las particularidades de cada clase de suelo para poder valorar de forma más completa sus posibilidades de edificación."
         },
         {
           "tipo": "subtitulo",
@@ -202,27 +158,23 @@
         },
         {
           "tipo": "parrafo",
-          "html": "Por lo que respecta al <strong>suelo urbano</strong>, su consideración como tal no implica necesariamente que pueda edificarse de manera inmediata. Las legislaciones autonómicas pueden distinguir entre suelo urbano consolidado y no consolidado, atendiendo a su grado de urbanización y a las actuaciones urbanísticas que resulten necesarias."
+          "html": "La clasificación como suelo urbano <strong>no implica necesariamente que pueda edificarse de manera inmediata</strong>. Las legislaciones autonómicas pueden distinguir entre suelo urbano consolidado y no consolidado, atendiendo a su grado de urbanización y a las actuaciones necesarias."
         },
         {
           "tipo": "parrafo",
-          "html": "En este contexto adquiere especial importancia la <strong>condición de solar</strong>, que identifica, conforme a los requisitos establecidos por cada legislación autonómica, aquellas parcelas que reúnen las condiciones urbanísticas necesarias para su edificación."
+          "html": "En este contexto adquiere especial importancia la <strong>condición de solar</strong>, que identifica, conforme a los requisitos de cada legislación autonómica, las parcelas que reúnen las condiciones urbanísticas necesarias para edificar. Con carácter general, exige disponer de los servicios e infraestructuras urbanísticas necesarios y cumplir los demás requisitos establecidos por la ordenación aplicable."
         },
         {
           "tipo": "parrafo",
-          "html": "Con carácter general, esta condición exige que el terreno disponga de los servicios e infraestructuras urbanísticas necesarios y reúna los demás requisitos establecidos por la ordenación aplicable. Ahora bien, debe distinguirse de la situación básica de suelo urbanizado, regulada en el artículo 21.3 TRLSRU."
+          "html": "Esta condición debe distinguirse de la situación básica de suelo urbanizado regulada en el artículo 21.3 TRLSRU {{ref:2}}. La integración legal en una malla urbana constituye un elemento relevante tanto para determinar dicha situación como para valorar la relación efectiva del terreno con la estructura urbana."
         },
         {
           "tipo": "parrafo",
-          "html": "Este precepto exige que el terreno se encuentre legalmente integrado en una <strong>malla urbana</strong>, conformada por la red de viales, dotaciones y parcelas propia del núcleo de población, además de cumplir alguna de las condiciones adicionales previstas legalmente. {{ref:2}}"
+          "html": "No obstante, como expone Juan Antonio Chinchilla Peinado {{ref:6}}, la mera existencia de determinados servicios urbanísticos no resulta suficiente cuando el terreno carece de integración efectiva en la estructura urbana."
         },
         {
           "tipo": "parrafo",
-          "html": "La exigencia de integración en la malla urbana ha sido destacada por la jurisprudencia al examinar el carácter reglado de la clasificación del suelo urbano. Como expone Juan Antonio Chinchilla Peinado en su análisis de la jurisprudencia recaída en 2006, la mera existencia de determinados servicios urbanísticos no resulta suficiente cuando el terreno carece de una integración efectiva en la estructura urbana. {{ref:6}}"
-        },
-        {
-          "tipo": "parrafo",
-          "html": "De este modo, una parcela situada junto a una urbanización puede disponer de determinados servicios y, sin embargo, carecer de las condiciones urbanísticas necesarias para edificar. La proximidad física a un núcleo urbano no equivale necesariamente a su integración efectiva en él."
+          "html": "Así, una parcela situada junto a una urbanización puede disponer de algunos servicios y, sin embargo, carecer de las condiciones urbanísticas necesarias para edificar. La proximidad física a un núcleo urbano no garantiza que el terreno pueda construirse: es necesario comprobar si reúne los requisitos exigidos por la legislación autonómica y el planeamiento municipal."
         },
         {
           "tipo": "subtitulo",
@@ -230,19 +182,19 @@
         },
         {
           "tipo": "parrafo",
-          "html": "En cuanto al <strong>suelo urbanizable</strong>, allí donde la legislación autonómica mantiene esta categoría, comprende los terrenos cuya transformación urbanística se encuentra prevista o permitida conforme a la ordenación aplicable."
+          "html": "Allí donde la legislación autonómica mantiene esta categoría, el suelo urbanizable comprende los terrenos cuya transformación urbanística está prevista o permitida conforme a la ordenación aplicable."
         },
         {
           "tipo": "parrafo",
-          "html": "Sin embargo, su clasificación como urbanizable no significa que el terreno esté preparado para construir. La materialización de sus posibilidades edificatorias puede requerir la aprobación de instrumentos de planeamiento, la ejecución de actuaciones de gestión urbanística y la realización de las correspondientes obras de urbanización."
+          "html": "Sin embargo, su clasificación como urbanizable <strong>no significa que esté preparado para construir</strong>. La materialización de sus posibilidades edificatorias puede requerir la aprobación de instrumentos de planeamiento, actuaciones de gestión urbanística y obras de urbanización."
         },
         {
           "tipo": "parrafo",
-          "html": "Estas actuaciones pueden comportar, además, obligaciones de cesión, distribución de beneficios y cargas y participación de los propietarios en los costes de urbanización. Como indica Felipe Iglesias González, estas técnicas forman parte de la configuración tradicional del sistema español de ejecución del planeamiento y continúan desempeñando un papel fundamental en la transformación del suelo. {{ref:7}}"
+          "html": "Estas actuaciones pueden comportar obligaciones de cesión, distribución de beneficios y cargas y participación de los propietarios en los costes de urbanización. Como indica Felipe Iglesias González {{ref:7}}, estas técnicas forman parte del sistema español de ejecución del planeamiento y continúan desempeñando un papel fundamental en la transformación del suelo."
         },
         {
           "tipo": "parrafo",
-          "html": "Por tanto, que un terreno sea susceptible de urbanización no implica que pueda edificarse inmediatamente, ni permite determinar por sí solo cuándo estará en condiciones de hacerlo."
+          "html": "Por tanto, que un terreno sea urbanizable no implica que pueda edificarse inmediatamente, ni permite determinar por sí solo cuándo estará en condiciones de hacerlo. Antes de comprarlo es necesario comprobar qué trámites, obras y obligaciones siguen pendientes."
         },
         {
           "tipo": "subtitulo",
@@ -250,19 +202,19 @@
         },
         {
           "tipo": "parrafo",
-          "html": "Finalmente, el <strong>suelo rústico o no urbanizable</strong> se encuentra sometido a un régimen específico de utilización y, en su caso, de protección, que condiciona sus posibilidades de transformación y edificación."
+          "html": "El suelo rústico o no urbanizable está sometido a un régimen específico de utilización y, en su caso, de protección, que condiciona sus posibilidades de transformación y edificación."
         },
         {
           "tipo": "parrafo",
-          "html": "No obstante, tampoco constituye una categoría uniforme ni implica necesariamente la prohibición absoluta de cualquier construcción. Las legislaciones autonómicas distinguen diferentes categorías de suelo rústico y contemplan determinados usos y actuaciones que pueden resultar admisibles bajo condiciones específicas."
+          "html": "No constituye, sin embargo, una categoría uniforme ni implica necesariamente la prohibición absoluta de cualquier construcción. Las legislaciones autonómicas distinguen diferentes categorías de suelo rústico y contemplan determinados usos y actuaciones admisibles bajo condiciones específicas."
         },
         {
           "tipo": "parrafo",
-          "html": "En particular, la construcción de viviendas se encuentra generalmente restringida y su eventual autorización depende de los presupuestos establecidos por la legislación autonómica, la categoría del terreno y las limitaciones sectoriales aplicables."
+          "html": "En particular, <strong>la construcción de viviendas suele estar restringida</strong> y su eventual autorización depende estrictamente de los requisitos establecidos por la legislación autonómica, de la categoría del terreno y de las limitaciones sectoriales aplicables."
         },
         {
           "tipo": "parrafo",
-          "html": "En definitiva, <strong>las denominaciones urbano, urbanizable y rústico permiten identificar el régimen general de un terreno, pero no resultan suficientes para determinar si una vivienda concreta puede construirse en él</strong>. Para ello será necesario examinar la ordenación urbanística y las condiciones exigidas para materializar sus posibilidades edificatorias."
+          "html": "En consecuencia, las denominaciones urbano, urbanizable y rústico permiten identificar el régimen general de una parcela, pero no bastan para determinar si una vivienda concreta puede construirse en ella. Para ello es necesario examinar el planeamiento, las condiciones de edificación y las actuaciones pendientes."
         }
       ]
     },
@@ -273,7 +225,7 @@
       "bloques": [
         {
           "tipo": "parrafo",
-          "html": "Las distinciones anteriores tienen consecuencias directas sobre la adquisición de terrenos destinados a la construcción de viviendas. La clasificación urbanística constituye un primer elemento de análisis, pero la decisión de compra exige determinar si el uso residencial pretendido resulta admisible, qué requisitos deben cumplirse para construir y qué obligaciones pueden corresponder al futuro propietario."
+          "html": "La clasificación urbanística constituye un primer elemento de análisis, pero la decisión de compra exige determinar si el uso residencial pretendido resulta admisible, qué requisitos deben cumplirse para construir y qué obligaciones pueden corresponder al futuro propietario."
         },
         {
           "tipo": "subtitulo",
@@ -281,27 +233,23 @@
         },
         {
           "tipo": "parrafo",
-          "html": "La forma más adecuada de abordar estas comprobaciones consiste en realizar, antes de comprometer la adquisición, una <strong><em>due diligence</em> jurídico-urbanística</strong>."
+          "html": "La forma más adecuada de abordar estas comprobaciones consiste en realizar, antes de comprometer la adquisición, una <strong>due diligence jurídico-urbanística</strong>."
         },
         {
           "tipo": "parrafo",
-          "html": "Esta expresión, habitualmente traducida como diligencia debida, designa un proceso de investigación previa destinado a conocer la situación jurídica de un activo e identificar los riesgos que pueden afectar a una operación."
+          "html": "Esta expresión, habitualmente traducida como diligencia debida, designa una investigación previa destinada a conocer la situación jurídica de un activo e identificar los riesgos que pueden afectar a una operación. Aplicada a la adquisición de suelo, consiste en <strong>examinar de forma exhaustiva el régimen urbanístico de la finca</strong>, sus posibilidades de utilización y edificación, las limitaciones existentes y las obligaciones que pueden corresponder al comprador."
         },
         {
           "tipo": "parrafo",
-          "html": "Aplicada a la adquisición de suelo, consiste en examinar el régimen urbanístico de una finca para determinar sus posibilidades de utilización y edificación, las limitaciones existentes y las obligaciones que pueden corresponder al comprador."
+          "html": "Su alcance dependerá de las características del terreno y de la operación proyectada, pero generalmente comprende el análisis del planeamiento, las condiciones de edificación, el estado de la gestión urbanística, las cargas y afecciones y los posibles procedimientos administrativos que puedan condicionar la utilización del inmueble."
         },
         {
           "tipo": "parrafo",
-          "html": "Su alcance dependerá de las características del terreno y de la operación proyectada, pero generalmente comprende el análisis del planeamiento aplicable, las condiciones de edificación, el estado de la gestión urbanística, las cargas y afecciones existentes y los posibles procedimientos administrativos que puedan condicionar la utilización del inmueble."
+          "html": "Para realizar este examen <strong>resulta muy recomendable acudir a un abogado especializado en Derecho urbanístico</strong>, complementando el análisis jurídico con una valoración técnica cuando las características de la parcela o del proyecto lo requieran."
         },
         {
           "tipo": "parrafo",
-          "html": "Para realizar este examen resulta recomendable acudir a un abogado especializado en Derecho urbanístico, complementando el análisis jurídico con una valoración técnica cuando las características de la parcela o del proyecto lo requieran."
-        },
-        {
-          "tipo": "parrafo",
-          "html": "Conviene precisar que la finalidad de esta investigación no consiste en garantizar anticipadamente la concesión de una licencia, sino en proporcionar información suficiente para valorar las posibilidades y riesgos de la operación antes de asumir el compromiso de compra."
+          "html": "La finalidad de esta investigación no es garantizar anticipadamente la concesión de una licencia, sino proporcionar información suficiente para valorar las posibilidades y los riesgos de la operación antes de asumir el compromiso de compra."
         },
         {
           "tipo": "subtitulo",
@@ -309,63 +257,37 @@
         },
         {
           "tipo": "parrafo",
-          "html": "Con independencia de que se encargue una <em>due diligence</em> jurídico-urbanística, existen determinadas comprobaciones preliminares que permiten conocer la situación urbanística de una parcela y valorar inicialmente sus posibilidades de edificación."
+          "html": "Con independencia de que se encargue una due diligence jurídico-urbanística, existen algunas comprobaciones preliminares que permiten valorar las posibilidades de edificación de una parcela, a destacar las siguientes:"
+        },
+        {
+          "tipo": "lista",
+          "ordenada": false,
+          "items": [
+            {
+              "marcador": null,
+              "html": "<strong>Identificar correctamente la finca.</strong> Debe obtenerse su referencia catastral y contrastarse la información del Catastro con la descripción registral y la realidad física del terreno. Esto permite detectar discrepancias de superficie, delimitación o titularidad, así como posibles problemas de segregación o parcelación. Conviene recordar que el Catastro y el Registro de la Propiedad cumplen funciones diferentes y que <strong>ninguno acredita, por sí solo, la edificabilidad de una parcela</strong>."
+            },
+            {
+              "marcador": null,
+              "html": "<strong>Examinar el planeamiento urbanístico.</strong> Una vez identificada la finca, hay que determinar su clasificación, categoría y calificación, así como los usos y condiciones de edificación aplicables. En particular, debe comprobarse si se admite el uso residencial y qué parámetros resultan exigibles en cuanto a superficie mínima de parcela, edificabilidad, ocupación, altura, retranqueos y demás condiciones que puedan afectar al proyecto. Los visores urbanísticos municipales y autonómicos son útiles para una primera consulta, aunque su información debe contrastarse siempre con los instrumentos oficiales vigentes."
+            },
+            {
+              "marcador": null,
+              "html": "<strong>Comprobar si el terreno está preparado para edificar.</strong> No basta con conocer qué puede construirse conforme a la ordenación: es necesario determinar si la parcela reúne actualmente las condiciones exigidas. Para ello, debe comprobarse si tiene la condición de solar, si existen instrumentos de desarrollo pendientes, si forma parte de un ámbito sometido a reparcelación o gestión urbanística y si quedan obras de urbanización por ejecutar. Estas circunstancias pueden condicionar la edificación y exigir actuaciones previas cuyo coste y duración sean determinantes para valorar la adquisición."
+            },
+            {
+              "marcador": null,
+              "html": "<strong>Identificar las cargas y afecciones.</strong> Deben revisarse las servidumbres, obligaciones urbanísticas, restricciones ambientales y afecciones derivadas de la legislación de carreteras, aguas, costas o patrimonio histórico. También conviene comprobar, cuando proceda, si existen expedientes de disciplina urbanística u otras actuaciones administrativas que puedan afectar a la finca."
+            },
+            {
+              "marcador": null,
+              "html": "<strong>Solicitar información urbanística escrita al Ayuntamiento.</strong> El artículo 5.d) TRLSRU reconoce el derecho a recibir información completa y por escrito sobre el régimen y las condiciones urbanísticas aplicables a una finca, conforme a la legislación correspondiente {{ref:2}}. La consulta debería identificar correctamente la parcela y concretar la actuación pretendida, solicitando información sobre la admisibilidad del uso residencial, las condiciones de edificación y las actuaciones o autorizaciones que puedan resultar necesarias. Esta información puede obtenerse, según la normativa aplicable, mediante informes, certificados o cédulas urbanísticas. No obstante, <strong>debe distinguirse claramente de una licencia urbanística</strong>, cuya concesión exige verificar el cumplimiento de los requisitos legalmente establecidos."
+            }
+          ]
         },
         {
           "tipo": "parrafo",
-          "html": "La primera consiste en <strong>identificar correctamente la finca</strong>, obteniendo su referencia catastral y contrastando la información del Catastro con la descripción registral y la realidad física del terreno."
-        },
-        {
-          "tipo": "parrafo",
-          "html": "Esta comprobación permite detectar posibles discrepancias de superficie, delimitación o titularidad, así como identificar cuestiones relacionadas con segregaciones y parcelaciones que puedan condicionar su utilización. Conviene recordar, en todo caso, que el Catastro y el Registro de la Propiedad cumplen funciones diferentes y que ninguno acredita, por sí solo, la edificabilidad de una parcela."
-        },
-        {
-          "tipo": "parrafo",
-          "html": "Una vez identificada la finca, resulta necesario <strong>examinar el planeamiento urbanístico vigente</strong> en el municipio para determinar su clasificación, categoría y calificación, así como los usos y condiciones de edificación que le corresponden."
-        },
-        {
-          "tipo": "parrafo",
-          "html": "En particular, debe comprobarse si se admite el uso residencial y qué parámetros urbanísticos resultan aplicables, especialmente en relación con la superficie mínima de parcela, edificabilidad, ocupación, altura, retranqueos y demás condiciones que puedan afectar al proyecto."
-        },
-        {
-          "tipo": "parrafo",
-          "html": "Los visores urbanísticos municipales y autonómicos constituyen una herramienta útil para efectuar esta primera consulta, aunque su información debe contrastarse con los instrumentos oficiales vigentes, especialmente cuando existan dudas sobre su actualización o interpretación."
-        },
-        {
-          "tipo": "parrafo",
-          "html": "Junto a ello, debe examinarse <strong>el estado de desarrollo y ejecución del planeamiento</strong>. No basta con conocer qué puede construirse conforme a la ordenación, sino que es necesario determinar si la parcela reúne actualmente las condiciones exigidas para hacerlo."
-        },
-        {
-          "tipo": "parrafo",
-          "html": "A estos efectos, deberá comprobarse si tiene la condición de solar, si existen instrumentos de desarrollo pendientes de aprobación, si forma parte de un ámbito sometido a reparcelación o gestión urbanística y si quedan obras de urbanización por ejecutar."
-        },
-        {
-          "tipo": "parrafo",
-          "html": "Estas circunstancias pueden condicionar la edificación y exigir actuaciones previas cuya duración y coste resulten determinantes para valorar la adquisición."
-        },
-        {
-          "tipo": "parrafo",
-          "html": "También resulta necesario identificar <strong>las cargas y afecciones que puedan limitar el aprovechamiento del terreno</strong>, como servidumbres, obligaciones urbanísticas, restricciones ambientales o afecciones derivadas de la legislación de carreteras, aguas, costas o patrimonio histórico. Del mismo modo, deberá comprobarse, cuando proceda, la existencia de expedientes de disciplina urbanística u otras actuaciones administrativas que puedan afectar a la finca."
-        },
-        {
-          "tipo": "parrafo",
-          "html": "Por último, una de las comprobaciones más relevantes consiste en <strong>solicitar información urbanística escrita al Ayuntamiento</strong>."
-        },
-        {
-          "tipo": "parrafo",
-          "html": "El artículo 5.d) TRLSRU reconoce expresamente el derecho de los ciudadanos a ser informados por la Administración competente, de forma completa, por escrito y en un plazo razonable, del régimen y las condiciones urbanísticas aplicables a una finca determinada, conforme a su legislación reguladora. {{ref:2}}"
-        },
-        {
-          "tipo": "parrafo",
-          "html": "La consulta debería identificar correctamente la parcela y concretar la actuación pretendida, solicitando información sobre la admisibilidad del uso residencial, las condiciones de edificación y las actuaciones o autorizaciones que puedan resultar necesarias."
-        },
-        {
-          "tipo": "parrafo",
-          "html": "Esta información puede obtenerse, según la normativa aplicable, mediante los correspondientes informes, certificados o cédulas urbanísticas. Ahora bien, su contenido y efectos deben distinguirse de los propios de una licencia urbanística, cuya concesión exige verificar el cumplimiento de los requisitos legalmente establecidos."
-        },
-        {
-          "tipo": "parrafo",
-          "html": "En cualquier caso, las comprobaciones jurídicas deben completarse con un análisis de viabilidad técnica cuando resulte necesario, pues la admisibilidad urbanística de una vivienda no garantiza, por sí sola, que las condiciones físicas del terreno permitan ejecutar el proyecto pretendido."
+          "html": "En cualquier caso, las comprobaciones jurídicas deben completarse con un análisis de viabilidad técnica cuando resulte necesario, pues la admisibilidad urbanística de una vivienda no garantiza, por sí sola, que las condiciones físicas del terreno permitan ejecutar el proyecto."
         },
         {
           "tipo": "subtitulo",
@@ -373,40 +295,27 @@
         },
         {
           "tipo": "parrafo",
-          "html": "Uno de los aspectos que merece especial atención antes de comprar un terreno es la existencia de obligaciones urbanísticas que puedan afectar al futuro propietario."
+          "html": "Una parcela puede tener asignado un uso residencial y presentar un precio aparentemente atractivo, pero estar sujeta a gastos de urbanización o actuaciones pendientes cuya ejecución resulte necesaria para materializar sus posibilidades edificatorias."
         },
         {
           "tipo": "parrafo",
-          "html": "En efecto, una parcela puede tener asignado un uso residencial y presentar un precio aparentemente atractivo, pero encontrarse sujeta a importantes gastos de urbanización o actuaciones pendientes cuya ejecución resulte necesaria para materializar sus posibilidades edificatorias."
+          "html": "Estas obligaciones pueden derivar de la participación del terreno en una actuación de transformación urbanística e incluir deberes de cesión, costes de urbanización y gastos de gestión."
         },
         {
           "tipo": "parrafo",
-          "html": "Estas obligaciones pueden derivar de la participación del terreno en una actuación de transformación urbanística e incluir, entre otras, deberes de cesión, costes de urbanización y gastos de gestión."
+          "html": "En este contexto adquiere especial relevancia el artículo 27 TRLSRU, que regula la transmisión de fincas y los deberes urbanísticos {{ref:2}}. Su apartado primero establece que <strong>la transmisión no modifica la situación del titular respecto de los deberes que le corresponden</strong> conforme a la legislación estatal y urbanística aplicable. En los términos previstos legalmente, el nuevo titular queda subrogado en los derechos y deberes del anterior propietario y en determinadas obligaciones asumidas frente a la Administración."
         },
         {
           "tipo": "parrafo",
-          "html": "En este contexto adquiere especial relevancia el <strong>artículo 27 TRLSRU</strong>, que regula la transmisión de fincas y los deberes urbanísticos, cuyo apartado primero establece que:"
-        },
-        {
-          "tipo": "cita",
-          "html": "La transmisión de fincas no modifica la situación del titular respecto de los deberes del propietario conforme a esta ley y los establecidos por la legislación de la ordenación territorial y urbanística aplicable o exigibles por los actos de ejecución de la misma. <strong>El nuevo titular queda subrogado en los derechos y deberes del anterior propietario, así como en las obligaciones por éste asumidas frente a la Administración competente y que hayan sido objeto de inscripción registral</strong>, siempre que tales obligaciones se refieran a un posible efecto de mutación jurídico-real.",
-          "fuente_html": "Artículo 27.1 TRLSRU. {{ref:2}}"
+          "html": "Por ello, la adquisición de una finca puede comportar obligaciones urbanísticas cuyo cumplimiento corresponda al nuevo propietario, aunque no se hayan tenido suficientemente en cuenta al negociar el precio."
         },
         {
           "tipo": "parrafo",
-          "html": "De ello se desprende que <strong>la adquisición de una finca puede comportar obligaciones urbanísticas cuyo cumplimiento corresponda al nuevo propietario, con independencia de que no se hayan tenido suficientemente en cuenta al negociar el precio</strong>."
+          "html": "El artículo 27.2 TRLSRU exige, además, hacer constar en los títulos de transmisión determinada información sobre la situación urbanística de los terrenos y los deberes pendientes cuando concurran los presupuestos legales {{ref:2}}. Su incumplimiento puede facultar al adquirente para rescindir el contrato y reclamar la indemnización procedente, conforme a los requisitos y plazos previstos en el propio precepto."
         },
         {
           "tipo": "parrafo",
-          "html": "La importancia de estas circunstancias se refleja también en el artículo 27.2 TRLSRU, que exige hacer constar en los títulos de transmisión determinada información sobre la situación urbanística de los terrenos y los deberes pendientes cuando concurran los presupuestos legalmente establecidos. Su incumplimiento faculta al adquirente para rescindir el contrato en el plazo de cuatro años y reclamar la indemnización que proceda, conforme al apartado tercero del mismo precepto. {{ref:2}}"
-        },
-        {
-          "tipo": "parrafo",
-          "html": "Por tanto, <strong>el coste real de adquirir un terreno no se limita a su precio de compraventa</strong>, sino que debe comprender las obligaciones económicas necesarias para hacer efectivo su aprovechamiento y las actuaciones que puedan resultar exigibles antes de construir."
-        },
-        {
-          "tipo": "parrafo",
-          "html": "A ello debe añadirse el factor temporal. La aprobación de instrumentos urbanísticos, la ejecución de obras o la culminación de procedimientos de gestión pueden retrasar considerablemente la posibilidad de edificar, circunstancia que también debe valorarse antes de adoptar una decisión de compra."
+          "html": "El coste real de adquirir un terreno no se limita, por tanto, a su precio de compraventa: debe incluir las obligaciones económicas necesarias para materializar su aprovechamiento y las actuaciones exigibles antes de construir. A ello se añade el factor temporal, pues la aprobación de instrumentos urbanísticos, la ejecución de obras o la culminación de procedimientos de gestión pueden retrasar considerablemente la edificación."
         }
       ]
     },
@@ -417,11 +326,7 @@
       "bloques": [
         {
           "tipo": "parrafo",
-          "html": "Las comprobaciones anteriores adquieren especial importancia cuando el comprador se dispone a formalizar un contrato de arras, pues desde ese momento puede asumir obligaciones económicas relevantes sin conocer todavía todas las circunstancias que condicionan la edificación del terreno."
-        },
-        {
-          "tipo": "parrafo",
-          "html": "Conviene, por tanto, examinar los riesgos de comprometer la adquisición sin haber verificado previamente su viabilidad urbanística y las garantías contractuales que pueden establecerse cuando resulta necesario actuar con rapidez."
+          "html": "Las comprobaciones anteriores adquieren especial importancia al formalizar un contrato de arras, pues el comprador puede asumir obligaciones económicas relevantes sin conocer todavía todas las circunstancias que condicionan la edificación del terreno."
         },
         {
           "tipo": "subtitulo",
@@ -429,35 +334,31 @@
         },
         {
           "tipo": "parrafo",
-          "html": "Uno de los principales riesgos de suscribir un contrato de arras sin haber completado las comprobaciones urbanísticas consiste en descubrir posteriormente que el terreno no reúne las condiciones necesarias para ejecutar el proyecto pretendido."
+          "html": "Uno de los principales riesgos consiste en descubrir, después de entregar las arras, que la parcela no reúne las condiciones necesarias para ejecutar el proyecto previsto, que existen limitaciones de edificabilidad desconocidas o que deben asumirse importantes gastos de urbanización. Estas circunstancias pueden comprometer la viabilidad del proyecto y alterar las condiciones económicas y jurídicas que justificaron la adquisición."
         },
         {
           "tipo": "parrafo",
-          "html": "En efecto, puede ocurrir que, después de entregar las arras, el comprador descubra que la parcela no admite la vivienda proyectada, que existen limitaciones de edificabilidad desconocidas o que resulta necesario asumir importantes gastos de urbanización. Estas circunstancias pueden comprometer la viabilidad del proyecto y alterar sustancialmente las condiciones económicas y jurídicas que justificaron la adquisición."
+          "html": "Sin embargo, <strong>su aparición no atribuye automáticamente al comprador el derecho a desistir del contrato y recuperar las cantidades entregadas</strong>. Cuando se han pactado arras penitenciales, el artículo 1454 del Código Civil (CC) permite desistir de la operación {{ref:8}}, pero con la consecuencia económica de perder las cantidades entregadas."
         },
         {
           "tipo": "parrafo",
-          "html": "El problema reside en que <strong>la aparición de estas circunstancias no atribuye necesariamente al comprador el derecho a desistir del contrato y recuperar las cantidades entregadas</strong>. Cuando se han pactado arras penitenciales, el artículo 1454 del Código Civil (CC) permite al comprador desistir de la operación, pero con la consecuencia de perder las cantidades entregadas. {{ref:8}}"
+          "html": "El comprador puede encontrarse así ante la disyuntiva de perder esas cantidades o formalizar la compraventa de un terreno que ya no responde a sus necesidades. El riesgo es especialmente relevante cuando el contrato no incorpora garantías sobre la situación urbanística de la finca ni condiciona la compraventa a la viabilidad del proyecto."
         },
         {
           "tipo": "parrafo",
-          "html": "De este modo, <strong>el comprador puede encontrarse ante la disyuntiva de perder las cantidades entregadas o formalizar la compraventa de un terreno que ya no responde a sus necesidades</strong>, con el propósito de evitar las consecuencias económicas de su desistimiento."
+          "html": "Las expectativas particulares del comprador no forman necesariamente parte de las obligaciones asumidas por el vendedor, por lo que su frustración puede no justificar por sí sola la resolución contractual, sin perjuicio de las acciones que pudieran corresponder por otras causas legales o contractuales."
         },
         {
           "tipo": "parrafo",
-          "html": "Esta situación resulta especialmente problemática cuando el contrato no incorpora garantías sobre la situación urbanística de la finca ni condiciona la compraventa a la viabilidad del proyecto pretendido. En tales circunstancias, las expectativas particulares del comprador no forman necesariamente parte de las obligaciones asumidas por el vendedor, por lo que su frustración puede no justificar la resolución contractual, sin perjuicio de las acciones que pudieran corresponder por otras causas legal o contractualmente previstas."
-        },
-        {
-          "tipo": "parrafo",
-          "html": "Por ello, <strong>resulta fundamental comprobar la viabilidad urbanística del proyecto antes de comprometer la adquisición</strong>, evitando que el comprador asuma obligaciones económicas sobre la base de unas posibilidades de edificación que todavía no hayan sido suficientemente verificadas."
+          "html": "Por ello, resulta fundamental comprobar la viabilidad urbanística antes de comprometer la adquisición o <strong>establecer garantías contractuales sólidas</strong> que protejan al comprador frente a circunstancias todavía desconocidas."
         },
         {
           "tipo": "subtitulo",
-          "texto": "4.2. Cómo asegurar una oportunidad de compra sin asumir riesgos urbanísticos desconocidos"
+          "texto": "4.2. Cómo proteger la operación y minimizar los riesgos urbanísticos"
         },
         {
           "tipo": "parrafo",
-          "html": "Ahora bien, cuando surge una oportunidad de compra especialmente atractiva y resulta necesario actuar con rapidez, no siempre es posible completar una investigación urbanística antes de suscribir las arras. En estos supuestos, existen <strong>mecanismos contractuales que permiten asegurar inicialmente la operación y ofrecer al comprador una mayor protección frente a las circunstancias que todavía no han podido comprobarse</strong>."
+          "html": "Cuando surge una oportunidad atractiva y es necesario actuar con rapidez, puede no haber tiempo para completar todas las comprobaciones antes de suscribir las arras. En estos casos, existen mecanismos contractuales orientados a <strong>mitigar el riesgo de la operación, dotar de mayores argumentos jurídicos al comprador y blindar su capacidad de reacción o defensa</strong> si la situación real del terreno difiere de lo esperado."
         },
         {
           "tipo": "subtitulo",
@@ -465,15 +366,19 @@
         },
         {
           "tipo": "parrafo",
-          "html": "Una primera medida consiste en <strong>incorporar al contrato una cláusula de manifestaciones y garantías del vendedor</strong>, mediante la cual este declare expresamente la situación jurídica y urbanística de la finca y asuma responsabilidad por la veracidad de la información facilitada."
+          "html": "Una primera medida consiste en incorporar al contrato una cláusula por la que el vendedor declare expresamente la situación jurídica y urbanística de la finca y <strong>asuma responsabilidad contractual directa</strong> por la veracidad de la información facilitada."
         },
         {
           "tipo": "parrafo",
-          "html": "Conviene que estas manifestaciones sean lo más completas y precisas posible, comprendiendo, entre otras cuestiones, la clasificación y calificación urbanística, la situación legal de las edificaciones existentes, la inexistencia de expedientes sancionadores o de disciplina urbanística, órdenes de demolición o de restablecimiento de la legalidad, cargas y afecciones no comunicadas, servidumbres, cuotas de urbanización, obligaciones de cesión o deberes urbanísticos pendientes, así como cualquier otra circunstancia que pueda condicionar la utilización o edificación del terreno. Las excepciones conocidas deberían identificarse expresamente y acompañarse de la documentación correspondiente."
+          "html": "Estas manifestaciones deberían comprender, entre otras cuestiones, la clasificación y calificación urbanística, la situación legal de las edificaciones existentes, los expedientes sancionadores o de disciplina urbanística, las órdenes de demolición o restablecimiento de la legalidad, las cargas y afecciones, las servidumbres, las cuotas de urbanización y los deberes urbanísticos pendientes."
         },
         {
           "tipo": "parrafo",
-          "html": "La importancia de esta cláusula reside en <strong>incorporar dichas manifestaciones al contenido obligacional del contrato</strong>, de manera que su eventual falsedad o inexactitud pueda fundamentar una reclamación frente al vendedor por incumplimiento contractual, incluida la indemnización de daños y perjuicios o, cuando concurran los presupuestos legalmente exigibles, la resolución del contrato. {{ref:8}}"
+          "html": "Las excepciones conocidas deben identificarse expresamente y acompañarse de la documentación correspondiente."
+        },
+        {
+          "tipo": "parrafo",
+          "html": "La finalidad de esta cláusula es incorporar las declaraciones del vendedor al contenido obligacional del contrato. De este modo, <strong>si se descubre la inexactitud o falsedad de lo manifestado, el comprador dispondrá de una sólida base jurídica para reclamar por incumplimiento contractual</strong>, exigir una indemnización de daños y perjuicios o instar la resolución del contrato con mejor posición en caso de conflicto."
         },
         {
           "tipo": "subtitulo",
@@ -481,23 +386,23 @@
         },
         {
           "tipo": "parrafo",
-          "html": "Una segunda medida, compatible con la anterior, consiste en <strong>reservar expresamente al comprador la facultad de realizar una <em>due diligence</em> jurídico-urbanística durante el periodo comprendido entre la firma de las arras y el otorgamiento de la escritura pública</strong>."
+          "html": "Una segunda medida, plenamente compatible con la anterior, consiste en <strong>reservar expresamente al comprador la facultad de realizar una due diligence jurídico-urbanística</strong> entre la firma de las arras y el otorgamiento de la escritura pública."
         },
         {
           "tipo": "parrafo",
-          "html": "Para ello puede establecerse un plazo determinado —por ejemplo, treinta días desde la entrega de la documentación inicialmente solicitada— durante el cual el vendedor quede obligado a facilitar la documentación de que disponga y colaborar en la obtención de cuanta información adicional resulte razonablemente necesaria para comprobar la situación de la finca."
+          "html": "Para ello puede establecerse un plazo determinado —por ejemplo, treinta días desde la entrega de la documentación inicialmente solicitada— durante el cual el vendedor se comprometa a facilitar todos los antecedentes de que disponga y a colaborar en las comprobaciones necesarias."
         },
         {
           "tipo": "parrafo",
-          "html": "Esta previsión permite formalizar inicialmente el compromiso de adquisición y disponer de un periodo adicional para verificar las manifestaciones del vendedor, examinar las posibles cargas y comprobar las condiciones urbanísticas del terreno. Conviene, además, regular las consecuencias de la falta de entrega de documentación y los posibles retrasos, incluyendo la ampliación del plazo de investigación cuando estos resulten imputables al vendedor."
+          "html": "Conviene regular también las consecuencias de la falta de entrega de documentos y de los posibles retrasos, incluida la ampliación del plazo cuando sean imputables al vendedor."
         },
         {
           "tipo": "parrafo",
-          "html": "Para que esta garantía resulte eficaz, <strong>el contrato debe reconocer expresamente al comprador la facultad de resolver la operación, con devolución íntegra de las cantidades entregadas y sin penalización, cuando la investigación revele incidencias urbanísticas relevantes, desconocidas o no comunicadas previamente</strong>, que afecten a las posibilidades de utilización o edificación del terreno, a las obligaciones económicas que deban asumirse o a otras condiciones esenciales de la adquisición."
+          "html": "Para que esta garantía resulte eficaz, el contrato debe <strong>reconocer expresamente la facultad de resolver la operación —con recuperación íntegra de las cantidades entregadas y sin penalización—</strong> si la investigación revela incidencias urbanísticas relevantes que afecten negativamente a las posibilidades de edificación, a las obligaciones económicas o a otras condiciones esenciales de la adquisición."
         },
         {
           "tipo": "parrafo",
-          "html": "Esta facultad debe vincularse a circunstancias objetivas y suficientemente determinadas, precisando el plazo y las condiciones para su ejercicio, de manera que no quede sometida al mero arbitrio del comprador, conforme a los límites establecidos por la legislación civil. {{ref:8}}"
+          "html": "Esta facultad debe vincularse a circunstancias objetivas y suficientemente determinadas, precisando el plazo y las condiciones para ejercerla, de manera que no quede sometida al mero arbitrio del comprador, reforzando así la justificación jurídica de la decisión."
         },
         {
           "tipo": "subtitulo",
@@ -505,27 +410,27 @@
         },
         {
           "tipo": "parrafo",
-          "html": "Asimismo, resulta especialmente recomendable <strong>establecer consecuencias económicas diferenciadas según la causa por la que no llegue a formalizarse la compraventa</strong>."
+          "html": "También resulta recomendable establecer consecuencias económicas diferenciadas según la causa por la que no llegue a formalizarse la compraventa."
         },
         {
           "tipo": "parrafo",
-          "html": "Así, mientras que el desistimiento voluntario del comprador no amparado por las causas de resolución pactadas puede comportar la pérdida de las arras, la aparición de una incidencia relevante durante la investigación puede permitir su recuperación íntegra, sin penalización, cuando así se haya previsto contractualmente."
+          "html": "El desistimiento voluntario del comprador no amparado por las causas de resolución pactadas {{ref:8}} puede comportar la pérdida de las arras. En cambio, <strong>una incidencia relevante descubierta durante la fase de investigación protegida contractualmente facilitará la recuperación íntegra de las cantidades</strong> cuando así se haya previsto de forma expresa en el documento."
         },
         {
           "tipo": "parrafo",
-          "html": "Por su parte, la falsedad de las manifestaciones del vendedor, la ocultación de circunstancias relevantes o el incumplimiento de sus obligaciones contractuales pueden sujetarse a consecuencias más gravosas, como la devolución duplicada de las cantidades recibidas o la imposición de penalizaciones económicas específicas, siempre que estas consecuencias hayan quedado suficientemente establecidas en el contrato."
+          "html": "Por su parte, la falsedad de las manifestaciones del vendedor, la ocultación dolosa o negligente de circunstancias relevantes o el incumplimiento de sus obligaciones {{ref:8}} pueden dar lugar a consecuencias específicas, como la devolución duplicada de las cantidades recibidas o la imposición de penalizaciones económicas {{ref:8}}, siempre que se hayan establecido contractualmente y resulten legalmente procedentes."
         },
         {
           "tipo": "parrafo",
-          "html": "Estas previsiones deben coordinarse con el régimen de arras pactado y con los mecanismos generales de responsabilidad contractual previstos en los artículos 1101, 1124, 1152 y 1454 CC, precisando las consecuencias de cada supuesto y la posibilidad de reclamar adicionalmente los daños y perjuicios ocasionados cuando así se haya pactado y resulte procedente. {{ref:8}}"
+          "html": "Estas previsiones deben coordinarse con el régimen de arras pactado y con las reglas generales de responsabilidad contractual previstas en el Código Civil {{ref:8}}, precisando las consecuencias de cada supuesto y facilitando la base jurídica necesaria para <strong>reclamar eficazmente los daños y perjuicios sufridos</strong> {{ref:8}}."
         },
         {
           "tipo": "parrafo",
-          "html": "También conviene determinar si las manifestaciones y garantías del vendedor mantienen su eficacia tras el otorgamiento de la escritura pública, especialmente respecto de las incidencias que no hayan podido detectarse durante la investigación previa."
+          "html": "También conviene determinar si las manifestaciones y garantías del vendedor mantienen su eficacia tras el otorgamiento de la escritura pública, especialmente respecto de las incidencias ocultas que no hayan podido detectarse razonablemente durante la investigación previa."
         },
         {
           "tipo": "parrafo",
-          "html": "En definitiva, <strong>las manifestaciones y garantías del vendedor, combinadas con la reserva de un periodo de investigación posterior y un régimen expreso de resolución y penalizaciones, permiten compatibilizar la rapidez en la adquisición con una mayor protección jurídica del comprador</strong>. Aunque estas medidas no sustituyen la comprobación efectiva del régimen urbanístico de la finca, permiten distribuir contractualmente los riesgos de la operación y establecer las consecuencias de que su situación no se corresponda con las condiciones declaradas o acordadas."
+          "html": "En definitiva, las manifestaciones y garantías del vendedor, la reserva de un periodo de investigación y un régimen claro de resolución e incumplimiento permiten compatibilizar la rapidez de la adquisición con un marco de <strong>protección jurídica avanzada que reduce notablemente la exposición al riesgo del comprador y fortalece su posición ante posibles litigios</strong>. Estas medidas no sustituyen la comprobación urbanística previa, pero constituyen herramientas clave para distribuir adecuadamente los riesgos de la operación."
         }
       ]
     },
@@ -536,7 +441,7 @@
       "bloques": [
         {
           "tipo": "parrafo",
-          "html": "De las cuestiones examinadas pueden extraerse algunas recomendaciones esenciales para comprobar la viabilidad de una adquisición y evitar riesgos urbanísticos y contractuales:"
+          "html": "Antes de adquirir una parcela para construir, conviene tener presentes las siguientes recomendaciones:"
         },
         {
           "tipo": "lista",
@@ -544,41 +449,41 @@
           "items": [
             {
               "marcador": null,
-              "html": "<strong>No confiar únicamente en la clasificación urbanística del terreno.</strong> Que una parcela sea urbana o urbanizable no significa necesariamente que pueda construirse una vivienda, ni que sea posible hacerlo inmediatamente."
+              "html": "<strong>No confiar únicamente en la clasificación urbanística.</strong> Que una parcela sea urbana o urbanizable no significa necesariamente que pueda construirse una vivienda ni que sea posible hacerlo de manera inmediata."
             },
             {
               "marcador": null,
-              "html": "<strong>Identificar correctamente la finca.</strong> Contrastar su referencia catastral, descripción registral y realidad física, prestando especial atención a su superficie, delimitación y posibles problemas de parcelación."
+              "html": "<strong>Identificar correctamente la finca.</strong> Contrastar la referencia catastral, la descripción registral y la realidad física, prestando especial atención a la superficie, la delimitación y los posibles problemas de parcelación."
             },
             {
               "marcador": null,
-              "html": "<strong>Comprobar qué puede construirse realmente.</strong> Examinar el planeamiento vigente y verificar que admite el uso residencial pretendido, así como las condiciones de edificabilidad, ocupación, altura, retranqueos y demás parámetros aplicables al proyecto."
+              "html": "<strong>Comprobar qué puede construirse realmente.</strong> Examinar el planeamiento vigente y verificar que permite el uso residencial pretendido, así como la edificabilidad, ocupación, altura, retranqueos y demás parámetros aplicables."
             },
             {
               "marcador": null,
-              "html": "<strong>Verificar si el terreno está preparado para edificar.</strong> Comprobar si reúne la condición de solar y si existen instrumentos de planeamiento, procedimientos de gestión o actuaciones de urbanización pendientes."
+              "html": "<strong>Verificar si el terreno está preparado para edificar.</strong> Comprobar si reúne la condición de solar y si existen instrumentos de planeamiento, procedimientos de gestión u obras de urbanización pendientes."
             },
             {
               "marcador": null,
-              "html": "<strong>Calcular el coste real y los plazos de la operación.</strong> Identificar las cargas urbanísticas, cuotas de urbanización, obligaciones de cesión y demás gastos que puedan corresponder al futuro propietario, así como el tiempo necesario para poder construir."
+              "html": "<strong>Calcular el coste real y los plazos.</strong> Identificar las cargas urbanísticas, cuotas de urbanización, obligaciones de cesión y demás gastos que puedan corresponder al futuro propietario, así como el tiempo necesario para construir."
             },
             {
               "marcador": null,
-              "html": "<strong>Realizar una <em>due diligence</em> jurídico-urbanística antes de adquirir el terreno.</strong> Examinar de forma integral su situación jurídica y urbanística, las posibles cargas y afecciones y los riesgos de la operación, recurriendo al asesoramiento de profesionales especializados y solicitando información urbanística escrita al Ayuntamiento cuando resulte necesario."
+              "html": "<strong>Realizar una due diligence jurídico-urbanística.</strong> Examinar la situación de la finca, las posibles cargas y afecciones y los riesgos de la operación, recurriendo al asesoramiento especializado y solicitando información urbanística escrita al Ayuntamiento cuando resulte necesario {{ref:2}}."
             },
             {
               "marcador": null,
-              "html": "<strong>Evitar firmar arras antes de completar las comprobaciones.</strong> El descubrimiento posterior de circunstancias que impidan ejecutar el proyecto no garantiza la posibilidad de desistir de la compraventa sin perder las cantidades entregadas o afrontar otras consecuencias contractuales."
+              "html": "<strong>Evitar firmar arras antes de completar las comprobaciones.</strong> Descubrir después que el proyecto no es viable no garantiza que pueda desistirse de la compraventa sin perder las cantidades entregadas o afrontar otras consecuencias contractuales desfavorables."
             },
             {
               "marcador": null,
-              "html": "<strong>Incorporar garantías contractuales cuando resulte necesario actuar con rapidez.</strong> Exigir manifestaciones expresas del vendedor sobre la situación urbanística de la finca, reservar un plazo para completar la <em>due diligence</em> pendiente y pactar la posibilidad de resolver la operación con devolución de las arras si aparecen incidencias relevantes, estableciendo además penalizaciones específicas por incumplimiento o falsedad de las manifestaciones del vendedor."
+              "html": "<strong>Incorporar garantías contractuales sólidas cuando sea necesario actuar con rapidez.</strong> Exigir manifestaciones expresas del vendedor, reservar un plazo para completar la investigación y pactar causas claras de resolución con devolución de las arras, blindando así las opciones de defensa ante cualquier contingencia."
             }
           ]
         },
         {
           "tipo": "parrafo",
-          "html": "En definitiva, <strong>antes de comprar un terreno, lo esencial es comprobar que el proyecto resulta viable, conocer las condiciones y costes necesarios para ejecutarlo y evitar asumir compromisos contractuales sin una protección jurídica suficiente</strong>."
+          "html": "En definitiva, antes de comprar un terreno, lo esencial es comprobar que el proyecto resulta viable, conocer con precisión las condiciones, los costes y los plazos necesarios para ejecutarlo, y <strong>evitar asumir compromisos contractuales sin una cobertura jurídica suficiente que proteja los intereses del comprador</strong>."
         }
       ]
     }
@@ -590,35 +495,35 @@
       "items": [
         {
           "numero": 1,
-          "html": "CONSTITUCIÓN ESPAÑOLA de 1978, especialmente arts. 33 y 148.1.3.ª. BOE-A-1978-31229. https://www.boe.es/buscar/act.php?id=BOE-A-1978-31229"
+          "html": "ESPAÑA. Constitución Española, de 27 de diciembre de 1978, especialmente arts. 33 y 148.1.3.ª. Boletín Oficial del Estado, núm. 311, de 29 de diciembre de 1978. BOE-A-1978-31229. Disponible en: https://www.boe.es/buscar/act.php?id=BOE-A-1978-31229"
         },
         {
           "numero": 2,
-          "html": "REAL DECRETO LEGISLATIVO 7/2015, de 30 de octubre, por el que se aprueba el texto refundido de la Ley de Suelo y Rehabilitación Urbana, especialmente arts. 5, 7, 11, 21 y 27. BOE-A-2015-11723. https://www.boe.es/buscar/act.php?id=BOE-A-2015-11723"
+          "html": "ESPAÑA. Real Decreto Legislativo 7/2015, de 30 de octubre, por el que se aprueba el texto refundido de la Ley de Suelo y Rehabilitación Urbana, especialmente arts. 5, 7, 11, 21 y 27. Boletín Oficial del Estado, núm. 261, de 31 de octubre de 2015. BOE-A-2015-11723. Disponible en: https://www.boe.es/buscar/act.php?id=BOE-A-2015-11723"
         },
         {
           "numero": 3,
-          "html": "LEY 7/2021, de 1 de diciembre, de impulso para la sostenibilidad del territorio de Andalucía, especialmente arts. 12 a 14. BOE-A-2021-20916. https://www.boe.es/buscar/act.php?id=BOE-A-2021-20916"
+          "html": "ANDALUCÍA. Ley 7/2021, de 1 de diciembre, de impulso para la sostenibilidad del territorio de Andalucía, especialmente arts. 12 a 14. Boletín Oficial del Estado, núm. 303, de 20 de diciembre de 2021. BOE-A-2021-20916. Disponible en: https://www.boe.es/buscar/act.php?id=BOE-A-2021-20916"
         },
         {
           "numero": 4,
-          "html": "LEY 2/2016, de 10 de febrero, del suelo de Galicia, especialmente art. 15. BOE-A-2016-3191. https://www.boe.es/buscar/act.php?id=BOE-A-2016-3191"
+          "html": "GALICIA. Ley 2/2016, de 10 de febrero, del suelo de Galicia, especialmente art. 15. Boletín Oficial del Estado, núm. 81, de 4 de abril de 2016. BOE-A-2016-3191. Disponible en: https://www.boe.es/buscar/act.php?id=BOE-A-2016-3191"
         },
         {
           "numero": 5,
-          "html": "VAQUER CABALLERÍA, Marcos, «Suelo urbano, suelo urbanizado, suelo consolidado: las bases legales de la ordenación y gestión sostenibles del medio urbano», <em>Revista de Derecho Urbanístico y Medio Ambiente</em>, núms. 330-331, 2019, pp. 457-482. https://hdl.handle.net/10016/45781"
+          "html": "VAQUER CABALLERÍA, Marcos. «Suelo urbano, suelo urbanizado, suelo consolidado: las bases legales de la ordenación y gestión sostenibles del medio urbano». Revista de Derecho Urbanístico y Medio Ambiente, núms. 330-331, 2019, pp. 457-482. Disponible en: https://hdl.handle.net/10016/45781"
         },
         {
           "numero": 6,
-          "html": "CHINCHILLA PEINADO, Juan Antonio, «El régimen del suelo: clasificación y deberes y derechos de los propietarios. Análisis de la jurisprudencia recaída en 2006», <em>Revista de Derecho Urbanístico y Medio Ambiente</em>, núm. 234, 2007, pp. 45-104. https://ssrn.com/abstract=1786410"
+          "html": "CHINCHILLA PEINADO, Juan Antonio. «El régimen del suelo: clasificación y deberes y derechos de los propietarios. Análisis de la jurisprudencia recaída en 2006». Revista de Derecho Urbanístico y Medio Ambiente, núm. 234, 2007, pp. 45-104. Disponible en: https://ssrn.com/abstract=1786410"
         },
         {
           "numero": 7,
-          "html": "IGLESIAS GONZÁLEZ, Felipe, «La actualidad de la ejecución del planeamiento recogida en la Ley del Suelo de 1956 y propuestas de mejora», <em>Ciudades</em>, núm. 29, 2026, pp. 65-80. https://doi.org/10.24197/ciudades.29.2026.65-80"
+          "html": "IGLESIAS GONZÁLEZ, Felipe. «La actualidad de la ejecución del planeamiento recogida en la Ley del Suelo de 1956 y propuestas de mejora». Ciudades, núm. 29, 2026, pp. 65-80. Disponible en: https://doi.org/10.24197/ciudades.29.2026.65-80"
         },
         {
           "numero": 8,
-          "html": "REAL DECRETO de 24 de julio de 1889 por el que se publica el Código Civil, especialmente arts. 1101, 1106, 1115, 1124, 1152, 1153, 1255, 1256 y 1454. BOE-A-1889-4763. https://www.boe.es/buscar/act.php?id=BOE-A-1889-4763"
+          "html": "ESPAÑA. Real Decreto de 24 de julio de 1889 por el que se publica el Código Civil, especialmente arts. 1101, 1106, 1115, 1124, 1152, 1153, 1255, 1256 y 1454. Gaceta de Madrid, núm. 206, de 25 de julio de 1889. BOE-A-1889-4763. Disponible en: https://www.boe.es/buscar/act.php?id=BOE-A-1889-4763"
         }
       ]
     }
@@ -630,12 +535,14 @@
     "origen": "cliente"
   },
   "avisos": [
-    "La referencia [7] (IGLESIAS GONZÁLEZ, Felipe) cita la revista Ciudades, núm. 29, con el año 2026, una fecha posterior a la actual; se ha dejado tal cual figura en el original."
+    "Se han eliminado espacios de ancho cero (&#8203;) al inicio de los párrafos del Word, por tratarse de artefactos de formato sin contenido textual.",
+    "La referencia [7] (IGLESIAS GONZÁLEZ, Felipe) cita el año 2026 para la revista Ciudades, una fecha futura respecto a la redacción del artículo; se mantiene tal cual figura en el Word.",
+    "En la referencia [1] figura '148.1.3.ª' (con &ordf;), se ha conservado tal cual sin normalizar a '148.1.3.ª' distinto formato."
   ],
   "fecha": "2026-10-16",
   "fuente": {
-    "docx": "Cómo saber si un terreno es edificable antes de comprarlo.docx",
-    "procesado": "2026-10-16T16:57:31.173Z"
+    "docx": "Cómo saber si un terreno es edificable antes de comprarlo 3.docx",
+    "procesado": "2026-10-17T11:38:17.454Z"
   },
-  "actualizado": "2026-10-16"
+  "actualizado": "2026-10-17"
 }
