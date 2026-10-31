@@ -46,7 +46,7 @@
       "inLanguage": "es-ES",
       "isPartOf": { "@id": "https://elderechoescrito.es/#website" },
       "author": { "@type": "Organization", "name": "El Derecho Escrito" },
-      "dateModified": "2026-10-05"
+      "dateModified": "2026-10-30"
     }
   ]
 }
@@ -202,32 +202,35 @@
       <h3>3. El formulario de contacto</h3>
 
       <ul>
-        <li><strong>Qué se recoge:</strong> el nombre, el correo, el asunto y el
-        mensaje que escribas.</li>
-        <li><strong>Para qué:</strong> leer y responder a lo que planteas.</li>
+        <li><strong>Qué se recoge:</strong> el nombre, el correo electrónico,
+        el asunto y el mensaje que escribas.</li>
+        <li><strong>Para qué:</strong> responder a la consulta o comunicación
+        que envíes.</li>
         <li><strong>Base legal:</strong> tu <strong>consentimiento</strong>
         (artículo 6.1.a del RGPD) al enviar el formulario.</li>
         <li><strong>Cuánto tiempo:</strong> el necesario para atender tu
-        consulta y, después, mientras pueda haber que acreditar la
-        correspondencia.</li>
+        comunicación. Después se suprime del correo y del panel de
+        Formspree.</li>
       </ul>
 
-      <!-- ⚠️ ESTE PÁRRAFO ES PROVISIONAL Y HAY QUE SUSTITUIRLO, no borrarlo.
-           El formulario de contacto NO ENVÍA a ninguna parte hoy: su `action`
-           apunta a `formspree.io/f/TU_ENDPOINT_AQUI`, que es literalmente un
-           marcador. Cuando se conecte el servicio real hay que decir aquí
-           quién lo procesa, dónde está y bajo qué garantías, y añadirlo a la
-           tabla de encargados de más abajo.
+      <!-- Este apartado sustituye al aviso provisional que decía que el
+           formulario «todavía no está en funcionamiento». Desde que el `action`
+           apunta a Formspree, el mensaje sale hacia un tercero, y por eso
+           Formspree está también en la tabla de encargados y en el apartado de
+           transferencias. Si se cambia de servicio, hay que tocar los tres
+           sitios a la vez. -->
+      <p>Los mensajes se gestionan a través de <strong>Formspree, Inc.</strong>,
+      con sede en Estados Unidos, que actúa como <strong>encargado del
+      tratamiento</strong>: recibe lo que envías y lo reenvía al correo del
+      responsable. Formspree aloja su servicio en Amazon Web Services, en
+      Estados Unidos; esa transferencia se explica más abajo, en el apartado de
+      transferencias. Puedes consultar sus
+      <a href="https://formspree.io/security/">medidas de seguridad</a> y su
+      <a href="https://formspree.io/legal/privacy-policy/">política de
+      privacidad</a>.</p>
 
-           Mientras tanto queda escrito lo que es verdad: que el formulario no
-           está operativo. Decir que «los datos los trata X» cuando no se envían
-           a ningún sitio sería una política que miente, y eso es peor que una
-           que avisa de que falta algo. -->
-      <p><strong>Aviso: este formulario todavía no está en funcionamiento.</strong>
-      Mientras tanto, el único canal de contacto operativo es el correo
-      <a href="mailto:jcontera@icam.es">jcontera@icam.es</a>. Cuando el
-      formulario se active, esta política se actualizará para indicar qué
-      proveedor lo gestiona.</p>
+      <p>Si prefieres no usar el formulario, puedes escribir directamente a
+      <a href="mailto:jcontera@icam.es">jcontera@icam.es</a>.</p>
 
       <h3>4. Las visitas a la web</h3>
 
@@ -289,6 +292,11 @@
               <td>Francia (UE)</td>
             </tr>
             <tr>
+              <td>Formspree</td>
+              <td>Recepción y reenvío de los mensajes del formulario de contacto</td>
+              <td>Estados Unidos (Amazon Web Services)</td>
+            </tr>
+            <tr>
               <td>GitHub</td>
               <td>Alojamiento de la web</td>
               <td>Estados Unidos</td>
@@ -323,7 +331,7 @@
 
       <h2 id="transferencias">Transferencias fuera de la Unión Europea</h2>
 
-      <p>Dos de los proveedores están en Estados Unidos:</p>
+      <p>Tres de los proveedores están en Estados Unidos:</p>
 
       <ul>
         <li><strong>GitHub</strong> (GitHub, Inc., del grupo Microsoft) aloja la
@@ -332,6 +340,15 @@
         además, aplica las <strong>cláusulas contractuales tipo</strong>
         aprobadas por la Comisión Europea en su Decisión de Ejecución (UE)
         2021/914.</li>
+        <li><strong>Formspree</strong> (Formspree, Inc.) recibe y reenvía los
+        mensajes del formulario de contacto, con su servicio alojado en Amazon
+        Web Services en Estados Unidos. La transferencia se ampara en las
+        <strong>cláusulas contractuales tipo</strong> aprobadas por la Comisión
+        Europea en su Decisión de Ejecución (UE) 2021/914.</li>
+        <!-- ⚠️ FORMSPREE NO ESTÁ EN EL MARCO DE PRIVACIDAD DE DATOS UE-EE. UU.:
+             su certificación consta como retirada desde el 26/04/2022. Por eso
+             aquí solo se citan las cláusulas tipo, al revés que con GitHub, que
+             tiene las dos garantías. No hay que «igualarlo» añadiendo el Marco. -->
         <li><strong>Google</strong> sirve las tipografías con las que se ve la
         web. Al cargarlas, tu navegador se conecta a sus servidores y les
         comunica tu dirección IP.</li>
@@ -361,6 +378,12 @@
       <p>Eso <strong>no sale de tu equipo</strong>: no se envía a ningún
       servidor ni sirve para seguirte por otras webs. Puedes borrarlo cuando
       quieras desde las opciones de tu navegador, igual que el historial.</p>
+
+      <p>Si envías el formulario de contacto <strong>con JavaScript
+      desactivado</strong>, el navegador pasa por una página de confirmación de
+      Formspree, en su propio dominio, que puede instalar cookies propias y se
+      rige por la <a href="https://formspree.io/legal/privacy-policy/">política
+      de privacidad de Formspree</a>. Esta web sigue sin usar cookies.</p>
 
       <h2 id="derechos">Tus derechos</h2>
 
@@ -426,7 +449,7 @@
       <hr>
 
       <p class="privacidad__fecha">Última actualización:
-      <time datetime="2026-10-05">5 de octubre de 2026</time></p>
+      <time datetime="2026-10-30">30 de octubre de 2026</time></p>
 
     </div>
   </div>
