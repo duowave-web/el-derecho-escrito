@@ -5271,6 +5271,10 @@ body:has(.progreso) .cabecera {
 
 /* ---- El aviso de la suscripción ---------------------------------------- */
 
+/* Lo comparte el aviso del formulario de contacto, `.formulario__aviso`, con
+   las mismas tres reglas agrupadas: las dos respuestas de formulario del sitio
+   se ven igual. Si se toca una, se toca la otra. */
+
 /* Vive vacío y sin ocupar sitio hasta que hay algo que decir: `:empty` evita
    que el margen abra un hueco en un formulario que todavía no ha hecho nada.
 
@@ -5284,18 +5288,21 @@ body:has(.progreso) .cabecera {
    no tiene paleta de error. Si algún día hace falta un rojo, se añade al
    sistema de color, no aquí. */
 
-.suscripcion__aviso {
+.suscripcion__aviso,
+.formulario__aviso {
   margin: 12px 0 0;
   font-size: 0.85rem;
   line-height: 1.5;
   color: var(--tinta);
 }
 
-.suscripcion__aviso:empty {
+.suscripcion__aviso:empty,
+.formulario__aviso:empty {
   display: none;
 }
 
-.suscripcion__aviso--error {
+.suscripcion__aviso--error,
+.formulario__aviso--error {
   padding-left: 10px;
   border-left: 2px solid var(--acento-oscuro);
   color: var(--tinta-suave);

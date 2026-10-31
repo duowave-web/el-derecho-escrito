@@ -96,11 +96,52 @@ aviso de `sobre/` adoptó la fórmula del artículo.
 
 ## Rutas — leer antes de tocar enlaces
 
-> ✅ **LA WEB SE SIRVE YA EN LA RAÍZ DE `elderechoescrito.es` (16/10/2026),
-> desde Cloudflare Pages conectado a este repo —rama `main`, sin build—.** La
-> copia de GitHub Pages (`duowave-web.github.io/el-derecho-escrito/`) deja de
-> ser la dirección publicada. Los DNS del dominio están en la cuenta de
-> Cloudflare de DuoWave; el registro sigue en Hostinger, a nombre del cliente.
+> ✅ **LA WEB SE SIRVE YA EN LA RAÍZ DE `elderechoescrito.es`, DESDE GITHUB
+> PAGES.** El dominio propio lo configura el archivo `CNAME` del repo; la
+> dirección `duowave-web.github.io/el-derecho-escrito/` redirige al dominio con
+> un 301. Los DNS están en la cuenta de Cloudflare de DuoWave; el registro sigue
+> en Hostinger, a nombre del cliente.
+>
+> | Registro | Apunta a |
+> |---|---|
+> | `elderechoescrito.es`, tipo A | las IP de GitHub Pages: 185.199.108.153, .109, .110 y .111 |
+> | `www`, tipo CNAME | `duowave-web.github.io` |
+>
+> ⚠️ **ESTA SECCIÓN DECÍA «desde Cloudflare Pages (16/10/2026)» Y NO ERA
+> CIERTO.** Se intentó y se volvió atrás. Lo destapó la política de privacidad:
+> al ir a cambiar a GitHub por Cloudflare como alojamiento, las cabeceras de la
+> portada decían `server: GitHub.com` y los registros A eran los de GitHub.
+>
+> ⚠️ **CLOUDFLARE ES SOLO DNS, Y EL PROXY TIENE QUE ESTAR SIEMPRE DESACTIVADO**
+> —la nube gris, «Solo DNS»— en todos los registros del dominio. El motivo: en
+> España, **los fines de semana de fútbol se bloquean IP de Cloudflare** por la
+> lucha contra la piratería de LaLiga, y mientras la web pasó por Cloudflare
+> **dejaba de cargar** esos días. Con el proxy activado vuelve a pasar, y no da
+> ningún error en el panel: la web funciona entre semana y cae el sábado.
+>
+> Por eso la **migración a Cloudflare Pages quedó aparcada**.
+>
+> ⚠️ **EL FORMULARIO DE CONTACTO SÍ DEPENDE DE CLOUDFLARE, Y ESO NO SE PUEDE
+> EVITAR DESDE AQUÍ.** Formspree está detrás de Cloudflare —comprobado:
+> `formspree.io` responde con `server: cloudflare`—, así que durante esos
+> bloqueos el envío puede fallar. Está cubierto: el mensaje de error del
+> formulario remite a `jcontera@icam.es`, que no pasa por Cloudflare.
+>
+> ⚠️ **SI ALGÚN DÍA SE PASA A CLOUDFLARE PAGES, HAY QUE ACTUALIZAR LA POLÍTICA
+> DE PRIVACIDAD EN EL MISMO MOVIMIENTO.** Hoy declara a GitHub como alojamiento,
+> y es correcto. Con Cloudflare Pages habría que tocar tres sitios de
+> `privacidad/index.html`:
+>
+> 1. **La tabla de encargados:** Cloudflare, Inc. como alojamiento y entrega de
+>    la web, y quitar GitHub si deja de servir algo a los visitantes.
+> 2. **El apartado de visitas a la web:** los registros técnicos —la IP— los
+>    tendría Cloudflare.
+> 3. **Las transferencias:** Cloudflare, Inc. (EE. UU.), certificada en el
+>    **Marco de Privacidad de Datos UE-EE. UU.**, Decisión de Ejecución (UE)
+>    2023/1795, y ajustar el recuento de proveedores.
+>
+> Más la fecha de «Última actualización» en sus tres sitios. Y antes de nada,
+> resolver lo de los bloqueos de los fines de semana, que es lo que hizo volver.
 >
 > **Las rutas relativas SE QUEDARON COMO ESTABAN.** Esta sección mandaba
 > «revertir todo a rutas absolutas» al conectar el dominio, y no se hizo a
@@ -4278,8 +4319,20 @@ node r.mjs img/logo.svg /tmp/logo-w512.png 512
   ✅ **La página `privacidad/` YA EXISTE** y los dos enlaces resuelven. Aquí
   decía que daba 404 y que había que crearla antes de abrir la newsletter al
   público; está hecho y tiene su propia sección al final de este archivo.
-- El formulario de contacto tampoco tiene backend: no envía nada. Su `action`
-  apunta a `formspree.io/f/TU_ENDPOINT_AQUI`, que es literalmente un marcador.
+- ✅ **El formulario de contacto ya envía.** Aquí decía que no tenía backend y
+  que su `action` apuntaba a `formspree.io/f/TU_ENDPOINT_AQUI`, un marcador.
+  Hoy apunta a `https://formspree.io/f/xoeennvv`, en la **cuenta de Formspree
+  de Juan**, que reenvía cada mensaje a `jcontera@icam.es`.
+
+  Con JavaScript, `formularioDeContacto()` en `js/main.js` lo envía por `fetch`
+  y responde en un `<p class="formulario__aviso" role="status">` bajo el botón,
+  sin salir de la página; sin JavaScript, el envío normal sigue funcionando y
+  Formspree enseña su propia confirmación. El destino se lee del `action`: no
+  hay copia en el JS.
+
+  ⚠️ **Puede fallar los fines de semana de fútbol**, porque Formspree está
+  detrás de Cloudflare. Está razonado en «Rutas»; el mensaje de error remite a
+  `jcontera@icam.es`.
 - ✅ **El correo ya es real: `jcontera@icam.es`.** Aquí había un aviso de que
   `hola@elderechoescrito.es` no existía y era un marcador que se publicaba sin
   dar error. Ya no está en el HTML.
@@ -6935,7 +6988,12 @@ Son dos constantes de `plantilla.mjs` con valores distintos **a propósito**:
 | | Valor | Qué es |
 |---|---|---|
 | `DOMINIO` | `https://elderechoescrito.es` | el dominio **canónico** |
-| `SITIO` | `https://duowave-web.github.io/…` | donde se sirve **hoy** |
+| `SITIO` | `https://elderechoescrito.es` | donde se sirve **hoy** |
+
+> ⚠️ **HOY LOS DOS VALEN LO MISMO, Y ESTA TABLA DECÍA QUE `SITIO` ERA
+> `duowave-web.github.io/…`.** La web ya se sirve en el dominio —desde GitHub
+> Pages, ver «Rutas»— y `SITIO` se igualó a `DOMINIO`. Es justo el caso que
+> prevé el aviso de abajo: que valgan lo mismo no hace que sobre.
 
 `DOMINIO` es lo que el sitio **declara** en `canonical`, `og:url`, el sitemap y
 el feed. Son metadatos para buscadores y pueden ir por delante de la mudanza sin
@@ -6944,9 +7002,10 @@ que nadie se rompa, porque **nadie los pulsa**.
 `SITIO` es donde el artículo se puede **abrir** de verdad hoy, y es lo único que
 puede ir en un correo.
 
-> ⚠️ **UN ENLACE DEL BOLETÍN SÍ LO PULSA UNA PERSONA.** Si saliera de `DOMINIO`,
-> cada suscriptor recibiría enlaces muertos hasta el día de la mudanza, y **nada
-> avisaría**: el correo se envía bien y el fallo solo aparece al hacer clic.
+> ⚠️ **UN ENLACE DEL BOLETÍN SÍ LO PULSA UNA PERSONA.** Mientras la web vivía
+> en `duowave-web.github.io`, sacar las URL de `DOMINIO` habría mandado a cada
+> suscriptor enlaces muertos, y **nada habría avisado**: el correo se envía bien
+> y el fallo solo aparece al hacer clic.
 
 > ⚠️ **EL DÍA DE LA MUDANZA LOS DOS VALORES SE IGUALAN, y entonces parecerá que
 > `SITIO` sobra. NO sobra**: lo que la justifica no es que los valores difieran,
@@ -6998,19 +7057,28 @@ bundle que sirve el servidor, y por eso la lista de abajo es también la de
 | No hay analítica | no hay ningún script de medición en el repositorio |
 | GitHub: DPF **y** cláusulas tipo | su declaración de privacidad: certificación ante el Departamento de Comercio **y** Decisión de Ejecución (UE) 2021/914 |
 
-> ⚠️ **EL FORMULARIO DE CONTACTO NO ENVÍA A NINGUNA PARTE, y la página lo dice.**
-> Su `action` sigue apuntando a `formspree.io/f/TU_ENDPOINT_AQUI`, que es
-> literalmente un marcador. El apartado 3 avisa de que no está operativo y
-> remite al correo.
+> ✅ **EL FORMULARIO DE CONTACTO YA FUNCIONA, Y LA POLÍTICA LO DESCRIBE.** Aquí
+> decía que no enviaba a ninguna parte —su `action` era el marcador
+> `TU_ENDPOINT_AQUI`— y que el apartado 3 avisaba de que no estaba operativo.
+> Ese aviso se ha sustituido.
 >
-> **Cuando se conecte el servicio hay que hacer DOS cosas**: sustituir ese
-> párrafo —hay un comentario HTML encima que lo dice— **y añadir el proveedor a
-> la tabla de encargados**. Olvidar la segunda deja una política que nombra un
-> tratamiento sin decir quién lo procesa.
+> Hoy **Formspree, Inc.** figura en los tres sitios que tocaba, y en los tres
+> hay que tocarlo si algún día se cambia de servicio:
 >
-> **No se escribió «los datos los trata Formspree»** porque hoy no los trata
-> nadie: una política que describe un tratamiento que no existe es peor que una
-> que avisa de que falta algo.
+> | Dónde | Qué dice |
+> |---|---|
+> | apartado 3 | datos, finalidad, consentimiento (6.1.a), conservación, Formspree como **encargado** y la salida directa a `jcontera@icam.es` |
+> | tabla de encargados | recepción y reenvío de los mensajes · Estados Unidos (AWS) |
+> | transferencias | **cláusulas contractuales tipo, Decisión de Ejecución (UE) 2021/914** |
+>
+> ⚠️ **FORMSPREE NO ESTÁ EN EL MARCO DE PRIVACIDAD DE DATOS UE-EE. UU.** —su
+> certificación consta como retirada desde el 26/04/2022—, así que solo se
+> citan las cláusulas tipo. **No hay que «igualarlo» con GitHub**, que sí tiene
+> las dos garantías. Hay un comentario HTML en la política que lo avisa.
+>
+> Y el apartado de cookies avisa de que, **sin JavaScript**, el envío pasa por
+> una página de confirmación de Formspree en su propio dominio, que puede poner
+> cookies propias. Esta web sigue sin poner ninguna.
 
 > ⚠️ **EL PÁRRAFO DE GOOGLE FONTS SE BORRA EL DÍA QUE LAS FUENTES SE ALOJEN
 > AQUÍ**, y hay que acordarse de los dos sitios: el `@import` de `styles.css` y

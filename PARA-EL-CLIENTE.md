@@ -341,6 +341,27 @@ cuántos suscriptores hay y cuántos correos se enviaron.
 
 ---
 
+# El formulario de contacto
+
+**Ya funciona.** Lo que un lector escribe en **tu-web/contacto/** te llega a
+**jcontera@icam.es**. Por el camino pasa por **Formspree**, un servicio que
+recibe el mensaje y te lo reenvía, en una cuenta a tu nombre.
+
+**Si con el primer mensaje Formspree te pide confirmar el formulario por
+correo**, solo tienes que pulsar el enlace de ese correo. Es una comprobación
+que hace una única vez.
+
+> **Algunos fines de semana de fútbol el envío puede fallar.** Son los bloqueos
+> de LaLiga contra la piratería, que a veces se llevan por delante servicios que
+> no tienen nada que ver, y Formspree es uno de ellos. Si pasa, el formulario se
+> lo dice al lector y le propone escribirte directamente a jcontera@icam.es, así
+> que el mensaje no se pierde: llega por otro camino.
+
+La política de privacidad ya lo cuenta: nombra a **Formspree** como el servicio
+que trata esos mensajes por tu cuenta.
+
+---
+
 # La política de privacidad
 
 Está en **tu-web/privacidad/** y se enlaza desde el pie de todas las páginas,
@@ -356,10 +377,6 @@ cuánto se guardan, quién más los trata y cómo pedir que se borren.
 > para no tener que reescribirlos, y eso no sale de su equipo.
 
 ## Lo que hoy está pendiente y la propia página avisa
-
-**El formulario de contacto todavía no envía a ningún sitio.** La política lo
-dice con esas palabras y remite a tu correo, que sí funciona. Cuando se conecte,
-hay que actualizar ese apartado: avísame y lo hago.
 
 **Las tipografías se cargan desde Google.** Está previsto traerlas a la propia
 web; cuando se haga, ese párrafo desaparece.

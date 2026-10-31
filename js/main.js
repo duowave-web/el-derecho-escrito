@@ -25,6 +25,7 @@
   articulosRelacionados();
   comentarios();
   suscripcion();
+  formularioDeContacto();
 
   /* ---------------------------------------------------- Buscador ------- */
 
@@ -2031,6 +2032,64 @@
           });
       });
     });
+  }
+
+  /* ---------------------------------------- Formulario de contacto ---- */
+
+  /* Envía el formulario de contacto/ a Formspree sin sacar al lector de la
+     página. Sin JavaScript, el `action` del <form> funciona solo y Formspree
+     enseña su propia confirmación; esto solo lo mejora.
+
+     El destino se lee del `action`, no se repite aquí: cambiar de endpoint es
+     tocar una línea del HTML. Con `Accept: application/json` Formspree
+     contesta con JSON en vez de redirigir a su página de gracias. */
+
+  const MENSAJES_CONTACTO = {
+    ok: "Mensaje enviado. Gracias por escribir.",
+    error: "No se ha podido enviar. Puedes escribir a jcontera@icam.es.",
+    enviando: "Enviando…",
+  };
+
+  function formularioDeContacto() {
+    const form = document.querySelector("form.formulario");
+    if (!form || !("fetch" in window) || !("FormData" in window)) return;
+
+    const aviso = form.querySelector(".formulario__aviso");
+    const boton = form.querySelector('button[type="submit"]');
+    if (!aviso) return;   // sin dónde contestar, que envíe el navegador
+
+    form.addEventListener("submit", function (e) {
+      /* La validación del navegador va primero, como en la suscripción: si
+         falta un campo obligatorio, no se intercepta y el navegador enseña su
+         propio aviso. */
+      if (!form.checkValidity()) return;
+
+      e.preventDefault();
+      pintarContacto(aviso, MENSAJES_CONTACTO.enviando, false);
+      if (boton) boton.disabled = true;
+
+      fetch(form.getAttribute("action"), {
+        method: "POST",
+        headers: { Accept: "application/json" },
+        body: new FormData(form),
+      })
+        .then(function (r) { return r.ok; })
+        .catch(function () { return false; })
+        .then(function (bien) {
+          if (bien) {
+            form.reset();
+            pintarContacto(aviso, MENSAJES_CONTACTO.ok, false);
+          } else {
+            pintarContacto(aviso, MENSAJES_CONTACTO.error, true);
+          }
+          if (boton) boton.disabled = false;
+        });
+    });
+  }
+
+  function pintarContacto(aviso, texto, esError) {
+    aviso.textContent = texto;
+    aviso.classList.toggle("formulario__aviso--error", !!esError);
   }
 
   function pintar(aviso, texto, esError) {

@@ -100,12 +100,19 @@
     <div class="contenedor contenedor--amplio">
 
       <!--
-        PARA QUE EL FORMULARIO FUNCIONE:
-        1. Crea una cuenta gratis en https://formspree.io
-        2. Copia el endpoint que te den (tipo https://formspree.io/f/abcdefgh)
-        3. Pégalo abajo sustituyendo TU_ENDPOINT_AQUI
-        Alternativa si usas Cloudflare Pages: puedes montar una Pages Function
-        en /functions/contacto.js y apuntar el action a /contacto.
+        EL FORMULARIO YA ESTÁ CONFIGURADO: envía a Formspree, al endpoint
+        https://formspree.io/f/xoeennvv, que reenvía cada mensaje por correo.
+        El asunto del correo lo fija el campo oculto `_subject`, y `_gotcha`
+        es la trampa antispam que Formspree reconoce por su nombre.
+
+        Con JavaScript, `formularioDeContacto()` en js/main.js intercepta el
+        envío y lo manda por fetch, así que el lector no sale de la página: la
+        respuesta se pinta en el <p role="status"> de debajo del botón. Sin
+        JavaScript, el envío normal del navegador sigue funcionando y Formspree
+        enseña su propia página de confirmación.
+
+        Si se cambia de endpoint, basta con tocar el `action`: el JS lo lee de
+        ahí y no guarda ninguna copia.
       -->
       <!-- Entradilla del formulario. No existía: la página abría directamente
            con los campos. «El Derecho Escrito» va en cursiva por ser una
@@ -136,7 +143,9 @@
            Las etiquetas son <label for> de verdad. Ningún placeholder hace de
            etiqueta: desaparecen al escribir, así que quien vuelve a repasar el
            formulario ya no sabe qué pedía cada casilla. -->
-      <form class="formulario" action="https://formspree.io/f/TU_ENDPOINT_AQUI" method="POST">
+      <form class="formulario" action="https://formspree.io/f/xoeennvv" method="POST">
+
+        <input type="hidden" name="_subject" value="Nuevo mensaje desde El Derecho Escrito">
 
         <div class="campos-par">
           <div class="campo">
@@ -167,6 +176,11 @@
         </div>
 
         <button class="boton boton--principal" type="submit">Enviar mensaje</button>
+
+        <!-- Nace vacío a propósito: un lector de pantalla solo anuncia los
+             cambios de una región que ya existía. role="status" ya es
+             aria-live="polite", así que no se declaran los dos. -->
+        <p class="formulario__aviso" role="status"></p>
 
       </form>
 
