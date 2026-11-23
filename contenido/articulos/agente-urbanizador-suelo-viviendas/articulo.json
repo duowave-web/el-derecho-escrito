@@ -1,10 +1,9 @@
 {
   "slug": "agente-urbanizador-suelo-viviendas",
   "titulo": "Vuelve el agente urbanizador. ¿Podrá desbloquear el suelo para construir nuevas viviendas?",
-  "titulo_seo": "El agente urbanizador: ¿puede desbloquear el suelo?",
-  "descripcion": "Madrid recupera el agente urbanizador para desbloquear suelo paralizado: un balance de treinta años de experiencia y de los retos pendientes en España.",
+  "descripcion": "Madrid recupera el agente urbanizador para desbloquear suelo paralizado: balance de tres décadas de experiencia y retos pendientes en España.",
   "entradilla": "La recuperación del agente urbanizador en Madrid reabre el debate sobre el papel de la iniciativa privada en la ejecución urbanística. Más de treinta años después de su aparición en la legislación valenciana, la experiencia de esta figura permite examinar tanto sus posibilidades para desbloquear actuaciones paralizadas como los obstáculos jurídicos, administrativos y económicos que siguen dificultando la transformación del suelo y la construcción de nuevas viviendas.",
-  "categoria": "fundamentos",
+  "categoria": "ensayos",
   "etiquetas": [
     "Derecho Urbanístico",
     "Crisis de Vivienda",
@@ -35,7 +34,7 @@
         },
         {
           "tipo": "parrafo",
-          "html": "La pregunta adquiere especial relevancia en plena crisis de acceso a la vivienda. Como señalamos en nuestro artículo <em>«La vivienda no es un derecho (y por qué no debería serlo)»,</em> las dificultades para aumentar la oferta residencial no dependen únicamente de la disponibilidad de terrenos, sino también de las condiciones que permiten transformarlos en suelo edificable. <strong>Un plan urbanístico puede prever miles de viviendas y, sin embargo, transcurrir años sin que comiencen las obras necesarias para construirlas.</strong> {{ref:3}}"
+          "html": "La pregunta adquiere especial relevancia en plena crisis de acceso a la vivienda. Como señalamos en nuestro artículo <em><a href=\"../vivienda-no-es-derecho/\">«La vivienda no es un derecho (y por qué no debería serlo)»</a>,</em> las dificultades para aumentar la oferta residencial no dependen únicamente de la disponibilidad de terrenos, sino también de las condiciones que permiten transformarlos en suelo edificable. <strong>Un plan urbanístico puede prever miles de viviendas y, sin embargo, transcurrir años sin que comiencen las obras necesarias para construirlas.</strong> {{ref:3}}"
         },
         {
           "tipo": "parrafo",
@@ -228,7 +227,7 @@
         },
         {
           "numero": 3,
-          "html": "CONTERA MIRANDA, Juan. «La vivienda no es un derecho (y por qué no debería serlo)». <em>El Derecho Escrito</em>."
+          "html": "CONTERA MIRANDA, Juan. <a href=\"../vivienda-no-es-derecho/\">«La vivienda no es un derecho (y por qué no debería serlo)»</a>. <em>El Derecho Escrito</em>."
         },
         {
           "numero": 4,

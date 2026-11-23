@@ -4317,6 +4317,49 @@ body:has(.progreso) .cabecera {
   margin-top: 14px;
 }
 
+/* ENLACES DENTRO DEL TEXTO del articulo y de sus referencias.
+
+   El `a` base del sitio va en acento y SIN subrayado, que vale para menus,
+   tarjetas y rotulos: ahi la posicion ya dice que es un enlace. Dentro de un
+   parrafo no: un acento sin subrayado se confunde con un enfasis, y mas aun
+   dentro de una cursiva. Aqui el subrayado es lo que dice que es un enlace,
+   el mismo criterio que .etiqueta--plana.
+
+   Filete fino y separado del texto para no pisar los descendentes; al pasar el
+   raton engorda y oscurece, sin cambiar de familia ni de peso.
+
+   ⚠️ Las llamadas [n] quedan fuera con :not(.llamada a). Sin el :not, esta
+   regla y `.llamada a` empatan en (0,1,1) y el orden del archivo decidiria si
+   las llamadas se subrayan.
+
+   ⚠️ Va dentro de @media screen. imprimir.css quita color y subrayado a los
+   enlaces del articulo con `.articulo a` (0,1,1) —en papel no se pulsan— y
+   estas reglas pesan (0,2,2): fuera de un @media screen ganarian tambien en el
+   PDF y le devolverian el subrayado. */
+
+@media screen {
+  .articulo__cuerpo a:not(.llamada a),
+  .referencias a {
+    color: var(--acento);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+  }
+
+  .articulo__cuerpo a:not(.llamada a):hover,
+  .referencias a:hover {
+    color: var(--acento-oscuro);
+    text-decoration-thickness: 2px;
+  }
+
+  .articulo__cuerpo a:not(.llamada a):focus-visible,
+  .referencias a:focus-visible {
+    outline: 2px solid var(--acento);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+}
+
 /* La llamada de referencia. Va en <sup> con su aria-label, y CADA NUMERO ES SU
    PROPIO ENLACE: [1, 6] son dos anclas distintas, no una. Los corchetes y la
    coma los escribe la plantilla fuera de los <a> para que no formen parte de
