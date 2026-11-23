@@ -640,6 +640,9 @@ export function bloquePaso({ anterior, siguiente } = {}) {
 
 export function paginaArticulo(art, vecinos) {
   const conNumero = art.secciones.some((s) => s.numero_original);
+  // titulo_seo solo acorta el <title>, que es lo que Google corta a ~60. Las
+  // tarjetas sociales —og:title y twitter:title— llevan siempre el titular
+  // completo: ahi no hay ese limite y un titulo recortado se lee como otro.
   const titulo = art.titulo_seo || art.titulo;
   const enc = encodeURIComponent;
   const urlEnc = enc(art.url);
@@ -677,7 +680,7 @@ export function paginaArticulo(art, vecinos) {
 <meta property="og:site_name" content="El Derecho Escrito">
 <meta property="og:locale" content="es_ES">
 <meta property="og:url" content="${art.url}">
-<meta property="og:title" content="${escapar(titulo)}">
+<meta property="og:title" content="${escapar(art.titulo)}">
 <meta property="og:description" content="${escapar(art.descripcion)}">
 <meta property="og:image" content="${DOMINIO}/og.png">
 <meta property="og:image:width" content="1200">
@@ -688,7 +691,7 @@ export function paginaArticulo(art, vecinos) {
 ${etiquetasMeta}
 
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="${escapar(titulo)}">
+<meta name="twitter:title" content="${escapar(art.titulo)}">
 <meta name="twitter:description" content="${escapar(art.descripcion)}">
 <meta name="twitter:image" content="${DOMINIO}/og.png">
 
