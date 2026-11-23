@@ -374,6 +374,23 @@ async function main() {
       principal.insertAdjacentHTML('afterbegin', html);
     }, bloqueTitulo(art, logoDataUri));
 
+    /* ⚠️ LOS ENLACES RELATIVOS SE HACEN ABSOLUTOS ANTES DE IMPRIMIR. La página
+       se abre desde file://, así que Chromium resolvía «../../contacto/» contra
+       el disco y el PDF publicado llevaba enlaces a
+       file:///home/runner/work/el-derecho-escrito/…: la carpeta del runner de
+       GitHub. No funcionaban para nadie, y además metían en el PDF la ruta de
+       la máquina que lo generó, que cambia entre el runner y un Mac.
+
+       Se resuelven contra la URL pública del artículo. Las anclas «#ref-3» se
+       dejan: son saltos dentro del propio documento. */
+    await p.evaluate((base) => {
+      for (const a of document.querySelectorAll('a[href]')) {
+        const href = a.getAttribute('href');
+        if (!href || href.startsWith('#')) continue;
+        a.setAttribute('href', new URL(href, base).href);
+      }
+    }, art.url);
+
     /* ⚠️ AQUI SE ESPERABA A QUE CARGARA LA FOTO DE LA PORTADA, Y YA NO HACE
        FALTA: el bloque de titulo no lleva imagen. La unica que quedaba era la
        portada del articulo y en formato paper no se imprime.

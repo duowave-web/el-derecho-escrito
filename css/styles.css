@@ -4317,7 +4317,8 @@ body:has(.progreso) .cabecera {
   margin-top: 14px;
 }
 
-/* ENLACES DENTRO DEL TEXTO del articulo y de sus referencias.
+/* ENLACES DENTRO DEL TEXTO del articulo —cuerpo, entradilla y referencias—.
+   Los escribe scripts/lib/enlaces.mjs a partir de los hipervinculos del Word.
 
    El `a` base del sitio va en acento y SIN subrayado, que vale para menus,
    tarjetas y rotulos: ahi la posicion ya dice que es un enlace. Dentro de un
@@ -4339,6 +4340,7 @@ body:has(.progreso) .cabecera {
 
 @media screen {
   .articulo__cuerpo a:not(.llamada a),
+  .articulo .entradilla a:not(.llamada a),
   .referencias a {
     color: var(--acento);
     text-decoration: underline;
@@ -4347,12 +4349,14 @@ body:has(.progreso) .cabecera {
   }
 
   .articulo__cuerpo a:not(.llamada a):hover,
+  .articulo .entradilla a:not(.llamada a):hover,
   .referencias a:hover {
     color: var(--acento-oscuro);
     text-decoration-thickness: 2px;
   }
 
   .articulo__cuerpo a:not(.llamada a):focus-visible,
+  .articulo .entradilla a:not(.llamada a):focus-visible,
   .referencias a:focus-visible {
     outline: 2px solid var(--acento);
     outline-offset: 3px;
