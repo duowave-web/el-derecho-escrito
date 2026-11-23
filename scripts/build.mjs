@@ -29,8 +29,10 @@ import { fileURLToPath } from 'node:url';
 import {
   derivar, paginaArticulo, tarjetaListado, tarjetaPortada, bloqueDestacado,
   botonesCategoria, entradaSitemap, entradaFeed, bloqueItemList, clave, CATEGORIAS,
+  resolverCategoria, esRecorteLiteral,
 } from './lib/plantilla.mjs';
 import { llamadasDe } from './lib/refs.mjs';
+import { enlazarArticulo } from './lib/enlaces.mjs';
 import { procesarPortada } from './lib/imagen.mjs';
 import { comprobarClaves } from './comprobar-claves.mjs';
 import { comprobarEnlaces } from './comprobar-enlaces.mjs';
@@ -116,10 +118,49 @@ function validar(art, ruta) {
   for (const c of CAMPOS) {
     if (art[c] === undefined) errores.push(`${ruta}: falta el campo «${c}»`);
   }
-  if (art.categoria && !CATEGORIAS[art.categoria]) {
-    errores.push(
-      `${ruta}: categoría «${art.categoria}» desconocida. Las del sitio son: ${Object.keys(CATEGORIAS).join(', ')}`
-    );
+  /* ⚠️ LA CATEGORÍA SE ACEPTA COMO LA ESCRIBE UNA PERSONA y se guarda como
+     clave. «Ensayo», «ENSAYOS» o «ensayos» dan `ensayos`; lo que no
+     corresponda a ninguna para el build, y con él el PR. Es lo que llega de
+     una corrección cuyo Word trae «Categoría: …»: n8n escribe la que ha
+     reconocido y, si no reconoce ninguna, escribe la del Word tal cual para
+     que falle AQUÍ, en el check del PR, con este mensaje.
+
+     Que no sea la clave exacta es aviso y no error: la página sale bien, pero
+     el JSON conviene dejarlo con la clave, que es lo que leen los filtros. */
+  if (art.categoria !== undefined) {
+    const k = resolverCategoria(art.categoria);
+    if (!k) {
+      errores.push(
+        `${ruta}: la categoría «${art.categoria}» no es ninguna de las del sitio. ` +
+        `Las válidas son: ${Object.values(CATEGORIAS).join(', ')} ` +
+        '(valen en singular o plural, con mayúsculas o sin tildes). ' +
+        'Corrige la línea «Categoría:» del Word, o el campo "categoria" del articulo.json.'
+      );
+    } else if (k !== art.categoria) {
+      avisos.push(`${art.slug || ruta}: la categoría «${art.categoria}» se ha leído como «${k}». Conviene escribir la clave en el JSON.`);
+      art.categoria = k;
+    }
+  }
+
+  /* ⚠️ titulo_seo SOLO PUEDE SER UN RECORTE LITERAL DEL TITULAR. La regla está
+     en CLAUDE.md: si el titular pasa de 60 caracteres, el <title> puede ser su
+     principio exacto —lo que va antes de los dos puntos—, nunca una versión
+     con otras palabras. Así nació «El agente urbanizador: ¿puede desbloquear
+     el suelo?» para un titular que no dice eso.
+
+     Si no lo es, se AVISA y se DESCARTA: el <title> sale con el titular
+     completo, que es correcto aunque largo. No es un error porque el
+     resultado publicado está bien; lo que estaba mal era el dato. */
+  if (art.titulo_seo !== undefined && art.titulo_seo !== null) {
+    if (!esRecorteLiteral(art.titulo, art.titulo_seo)) {
+      avisos.push(
+        `${art.slug || ruta}: titulo_seo «${art.titulo_seo}» no es un recorte literal del titular; ` +
+        'se ignora y el <title> lleva el titular completo. Bórralo del JSON o pon el principio exacto del titular.'
+      );
+      delete art.titulo_seo;
+    } else if (art.titulo_seo.length > 60) {
+      avisos.push(`${art.slug || ruta}: titulo_seo mide ${art.titulo_seo.length} caracteres (recomendado: 60 o menos).`);
+    }
   }
   if (art.fecha && !fechaValida(art.fecha)) {
     errores.push(`${ruta}: la fecha debe ser YYYY-MM-DD y existir en el calendario, y es «${art.fecha}»`);
@@ -350,8 +391,23 @@ async function leerArticulos() {
     }
     validar(art, `${carpeta}/articulo.json`);
     for (const a of art.avisos || []) avisos.push(`${art.slug}: ${a}`);
-    fuera.push({ ...derivar(art), _carpeta: join(CONTENIDO, carpeta) });
+    fuera.push(art);
   }
+
+  /* Los enlaces del texto, cuando ya se conocen TODOS los slugs: un enlace a
+     otro artículo solo se puede comprobar con la lista completa. Está en
+     lib/enlaces.mjs: URL sueltas a enlaces, los del propio sitio a rutas
+     relativas y los externos en pestaña nueva. Un slug inexistente avisa. */
+  const slugs = new Set(fuera.map((a) => a.slug));
+  const listos = fuera.map((art) => {
+    const conEnlaces = enlazarArticulo(art, {
+      slugs,
+      alAvisar: (m) => avisos.push(`${art.slug}: ${m}`),
+    });
+    return { ...derivar(conEnlaces), _carpeta: join(CONTENIDO, art.slug) };
+  });
+  fuera.length = 0;
+  fuera.push(...listos);
 
   /* Orden determinista: fecha descendente y el slug desempata. Sin el
      desempate, dos artículos del mismo día podrían salir en distinto orden

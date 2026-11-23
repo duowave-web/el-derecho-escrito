@@ -48,6 +48,46 @@ export const CATEGORIAS = {
   jurisprudencia: 'Jurisprudencia',
 };
 
+/* La categoría tal como la escribe una persona —«Ensayo», «FUNDAMENTOS»,
+   «jurisprudéncia»— a la clave de CATEGORIAS. Acepta mayúsculas, tildes y
+   singular o plural; nada más. Devuelve null si no corresponde a ninguna.
+
+   ⚠️ NO ES UN «EMPIEZA POR».  n8n lo resolvía con `startsWith` en los dos
+   sentidos, así que «e» daba «ensayos» y «jurisprudencial» daba
+   «jurisprudencia». Aquí solo valen la clave, su singular y su plural: una
+   errata de verdad tiene que fallar, que es lo que pide el PR.
+
+   ⚠️ n8n LLEVA UNA COPIA de esta función en el nodo «Validar», porque no
+   puede importar módulos del repo. Si se toca una, se toca la otra. */
+
+export function resolverCategoria(valor) {
+  const n = (s) => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z]/g, '');
+  const v = n(valor);
+  if (!v) return null;
+  for (const k of Object.keys(CATEGORIAS)) {
+    const base = n(k).replace(/s$/, '');
+    if (v === base || v === base + 's') return k;
+  }
+  return null;
+}
+
+/* ¿Es `seo` un recorte LITERAL de `titulo`? Es decir: el principio exacto del
+   titular, cortado en una frontera —dos puntos, punto y coma, punto, coma,
+   raya, paréntesis, o tras un «?» o «!»—. Igual al titular también vale.
+
+   Es la comprobación de la regla de CLAUDE.md: el `titulo_seo` no puede ser
+   una reescritura. Un recorte que se queda a media palabra tampoco vale. */
+
+export function esRecorteLiteral(titulo, seo) {
+  const t = String(titulo || '').trim();
+  const s = String(seo || '').trim();
+  if (!s || s.length > t.length) return false;
+  if (s === t) return true;
+  if (!t.startsWith(s)) return false;
+  const resto = t.slice(s.length);
+  return /[?!]$/.test(s) && /^\s/.test(resto) || /^\s*([:;.,(]|[—–]\s|-\s)/.test(resto);
+}
+
 /* ------------------------------------------------------------ autoría --- */
 
 /* ⚠️ LA AUTORÍA SE ESCRIBE AQUÍ UNA VEZ Y SALE EN OCHO SITIOS DEL ARTÍCULO.

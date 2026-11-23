@@ -975,8 +975,11 @@ conviviendo en el mismo archivo**: la etiqueta visible y la clave del enlace.
 > **Y es justo la asimetría que el JSON conserva.** `categoria` se escribe en
 > **clave** —`"jurisprudencia"`— y de ahí salen las dos formas: la clave viaja
 > literal a `data-categoria` y a los `href`, y el texto visible sale de la tabla
-> `CATEGORIAS` de `scripts/lib/plantilla.mjs`. Escribir `"Jurisprudencia"` hace
-> fallar el build, que es el modo de fallar bueno.
+> `CATEGORIAS` de `scripts/lib/plantilla.mjs`. Escribir `"Jurisprudencia"` o
+> `"Ensayo"` **ya no falla**: `resolverCategoria()` acepta mayúsculas, tildes y
+> singular o plural, lo convierte en la clave y avisa. Lo que **sí** falla, y con
+> un mensaje que dice cuáles valen, es una palabra que no sea ninguna
+> —«Opinión»—. Ver «La conversión del Word», al final.
 >
 > ⚠️ **Añadir una categoría es añadir una línea a esa tabla, y hay que saber que
 > la tabla también pinta los botones del filtro.** No hay lista de categorías en
@@ -4381,18 +4384,18 @@ Graph, Twitter y JSON-LD de las cinco páginas indexables.
 |---|---|
 | `<title>` | **El titular a secas, SIN sufijo de marca.** Con «\| El Derecho Escrito» —20 caracteres— cualquier titular real se pasa de 60. Consecuencia: **el titular debe medir ≤60** |
 | `description` | **140–160** caracteres, resumen del artículo |
-| `og:title` y `twitter:title` | Iguales que el `<title>` |
+| `og:title` y `twitter:title` | **El titular completo, siempre**, aunque el `<title>` vaya recortado |
 | `og:description` | Puede ser más corta que la meta; no hay límite duro |
 | `article:section` y `articleSection` | La **categoría real**, y las dos tienen que coincidir |
 | `keywords` | Frases largas de cola, propias del artículo. No son las etiquetas de navegación |
 | `author.description` | **La bio corta**, idéntica a `.autor__bio` del lateral |
 
 **De los siete campos, el generador escribe seis solo.** Lo único que hay que
-darle en el JSON son `titulo` —o `titulo_seo`, si el titular pasa de 60— y
-`descripcion`. Del resto:
+darle en el JSON son `titulo` —y `titulo_seo`, si el titular pasa de 60 y tiene
+un corte limpio— y `descripcion`. Del resto:
 
-- `og:title` y `twitter:title` salen del mismo valor que el `<title>`, así que
-  no pueden discrepar.
+- `og:title` y `twitter:title` salen de `titulo`, el titular completo. En las
+  tarjetas sociales no hay límite de 60 y un título recortado se lee como otro.
 - `og:description` y `twitter:description` salen de `descripcion`.
 - `article:section` y `articleSection` salen los dos de `categoria`, que es la
   clave y no el texto, así que tampoco pueden discrepar.
@@ -4402,11 +4405,55 @@ darle en el JSON son `titulo` —o `titulo_seo`, si el titular pasa de 60— y
   `.autor__bio`.
 
 > ⚠️ **`titulo_seo` NO es un titular alternativo, y el nombre engaña.** Es lo
-> que va en el `<title>`, en `og:title` y en el `name` del `WebPage` cuando el
-> titular real no cabe en 60 caracteres. **El `<h1>`, la portada, las tarjetas y
-> el `headline` del JSON-LD siguen usando `titulo`.**
+> que va en el `<title>` y en el `name` del `WebPage` cuando el titular real no
+> cabe en 60 caracteres. **El `<h1>`, la portada, las tarjetas, `og:title`,
+> `twitter:title` y el `headline` del JSON-LD siguen usando `titulo`.**
 >
-> El de MASC lo necesita: el titular completo mide 82 y el `titulo_seo` 51.
+> El de MASC lo necesita: el titular completo mide 87 y el `titulo_seo` 49.
+
+#### ⚠️ `titulo_seo` SOLO PUEDE SER UN RECORTE LITERAL DEL TITULAR
+
+**Nunca una reescritura con otras palabras.** Si el titular pasa de 60
+caracteres, `titulo_seo` es **su principio exacto**, cortado en una frontera
+limpia: lo que va antes de los dos puntos o de una raya. Si no hay ningún corte
+limpio que deje entre 20 y 60 caracteres, **no se pone `titulo_seo`** y el
+`<title>` lleva el titular entero, aunque pase de 60.
+
+| Titular | `titulo_seo` |
+|---|---|
+| La falta de MASC como requisito de procedibilidad**:** entre la inadmisión y la subsanación | La falta de MASC como requisito de procedibilidad |
+| Vuelve el agente urbanizador. ¿Podrá desbloquear el suelo para construir nuevas viviendas? | **ninguno** — no hay dos puntos ni raya |
+| Cómo saber si un terreno es edificable antes de comprarlo (57) | ninguno — cabe entero |
+
+> **Por qué esta regla, y no «fiel al título».** El prompt de n8n pedía un
+> `titulo_seo` de «máximo 60 caracteres, fiel al título», y Claude escribió
+> «El agente urbanizador: ¿puede desbloquear el suelo?» para un titular que no
+> dice eso. **Fiel no es literal**: el buscador enseñaba una pregunta que el
+> autor no había formulado.
+>
+> El punto y la interrogación **no** son cortes para n8n, a propósito: «Vuelve
+> el agente urbanizador» es un recorte literal, pero no dice de qué va el
+> artículo. Los dos puntos y la raya separan título y subtítulo; un punto
+> separa dos frases, y la primera no tiene por qué sostenerse sola.
+
+**Quién lo aplica, en dos capas:**
+
+| | Dónde | Qué hace |
+|---|---|---|
+| **n8n** | nodo «Validar» | **calcula** `titulo_seo` con `recorteSEO()` y descarta el que proponga Claude. El prompt ya no lo pide |
+| **build** | `esRecorteLiteral()` en `plantilla.mjs` | **comprueba** el del JSON: si no es el principio exacto del titular cortado en una frontera, **avisa y lo ignora** |
+
+> El build es más permisivo que n8n —acepta también un corte en punto, coma o
+> tras «?»— porque comprueba que sea **literal**, no que sea el corte que n8n
+> habría elegido. Así un `titulo_seo` puesto a mano a propósito no salta.
+>
+> **Ignorar no es fallar.** Un `titulo_seo` reescrito no rompe nada que se
+> publique: el `<title>` sale con el titular completo, que es correcto. Lo que
+> estaba mal era el dato, y eso lo dice el aviso del PR.
+>
+> **En una corrección** se conserva el `titulo_seo` publicado si el titular no
+> cambia —**también su ausencia**: el del agente urbanizador se quitó a mano y
+> no tiene que volver— y se recalcula si el titular cambia.
 
 > ⚠️ **El generador NO comprueba las longitudes, y podría.** Hoy un `<title>`
 > de 80 caracteres pasa sin decir nada. Se dejó así porque la regla de los 60
@@ -4419,7 +4466,7 @@ darle en el JSON son `titulo` —o `titulo_seo`, si el titular pasa de 60— y
 > `<title>` medía 61, su `description` 184 y sus `keywords` eran de Derecho
 > penal; se toleraba porque se borraba al entregar. **Ya está borrado**, así que
 > la regla no tiene excepciones: el único artículo, el de MASC, la cumple con su
-> `titulo_seo` de 51 caracteres.
+> `titulo_seo` de 49 caracteres —aquí decía 51, y el titular 82: medidos de nuevo, son 49 y 87—.
 
 ---
 
@@ -4535,7 +4582,7 @@ coincidir**, y el build falla si no —es lo único que ata la URL al contenido.
 |---|---|---|
 | `slug` | **sí** | la URL. Tiene que ser el nombre de la carpeta |
 | `titulo` | **sí** | `<h1>`, tarjetas, destacado, `headline` del JSON-LD |
-| `titulo_seo` | no | solo `<title>`, `og:title` y `name` del `WebPage`. Para titulares de más de 60 |
+| `titulo_seo` | no | solo `<title>` y `name` del `WebPage`. **Recorte literal del titular** si pasa de 60; si no hay corte limpio, no se pone. Ver «SEO de un artículo nuevo» |
 | `descripcion` | **sí** | meta description, OG, extracto de las tarjetas y entradilla del destacado |
 | `entradilla` | **sí** | el párrafo de apertura del artículo. **No es lo mismo que `descripcion`** |
 | `categoria` | **sí** | una de `ensayos`, `fundamentos`, `jurisprudencia`. En **clave** y en PLURAL, no en texto |
@@ -4752,7 +4799,8 @@ envoltorio no cambia el DOM.
 > lo que parece.** Es la misma asimetría que el CLAUDE.md ya documenta para
 > `data-categoria` y `data-etiquetas`, y por el mismo motivo: la clave de una
 > etiqueta no permite reconstruir sus tildes. Escribir `"categoria":
-> "Jurisprudencia"` hace fallar el build, que es el modo de fallar bueno.
+> "Jurisprudencia"` se acepta con un aviso; una categoría que no sea ninguna
+> —`"Opinión"`— para el build y dice cuáles valen.
 
 ### Los bloques
 
@@ -5891,8 +5939,9 @@ Para que nadie lo busque:
 - **No escribe `sobre/`, `contacto/`, `404.html` ni el hero.** Son páginas a
   mano y siguen siéndolo.
 - **No valida longitudes de SEO.** Razonado arriba.
-- **No comprueba los enlaces del texto.** Un `<a>` roto dentro de un párrafo
-  pasa sin decir nada.
+- **No comprueba que un enlace EXTERNO responda**: no hay red en el build. Los
+  internos sí: un enlace a `/articulos/<slug>/` que no existe sale como aviso
+  en el log y en el PR. Ver «Los enlaces del texto».
 - **No genera variantes de imagen por proporción.** Y no hace falta: el CSS
   recorta con `object-fit: cover`, así que **la misma foto sirve para el 21:9
   del artículo, el 3:2 del listado, el 16:9 de la portada y el de la portada del
@@ -7324,3 +7373,141 @@ en otro con un «no tenemos acceso».
 >
 > Verificado: el PDF del artículo sigue en **543 730 bytes**, los mismos, y no
 > contiene ni «DuoWave» ni «Desarrollado».
+
+---
+
+# La conversión del Word (n8n)
+
+**No está en este repositorio.** Vive entera en n8n, en el flujo **«El Derecho
+Escrito · Word → artículo (Pull Request)»**, y lo que llega aquí es su
+resultado: un `articulo.json` y una portada en un PR. Quien cambie la
+conversión cambia n8n; quien cambie cómo se publica el JSON, cambia el repo.
+
+```
+Cada minuto → Word en Entrada / Word en Correcciones → Elegir Word (el más antiguo, uno por vez)
+  → Configuración → ¿Es un Word? → Reservar: mover a En revisión
+  → Convertir a Google Doc → Exportar HTML → Borrar temporal → Listar carpeta Entrada
+  → Limpiar HTML          (HTML de Google → HTML mínimo + prompt para Claude)
+  → Claude: estructurar artículo
+  → Validar               (corrige y comprueba la respuesta palabra por palabra contra el Word)
+  → ¿Válido? ── no → Mover a Errores → Avisar: error
+      └─ sí → ¿Es corrección?
+               ├─ no → ¿Trae imagen? → (Descargar | Generar imagen) → Preparar commit
+               └─ sí → Árbol del repo → Separar artículos → Leer artículo publicado
+                        → Emparejar → ¿Encontrado? → ¿Imagen nueva? → Preparar commit
+  → SHA de main → Crear rama → Separar archivos → Subir archivo → Abrir Pull Request
+  → Avisar: listo para revisar
+```
+
+| Nodo | Qué decide |
+|---|---|
+| **Limpiar HTML** | qué sobrevive del Word: negrita, cursiva, **enlaces**, estructura. Lee la cabecera «Categoría:» / «Etiquetas:» y la quita del texto. Escribe el prompt |
+| **Validar** | repara el titular partido, **calcula `titulo_seo`**, aplica categoría y etiquetas del Word, y compara el texto con el Word palabra por palabra |
+| **Emparejar** | en una corrección, a qué artículo publicado corresponde el Word: por título, por nombre del archivo o por parecido del texto |
+| **Preparar commit** | el JSON final. En una corrección, **qué se toma del Word y qué se conserva** del publicado |
+
+> ⚠️ **HAY DOS COPIAS DE LÓGICA ENTRE n8n Y EL REPO, y hay que moverlas juntas.**
+> n8n no puede importar módulos de aquí:
+>
+> | En n8n | En el repo |
+> |---|---|
+> | `cfg.categorias` en «Configuración» | `CATEGORIAS` en `plantilla.mjs` |
+> | la resolución de la categoría en «Validar» | `resolverCategoria()` en `plantilla.mjs` |
+> | `recorteSEO()` en «Validar» | `esRecorteLiteral()` en `plantilla.mjs`, que la comprueba |
+
+## Las dos carpetas de Drive
+
+| Carpeta | Modo | Qué hace |
+|---|---|---|
+| **Entrada** | `nuevo` | artículo nuevo: fecha de hoy, slug nuevo, rama `articulo/…` |
+| **Correcciones** | `correccion` | nueva versión de uno publicado: rama `correccion/…`, **la URL no cambia** |
+
+**Qué hace una corrección con cada campo:**
+
+| Campo | Qué pasa |
+|---|---|
+| título, entradilla, cuerpo, referencias, keywords | **se toman del Word** |
+| **categoría** | **del Word si trae «Categoría: …»**; si no, se conserva |
+| **etiquetas** | del Word si trae «Etiquetas: …»; si no, se conservan |
+| `titulo_seo` | se conserva si el titular no cambia —también su ausencia—; si cambia, se recorta de nuevo |
+| slug, `fecha`, descripción, destacado | **se conservan** |
+| `actualizado` | **hoy** |
+| portada | se sustituye solo si llega una imagen nueva |
+
+> ⚠️ **LA CATEGORÍA DEL WORD SE IGNORABA EN LAS CORRECCIONES.** «Preparar
+> commit» hacía `{ ...previo }` y nunca la tocaba, y «Emparejar» no la contaba
+> como cambio: un Word que **solo** cambiaba la categoría acababa en Errores con
+> «El Word es idéntico al artículo publicado». Fue lo que obligó a corregir a
+> mano la del agente urbanizador.
+
+> ⚠️ **UNA CATEGORÍA QUE NO ES NINGUNA LLEGA AL PR, A PROPÓSITO.** n8n la
+> escribe tal cual en el JSON y **el check del PR falla** con el mensaje de
+> `validar()`, que dice cuáles valen. Antes n8n usaba en silencio la que
+> proponía Claude, y el autor no se enteraba de que su línea se había ignorado.
+>
+> Se acepta «Ensayo», «ENSAYOS» o «ensayos»; **no** «e» ni «jurisprudencial»,
+> que el `startsWith` de antes sí dejaba pasar.
+
+> ⚠️ **`PARA-EL-CLIENTE.md` DICE «no vuelvas a subirlo a Drive: pásamelo a
+> mí»**, de cuando no existía la carpeta Correcciones. No se ha cambiado: es
+> texto para el cliente y decidir si se le enseña la carpeta es otra cosa.
+
+## Los enlaces del texto
+
+**Los hipervínculos del Word llegan a la web y al PDF.** Antes no: «Limpiar
+HTML» quitaba toda etiqueta que no estuviera en su lista, y `<a>` no estaba. El
+artículo del agente urbanizador **traía el enlace** a «La vivienda no es un
+derecho» en el Word, y se perdió ahí.
+
+**Dos trampas del export de Google Docs**, las dos vistas en el HTML real:
+
+1. **Cada URL va envuelta en su redirector**:
+   `https://www.google.com/url?q=URL&sa=D&source=editors&…`. Se desenvuelve.
+2. **Un enlace con dos formatos sale partido en dos `<a>`** con la misma URL
+   —«La vivienda…» en cursiva y el «»» de cierre en redonda—. «Limpiar HTML»
+   reescribe cada párrafo por tramos y los une: `<a><em>«La vivienda…</em>»</a>`.
+
+El resto lo hace el build, en `scripts/lib/enlaces.mjs`, sobre todo el HTML del
+artículo —entradilla, párrafos, citas, listas y referencias—:
+
+| Qué hay en el JSON | Qué se publica |
+|---|---|
+| `https://elderechoescrito.es/articulos/<slug>/` | `../<slug>/` |
+| la misma en `duowave-web.github.io/el-derecho-escrito/`, en una preview `…-previews/pr-N/` o en `raw.githack.com/…/<sha>/` | `../<slug>/` |
+| otra página del sitio (`/contacto/`) | `../../contacto/` |
+| cualquier otra URL | `target="_blank" rel="noopener noreferrer"` |
+| una URL escrita a mano en el texto | un enlace con esa URL como texto |
+| `javascript:` o cualquier otro esquema | se queda en texto, con aviso |
+
+> ⚠️ **EL JSON GUARDA LA URL COMO VINO; LA RUTA RELATIVA LA ESCRIBE EL BUILD.**
+> Así el mismo JSON vale aunque cambie el dominio, y un enlace corregido a mano
+> en el JSON pasa por las mismas reglas que uno del Word.
+
+> ⚠️ **UN ENLACE INTERNO A UN SLUG QUE NO EXISTE ES UN AVISO, NO UN ERROR.**
+> Sale en el log y en el comentario del PR, y el artículo se publica: el enlace
+> dará 404 hasta que exista el destino. Es la frontera de siempre: lo que rompe
+> el sistema para el build; lo que es decisión del autor, avisa.
+
+> ⚠️ **AL ACTIVARLO, LAS REFERENCIAS DE DOS ARTÍCULOS PUBLICADOS CAMBIARON.**
+> `terreno-edificable-comprarlo` y `vivienda-no-es-derecho` traían 32 URL
+> escritas como texto («Disponible en: https://www.boe.es/…») que ahora son
+> enlaces. Es lo pedido, no un efecto lateral; comprobado que todas cortan
+> bien la puntuación final.
+
+> **El estilo es el de pantalla que ya existía** —`.articulo__cuerpo a`,
+> `.referencias a`, ahora también `.entradilla a`—, dentro de `@media screen`.
+> **En el PDF los enlaces se pueden pulsar pero no se distinguen**: lo decide
+> `imprimir.css` («en papel un enlace no se puede pulsar»). Si se quiere que se
+> vean en el PDF, se cambia ahí.
+
+> ⚠️ **LOS PDF LLEVABAN ENLACES A `file:///home/runner/…`.** La página se abre
+> desde `file://` para imprimirla, y Chromium resolvía «../../contacto/» contra
+> el disco del runner de GitHub: los cuatro PDF publicados tenían el enlace del
+> aviso legal apuntando a una carpeta que no existe para nadie. `pdf.mjs`
+> convierte ahora todo href relativo en absoluto contra la URL pública del
+> artículo antes de imprimir; las anclas `#ref-n` se quedan como saltos
+> internos. Se comprueba así:
+>
+> ```sh
+> LC_ALL=C grep -a -c 'file://' articulos/*/*.pdf    # tiene que dar 0
+> ```
